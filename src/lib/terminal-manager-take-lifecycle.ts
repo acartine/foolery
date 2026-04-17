@@ -18,7 +18,7 @@ export type TakeLoopLifecycleEvent =
   | "stderr_observed"
   | "response_logged"
   | "normalized_event_observed"
-  | "result_observed"
+  | "turn_ended"
   | "child_close"
   | "spawn_error"
   | "post_exit_state_observed"
@@ -156,7 +156,7 @@ function applyEvent(
     case "normalized_event_observed":
       trace.firstNormalizedEventAt ??= at;
       break;
-    case "result_observed":
+    case "turn_ended":
       trace.resultObservedAt ??= at;
       break;
     case "child_close":

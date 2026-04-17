@@ -134,15 +134,15 @@ describe("runtime: gemini stdout", () => {
   });
 });
 
-// ── onResult callback ──────────────────────────────────
+// ── onTurnEnded callback ───────────────────────────────
 
-describe("runtime: onResult callback", () => {
+describe("runtime: onTurnEnded callback", () => {
   beforeEach(() => { vi.useFakeTimers(); });
   afterEach(() => { vi.useRealTimers(); });
 
   it("prevents close when returns true", () => {
     const config = makeConfig("claude", {
-      onResult: () => true,
+      onTurnEnded: () => true,
     });
     const rt = createSessionRuntime(config);
     const child = makeChild(true);
@@ -162,7 +162,7 @@ describe("runtime: onResult callback", () => {
 
   it("schedules close when returns false", () => {
     const config = makeConfig("claude", {
-      onResult: () => false,
+      onTurnEnded: () => false,
     });
     const rt = createSessionRuntime(config);
     const child = makeChild(true);
@@ -240,7 +240,7 @@ describe("runtime: lifecycle callbacks", () => {
           eventType: "result",
         }),
         expect.objectContaining({
-          type: "result_observed",
+          type: "turn_ended",
           eventType: "result",
           isError: false,
         }),
@@ -437,7 +437,7 @@ describe("runtime: watchdog", () => {
     expect(rt.state.resultObserved).toBe(true);
     vi.advanceTimersByTime(10_000);
     expect(rt.state.exitReason).toBe(
-      "result_observed",
+      "turn_ended",
     );
   });
 });

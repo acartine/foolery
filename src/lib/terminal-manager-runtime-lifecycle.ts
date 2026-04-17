@@ -169,10 +169,10 @@ function handleRuntimeObservationEvent(
         },
       );
       break;
-    case "result_observed":
+    case "turn_ended":
       recordTakeLoopLifecycle(
         ctx,
-        "result_observed",
+        "turn_ended",
         {
           claimedState: beatState,
           resultIsError: event.isError,

@@ -51,7 +51,7 @@ export interface InitialChildState {
 export function createInitialChildState(
   autoShipCompletionPrompt: string | null,
   runtimeConfig: Omit<
-    SessionRuntimeConfig, "onResult"
+    SessionRuntimeConfig, "onTurnEnded"
   >,
 ): InitialChildState {
   const state: InitialChildState = {
@@ -64,8 +64,8 @@ export function createInitialChildState(
 
   const runtime = createSessionRuntime({
     ...runtimeConfig,
-    onResult: () =>
-      resultFollowUp(state),
+    onTurnEnded: () =>
+      turnEndedFollowUp(state),
   });
   state.runtime = runtime;
   return state;
@@ -73,7 +73,7 @@ export function createInitialChildState(
 
 // ─── Follow-up logic ────────────────────────────────
 
-function resultFollowUp(
+function turnEndedFollowUp(
   state: InitialChildState,
 ): boolean {
   if (

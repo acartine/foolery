@@ -2,344 +2,90 @@
  * Shared agent session runtime.
  *
  * Centralizes line buffering, event normalization,
- * AskUser auto-response, stdin lifecycle, result
+ * AskUser auto-response, stdin lifecycle, turn-ended
  * follow-up, watchdog, and process-group termination
  * so terminal-manager paths share one protocol.
+ *
+ * ── Turn-ended dispatch (foolery-a401) ──
+ *
+ * The generic runtime NEVER inspects payload shape to
+ * decide when a turn has ended. Each transport adapter
+ * (stdio, jsonrpc, acp, http) signals turn-end via
+ * `runtime.signalTurnEnded()` using its own protocol
+ * terminator. The runtime just routes the signal into
+ * the optional `onTurnEnded` follow-up callback and
+ * schedules stdin close when no follow-up was sent.
+ *
+ * DO NOT reintroduce `if (obj.type === "result") {
+ * onTurnEnded() }` in this file. That bug, where the
+ * payload gate lived in the transport-agnostic core,
+ * silently disabled follow-up for Codex / Gemini /
+ * OpenCode for months. See the knot handoff capsule
+ * for the full story.
  */
 import type { ChildProcess } from "node:child_process";
-import type { InteractionLog } from "@/lib/interaction-logger";
-import type {
-  AgentDialect,
-  createLineNormalizer,
-} from "@/lib/agent-adapter";
-import type {
-  AgentSessionCapabilities,
-} from "@/lib/agent-session-capabilities";
-import { logTokenUsageForEvent } from "@/lib/agent-token-usage";
-import type { TerminalEvent } from "@/lib/types";
-import {
-  type JsonObject,
-  formatStreamEvent,
-  pushFormattedEvent,
-} from "@/lib/terminal-manager-format";
-import type {
-  CodexJsonRpcSession,
-} from "@/lib/codex-jsonrpc-session";
-import type {
-  OpenCodeHttpSession,
-} from "@/lib/opencode-http-session";
-import type {
-  GeminiAcpSession,
-} from "@/lib/gemini-acp-session";
 import {
   doCloseInput,
   doCancelInputClose,
   doScheduleInputClose,
   doSendUserTurn,
-  autoAnswerAskUser,
   doResetWatchdog,
 } from "@/lib/agent-session-runtime-helpers";
+import {
+  processLine,
+  type TurnEndedSignal,
+} from "@/lib/agent-session-runtime-events";
+import type {
+  AgentSessionRuntime,
+  SessionRuntimeConfig,
+  SessionRuntimeState,
+  TurnEndedInfo,
+} from "@/lib/agent-session-runtime-types";
 
-// ── Exit reason ────────────────────────────────────────
+// Re-export type surface so existing call sites keep
+// `from "@/lib/agent-session-runtime"` working after
+// the split.
+export type {
+  AgentSessionRuntime,
+  SessionExitReason,
+  SessionRuntimeConfig,
+  SessionRuntimeLifecycleEvent,
+  SessionRuntimeState,
+  TurnEndedInfo,
+} from "@/lib/agent-session-runtime-types";
 
-export type SessionExitReason =
-  | "result_observed"
-  | "timeout"
-  | "spawn_error"
-  | "external_abort"
-  | "raw_close";
+// ── Turn-ended handler ─────────────────────────────────
 
-export type SessionRuntimeLifecycleEvent =
-  | {
-    type: "prompt_delivery_deferred";
-    transport: "stdio" | "jsonrpc" | "http" | "acp";
-    reason?: string;
-  }
-  | {
-    type: "prompt_delivery_attempted";
-    transport: "stdio" | "jsonrpc" | "http" | "acp";
-  }
-  | {
-    type: "prompt_delivery_succeeded";
-    transport: "stdio" | "jsonrpc" | "http" | "acp";
-  }
-  | {
-    type: "prompt_delivery_failed";
-    transport: "stdio" | "jsonrpc" | "http" | "acp";
-    reason?: string;
-  }
-  | { type: "stdout_observed"; preview?: string }
-  | { type: "stderr_observed"; preview?: string }
-  | { type: "response_logged"; rawLine: string }
-  | {
-    type: "normalized_event_observed";
-    eventType?: string;
-    isError?: boolean;
-  }
-  | {
-    type: "result_observed";
-    eventType?: string;
-    isError?: boolean;
-  }
-  | {
-    type: "watchdog_fired";
-    timeoutMs: number;
-    msSinceLastEvent: number;
-    lastEventType?: string;
-  };
-
-// ── Runtime configuration ──────────────────────────────
-
-export interface SessionRuntimeConfig {
-  id: string;
-  dialect: AgentDialect;
-  capabilities: AgentSessionCapabilities;
-  watchdogTimeoutMs: number | null;
-  normalizeEvent: ReturnType<
-    typeof createLineNormalizer
-  >;
-  pushEvent: (evt: TerminalEvent) => void;
-  interactionLog: InteractionLog;
-  beatIds: string[];
-  /**
-   * Called when a result event is observed.
-   * Return true if a follow-up prompt was sent,
-   * which prevents stdin close scheduling.
-   */
-  onResult?: () => boolean;
-  onLifecycleEvent?: (
-    event: SessionRuntimeLifecycleEvent,
-  ) => void;
-  /**
-   * Optional Codex JSON-RPC session for
-   * jsonrpc-stdio transport.
-   */
-  jsonrpcSession?: CodexJsonRpcSession;
-  /**
-   * Optional OpenCode HTTP session for
-   * http-server transport.
-   */
-  httpSession?: OpenCodeHttpSession;
-  /**
-   * Optional Gemini ACP session for
-   * acp-stdio transport.
-   */
-  acpSession?: GeminiAcpSession;
-}
-
-// ── Runtime state ──────────────────────────────────────
-
-export interface SessionRuntimeState {
-  lineBuffer: string;
-  stdinClosed: boolean;
-  closeInputTimer: NodeJS.Timeout | null;
-  watchdogTimer: NodeJS.Timeout | null;
-  watchdogArmedAt: number | null;
-  autoAnsweredToolUseIds: Set<string>;
-  resultObserved: boolean;
-  exitReason: SessionExitReason | null;
-  lastNormalizedEvent: JsonObject | null;
-  /**
-   * Wall-clock timestamp (ms since epoch) of the
-   * most recent stdout chunk from the child. Null
-   * until the first chunk arrives. Used by close
-   * handlers to report how long the child had been
-   * idle before exit.
-   */
-  lastStdoutAt: number | null;
-}
-
-// ── Runtime handle ─────────────────────────────────────
-
-export interface AgentSessionRuntime {
-  readonly state: SessionRuntimeState;
-  readonly config: SessionRuntimeConfig;
-  wireStdout(child: ChildProcess): void;
-  wireStderr(child: ChildProcess): void;
-  sendUserTurn(
-    child: ChildProcess,
-    text: string,
-    source?: string,
-  ): boolean;
-  closeInput(child: ChildProcess): void;
-  scheduleInputClose(child: ChildProcess): void;
-  cancelInputClose(): void;
-  flushLineBuffer(child: ChildProcess): void;
-  /**
-   * Inject a JSON line into the event processing
-   * pipeline. Used by HTTP-based transports that
-   * receive events outside of stdout.
-   */
-  injectLine(
-    child: ChildProcess, line: string,
-  ): void;
-  dispose(): void;
-}
-
-// ── Event processing ───────────────────────────────────
-
-function handleResultEvent(
+/**
+ * Transport-neutral turn-ended handler. Invoked via
+ * `runtime.signalTurnEnded` from each adapter when its
+ * protocol reports end-of-turn. Does NOT inspect the
+ * payload shape — the decision to call this function
+ * has already been made by the caller.
+ */
+function handleTurnEnded(
   child: ChildProcess,
   state: SessionRuntimeState,
   config: SessionRuntimeConfig,
-  obj: Record<string, unknown>,
+  info: TurnEndedInfo,
 ): void {
   state.resultObserved = true;
-  state.exitReason = "result_observed";
+  state.exitReason = "turn_ended";
   config.onLifecycleEvent?.({
-    type: "result_observed",
-    eventType: typeof obj.type === "string"
-      ? obj.type
-      : undefined,
-    isError: obj.is_error === true,
+    type: "turn_ended",
+    eventType: info.eventType,
+    isError: info.isError,
   });
   const followUpSent =
-    config.onResult?.() ?? false;
+    config.onTurnEnded?.() ?? false;
   if (!followUpSent) {
     doScheduleInputClose(child, state, config);
   }
 }
 
-function processNormalizedEvent(
-  child: ChildProcess,
-  obj: Record<string, unknown>,
-  state: SessionRuntimeState,
-  config: SessionRuntimeConfig,
-): void {
-  state.lastNormalizedEvent = obj;
-  doResetWatchdog(child, state, config);
-  autoAnswerAskUser(child, obj, state, config);
-  config.onLifecycleEvent?.({
-    type: "normalized_event_observed",
-    eventType: typeof obj.type === "string"
-      ? obj.type
-      : undefined,
-    isError: obj.is_error === true,
-  });
-  if (obj.type === "result") {
-    handleResultEvent(child, state, config, obj);
-  } else {
-    doCancelInputClose(state);
-  }
-  const display = formatStreamEvent(obj);
-  if (display) {
-    pushFormattedEvent(display, config.pushEvent);
-  }
-}
+// ── Process termination (re-export) ────────────────────
 
-function processLine(
-  child: ChildProcess,
-  line: string,
-  state: SessionRuntimeState,
-  config: SessionRuntimeConfig,
-): void {
-  try {
-    const raw = JSON.parse(line) as JsonObject;
-
-    // JSON-RPC transport: translate first, then
-    // normalize with the standard Codex normalizer
-    if (config.jsonrpcSession) {
-      const translated =
-        config.jsonrpcSession.processLine(raw);
-      if (!translated) return; // skip noise
-      logTokenUsageForEvent(
-        config.interactionLog,
-        config.dialect,
-        translated as JsonObject,
-        config.beatIds,
-      );
-      const obj = (
-        config.normalizeEvent(translated) ??
-        translated
-      ) as Record<string, unknown>;
-      processNormalizedEvent(
-        child, obj, state, config,
-      );
-      return;
-    }
-
-    // ACP transport: translate (needs child for
-    // responding to client-side requests)
-    if (config.acpSession) {
-      const translated =
-        config.acpSession.processLine(child, raw);
-      if (!translated) return;
-      logTokenUsageForEvent(
-        config.interactionLog,
-        config.dialect,
-        translated as JsonObject,
-        config.beatIds,
-      );
-      const obj = (
-        config.normalizeEvent(translated) ??
-        translated
-      ) as Record<string, unknown>;
-      processNormalizedEvent(
-        child, obj, state, config,
-      );
-      return;
-    }
-
-    logTokenUsageForEvent(
-      config.interactionLog,
-      config.dialect,
-      raw,
-      config.beatIds,
-    );
-    const obj = (
-      config.normalizeEvent(raw) ?? raw
-    ) as Record<string, unknown>;
-    processNormalizedEvent(
-      child, obj, state, config,
-    );
-  } catch {
-    console.log(
-      `[terminal-manager] [${config.id}] ` +
-      `raw stdout: ${line.slice(0, 150)}`,
-    );
-    config.pushEvent({
-      type: "stdout",
-      data: line + "\n",
-      timestamp: Date.now(),
-    });
-  }
-}
-
-// ── Process termination ────────────────────────────────
-
-export function terminateProcessGroup(
-  child: ChildProcess,
-  reason: string,
-  delayMs = 5000,
-): void {
-  const pid = child.pid;
-  console.warn(
-    `[terminal-manager] [terminate-process-group] ` +
-    `pid=${pid ?? "unknown"} reason=${reason} ` +
-    `delayMs=${delayMs}`,
-  );
-  try {
-    if (pid) process.kill(-pid, "SIGTERM");
-  } catch {
-    try {
-      child.kill("SIGTERM");
-    } catch { /* already dead */ }
-  }
-  setTimeout(() => {
-    console.warn(
-      `[terminate-process-group] ` +
-      `pid=${pid ?? "unknown"} reason=${reason} ` +
-      `signal=SIGKILL (forced after ${delayMs}ms)`,
-    );
-    try {
-      if (pid) process.kill(-pid, "SIGKILL");
-    } catch {
-      try {
-        child.kill("SIGKILL");
-      } catch { /* already dead */ }
-    }
-  }, delayMs);
-}
+export { terminateProcessGroup } from "@/lib/agent-session-process";
 
 // ── Wire helpers ──────────────────────────────────────
 
@@ -347,6 +93,7 @@ function doWireStdout(
   child: ChildProcess,
   state: SessionRuntimeState,
   config: SessionRuntimeConfig,
+  signal: TurnEndedSignal,
 ): void {
   doResetWatchdog(child, state, config);
   child.stdout?.on("data", (chunk: Buffer) => {
@@ -358,83 +105,81 @@ function doWireStdout(
       preview: text.slice(0, 160),
     });
 
-    // HTTP transport: stdout carries server logs,
-    // not agent events. Pass lines to httpSession
-    // for URL discovery; log the rest as stdout.
     if (config.httpSession) {
-      const lines = text.split("\n");
-      for (const line of lines) {
-        if (!line.trim()) continue;
-        if (
-          !config.httpSession.processStdoutLine(line)
-        ) {
-          config.pushEvent({
-            type: "stdout",
-            data: line + "\n",
-            timestamp: Date.now(),
-          });
-        }
-      }
+      routeHttpStdout(text, config);
       return;
     }
-
-    state.lineBuffer += text;
-    const lines = state.lineBuffer.split("\n");
-    state.lineBuffer = lines.pop() ?? "";
-    for (const line of lines) {
-      if (!line.trim()) continue;
-      config.interactionLog.logResponse(line);
-      config.onLifecycleEvent?.({
-        type: "response_logged",
-        rawLine: line,
-      });
-      processLine(child, line, state, config);
-    }
+    pumpLineBuffer(child, text, state, config, signal);
   });
+}
+
+function routeHttpStdout(
+  text: string,
+  config: SessionRuntimeConfig,
+): void {
+  // HTTP transport: stdout carries server logs,
+  // not agent events. Pass lines to httpSession
+  // for URL discovery; log the rest as stdout.
+  const lines = text.split("\n");
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    if (!config.httpSession!.processStdoutLine(line)) {
+      config.pushEvent({
+        type: "stdout",
+        data: line + "\n",
+        timestamp: Date.now(),
+      });
+    }
+  }
+}
+
+function pumpLineBuffer(
+  child: ChildProcess,
+  text: string,
+  state: SessionRuntimeState,
+  config: SessionRuntimeConfig,
+  signal: TurnEndedSignal,
+): void {
+  state.lineBuffer += text;
+  const lines = state.lineBuffer.split("\n");
+  state.lineBuffer = lines.pop() ?? "";
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    config.interactionLog.logResponse(line);
+    config.onLifecycleEvent?.({
+      type: "response_logged",
+      rawLine: line,
+    });
+    processLine(child, line, state, config, signal);
+  }
 }
 
 function doFlushLineBuffer(
   child: ChildProcess,
   state: SessionRuntimeState,
   config: SessionRuntimeConfig,
+  signal: TurnEndedSignal,
 ): void {
   if (!state.lineBuffer.trim()) return;
-  config.interactionLog.logResponse(
-    state.lineBuffer,
-  );
+  const line = state.lineBuffer;
+  state.lineBuffer = "";
+  config.interactionLog.logResponse(line);
   config.onLifecycleEvent?.({
     type: "response_logged",
-    rawLine: state.lineBuffer,
+    rawLine: line,
   });
-  try {
-    const obj = JSON.parse(
-      state.lineBuffer,
-    ) as JsonObject;
-    logTokenUsageForEvent(
-      config.interactionLog,
-      config.dialect,
-      obj,
-      config.beatIds,
-    );
-    processNormalizedEvent(
-      child, obj, state, config,
-    );
-  } catch {
-    config.pushEvent({
-      type: "stdout",
-      data: state.lineBuffer + "\n",
-      timestamp: Date.now(),
-    });
-  }
-  state.lineBuffer = "";
+  // Route through the full `processLine` pipeline so
+  // the buffered line follows the same adapter-gated
+  // turn-ended detection as streaming lines.
+  processLine(child, line, state, config, signal);
 }
 
 // ── Factory ────────────────────────────────────────────
 
-export function createSessionRuntime(
+function initState(
   config: SessionRuntimeConfig,
-): AgentSessionRuntime {
-  const state: SessionRuntimeState = {
+): SessionRuntimeState {
+  return {
     lineBuffer: "",
     stdinClosed: !config.capabilities.interactive,
     closeInputTimer: null,
@@ -446,32 +191,45 @@ export function createSessionRuntime(
     lastNormalizedEvent: null,
     lastStdoutAt: null,
   };
+}
+
+function wireStderrImpl(
+  child: ChildProcess,
+  config: SessionRuntimeConfig,
+): void {
+  child.stderr?.on("data", (chunk: Buffer) => {
+    const text = chunk.toString();
+    config.interactionLog.logStderr(text);
+    config.onLifecycleEvent?.({
+      type: "stderr_observed",
+      preview: text.slice(0, 160),
+    });
+    console.log(
+      `[terminal-manager] [${config.id}] ` +
+      `stderr: ${text.slice(0, 200)}`,
+    );
+    config.pushEvent({
+      type: "stderr", data: text,
+      timestamp: Date.now(),
+    });
+  });
+}
+
+export function createSessionRuntime(
+  config: SessionRuntimeConfig,
+): AgentSessionRuntime {
+  const state = initState(config);
+  const signal: TurnEndedSignal = (child, info = {}) => {
+    handleTurnEnded(child, state, config, info);
+  };
 
   return {
     state,
     config,
     wireStdout: (child) =>
-      doWireStdout(child, state, config),
-    wireStderr: (child) => {
-      child.stderr?.on(
-        "data", (chunk: Buffer) => {
-          const text = chunk.toString();
-          config.interactionLog.logStderr(text);
-          config.onLifecycleEvent?.({
-            type: "stderr_observed",
-            preview: text.slice(0, 160),
-          });
-          console.log(
-            `[terminal-manager] [${config.id}] ` +
-            `stderr: ${text.slice(0, 200)}`,
-          );
-          config.pushEvent({
-            type: "stderr", data: text,
-            timestamp: Date.now(),
-          });
-        },
-      );
-    },
+      doWireStdout(child, state, config, signal),
+    wireStderr: (child) =>
+      wireStderrImpl(child, config),
     sendUserTurn: (child, text, source) =>
       doSendUserTurn(
         child, state, config,
@@ -484,9 +242,11 @@ export function createSessionRuntime(
     cancelInputClose: () =>
       doCancelInputClose(state),
     flushLineBuffer: (child) =>
-      doFlushLineBuffer(child, state, config),
+      doFlushLineBuffer(child, state, config, signal),
     injectLine: (child, line) =>
-      processLine(child, line, state, config),
+      processLine(child, line, state, config, signal),
+    signalTurnEnded: (child, info) =>
+      signal(child, info),
     dispose: () => {
       doCancelInputClose(state);
       if (state.watchdogTimer) {

@@ -108,7 +108,7 @@ describe("copilot interactive: completion", () => {
     });
     expect(rt.state.resultObserved).toBe(true);
     expect(rt.state.exitReason).toBe(
-      "result_observed",
+      "turn_ended",
     );
   });
 
@@ -200,7 +200,7 @@ describe("copilot interactive: watchdog", () => {
       DEFAULT_WATCHDOG_TIMEOUT_MS,
     );
     expect(rt.state.exitReason).toBe(
-      "result_observed",
+      "turn_ended",
     );
   });
 });
@@ -211,10 +211,10 @@ describe("copilot interactive: follow-up", () => {
   beforeEach(() => { vi.useFakeTimers(); });
   afterEach(() => { vi.useRealTimers(); });
 
-  it("sends follow-up via onResult callback", () => {
-    const onResult = vi.fn(() => true);
+  it("sends follow-up via onTurnEnded callback", () => {
+    const onTurnEnded = vi.fn(() => true);
     const rt = createSessionRuntime(
-      makeConfig({ onResult }),
+      makeConfig({ onTurnEnded }),
     );
     const child = makeChild();
     const endSpy = vi.spyOn(child.stdin!, "end");
@@ -224,7 +224,7 @@ describe("copilot interactive: follow-up", () => {
       type: "session.task_complete",
       data: { success: true },
     });
-    expect(onResult).toHaveBeenCalledOnce();
+    expect(onTurnEnded).toHaveBeenCalledOnce();
 
     vi.advanceTimersByTime(5000);
     expect(endSpy).not.toHaveBeenCalled();
@@ -288,7 +288,7 @@ describe("copilot interactive: follow-up", () => {
       data: { success: true },
     });
     expect(rt.state.exitReason).toBe(
-      "result_observed",
+      "turn_ended",
     );
 
     rt.cancelInputClose();

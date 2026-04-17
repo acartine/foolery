@@ -236,7 +236,7 @@ describe("runtime: claude stdout", () => {
     );
     expect(rt.state.resultObserved).toBe(true);
     expect(rt.state.exitReason).toBe(
-      "result_observed",
+      "turn_ended",
     );
   });
 
@@ -425,7 +425,7 @@ describe("runtime: interactive codex stdout", () => {
     );
     expect(rt.state.resultObserved).toBe(true);
     expect(rt.state.exitReason).toBe(
-      "result_observed",
+      "turn_ended",
     );
   });
 

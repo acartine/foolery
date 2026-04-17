@@ -16,10 +16,10 @@ import {
 import type {
   SessionRuntimeState,
   SessionRuntimeConfig,
-} from "@/lib/agent-session-runtime";
+} from "@/lib/agent-session-runtime-types";
 import {
   terminateProcessGroup,
-} from "@/lib/agent-session-runtime";
+} from "@/lib/agent-session-process";
 
 // ── Stdin operations ───────────────────────────────────
 
