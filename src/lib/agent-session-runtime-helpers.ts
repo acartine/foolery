@@ -279,7 +279,14 @@ function fireWatchdogTimeout(
   ms: number,
 ): void {
   state.watchdogTimer = null;
-  if (state.resultObserved) return;
+  // Canonical liveness: the only authority on whether the
+  // session is open is the child process itself. If the
+  // OS has already delivered exit/close, `dispose` will
+  // have nulled the timer before we got here. We do NOT
+  // consult `resultObserved` or any payload-derived state
+  // — a turn ending is not a licence to stop watchdogging
+  // a live process. If the child emits no stdout/stderr
+  // for `ms` while still alive, kill it.
   state.exitReason = "timeout";
   const armedAt = state.watchdogArmedAt;
   const msSinceLastEvent =

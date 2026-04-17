@@ -418,7 +418,19 @@ describe("runtime: watchdog", () => {
     expect(rt.state.exitReason).toBeNull();
   });
 
-  it("skips termination after result", () => {
+  it("fires on silence even after a result event", () => {
+    // Canonical liveness rule: as long as the child is
+    // still open, the watchdog must trip if it falls
+    // silent for the full timeout window. A turn
+    // ending is not proof of exit — only the OS
+    // `close` event is, and that clears the timer via
+    // `dispose`. Prior to this fix, `resultObserved`
+    // short-circuited the watchdog and let silent-but-
+    // alive children linger indefinitely (foolery-a9a2).
+    const killSpy = vi.spyOn(process, "kill")
+      .mockImplementation(() => true);
+    const warnSpy = vi.spyOn(console, "warn")
+      .mockImplementation(() => { /* quiet */ });
     const rt = createSessionRuntime(
       makeConfig("claude", {
         watchdogTimeoutMs: 5_000,
@@ -435,10 +447,15 @@ describe("runtime: watchdog", () => {
       }) + "\n"),
     );
     expect(rt.state.resultObserved).toBe(true);
-    vi.advanceTimersByTime(10_000);
-    expect(rt.state.exitReason).toBe(
-      "turn_ended",
+    // Activity reset the watchdog to t=0; 5s of silence
+    // later, it must fire.
+    vi.advanceTimersByTime(5_001);
+    expect(rt.state.exitReason).toBe("timeout");
+    expect(killSpy).toHaveBeenCalledWith(
+      -(child.pid as number), "SIGTERM",
     );
+    killSpy.mockRestore();
+    warnSpy.mockRestore();
   });
 });
 

@@ -117,6 +117,10 @@ function doWireStdout(
   doResetWatchdog(child, state, config);
   child.stdout?.on("data", (chunk: Buffer) => {
     state.lastStdoutAt = Date.now();
+    // Any byte from the live child is proof of liveness
+    // and resets the silence timer. This must happen
+    // before parsing so even un-parseable chatter counts.
+    doResetWatchdog(child, state, config);
     const text = chunk.toString();
     config.interactionLog.logStdout(text);
     config.onLifecycleEvent?.({
@@ -214,9 +218,14 @@ function initState(
 
 function wireStderrImpl(
   child: ChildProcess,
+  state: SessionRuntimeState,
   config: SessionRuntimeConfig,
 ): void {
   child.stderr?.on("data", (chunk: Buffer) => {
+    // Stderr bytes are also proof of liveness. A child
+    // that logs only warnings/debug to stderr must not
+    // be misjudged as idle.
+    doResetWatchdog(child, state, config);
     const text = chunk.toString();
     config.interactionLog.logStderr(text);
     config.onLifecycleEvent?.({
@@ -248,7 +257,7 @@ export function createSessionRuntime(
     wireStdout: (child) =>
       doWireStdout(child, state, config, signal),
     wireStderr: (child) =>
-      wireStderrImpl(child, config),
+      wireStderrImpl(child, state, config),
     sendUserTurn: (child, text, source) =>
       doSendUserTurn(
         child, state, config,

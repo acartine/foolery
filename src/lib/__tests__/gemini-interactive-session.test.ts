@@ -236,29 +236,41 @@ describe("gemini interactive: watchdog", () => {
     expect(rt.state.exitReason).toBe("timeout");
   });
 
-  it("does not fire after result observed", () => {
-    const acpSession = createGeminiAcpSession("/tmp");
-    const rt = createSessionRuntime(
-      makeConfig({ acpSession }),
-    );
-    const child = makeChild();
-    rt.wireStdout(child);
-    completeHandshake(child);
-    rt.sendUserTurn(child, "do", "test");
+  it(
+    "fires on silence even after result observed " +
+    "(canonical liveness rule)",
+    () => {
+      const killSpy = vi.spyOn(process, "kill")
+        .mockImplementation(() => true);
+      const warnSpy = vi.spyOn(console, "warn")
+        .mockImplementation(() => { /* quiet */ });
+      const acpSession = createGeminiAcpSession("/tmp");
+      const rt = createSessionRuntime(
+        makeConfig({ acpSession }),
+      );
+      const child = makeChild();
+      rt.wireStdout(child);
+      completeHandshake(child);
+      rt.sendUserTurn(child, "do", "test");
 
-    emitLine(child, {
-      id: 3,
-      result: { stopReason: "end_turn" },
-    });
-    expect(rt.state.resultObserved).toBe(true);
+      emitLine(child, {
+        id: 3,
+        result: { stopReason: "end_turn" },
+      });
+      expect(rt.state.resultObserved).toBe(true);
 
-    vi.advanceTimersByTime(
-      DEFAULT_WATCHDOG_TIMEOUT_MS,
-    );
-    expect(rt.state.exitReason).toBe(
-      "turn_ended",
-    );
-  });
+      // Activity reset the watchdog; a full window of
+      // silence after a result event must still trip
+      // the watchdog while the child is OS-live.
+      vi.advanceTimersByTime(
+        DEFAULT_WATCHDOG_TIMEOUT_MS + 1,
+      );
+      expect(rt.state.exitReason).toBe("timeout");
+      expect(killSpy).toHaveBeenCalled();
+      killSpy.mockRestore();
+      warnSpy.mockRestore();
+    },
+  );
 });
 
 // ── Follow-up turn / retry ───────────────────────────

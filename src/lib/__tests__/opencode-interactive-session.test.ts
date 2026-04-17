@@ -304,25 +304,37 @@ describe("opencode interactive: watchdog", () => {
     expect(rt.state.exitReason).toBe("timeout");
   });
 
-  it("does not fire after result observed", () => {
-    const { config } = makeConfigWithHttp();
-    const rt = createSessionRuntime(config);
-    const child = makeChild();
-    rt.wireStdout(child);
+  it(
+    "fires on silence even after result observed " +
+    "(canonical liveness rule)",
+    () => {
+      const killSpy = vi.spyOn(process, "kill")
+        .mockImplementation(() => true);
+      const warnSpy = vi.spyOn(console, "warn")
+        .mockImplementation(() => { /* quiet */ });
+      const { config } = makeConfigWithHttp();
+      const rt = createSessionRuntime(config);
+      const child = makeChild();
+      rt.wireStdout(child);
 
-    rt.injectLine(child, JSON.stringify({
-      type: "step_finish",
-      part: { reason: "stop" },
-    }));
-    expect(rt.state.resultObserved).toBe(true);
+      rt.injectLine(child, JSON.stringify({
+        type: "step_finish",
+        part: { reason: "stop" },
+      }));
+      expect(rt.state.resultObserved).toBe(true);
 
-    vi.advanceTimersByTime(
-      DEFAULT_WATCHDOG_TIMEOUT_MS,
-    );
-    expect(rt.state.exitReason).toBe(
-      "turn_ended",
-    );
-  });
+      // Result event reset the watchdog; the child
+      // stays OS-live, so a full window of silence
+      // must still trip the watchdog.
+      vi.advanceTimersByTime(
+        DEFAULT_WATCHDOG_TIMEOUT_MS + 1,
+      );
+      expect(rt.state.exitReason).toBe("timeout");
+      expect(killSpy).toHaveBeenCalled();
+      killSpy.mockRestore();
+      warnSpy.mockRestore();
+    },
+  );
 });
 
 // ── Follow-up turn / retry ──────────────────────────

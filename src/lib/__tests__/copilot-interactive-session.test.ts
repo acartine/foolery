@@ -185,24 +185,37 @@ describe("copilot interactive: watchdog", () => {
     expect(rt.state.exitReason).toBe("timeout");
   });
 
-  it("does not fire after result observed", () => {
-    const rt = createSessionRuntime(makeConfig());
-    const child = makeChild();
-    rt.wireStdout(child);
+  it(
+    "fires on silence even after result observed " +
+    "(canonical liveness rule)",
+    () => {
+      const killSpy = vi.spyOn(process, "kill")
+        .mockImplementation(() => true);
+      const warnSpy = vi.spyOn(console, "warn")
+        .mockImplementation(() => { /* quiet */ });
+      const rt = createSessionRuntime(makeConfig());
+      const child = makeChild();
+      rt.wireStdout(child);
 
-    emitLine(child, {
-      type: "session.task_complete",
-      data: { success: true },
-    });
-    expect(rt.state.resultObserved).toBe(true);
+      emitLine(child, {
+        type: "session.task_complete",
+        data: { success: true },
+      });
+      expect(rt.state.resultObserved).toBe(true);
 
-    vi.advanceTimersByTime(
-      DEFAULT_WATCHDOG_TIMEOUT_MS,
-    );
-    expect(rt.state.exitReason).toBe(
-      "turn_ended",
-    );
-  });
+      // Activity (the task_complete event) reset the
+      // watchdog to t=0. The child is still OS-live, so
+      // a full window of silence must trip the watchdog
+      // — turn-ended is not an exit signal.
+      vi.advanceTimersByTime(
+        DEFAULT_WATCHDOG_TIMEOUT_MS + 1,
+      );
+      expect(rt.state.exitReason).toBe("timeout");
+      expect(killSpy).toHaveBeenCalled();
+      killSpy.mockRestore();
+      warnSpy.mockRestore();
+    },
+  );
 });
 
 // ── Follow-up turn / retry ───────────────────────────
