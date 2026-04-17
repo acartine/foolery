@@ -72,6 +72,66 @@ docs/                   Project documentation
 | `bash scripts/release/channel-install.sh release\|local [--activate]` | Install release/local channel launcher and runtime |
 | `bash scripts/release/channel-use.sh release\|local\|show` | Switch or inspect active `foolery` channel symlink |
 
+## Live Execution-Plan Validation
+
+`scripts/test-plans-live.sh` exercises `POST /api/plans` and
+`GET /api/plans/{planId}` against a real Knots repo (defaults to
+`/Users/cartine/stitch`) so taxonomy, eligibility, and persistence regressions
+in the execution-plan path are caught before they ship.
+
+### Prerequisites
+
+- A local Knots repo with at least one non-`execution_plan` knot. The default
+  is `/Users/cartine/stitch`; override with `FOOLERY_PLAN_REPO`.
+- The `kno` CLI on `PATH`.
+- A configured orchestration agent (`codex`, `claude`, etc.) reachable on the
+  same shell. The harness defers to whichever agent the dev server resolves,
+  so the agent must be installed and authenticated.
+
+### Run the Recipe
+
+```bash
+bash scripts/test-plans-live.sh
+```
+
+The harness:
+
+1. Clones `/Users/cartine/stitch` into a disposable git worktree under
+   `.test-plans-live/repo`, then copies `.knots/` so the source repo never
+   accumulates plan knots from this run.
+2. Starts the dev server on `FOOLERY_DEV_PORT` (default `3327`) with logs at
+   `.test-plans-live/logs/dev.log`.
+3. Auto-picks the first non-plan knot id (or uses `FOOLERY_PLAN_BEAT_IDS`)
+   and `POST`s `/api/plans` with explicit `repoPath` and `beatIds`.
+4. `GET`s `/api/plans/{planId}?repoPath=...` and asserts the artifact, plan
+   document, wave/step structure, and `progress.nextStep` all conform to the
+   spec in `src/lib/orchestration-plan-types.ts`.
+5. Independently runs `kno -C <repo> show <planId> --json` to confirm the
+   plan was persisted as type `execution_plan` with the payload attached.
+
+### Useful Overrides
+
+| Env var | Purpose |
+|---|---|
+| `FOOLERY_PLAN_REPO` | Source Knots repo (default `/Users/cartine/stitch`) |
+| `FOOLERY_PLAN_WORKTREE` | Reuse an existing repo path; disables auto-cleanup |
+| `FOOLERY_PLAN_BEAT_IDS` | Comma-separated beat ids to plan over |
+| `FOOLERY_PLAN_BEAT_LIMIT` | Auto-pick this many beats (default `1`) |
+| `FOOLERY_PLAN_MODEL` | Forwarded to `POST /api/plans` as `model` |
+| `FOOLERY_PLAN_OBJECTIVE` | Forwarded as the plan `objective` |
+| `FOOLERY_DEV_PORT` | Dev server port (default `3327`) |
+| `FOOLERY_KEEP_TEST_DIR=1` | Keep `.test-plans-live/` on success for inspection |
+
+### Reading Failures
+
+Failures are emitted as a single JSON document on stderr with a
+`category` field — for example `planner_runtime_failed`,
+`beat_selection_missing`, `addressability_failed`,
+`structural_drift`, `persistence_missing`, `persistence_taxonomy_drift`,
+or `persistence_payload_missing` — plus the response body, the dev-log path,
+and a `hint` describing the most likely root cause. Categorized failures are
+the primary signal that the execution-plan path drifted from the spec.
+
 ## Release Channels
 
 ### Install a Specific Release Tag

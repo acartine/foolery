@@ -34,6 +34,15 @@ Shell drivers with matching `.mjs` implementations for interactive/browser paths
 - **`test-install-copilot-setup.sh`** — Isolated installer smoke test for Copilot setup
 - **`test-setup-scan-unmounted.sh`** — Setup scan handling of unmounted repos
 - **`test-beat-refresh-latency.{sh,mjs}`** — Beat list refresh latency check
+- **`test-plans-live.{sh,mjs}`** — Live execution-plan API check
+  (POST/GET `/api/plans`) against a disposable Stitch worktree. Categorizes
+  failures (`planner_runtime_failed`, `persistence_missing`,
+  `structural_drift`, etc.) and prints the offending response excerpt and
+  dev-log path so taxonomy or persistence regressions surface as actionable
+  diagnostics. Override target with `FOOLERY_PLAN_REPO`,
+  `FOOLERY_PLAN_BEAT_IDS`, `FOOLERY_PLAN_MODEL`, or `FOOLERY_DEV_PORT`. See
+  [docs/API.md#execution-plans](../docs/API.md#execution-plans) for the
+  endpoint contract.
 - **`test-queue-pulldown-stability.{sh,mjs}`** — Queue pulldown stability under load
 - **`test-terminal-rehydration-multicontext.{sh,mjs}`** — Terminal rehydration across contexts
 - **`test-model-picker.sh`**, **`test-model-picker-integration.sh`** — Model picker unit and integration coverage

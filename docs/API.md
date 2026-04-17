@@ -13,6 +13,7 @@ Reference for agent clients automating Foolery operations. All endpoints live un
 - [Terminal Sessions](#terminal-sessions)
 - [Breakdown (AI Planning)](#breakdown-ai-planning)
 - [Orchestration (Multi-Agent)](#orchestration-multi-agent)
+- [Execution Plans](#execution-plans)
 - [Settings and Agents](#settings-and-agents)
 - [Registry (Repository Management)](#registry-repository-management)
 - [System](#system)
@@ -646,6 +647,100 @@ Response:
   }
 }
 ```
+
+---
+
+## Execution Plans
+
+Persisted execution plans turn a selected set of beats into a structured plan
+with **waves** (parallel-safe groupings) and **steps** (sequential phases inside
+each wave). Each plan is stored as an `execution_plan` knot so it is
+addressable, replayable, and traceable to its source beats.
+
+### Create Plan
+
+```
+POST /api/plans
+```
+
+Body:
+```json
+{
+  "repoPath": "/path/to/repo",
+  "beatIds": ["foolery-1234", "foolery-5678"],
+  "objective": "Optional planning objective",
+  "model": "optional-model-override",
+  "mode": "groom",
+  "replacesPlanId": "optional-prior-plan-id"
+}
+```
+
+Required: `repoPath`, `beatIds` (non-empty).
+
+Response (201):
+```json
+{
+  "data": {
+    "artifact": {
+      "id": "foolery-9abc",
+      "type": "execution_plan",
+      "state": "ready_for_design",
+      "createdAt": "2026-04-17T12:34:56Z",
+      "updatedAt": "2026-04-17T12:34:56Z"
+    },
+    "plan": {
+      "repoPath": "/path/to/repo",
+      "beatIds": ["foolery-1234", "foolery-5678"],
+      "summary": "...",
+      "waves": [
+        {
+          "waveIndex": 1,
+          "name": "...",
+          "objective": "...",
+          "steps": [
+            { "stepIndex": 1, "beatIds": ["foolery-1234"] }
+          ],
+          "beats": [{ "id": "foolery-1234", "title": "..." }]
+        }
+      ]
+    },
+    "progress": {
+      "waves": [],
+      "nextStep": { "waveIndex": 1, "stepIndex": 1, "beatIds": [...] }
+    },
+    "lineage": { "replacedByPlanIds": [] },
+    "skillPrompt": "..."
+  }
+}
+```
+
+### Get Plan
+
+```
+GET /api/plans/{planId}?repoPath=/path/to/repo
+```
+
+Returns the same envelope as the create response. The `repoPath` query string
+is required when the same `planId` could exist in more than one repo.
+
+### List Plans
+
+```
+GET /api/plans?repoPath=/path/to/repo
+```
+
+Returns a list of plan summaries (artifact metadata plus the source `beatIds`,
+`objective`, and `summary`).
+
+### Live Validation
+
+The execution-plan API has a dedicated live harness at
+`scripts/test-plans-live.sh`. It spins up the dev server against a disposable
+git worktree of a real Knots repo (defaults to `/Users/cartine/stitch`),
+exercises `POST /api/plans` and `GET /api/plans/{planId}`, and asserts the
+returned record matches the plan/wave/step/beat taxonomy. See
+[scripts/README.md](../scripts/README.md) and
+[docs/DEVELOPING.md](DEVELOPING.md) for the recipe.
 
 ---
 

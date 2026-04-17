@@ -21,6 +21,9 @@
 # test-doctor-stream.sh artifacts
 /.test-doctor/
 
+# test-plans-live.sh artifacts
+/.test-plans-live/
+
 # build-cli.sh local state
 /.local-state/
 
