@@ -1,0 +1,37 @@
+{
+  "event_id": "019da02b-e7a3-7c71-9892-93dabf88333a",
+  "occurred_at": "2026-04-18T10:38:45.155468Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d2ea",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Finish execution-plan API docs",
+    "type": "work",
+    "updated_at": "2026-04-18T10:38:45.155468Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019da02b-d973-73a2-8560-b427f9e76908"
+  }
+}

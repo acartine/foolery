@@ -1,0 +1,17 @@
+{
+  "event_id": "019da01e-a7c2-7121-a16f-bec9e9a45e2c",
+  "occurred_at": "2026-04-18T10:24:16.834179Z",
+  "knot_id": "foolery-d2ea",
+  "type": "knot.created",
+  "data": {
+    "body": "Create a finished consumer-facing documentation set for the execution plan REST API. Update docs/API.md and the OpenAPI contract so request/response shapes, execution semantics, disambiguation behavior, error responses, and end-to-end usage are documented clearly. No frontend work. Do not use PR workflow. Do not move the knot to a terminal state without explicit user instruction.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Finish execution-plan API docs",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

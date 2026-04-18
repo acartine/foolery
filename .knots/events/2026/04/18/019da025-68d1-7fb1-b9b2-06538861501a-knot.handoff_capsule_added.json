@@ -1,0 +1,15 @@
+{
+  "event_id": "019da025-68d1-7fb1-b9b2-06538861501a",
+  "occurred_at": "2026-04-18T10:31:39.473943Z",
+  "knot_id": "foolery-d2ea",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented and pushed the finished execution-plan API documentation pass.\n\nBranch: worktree-foolery-d2ea-execution-plan-docs\nCommit: 728cb837760c685efc955acb63ac22b064d8451d\n\nChanges\n- Rewrote the Execution Plans section in docs/API.md into a consumer-facing guide with a clear mental model, execution semantics, error matrix, and end-to-end workflow example.\n- Enriched the OpenAPI path metadata for /api/plans and /api/plans/{planId} with descriptions, examples, and missing response coverage.\n- Added behavioral descriptions to execution-plan schemas so generated docs better explain plan structure versus live progress.\n\nVerification\n- bun install --frozen-lockfile\n- bun run lint src/lib/openapi/paths-plans.ts src/lib/openapi/schemas-plans.ts\n- bun run test -- src/lib/__tests__/plans-route.test.ts\n- bunx tsc --noEmit\n- bun run build\n- bun run lint\n- bun run test\n\nStatus\n- Branch is pushed and clean. Ready for implementation review and shipment.",
+    "datetime": "2026-04-18T10:31:39.473943Z",
+    "entry_id": "019da025-68d1-7fb1-b9b2-0641162fc06d",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

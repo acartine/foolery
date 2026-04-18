@@ -1,0 +1,15 @@
+{
+  "event_id": "019da02b-ce2c-70d1-a895-b79bb6947cdb",
+  "occurred_at": "2026-04-18T10:38:38.636264Z",
+  "knot_id": "foolery-d2ea",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment completed.\n\nFinal branch state\n- origin/main now points to 728cb837760c685efc955acb63ac22b064d8451d\n- Feature branch remains available at origin/worktree-foolery-d2ea-execution-plan-docs\n\nRemote verification\n- git ls-remote origin refs/heads/main returned 728cb837760c685efc955acb63ac22b064d8451d\n- GitHub combined status for the shipped commit returned no statuses\n- GitHub workflow runs for the shipped commit returned no runs\n\nInterpretation\n- Shipment to remote main succeeded.\n- There are currently no GitHub status checks or workflow runs attached to this commit, so there was no remote CI to wait on or verify green.",
+    "datetime": "2026-04-18T10:38:38.636264Z",
+    "entry_id": "019da02b-ce2c-70d1-a895-b78cfc537e86",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

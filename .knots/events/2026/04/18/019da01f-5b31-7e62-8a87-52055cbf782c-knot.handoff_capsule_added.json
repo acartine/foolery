@@ -1,0 +1,15 @@
+{
+  "event_id": "019da01f-5b31-7e62-8a87-52055cbf782c",
+  "occurred_at": "2026-04-18T10:25:02.76906Z",
+  "knot_id": "foolery-d2ea",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planned a consumer-facing documentation pass for execution plans. Next implementation step should happen in a dedicated worktree, update docs/API.md plus plan OpenAPI metadata, and verify that error/status coverage matches runtime behavior before review.",
+    "datetime": "2026-04-18T10:25:02.76906Z",
+    "entry_id": "019da01f-5b31-7e62-8a87-51fc862fe383",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
