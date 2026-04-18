@@ -18,8 +18,12 @@ import { SetlistChartPanel } from "@/components/setlist-chart-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { fetchBeat } from "@/lib/api";
-import { fetchPlan, fetchPlanSummaries, fetchRepoBeats } from "@/lib/plan-api";
+import {
+  buildBeatsQueryKey,
+  fetchBeat,
+  fetchBeatsForScope,
+} from "@/lib/api";
+import { fetchPlan, fetchPlanSummaries } from "@/lib/plan-api";
 import {
   buildSetlistChart,
   buildSetlistPlanPreview,
@@ -236,6 +240,17 @@ function SetlistSummaryPanel({
 }
 
 function useSetlistBaseData(repoPath?: string) {
+  const repoScope = useMemo(
+    () =>
+      repoPath
+        ? {
+          kind: "repo" as const,
+          key: `repo:${repoPath}`,
+          repo: repoPath,
+        }
+        : null,
+    [repoPath],
+  );
   const plansQuery = useQuery({
     queryKey: ["setlist-plans", repoPath],
     queryFn: () => fetchPlanSummaries(repoPath!),
@@ -244,9 +259,11 @@ function useSetlistBaseData(repoPath?: string) {
     refetchOnWindowFocus: false,
   });
   const beatsQuery = useQuery({
-    queryKey: ["setlist-beats", repoPath],
-    queryFn: () => fetchRepoBeats(repoPath!),
-    enabled: Boolean(repoPath),
+    queryKey: repoScope
+      ? buildBeatsQueryKey("setlist", {}, repoScope)
+      : ["beats", "setlist", "repo:none", "{}"],
+    queryFn: () => fetchBeatsForScope({}, repoScope!, []),
+    enabled: Boolean(repoScope),
     staleTime: 15_000,
     refetchOnWindowFocus: false,
   });
