@@ -1,0 +1,17 @@
+{
+  "event_id": "019da147-affb-7e91-b21e-1f27a49e2065",
+  "occurred_at": "2026-04-18T15:48:43.131824Z",
+  "knot_id": "foolery-97fb",
+  "type": "knot.created",
+  "data": {
+    "body": "Foolery's current /api/terminal routes only support POST (spawn) and GET (list/inspect). DELETE returns HTTP 405. Add an endpoint to terminate/kill a running Foolery terminal session by session id (e.g. DELETE /api/terminal/:id or POST /api/terminal/:id/kill) so orchestrators can cancel agent runs that are going nowhere.\n\nMotivation: during a recent execution-plan run, orchestrator launched sessions for knots whose prerequisites had already been completed manually. The only options were to let them run to completion or have the user kill them out-of-band. An HTTP kill endpoint would let the orchestrator (and humans) cleanly terminate sessions when: (1) knots are force-shipped out-of-band, (2) a plan is aborted, (3) an agent is clearly stuck or looping.\n\nAcceptance: API call terminates the underlying agent process (codex / claude / etc) cleanly, updates the session status to something like 'terminated' or 'killed', and subsequent GETs reflect the terminal state. Orchestrator skills (execution-plan-runner, kno-project-autopilot) can use this without relying on process management outside Foolery.\n\nImplementation notes: look at how Foolery currently tracks child agent PIDs for the session; terminate via SIGTERM then SIGKILL after grace period. Record the terminate reason if provided in the request body.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Expose terminate/kill endpoint on /api/terminal",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
