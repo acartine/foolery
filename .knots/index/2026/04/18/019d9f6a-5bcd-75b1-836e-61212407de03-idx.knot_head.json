@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9f6a-5bcd-75b1-836e-61212407de03",
+  "occurred_at": "2026-04-18T07:07:20.909487Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-a0cb",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Improve execution plan generation quality",
+    "type": "work",
+    "updated_at": "2026-04-18T07:07:20.909487Z",
+    "workflow_id": "work_sdlc"
+  }
+}

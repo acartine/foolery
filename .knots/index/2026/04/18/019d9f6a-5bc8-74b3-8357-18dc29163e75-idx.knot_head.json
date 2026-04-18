@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9f6a-5bc8-74b3-8357-18dc29163e75",
+  "occurred_at": "2026-04-18T07:07:20.898091Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-a873",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Clean up scene terminology to orchestration",
+    "type": "work",
+    "updated_at": "2026-04-18T07:07:20.898091Z",
+    "workflow_id": "work_sdlc"
+  }
+}
