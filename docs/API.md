@@ -657,11 +657,57 @@ with **waves** (parallel-safe groupings) and **steps** (sequential phases inside
 each wave). Each plan is stored as an `execution_plan` knot so it is
 addressable, replayable, and traceable to its source beats.
 
+### Mental Model
+
+- `artifact` identifies the persisted plan record. Use `artifact.id` as the
+  stable identifier for future reads.
+- `plan` is the immutable planning document: source beats, wave/step structure,
+  assumptions, and planning metadata.
+- `progress` is derived at read time from the current beat states in Knots. It
+  changes as beats move forward without mutating the stored plan.
+- `lineage` shows whether this plan supersedes an earlier plan or has already
+  been superseded by newer revisions.
+- `skillPrompt` is a generated operator prompt for an agent consuming the plan.
+
+### Execution Rules
+
+- A beat only counts as complete when its state is `shipped`.
+- `progress.completionRule` is currently always `shipped`.
+- `progress.nextStep` is the next incomplete step in wave order. It is the
+  current unit of work a client should drive.
+- `progress.nextStep` becomes `null` only when every beat in the plan is
+  satisfied.
+- `plan` should be treated as immutable. Refresh `GET /api/plans/{planId}` to
+  observe progress changes instead of trying to patch the plan itself.
+
+### Endpoint Summary
+
+| Endpoint | Purpose |
+|---|---|
+| `POST /api/plans` | Create and persist an immutable execution plan |
+| `GET /api/plans/{planId}` | Read one persisted plan plus live derived progress |
+| `GET /api/plans?repoPath=...` | List persisted plan summaries for one repo |
+
+### Multi-Repo Rules
+
+- `POST /api/plans` and `GET /api/plans` require `repoPath`.
+- `GET /api/plans/{planId}` accepts `repoPath` as an optional disambiguation
+  hint.
+- For compatibility with the rest of the API, `_repo` is accepted anywhere
+  `repoPath` is accepted, but `repoPath` is the preferred field name for this
+  API family.
+- If you already have the full `artifact.id` returned by `POST /api/plans`, use
+  that exact value on later reads.
+- If you omit `repoPath` when reading and the same plan id could resolve in more
+  than one registered repo, the API returns `409`.
+
 ### Create Plan
 
 ```
 POST /api/plans
 ```
+
+Creates a new persisted execution plan from a set of existing beats.
 
 Body:
 ```json
@@ -675,44 +721,130 @@ Body:
 }
 ```
 
-Required: `repoPath`, `beatIds` (non-empty).
+Request fields:
+- `repoPath` — absolute repo path the beats belong to
+- `beatIds` — non-empty array of beat ids to include in the plan
+- `objective` — optional free-form planning objective shown in the plan
+- `model` — optional planner model override
+- `mode` — optional planning mode, `scene` or `groom`
+- `replacesPlanId` — optional prior plan id that this plan supersedes
 
 Response (201):
 ```json
 {
   "data": {
     "artifact": {
-      "id": "foolery-9abc",
+      "id": "repo-plan-1",
       "type": "execution_plan",
-      "state": "ready_for_design",
+      "state": "design",
+      "workflowId": "execution_plan_sdlc",
       "createdAt": "2026-04-17T12:34:56Z",
       "updatedAt": "2026-04-17T12:34:56Z"
     },
     "plan": {
       "repoPath": "/path/to/repo",
       "beatIds": ["foolery-1234", "foolery-5678"],
+      "objective": "Deliver the execution-plan API docs as a polished external guide",
       "summary": "...",
+      "assumptions": [
+        "Beat ownership and acceptance criteria are already correct."
+      ],
+      "unassignedBeatIds": [],
+      "mode": "groom",
+      "model": "gpt-5.4",
       "waves": [
         {
           "waveIndex": 1,
-          "name": "...",
-          "objective": "...",
-          "steps": [
-            { "stepIndex": 1, "beatIds": ["foolery-1234"] }
+          "name": "Refresh the consumer-facing contract",
+          "objective": "Align docs and machine-readable spec",
+          "agents": [
+            { "role": "doc-writer", "count": 1, "specialty": "REST API docs" }
           ],
-          "beats": [{ "id": "foolery-1234", "title": "..." }]
+          "notes": "Keep examples aligned with runtime behavior.",
+          "steps": [
+            {
+              "stepIndex": 1,
+              "beatIds": ["foolery-1234"],
+              "notes": "Rewrite docs/API.md"
+            },
+            {
+              "stepIndex": 2,
+              "beatIds": ["foolery-5678"],
+              "notes": "Update OpenAPI descriptions and examples"
+            }
+          ],
+          "beats": [
+            { "id": "foolery-1234", "title": "Rewrite docs/API.md" },
+            { "id": "foolery-5678", "title": "Enrich /api/openapi.json contract" }
+          ]
         }
       ]
     },
     "progress": {
-      "waves": [],
-      "nextStep": { "waveIndex": 1, "stepIndex": 1, "beatIds": [...] }
+      "generatedAt": "2026-04-17T12:35:00Z",
+      "completionRule": "shipped",
+      "beatStates": [
+        {
+          "beatId": "foolery-1234",
+          "title": "Rewrite docs/API.md",
+          "state": "ready_for_implementation",
+          "satisfied": false
+        },
+        {
+          "beatId": "foolery-5678",
+          "title": "Enrich /api/openapi.json contract",
+          "state": "ready_for_implementation",
+          "satisfied": false
+        }
+      ],
+      "satisfiedBeatIds": [],
+      "remainingBeatIds": ["foolery-1234", "foolery-5678"],
+      "nextStep": {
+        "waveIndex": 1,
+        "stepIndex": 1,
+        "beatIds": ["foolery-1234"],
+        "notes": "Rewrite docs/API.md"
+      },
+      "waves": [
+        {
+          "waveIndex": 1,
+          "complete": false,
+          "steps": [
+            {
+              "waveIndex": 1,
+              "stepIndex": 1,
+              "beatIds": ["foolery-1234"],
+              "notes": "Rewrite docs/API.md",
+              "complete": false,
+              "satisfiedBeatIds": [],
+              "remainingBeatIds": ["foolery-1234"]
+            },
+            {
+              "waveIndex": 1,
+              "stepIndex": 2,
+              "beatIds": ["foolery-5678"],
+              "notes": "Update OpenAPI descriptions and examples",
+              "complete": false,
+              "satisfiedBeatIds": [],
+              "remainingBeatIds": ["foolery-5678"]
+            }
+          ]
+        }
+      ]
     },
-    "lineage": { "replacedByPlanIds": [] },
+    "lineage": {
+      "replacesPlanId": "repo-plan-0",
+      "replacedByPlanIds": []
+    },
     "skillPrompt": "..."
   }
 }
 ```
+
+Client guidance:
+- Persist the returned `artifact.id` and use it for later `GET` calls.
+- Read `progress.nextStep` instead of inferring work order yourself.
+- Refresh the plan after every meaningful beat-state change.
 
 ### Get Plan
 
@@ -720,8 +852,19 @@ Response (201):
 GET /api/plans/{planId}?repoPath=/path/to/repo
 ```
 
-Returns the same envelope as the create response. The `repoPath` query string
-is required when the same `planId` could exist in more than one repo.
+Returns the same envelope as the create response.
+
+Use this endpoint to:
+- refresh `progress`
+- discover the next actionable step
+- verify whether all beats have reached `shipped`
+- inspect lineage before creating a replacement plan
+
+Lookup rules:
+- If `planId` is unambiguous, `repoPath` may be omitted.
+- If multiple registered repos could satisfy the same `planId`, the API returns
+  `409` with a message instructing the caller to provide `repoPath`.
+- If the plan does not exist, the API returns `404`.
 
 ### List Plans
 
@@ -731,6 +874,85 @@ GET /api/plans?repoPath=/path/to/repo
 
 Returns a list of plan summaries (artifact metadata plus the source `beatIds`,
 `objective`, and `summary`).
+
+Example response:
+```json
+{
+  "data": [
+    {
+      "artifact": {
+        "id": "repo-plan-1",
+        "type": "execution_plan",
+        "state": "design",
+        "workflowId": "execution_plan_sdlc",
+        "createdAt": "2026-04-17T12:34:56Z",
+        "updatedAt": "2026-04-17T12:34:56Z"
+      },
+      "plan": {
+        "repoPath": "/path/to/repo",
+        "beatIds": ["foolery-1234", "foolery-5678"],
+        "objective": "Deliver the execution-plan API docs as a polished external guide",
+        "summary": "Refresh docs and OpenAPI output for external consumers.",
+        "mode": "groom",
+        "model": "gpt-5.4"
+      }
+    }
+  ]
+}
+```
+
+### Error Handling
+
+| Endpoint | Status | When it happens |
+|---|---|---|
+| `POST /api/plans` | `400` | `repoPath` is missing or `beatIds` is empty |
+| `POST /api/plans` | `500` | planning, persistence, or post-create reload fails |
+| `GET /api/plans/{planId}` | `404` | no matching execution plan exists |
+| `GET /api/plans/{planId}` | `409` | `planId` matches multiple repos and `repoPath` was omitted |
+| `GET /api/plans/{planId}` | `400` | another read-time request error occurred |
+| `GET /api/plans` | `400` | `repoPath` is missing |
+| `GET /api/plans` | `500` | listing stored plans failed |
+
+Error body shape:
+```json
+{ "error": "Human-readable error message" }
+```
+
+### End-to-End Consumer Workflow
+
+1. `POST /api/plans` with `repoPath` and the beat ids you want to coordinate.
+2. Save `data.artifact.id` from the response.
+3. Read `data.progress.nextStep` and execute those beats through your normal
+   beat-driving flow.
+4. After a beat changes state, call `GET /api/plans/{planId}` again.
+5. Continue until `progress.nextStep` is `null` and
+   `progress.remainingBeatIds` is empty.
+
+Concrete example:
+```text
+POST /api/plans
+-> artifact.id = "repo-plan-1"
+-> progress.nextStep = wave 1 / step 1 / ["foolery-1234"]
+
+Drive beat foolery-1234 to state "shipped"
+
+GET /api/plans/repo-plan-1?repoPath=/path/to/repo
+-> progress.nextStep = wave 1 / step 2 / ["foolery-5678"]
+
+Drive beat foolery-5678 to state "shipped"
+
+GET /api/plans/repo-plan-1?repoPath=/path/to/repo
+-> progress.nextStep = null
+-> progress.remainingBeatIds = []
+```
+
+### Machine-Readable Contract
+
+The machine-readable OpenAPI 3.1.0 contract is available at:
+
+```
+GET /api/openapi.json
+```
 
 ### Live Validation
 
