@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9f6e-31c8-7640-9ce2-faac47319305",
+  "occurred_at": "2026-04-18T07:11:32.273691Z",
+  "knot_id": "foolery-36d3",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The affected Setlist widget path reads or refreshes the latest abandoned state.\\n2. Terminal cues render for abandoned beats in the reported scenario.\\n3. Validation for the touched area passes."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9f6e-31b1-72a0-89a2-27935d044995",
+  "occurred_at": "2026-04-18T07:11:32.273691Z",
+  "knot_id": "foolery-36d3",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\\nFix the Setlist screen so a widget updates to terminal styling when its underlying beat changes to abandoned, including the foolery-79a3 -> foolery-a873 case reported by the user. Investigate whether the issue is stale beat data, missing invalidation, or another Setlist-specific lookup path, then implement the fix.\\n\\nVerification:\\n1. Reproduce or characterize the stale widget behavior for a beat changed to abandoned.\\n2. Confirm the Setlist widget reflects terminal cues after the beat state update.\\n3. Run validation for the touched area and record the result.\\n\\nConstraints:\\n- Use the dedicated worktree for implementation.\\n- Do not move the knot to a terminal state unless explicitly instructed.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_implementation",
+    "title": "Investigate and fix stale setlist terminal cues for abandoned beats",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

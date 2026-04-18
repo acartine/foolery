@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9f6d-dfee-7b53-89d4-b48d5cfd3116",
+  "occurred_at": "2026-04-18T07:11:11.342681Z",
+  "knot_id": "foolery-19bd",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\\nInvestigate why the Setlist screen for foolery-79a3 does not update the foolery-a873 widget with terminal styling after that final ticket is changed to abandoned. Determine whether the issue is missing terminal-state support or stale UI/query invalidation, implement the fix, and keep the change scoped to the Setlist screen and its data flow.\\n\\nVerification:\\n1. Reproduce or characterize the stale Setlist behavior for an execution-plan beat moved to abandoned.\\n2. Confirm the Setlist widget applies terminal cues for abandoned beats after the underlying beat object changes.\\n3. Run the relevant validation commands for the touched area and record the result.\\n\\nConstraints:\\n- Use the dedicated worktree for implementation.\\n- Do not move the knot to a terminal state unless explicitly instructed.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Fix setlist terminal cues after abandoned state updates",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

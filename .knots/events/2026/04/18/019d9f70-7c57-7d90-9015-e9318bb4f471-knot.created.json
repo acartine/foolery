@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9f70-7c57-7d90-9015-e9318bb4f471",
+  "occurred_at": "2026-04-18T07:14:02.454785Z",
+  "knot_id": "foolery-b452",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nRemove the beads-compat-status.ts module and its dependents from the codebase. This module was explicitly quarantined by foolery-48c1 as migration debt for the Beads JSONL backend, and the ADR (docs/adr-knots-compatibility.md) promises a follow-up epic to eliminate it. This is that follow-up.\n\nVerification:\n1. beads-compat-status.ts and beads-compat-status.test.ts are deleted.\n2. bd-update.ts, bd-mutations.ts, bd-queries.ts, beads-backend.ts, beads-jsonl-dto.ts, and memory-manager-commands.ts no longer import from or reference compat-status translation.\n3. The Beads JSONL backend reads/writes workflow-native state directly.\n4. All existing tests pass.\n5. ADR docs/adr-knots-compatibility.md is updated to mark the debt as resolved.\n\nConstraints:\n- Ensure no JSONL files on disk become unreadable — add migration logic if existing .jsonl records contain compat-status fields.\n- Verify bd-update.ts and bd-mutations.ts (currently outside the backends/ directory) either move into backends/ or lose their compat-status dependency.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Eliminate quarantined beads-compat-status migration debt",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

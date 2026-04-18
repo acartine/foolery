@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9f70-e85e-7921-896e-b45af10d4915",
+  "occurred_at": "2026-04-18T07:14:30.110225Z",
+  "knot_id": "foolery-36d3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Root cause: the Setlist screen fetched repo beat data under its own [\"setlist-beats\", repoPath] query key, but beat mutations only invalidate the shared [\"beats\", ...] namespace. That left Setlist rendering warm stale beat state after a ticket changed to abandoned even though abandoned was already treated as terminal in the chart helpers. Fix: Setlist now uses buildBeatsQueryKey(\"setlist\", {}, repoScope) and fetchBeatsForScope so its repo beat list lives under the shared beat-query namespace and refetches immediately when beat updates invalidate active beat-list queries. Added a contract test to prevent the Setlist view from drifting back to a custom query key. Validation: bun run lint, bunx tsc --noEmit, bun run test, bun run build all passed in worktree-foolery-f79a3-terminal-fix.",
+    "datetime": "2026-04-18T07:14:30.110225Z",
+    "entry_id": "019d9f70-e85e-7921-896e-b444c2acf872",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "codex-cli"
+  }
+}

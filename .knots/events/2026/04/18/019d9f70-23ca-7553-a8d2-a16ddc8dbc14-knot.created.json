@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9f70-23ca-7553-a8d2-a16ddc8dbc14",
+  "occurred_at": "2026-04-18T07:13:39.78577Z",
+  "knot_id": "foolery-43fa",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nReplace the load-bearing mode: \"scene\" | \"groom\" enum in POST /api/plans with spec-aligned names. The Scene concept was removed by foolery-dd18, but \"scene\" survives as a valid API input that drives prompt branching in buildPrompt(), and fallback display strings still emit \"Scene N\" wave names and \"Drafting N scenes...\" progress messages.\n\nVerification:\n1. POST /api/plans no longer accepts mode: \"scene\" — the enum uses spec-native terminology.\n2. grep -r \"Scene N\\|Drafting.*scenes\\|mode.*scene\" in plan-related modules returns zero hits.\n3. Existing tests pass with the renamed mode values.\n4. OpenAPI schema reflects the updated enum.\n\nConstraints:\n- If external callers depend on mode: \"scene\", add a one-release deprecation alias that maps to the new name and logs a warning.\n- Update orchestration-plan-normalization.ts, orchestration-plan-helpers.ts, orchestration-plan-types.ts, and API schema files.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Rename mode: \"scene\" to spec-native terminology in execution-plan API",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

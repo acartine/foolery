@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9f6d-dff5-7a20-91d2-25021bc92f1a",
+  "occurred_at": "2026-04-18T07:11:11.342681Z",
+  "knot_id": "foolery-19bd",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Setlist terminal styling covers abandoned beats in the affected widget path.\\n2. The UI updates correctly after the beat object changes, either through correct invalidation or by reading the live state path.\\n3. Validation covering the touched area passes."
+  }
+}
