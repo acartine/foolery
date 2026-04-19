@@ -1,0 +1,15 @@
+{
+  "event_id": "019da4a6-abcd-78e2-a837-195d62a6680c",
+  "occurred_at": "2026-04-19T07:31:19.629418Z",
+  "knot_id": "foolery-5f38",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved. Diff against main is limited to the setlist summary card and its focused regression test. The change matches the knot description, preserves the existing fallback text, and the full sanity gates already passed: lint, typecheck, unit tests, and production build.",
+    "datetime": "2026-04-19T07:31:19.629418Z",
+    "entry_id": "019da4a6-abcd-78e2-a837-194ee58a79ae",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

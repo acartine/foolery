@@ -1,0 +1,17 @@
+{
+  "event_id": "019da49a-0bd1-7192-b1e0-771350a57e5f",
+  "occurred_at": "2026-04-19T07:17:32.240997Z",
+  "knot_id": "foolery-3e5a",
+  "type": "knot.created",
+  "data": {
+    "body": "Fix the setlist summary cards so unselected execution plans do not render the three-beat preview below the remaining count. Selected and unselected cards should share the same widget structure, differing only in selection styling and selected-state pill/cues. Use a dedicated worktree. Do not use PR workflow.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Remove setlist beat preview rows",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

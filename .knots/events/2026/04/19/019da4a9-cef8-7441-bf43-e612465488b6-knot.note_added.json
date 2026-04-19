@@ -1,0 +1,15 @@
+{
+  "event_id": "019da4a9-cef8-7441-bf43-e612465488b6",
+  "occurred_at": "2026-04-19T07:34:45.240773Z",
+  "knot_id": "foolery-5f38",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. The shipped commit 264a06e2 is present on main and origin/main, the knot includes the implementation commit tag, repository invariants continue to hold for the shipped code, and the remote CI workflows for the shipped SHA both concluded success.",
+    "datetime": "2026-04-19T07:34:45.240773Z",
+    "entry_id": "019da4a9-cef8-7441-bf43-e60b2e5c3ade",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

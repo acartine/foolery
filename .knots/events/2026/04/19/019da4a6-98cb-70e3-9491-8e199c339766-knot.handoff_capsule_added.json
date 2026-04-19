@@ -1,0 +1,15 @@
+{
+  "event_id": "019da4a6-98cb-70e3-9491-8e199c339766",
+  "occurred_at": "2026-04-19T07:31:14.763609Z",
+  "knot_id": "foolery-b46f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Investigation knot closed against the shipped fix from `e137`.\nResolving branch: `codex/remove-plan-repopath-filter`\nResolving commit: `7de78183e46d8aa7666609302fb44af34b224b85`\nStatus: already on `main` with successful remote CI (`24623450031`, `24623450037`).\nNote: this knot produced the root-cause investigation; the actual code change was intentionally shipped under the follow-on implementation knot.",
+    "datetime": "2026-04-19T07:31:14.763609Z",
+    "entry_id": "019da4a6-98cb-70e3-9491-8e07fc92a54d",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "desktop"
+  }
+}

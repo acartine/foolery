@@ -1,0 +1,17 @@
+{
+  "event_id": "019da4a7-56fe-73d1-8ee7-011f162f0ad5",
+  "occurred_at": "2026-04-19T07:32:03.454354Z",
+  "knot_id": "foolery-7e78",
+  "type": "knot.created",
+  "data": {
+    "body": "Update the Setlist screen so the beat chart paginates horizontally in windows of up to 12 steps. Default the initial window to the next unfinished beat (anything not shipped or abandoned), while still allowing users to navigate left to previously completed beats when present. Implement in a dedicated git worktree and validate with relevant tests.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Paginate Setlist beats in 12-step windows",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

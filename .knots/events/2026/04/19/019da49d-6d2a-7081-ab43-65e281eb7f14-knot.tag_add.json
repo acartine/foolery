@@ -1,0 +1,9 @@
+{
+  "event_id": "019da49d-6d2a-7081-ab43-65e281eb7f14",
+  "occurred_at": "2026-04-19T07:21:13.770232Z",
+  "knot_id": "foolery-3e5a",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/remove-setlist-beat-preview"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019da4a1-b09e-7793-8212-dfc6e9238fbd",
+  "occurred_at": "2026-04-19T07:25:53.182001Z",
+  "knot_id": "foolery-5f38",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented in worktree ../foolery-setlist-header-emphasis on branch codex/setlist-header-emphasis. Verification: bun install --frozen-lockfile, bun run lint src/components/setlist-view.tsx src/components/__tests__/setlist-view.test.ts, bun run test -- src/components/__tests__/setlist-view.test.ts, bunx tsc --noEmit.",
+    "datetime": "2026-04-19T07:25:53.182001Z",
+    "entry_id": "019da4a1-b09e-7793-8212-dfb42947669d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019da4a7-4b4e-73e2-91ad-5154489de90a",
+  "occurred_at": "2026-04-19T07:32:00.462822Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b46f",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Investigate setlist maestro-d6c6 visibility",
+    "type": "work",
+    "updated_at": "2026-04-19T07:32:00.462822Z",
+    "workflow_id": "work_sdlc"
+  }
+}

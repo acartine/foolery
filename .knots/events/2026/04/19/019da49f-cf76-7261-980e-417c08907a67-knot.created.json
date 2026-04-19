@@ -1,0 +1,17 @@
+{
+  "event_id": "019da49f-cf76-7261-980e-417c08907a67",
+  "occurred_at": "2026-04-19T07:23:50.006233Z",
+  "knot_id": "foolery-5f38",
+  "type": "knot.created",
+  "data": {
+    "body": "Update the setlist screen so the execution plan objective is visually primary and the summary is secondary. Work in a dedicated git worktree, validate the relevant UI/test surface, and avoid PR workflow.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Swap setlist plan header emphasis",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

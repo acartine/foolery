@@ -1,0 +1,21 @@
+{
+  "event_id": "019da492-7094-74a0-9d32-7e9eccfa5e1f",
+  "occurred_at": "2026-04-19T07:09:13.74849Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e137",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Remove redundant execution-plan repo_path filter",
+    "type": "work",
+    "updated_at": "2026-04-19T07:09:13.74849Z",
+    "workflow_id": "work_sdlc"
+  }
+}

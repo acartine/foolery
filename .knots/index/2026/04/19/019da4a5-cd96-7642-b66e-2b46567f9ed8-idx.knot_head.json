@@ -1,0 +1,21 @@
+{
+  "event_id": "019da4a5-cd96-7642-b66e-2b46567f9ed8",
+  "occurred_at": "2026-04-19T07:30:22.742421Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3e5a",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Remove setlist beat preview rows",
+    "type": "work",
+    "updated_at": "2026-04-19T07:30:22.742421Z",
+    "workflow_id": "work_sdlc"
+  }
+}

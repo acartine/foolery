@@ -1,0 +1,15 @@
+{
+  "event_id": "019da4a6-33c6-7571-95cc-675c662be4c0",
+  "occurred_at": "2026-04-19T07:30:48.902535Z",
+  "knot_id": "foolery-b46f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Investigation summary:\n1. The setlist screen was querying repo-scoped execution plans correctly, but `maestro-d6c6` was excluded because Foolery additionally filtered listed plans by `execution_plan.repo_path`.\n2. The actual `maestro-d6c6` knot in `/Users/cartine/maestro/.knots` is type `execution_plan`, but its payload omitted `repo_path`, so Foolery parsed that as an empty string and filtered it out.\n3. The underlying fix was implemented and shipped separately in knot `e137`, which removed the redundant `repo_path` equality filter.\n\nClosure plan: treat this knot as the investigation artifact that identified the root cause, with shipped resolution in commit `7de78183e46d8aa7666609302fb44af34b224b85` now on `main`.",
+    "datetime": "2026-04-19T07:30:48.902535Z",
+    "entry_id": "019da4a6-33c6-7571-95cc-674de8d24f0f",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "desktop"
+  }
+}

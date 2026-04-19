@@ -1,0 +1,15 @@
+{
+  "event_id": "019da49a-66d5-72e2-8e5b-d02791405753",
+  "occurred_at": "2026-04-19T07:17:55.541246Z",
+  "knot_id": "foolery-3e5a",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation plan:\n1. Refactor `PlanSummaryCard` in `src/components/setlist-view.tsx` so selected and unselected cards share one content widget and only differ by selection-specific visual treatment.\n2. Remove the unselected-only beat preview rows entirely; keep the count/mode summary pills and shared text layout.\n3. Add or update a focused component contract test to ensure no preview beat rows render for unselected plans and selected/unselected cards still reuse the same card structure.\n4. Run targeted tests first, then repo quality gates before shipping.\n\nComplexity: low.\nRisk: low, mainly visual regression in setlist summary cards.\nValidation: targeted setlist-related tests plus lint/typecheck/test/build in the worktree.",
+    "datetime": "2026-04-19T07:17:55.541246Z",
+    "entry_id": "019da49a-66d5-72e2-8e5b-d0177d283acb",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "desktop"
+  }
+}

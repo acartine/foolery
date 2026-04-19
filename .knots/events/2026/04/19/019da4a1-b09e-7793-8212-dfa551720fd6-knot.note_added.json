@@ -1,0 +1,15 @@
+{
+  "event_id": "019da4a1-b09e-7793-8212-dfa551720fd6",
+  "occurred_at": "2026-04-19T07:25:53.182001Z",
+  "knot_id": "foolery-5f38",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan:\n- Swap the setlist card header copy so the execution plan objective renders first.\n- Keep the objective in the larger, semibold style and demote the summary to the smaller muted line below it.\n- Add a focused PlanSummaryCard test that asserts the paragraph order and classes.\n- Verify with worktree dependency install, targeted lint/test, and repo typecheck.",
+    "datetime": "2026-04-19T07:25:53.182001Z",
+    "entry_id": "019da4a1-b09e-7793-8212-df9a7f3cead4",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

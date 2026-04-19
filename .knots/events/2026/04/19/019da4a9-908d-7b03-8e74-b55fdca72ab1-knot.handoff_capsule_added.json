@@ -1,0 +1,15 @@
+{
+  "event_id": "019da4a9-908d-7b03-8e74-b55fdca72ab1",
+  "occurred_at": "2026-04-19T07:34:29.261515Z",
+  "knot_id": "foolery-5f38",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipped on origin/main at 264a06e2. Remote CI status: success for runs 24623872872 (CI) and 24623872879 (Coverage Badge).",
+    "datetime": "2026-04-19T07:34:29.261515Z",
+    "entry_id": "019da4a9-908d-7b03-8e74-b54f26caaabc",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "event_id": "019da4a9-afeb-73c2-9742-f19d56f1be6c",
+  "occurred_at": "2026-04-19T07:34:37.291868Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5f38",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Swap setlist plan header emphasis",
+    "type": "work",
+    "updated_at": "2026-04-19T07:34:37.291868Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019da4a9-90b3-7d70-9403-44ef3b197950"
+  }
+}

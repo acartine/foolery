@@ -1,0 +1,21 @@
+{
+  "event_id": "019da4a9-cf1c-7a41-996d-cd68f5f31cf2",
+  "occurred_at": "2026-04-19T07:34:45.276375Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5f38",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Swap setlist plan header emphasis",
+    "type": "work",
+    "updated_at": "2026-04-19T07:34:45.276375Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019da4a8-ad57-7233-bdb7-e91fe47cb572",
+  "occurred_at": "2026-04-19T07:33:31.095894Z",
+  "knot_id": "foolery-7e78",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation plan:\n1. Add a small windowing helper for the Setlist chart that slices visible slots into pages of up to 12 steps and derives the default page index from the first unfinished beat row/cell.\n2. Update `src/components/setlist-chart-panel.tsx` to render only the current 12-step window, show horizontal pagination controls, and preserve access to earlier completed windows when present.\n3. Keep terminal-state detection anchored to existing setlist rules so shipped and abandoned beats do not anchor the initial page.\n4. Add focused tests around the window-selection helper and the visible chart output to cover: initial page lands on the next unfinished beat, left navigation reveals completed beats, and plans with 12 or fewer steps stay on a single page.\n\nFiles likely touched:\n- `src/components/setlist-chart-panel.tsx`\n- `src/lib/setlist-chart.ts` or a nearby helper if shared chart logic is cleaner there\n- `src/lib/__tests__/setlist-chart.test.ts` and/or a new chart panel test file\n\nComplexity: medium.\nRisks: keeping slot slicing aligned with wave headers and row cell indices without breaking existing chart layout.",
+    "datetime": "2026-04-19T07:33:31.095894Z",
+    "entry_id": "019da4a8-ad57-7233-bdb7-e9071dd1a7eb",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "desktop"
+  }
+}

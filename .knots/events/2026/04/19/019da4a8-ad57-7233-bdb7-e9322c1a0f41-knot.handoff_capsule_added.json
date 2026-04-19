@@ -1,0 +1,15 @@
+{
+  "event_id": "019da4a8-ad57-7233-bdb7-e9322c1a0f41",
+  "occurred_at": "2026-04-19T07:33:31.095894Z",
+  "knot_id": "foolery-7e78",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planned a 12-step horizontal pagination update for Setlist. The implementation will derive the initial window from the first non-terminal beat, keep earlier completed windows accessible via back navigation, and add targeted tests for window selection and single-page behavior.",
+    "datetime": "2026-04-19T07:33:31.095894Z",
+    "entry_id": "019da4a8-ad57-7233-bdb7-e92ddb18244d",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "desktop"
+  }
+}
