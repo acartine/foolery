@@ -434,10 +434,10 @@ export function PlanSummaryCard({
       <div className="mt-3 space-y-2">
         <div>
           <p className="text-base font-semibold leading-tight">
-            {preview.summary}
+            {preview.objective ?? "No objective captured."}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            {preview.objective ?? "No objective captured."}
+            {preview.summary}
           </p>
         </div>
 

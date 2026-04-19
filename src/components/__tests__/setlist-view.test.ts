@@ -46,6 +46,31 @@ function collectClassNames(node: ReactNode): string[] {
   ];
 }
 
+function collectParagraphs(node: ReactNode): Array<{
+  className?: string;
+  text: string;
+}> {
+  if (!node || typeof node === "boolean") return [];
+  if (Array.isArray(node)) {
+    return node.flatMap((child) => collectParagraphs(child));
+  }
+  if (!isValidElement(node)) return [];
+
+  const element = node as ElementWithProps;
+  const children = Children.toArray(element.props.children);
+  const paragraphs = element.type === "p"
+    ? [{
+      className: element.props.className,
+      text: flattenText(children),
+    }]
+    : [];
+
+  return [
+    ...paragraphs,
+    ...children.flatMap((child) => collectParagraphs(child)),
+  ];
+}
+
 function makePlanSummary(): PlanSummary {
   return {
     artifact: {
@@ -129,6 +154,27 @@ describe("PlanSummaryCard", () => {
     expect(unselectedText).toContain("4 beats");
     expect(selectedClasses).toContain("bg-primary/[0.03]");
     expect(selectedClasses).toContain("border-primary/35");
+  });
+
+  it("renders the objective as the primary line and the summary as secondary copy", () => {
+    const tree = PlanSummaryCard({
+      plan: makePlanSummary(),
+      preview: makePreview(),
+      selected: false,
+      selectedWorkableBeatCount: null,
+      onSelect: vi.fn(),
+    });
+
+    const paragraphs = collectParagraphs(tree);
+
+    expect(paragraphs[0]).toMatchObject({
+      className: "text-base font-semibold leading-tight",
+      text: "Migrate AWS infra",
+    });
+    expect(paragraphs[1]).toMatchObject({
+      className: "mt-1 text-sm text-muted-foreground",
+      text: "AWS to Hetzner Migration",
+    });
   });
 });
 
