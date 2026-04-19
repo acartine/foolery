@@ -328,31 +328,48 @@ it("resolves a plan from the repo registry when repoPath is omitted", async () =
   expect(plan?.artifact.id).toBe("repo-plan-1");
 });
 
-it("lists only plan knots for the requested repo", async () => {
+it("lists repo-scoped plan knots even when legacy payloads omit repo_path", async () => {
   mockListKnots.mockResolvedValue({
     ok: true,
     data: [
-      makePlanKnot({
-        repo_path: "/repo",
-        beat_ids: ["beat-1"],
-        summary: "Summary",
-        waves: [],
-        assumptions: [],
-        unassigned_beat_ids: [],
-      }).data,
-      makePlanKnot({
-        repo_path: "/other",
-        beat_ids: ["beat-2"],
-        summary: "Other",
-        waves: [],
-        assumptions: [],
-        unassigned_beat_ids: [],
-      }).data,
+      makePlanKnot(
+        {
+          repo_path: "/repo",
+          beat_ids: ["beat-1"],
+          summary: "Summary",
+          waves: [],
+          assumptions: [],
+          unassigned_beat_ids: [],
+        },
+        "plan-with-repo",
+      ).data,
+      makePlanKnot(
+        {
+          beat_ids: ["beat-2"],
+          summary: "Legacy summary",
+          waves: [],
+          assumptions: [],
+          unassigned_beat_ids: [],
+        },
+        "plan-without-repo",
+      ).data,
+      {
+        id: "plain-work-knot",
+        type: "work",
+        state: "queued",
+        updated_at: "2026-04-14T01:00:00Z",
+      },
     ],
   });
 
   const plans = await listPlans("/repo");
-  expect(plans).toHaveLength(1);
-  expect(plans[0]?.artifact.id).toBe("plan-1");
+
+  expect(mockListKnots).toHaveBeenCalledWith("/repo");
+  expect(plans).toHaveLength(2);
+  expect(plans.map((plan) => plan.artifact.id)).toEqual([
+    "plan-with-repo",
+    "plan-without-repo",
+  ]);
   expect(plans[0]?.plan.repoPath).toBe("/repo");
+  expect(plans[1]?.plan.repoPath).toBe("");
 });

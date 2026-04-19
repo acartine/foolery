@@ -448,6 +448,5 @@ export async function listPlans(
   return (result.data ?? [])
     .filter(isPlanKnot)
     .map(mapPlanSummary)
-    .filter((plan): plan is PlanSummary => Boolean(plan))
-    .filter((plan) => plan.plan.repoPath === repoPath);
+    .filter((plan): plan is PlanSummary => Boolean(plan));
 }
