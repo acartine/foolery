@@ -1,0 +1,17 @@
+{
+  "event_id": "019da484-7112-7cf0-ac66-d4674a967414",
+  "occurred_at": "2026-04-19T06:53:56.370094Z",
+  "knot_id": "foolery-b46f",
+  "type": "knot.created",
+  "data": {
+    "body": "Find why Foolery's setlist screen cannot see the device maestro-d6c6. Trace setlist screen data sources, device discovery/filtering, and any naming/state constraints. Do not move to a terminal state without explicit user instruction.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Investigate setlist maestro-d6c6 visibility",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

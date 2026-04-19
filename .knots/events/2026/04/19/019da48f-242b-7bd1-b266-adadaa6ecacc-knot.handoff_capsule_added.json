@@ -1,0 +1,15 @@
+{
+  "event_id": "019da48f-242b-7bd1-b266-adadaa6ecacc",
+  "occurred_at": "2026-04-19T07:05:37.579854Z",
+  "knot_id": "foolery-e137",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented in worktree branch `codex/remove-plan-repopath-filter`.\nCommit: `7de78183e46d8aa7666609302fb44af34b224b85`\nValidation: `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build` all passed in `/Users/cartine/foolery/.worktrees/remove-plan-repopath-filter`.\nSummary: removed the redundant execution-plan `repo_path` equality filter from `listPlans()` and added a regression test proving legacy execution-plan knots without `repo_path` still appear on Setlist.",
+    "datetime": "2026-04-19T07:05:37.579854Z",
+    "entry_id": "019da48f-242b-7bd1-b266-ad9d0f0cfc9d",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "desktop"
+  }
+}

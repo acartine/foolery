@@ -1,0 +1,17 @@
+{
+  "event_id": "019da48a-045e-7133-b2d9-a9c72c27342e",
+  "occurred_at": "2026-04-19T07:00:01.758667Z",
+  "knot_id": "foolery-e137",
+  "type": "knot.created",
+  "data": {
+    "body": "Update Foolery setlist plan listing to rely on repo-scoped knot queries instead of execution_plan.repo_path equality, so legacy execution_plan knots without repo_path still appear. Keep using Knots as the only tracker. Do not move to a terminal state without explicit user instruction.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Remove redundant execution-plan repo_path filter",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

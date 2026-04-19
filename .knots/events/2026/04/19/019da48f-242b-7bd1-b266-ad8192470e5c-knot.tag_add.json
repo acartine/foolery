@@ -1,0 +1,9 @@
+{
+  "event_id": "019da48f-242b-7bd1-b266-ad8192470e5c",
+  "occurred_at": "2026-04-19T07:05:37.579854Z",
+  "knot_id": "foolery-e137",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/remove-plan-repopath-filter"
+  }
+}

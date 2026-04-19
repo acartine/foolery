@@ -1,0 +1,15 @@
+{
+  "event_id": "019da48a-bf5f-76b3-b63d-08db9f5f1b54",
+  "occurred_at": "2026-04-19T07:00:49.630769Z",
+  "knot_id": "foolery-e137",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation plan:\n1. Remove the redundant `plan.plan.repoPath === repoPath` filter from `listPlans()` in `src/lib/orchestration-plan-manager.ts`, relying on `listKnots(repoPath)` to scope results to the selected repo.\n2. Keep `mapExecutionPlanDocument()` tolerant of missing `execution_plan.repo_path` so legacy execution-plan knots still parse, but stop requiring that field for Setlist visibility.\n3. Update `src/lib/__tests__/orchestration-plan-manager.test.ts` to cover legacy execution-plan knots that omit `repo_path` and verify they still appear when listed from the repo-scoped Knots store.\n4. Run targeted tests for orchestration plan listing, then expand to lint/typecheck or broader checks if the change surface stays small.\n\nComplexity: low.\nRisk: the main risk is exposing cross-repo plans if `listKnots(repoPath)` is not actually repo-scoped, but current Knots behavior and Foolery usage indicate it is.\nValidation: targeted Vitest coverage for `listPlans`, plus a quick sanity check against the live `maestro-d6c6` case once implementation is in place.",
+    "datetime": "2026-04-19T07:00:49.630769Z",
+    "entry_id": "019da48a-bf5f-76b3-b63d-08ca241a51dc",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "desktop"
+  }
+}
