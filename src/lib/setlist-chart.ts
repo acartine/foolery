@@ -34,6 +34,7 @@ export interface SetlistChartItem {
   state?: string;
   type?: string;
   notes?: string;
+  isActiveLease: boolean;
   span: number;
 }
 
@@ -55,17 +56,17 @@ export interface SetlistChartModel {
   rows: SetlistChartRow[];
 }
 
-export interface PaginatedSetlistChartPage {
-  index: number;
+export interface SetlistChartWindow {
   slotStart: number;
   slotEnd: number;
   slots: SetlistChartSlot[];
   rows: SetlistChartRow[];
 }
 
-export interface PaginatedSetlistChartModel {
-  initialPageIndex: number;
-  pages: PaginatedSetlistChartPage[];
+export interface SetlistChartViewport {
+  initialSlotStart: number;
+  maxSlotStart: number;
+  pageSize: number;
 }
 
 export const SETLIST_CHART_PAGE_SIZE = 12;
@@ -113,11 +114,15 @@ export function buildSetlistPlanPreview(
 export function buildSetlistChart(
   plan: PlanDocument,
   beatMap: ReadonlyMap<string, Beat>,
+  options?: {
+    activeBeatIds?: ReadonlySet<string>;
+  },
 ): SetlistChartModel {
   const {
     slots,
     slotByBeatId,
   } = buildScheduledSlots(plan);
+  const activeBeatIds = options?.activeBeatIds ?? new Set<string>();
   const rows = uniqueBeatIds(plan.beatIds)
     .filter((beatId) => slotByBeatId.has(beatId))
     .map((beatId) =>
@@ -125,6 +130,7 @@ export function buildSetlistChart(
         beatId,
         beatMap,
         slotByBeatId,
+        activeBeatIds,
         slots.length,
       ))
     .sort((left, right) =>
@@ -156,25 +162,27 @@ export function countWorkableSetlistRows(
   ).length;
 }
 
-export function paginateSetlistChart(
+export function buildSetlistChartViewport(
   chart: SetlistChartModel,
   pageSize = SETLIST_CHART_PAGE_SIZE,
-): PaginatedSetlistChartModel {
+): SetlistChartViewport {
   const normalizedPageSize = Math.max(pageSize, 1);
-  const pageCount = Math.max(
-    Math.ceil(chart.slots.length / normalizedPageSize),
-    1,
+  const maxSlotStart = Math.max(
+    chart.slots.length - normalizedPageSize,
+    0,
   );
-  const pages = Array.from({ length: pageCount }, (_, pageIndex) =>
-    buildSetlistChartPage(chart, pageIndex, normalizedPageSize)
-  );
-  const initialSlotIndex = findInitialSetlistSlotIndex(chart);
+  const initialSlotIndex =
+    findFirstIncompleteSetlistSlotIndex(chart);
 
   return {
-    initialPageIndex: initialSlotIndex >= 0
-      ? Math.floor(initialSlotIndex / normalizedPageSize)
-      : pageCount - 1,
-    pages,
+    initialSlotStart: clampSetlistSlotStart(
+      initialSlotIndex >= 0
+        ? initialSlotIndex
+        : maxSlotStart,
+      maxSlotStart,
+    ),
+    maxSlotStart,
+    pageSize: normalizedPageSize,
   };
 }
 
@@ -182,12 +190,16 @@ function buildRow(
   beatId: string,
   beatMap: ReadonlyMap<string, Beat>,
   slotByBeatId: ReadonlyMap<string, SlotAssignment>,
+  activeBeatIds: ReadonlySet<string>,
   slotCount: number,
 ): SetlistChartRow {
   const beat = beatMap.get(beatId);
   const detailBeatId = beat?.id ?? beatId;
   const assignment = slotByBeatId.get(beatId);
   const slotIndex = assignment?.slotIndex ?? 0;
+  const isActiveLease =
+    activeBeatIds.has(beatId)
+    || activeBeatIds.has(detailBeatId);
   const cells = Array.from(
     { length: slotCount },
     () => null as SetlistChartItem | null,
@@ -202,6 +214,7 @@ function buildRow(
     state: beat?.state,
     type: beat?.type,
     notes: assignment?.notes,
+    isActiveLease,
     span: assignment?.span ?? 1,
   };
 
@@ -227,42 +240,58 @@ function uniqueBeatIds(beatIds: string[]): string[] {
   );
 }
 
-function buildSetlistChartPage(
+export function sliceSetlistChart(
   chart: SetlistChartModel,
-  pageIndex: number,
+  slotStart: number,
   pageSize: number,
-): PaginatedSetlistChartPage {
-  const slotStart = pageIndex * pageSize;
-  const slotEnd = Math.min(slotStart + pageSize, chart.slots.length);
-  const slots = chart.slots.slice(slotStart, slotEnd);
+): SetlistChartWindow {
+  const maxSlotStart = Math.max(
+    chart.slots.length - Math.max(pageSize, 1),
+    0,
+  );
+  const boundedSlotStart = clampSetlistSlotStart(
+    slotStart,
+    maxSlotStart,
+  );
+  const slotEnd = Math.min(
+    boundedSlotStart + Math.max(pageSize, 1),
+    chart.slots.length,
+  );
+  const slots = chart.slots.slice(boundedSlotStart, slotEnd);
   const rows = chart.rows
     .map((row) => ({
       ...row,
-      cells: row.cells.slice(slotStart, slotEnd),
+      cells: row.cells.slice(boundedSlotStart, slotEnd),
     }))
     .filter((row) => row.cells.some((cell) => cell !== null));
 
   return {
-    index: pageIndex,
-    slotStart,
+    slotStart: boundedSlotStart,
     slotEnd,
     slots,
     rows,
   };
 }
 
-function findInitialSetlistSlotIndex(
+function findFirstIncompleteSetlistSlotIndex(
   chart: SetlistChartModel,
 ): number {
-  const nextRow = chart.rows.find(
-    (row) => !isTerminalSetlistState(row.state),
-  );
-
-  if (!nextRow) {
-    return -1;
+  for (let slotIndex = 0; slotIndex < chart.slots.length; slotIndex += 1) {
+    for (const row of chart.rows) {
+      const cell = row.cells[slotIndex];
+      if (cell && !isTerminalSetlistState(cell.state)) {
+        return slotIndex;
+      }
+    }
   }
+  return -1;
+}
 
-  return nextRow.cells.findIndex((cell) => cell !== null);
+function clampSetlistSlotStart(
+  slotStart: number,
+  maxSlotStart: number,
+): number {
+  return Math.max(Math.min(slotStart, maxSlotStart), 0);
 }
 
 function toPreviewBeat(

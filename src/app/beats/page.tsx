@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
+import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Beat } from "@/lib/types";
 import type { AgentInfo } from "@/components/beat-columns";
@@ -89,6 +90,21 @@ function useBeatsPageState() {
     }
     return acc;
   }, {});
+  const activeBeatIds = useMemo(() => {
+    const beatIds = new Set<string>();
+
+    for (const terminal of terminals) {
+      if (terminal.status !== "running") {
+        continue;
+      }
+      beatIds.add(terminal.beatId);
+      for (const beatId of terminal.beatIds ?? []) {
+        beatIds.add(beatId);
+      }
+    }
+
+    return beatIds;
+  }, [terminals]);
 
   const {
     beats, isLoading, loadError,
@@ -125,6 +141,7 @@ function useBeatsPageState() {
     beats, isLoading, loadError, isDegradedError,
     hasRollingAncestor, showRepoColumn,
     agentInfoByBeatId, shippingByBeatId,
+    activeBeatIds,
     streamingProgress,
     ...bulk, ...actions, ...detail,
   };
@@ -230,7 +247,10 @@ function BeatsViewBody({
   return (
     <div className="mt-0.5">
       {isSetlistView ? (
-        <SetlistView repoPath={s.activeRepo ?? undefined} />
+        <SetlistView
+          repoPath={s.activeRepo ?? undefined}
+          activeBeatIds={s.activeBeatIds}
+        />
       ) : isFinalCutView ? (
         <FinalCutView />
       ) : isRetakesView ? (

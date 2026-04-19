@@ -12,8 +12,9 @@ import {
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
+  buildSetlistChartViewport,
+  sliceSetlistChart,
   isTerminalSetlistState,
-  paginateSetlistChart,
   type SetlistChartModel,
 } from "@/lib/setlist-chart";
 import { buildBeatFocusHref } from "@/lib/beat-navigation";
@@ -26,81 +27,74 @@ export function SetlistChartPanel({
   chart: SetlistChartModel;
   repoPath?: string;
 }) {
-  const pagination = useMemo(
-    () => paginateSetlistChart(chart),
+  const viewport = useMemo(
+    () => buildSetlistChartViewport(chart),
     [chart],
   );
-  const paginationKey = useMemo(
-    () => buildPaginationKey(chart, pagination.initialPageIndex),
-    [chart, pagination.initialPageIndex],
+  const viewportKey = useMemo(
+    () => buildViewportKey(chart, viewport.initialSlotStart),
+    [chart, viewport.initialSlotStart],
   );
 
   return (
-    <PaginatedSetlistChart
-      key={paginationKey}
+    <SetlistChartViewportPanel
+      key={viewportKey}
       chart={chart}
-      pagination={pagination}
+      viewport={viewport}
       repoPath={repoPath}
     />
   );
 }
 
-function PaginatedSetlistChart({
+function SetlistChartViewportPanel({
   chart,
-  pagination,
+  viewport,
   repoPath,
 }: {
   chart: SetlistChartModel;
-  pagination: ReturnType<typeof paginateSetlistChart>;
+  viewport: ReturnType<typeof buildSetlistChartViewport>;
   repoPath?: string;
 }) {
-  const [pageIndex, setPageIndex] = useState(pagination.initialPageIndex);
+  const [slotStart, setSlotStart] = useState(viewport.initialSlotStart);
   const searchParams = useSearchParams();
-  const currentPage = pagination.pages[pageIndex] ?? pagination.pages[0];
-  const waveGroups = buildWaveGroups(currentPage.slots);
-  const lastRowByWave = buildLastRowByWave(currentPage);
+  const currentWindow = useMemo(
+    () => sliceSetlistChart(chart, slotStart, viewport.pageSize),
+    [chart, slotStart, viewport.pageSize],
+  );
+  const waveGroups = buildWaveGroups(currentWindow.slots);
+  const lastRowByWave = buildLastRowByWave(currentWindow);
+  const canGoEarlier = currentWindow.slotStart > 0;
+  const canGoLater =
+    currentWindow.slotStart < viewport.maxSlotStart;
 
   return (
     <div className="flex flex-col gap-2">
-      {pagination.pages.length > 1 ? (
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="text-xs text-muted-foreground">
-            Steps {currentPage.slotStart + 1}-{currentPage.slotEnd}
-            {" "}of {chart.slots.length}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setPageIndex((value) => Math.max(value - 1, 0))}
-              disabled={pageIndex === 0}
-            >
-              <ChevronLeft className="size-4" />
-              Earlier
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setPageIndex((value) =>
-                  Math.min(value + 1, pagination.pages.length - 1)
-                )}
-              disabled={pageIndex >= pagination.pages.length - 1}
-            >
-              Later
-              <ChevronRight className="size-4" />
-            </Button>
-          </div>
-        </div>
+      {viewport.maxSlotStart > 0 ? (
+        <SetlistChartWindowNav
+          slotStart={currentWindow.slotStart}
+          slotEnd={currentWindow.slotEnd}
+          slotCount={chart.slots.length}
+          canGoEarlier={canGoEarlier}
+          canGoLater={canGoLater}
+          onEarlier={() =>
+            setSlotStart((value) =>
+              Math.max(value - viewport.pageSize, 0)
+            )}
+          onLater={() =>
+            setSlotStart((value) =>
+              Math.min(
+                value + viewport.pageSize,
+                viewport.maxSlotStart,
+              )
+            )}
+        />
       ) : null}
 
       <div className="overflow-auto">
         <div
           className="grid w-full gap-x-0 gap-y-[4px] pb-[4px]"
           style={{
-            gridTemplateColumns: `repeat(${currentPage.slots.length}, minmax(0, 1fr))`,
+            gridTemplateColumns: `repeat(${currentWindow.slots.length}, minmax(0, 1fr))`,
           }}
         >
           {waveGroups.map((wave) => (
@@ -122,12 +116,12 @@ function PaginatedSetlistChart({
           ))}
         </div>
 
-        {currentPage.rows.map((row, rowIndex) => (
+        {currentWindow.rows.map((row, rowIndex) => (
           <ChartRow
             key={row.beatId}
             row={row}
             rowIndex={rowIndex}
-            slots={currentPage.slots}
+            slots={currentWindow.slots}
             lastRowByWave={lastRowByWave}
             detailHrefBuilder={(beatId) =>
               buildBeatFocusHref(
@@ -142,14 +136,70 @@ function PaginatedSetlistChart({
   );
 }
 
-function buildPaginationKey(
+function SetlistChartWindowNav({
+  slotStart,
+  slotEnd,
+  slotCount,
+  canGoEarlier,
+  canGoLater,
+  onEarlier,
+  onLater,
+}: {
+  slotStart: number;
+  slotEnd: number;
+  slotCount: number;
+  canGoEarlier: boolean;
+  canGoLater: boolean;
+  onEarlier: () => void;
+  onLater: () => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="text-xs text-muted-foreground">
+        Steps {slotStart + 1}-{slotEnd} of {slotCount}
+      </div>
+      <div className="flex items-center gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onEarlier}
+          disabled={!canGoEarlier}
+        >
+          <ChevronLeft className="size-4" />
+          Earlier
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onLater}
+          disabled={!canGoLater}
+        >
+          Later
+          <ChevronRight className="size-4" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function buildViewportKey(
   chart: SetlistChartModel,
-  initialPageIndex: number,
+  initialSlotStart: number,
 ): string {
   return [
-    initialPageIndex,
+    initialSlotStart,
     chart.slots.map((slot) => slot.id).join(","),
-    chart.rows.map((row) => `${row.beatId}:${row.state ?? ""}`).join(","),
+    chart.rows
+      .map((row) =>
+        [
+          row.beatId,
+          row.state ?? "",
+          row.cells.map((cell) => cell?.isActiveLease ? "1" : "0").join(""),
+        ].join(":")
+      )
+      .join(","),
   ].join("::");
 }
 
@@ -255,6 +305,7 @@ function ChartCell({
 }) {
   const isTerminal = isTerminalSetlistState(cell?.state);
   const isCompleted = cell?.state === "shipped";
+  const isActiveLease = Boolean(cell?.isActiveLease);
 
   return (
     <div
@@ -266,16 +317,18 @@ function ChartCell({
     >
       {cell ? (
         <div
-          className={
-            "w-full overflow-hidden rounded-sm border bg-transparent"
-            + (isTerminal
-              ? " border-zinc-300/90 opacity-85"
-              : " border-zinc-400")
-          }
+          className={buildChartCellClass(
+            isActiveLease,
+            isTerminal,
+          )}
         >
+          {isActiveLease ? <ActiveLeaseScan /> : null}
           <div
             className="flex items-center justify-between gap-2 overflow-hidden whitespace-nowrap px-[4px] py-[2px]"
-            style={waveToneStyle(waveLabel, 0.6)}
+            style={waveToneStyle(
+              waveLabel,
+              isActiveLease ? 0.72 : 0.6,
+            )}
           >
             <Link
               href={detailHref ?? "#"}
@@ -288,14 +341,10 @@ function ChartCell({
             >
               {cell.beatLabel}
             </Link>
-            {isCompleted ? (
-              <span
-                className="inline-flex size-[14px] shrink-0 items-center justify-center rounded-full bg-emerald-100/80 text-emerald-700"
-                title="Completed knot"
-              >
-                <CheckCircle2 className="size-[10px]" />
-              </span>
-            ) : null}
+            <ChartCellStatusIndicator
+              isActiveLease={isActiveLease}
+              isCompleted={isCompleted}
+            />
           </div>
           {cell.title !== cell.beatLabel ? (
             <div
@@ -312,6 +361,78 @@ function ChartCell({
         </div>
       ) : null}
     </div>
+  );
+}
+
+function buildChartCellClass(
+  isActiveLease: boolean,
+  isTerminal: boolean,
+): string {
+  return (
+    "relative w-full overflow-hidden rounded-sm border bg-transparent"
+    + " transition-[border-color,box-shadow,opacity]"
+    + " duration-200"
+    + (isActiveLease
+      ? " border-slate-500/85 shadow-[0_0_0_1px_rgba(51,65,85,0.18),0_4px_14px_rgba(51,65,85,0.14)]"
+      : isTerminal
+      ? " border-zinc-300/90 opacity-85"
+      : " border-zinc-400")
+  );
+}
+
+function ActiveLeaseScan() {
+  return (
+    <div className="pointer-events-none absolute inset-x-1 top-0 h-[2px] overflow-hidden rounded-full opacity-85">
+      <span
+        className={
+          "block h-full w-10 rounded-full"
+          + " bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.92),transparent)]"
+          + " motion-safe:animate-[setlist-active-scan_2.2s_ease-in-out_infinite]"
+        }
+      />
+    </div>
+  );
+}
+
+function ChartCellStatusIndicator({
+  isActiveLease,
+  isCompleted,
+}: {
+  isActiveLease: boolean;
+  isCompleted: boolean;
+}) {
+  if (isActiveLease) {
+    return (
+      <span
+        className={
+          "inline-flex size-[14px] shrink-0 items-center justify-center"
+          + " rounded-full border border-slate-500/50"
+          + " bg-slate-950/8"
+        }
+        title="Active knot lease"
+      >
+        <span
+          className={
+            "size-[5px] rounded-full bg-sky-500"
+            + " shadow-[0_0_10px_rgba(14,165,233,0.6)]"
+            + " motion-safe:animate-pulse"
+          }
+        />
+      </span>
+    );
+  }
+
+  if (!isCompleted) {
+    return null;
+  }
+
+  return (
+    <span
+      className="inline-flex size-[14px] shrink-0 items-center justify-center rounded-full bg-emerald-100/80 text-emerald-700"
+      title="Completed knot"
+    >
+      <CheckCircle2 className="size-[10px]" />
+    </span>
   );
 }
 

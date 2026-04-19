@@ -169,6 +169,20 @@
   }
 }
 
+@keyframes setlist-active-scan {
+  0% {
+    transform: translateX(-140%);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateX(260%);
+    opacity: 0;
+  }
+}
+
 .animate-beat-row-enter {
   animation: beat-row-enter 200ms ease-out;
 }

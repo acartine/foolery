@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   buildSetlistChart,
+  buildSetlistChartViewport,
   buildSetlistPlanPreview,
   countWorkableSetlistRows,
   isTerminalSetlistState,
-  paginateSetlistChart,
+  sliceSetlistChart,
 } from "@/lib/setlist-chart";
 import type { PlanDocument, PlanSummary } from "@/lib/orchestration-plan-types";
 import type { Beat } from "@/lib/types";
@@ -304,10 +305,46 @@ describe("setlist chart helpers: display fallbacks", () => {
     expect(isTerminalSetlistState("ready_for_implementation")).toBe(false);
     expect(isTerminalSetlistState(undefined)).toBe(false);
   });
+
+  it("flags cells whose beats have an active lease", () => {
+    const chart = buildSetlistChart(
+      makePlan(),
+      new Map<string, Beat>([
+        ["beat-next", makeBeat("beat-next", { title: "Wire navigation" })],
+        ["beat-last", makeBeat("beat-last", { title: "Draw gantt chart" })],
+      ]),
+      { activeBeatIds: new Set(["beat-next"]) },
+    );
+
+    expect(chart.rows[0]!.cells[0]?.isActiveLease).toBe(true);
+    expect(chart.rows[2]!.cells[2]?.isActiveLease).toBe(false);
+  });
 });
 
-describe("setlist chart helpers: pagination", () => {
-  it("starts on the page containing the next unfinished beat", () => {
+describe("setlist chart helpers: viewport", () => {
+  it("shifts leading completed steps off-screen when there is room", () => {
+    const chart = buildSetlistChart(
+      makeWindowedPlan(15),
+      makeWindowedBeatMap(
+        15,
+        (index) => index < 2 ? "shipped" : "ready_for_implementation",
+      ),
+    );
+
+    const viewport = buildSetlistChartViewport(chart);
+    const window = sliceSetlistChart(
+      chart,
+      viewport.initialSlotStart,
+      viewport.pageSize,
+    );
+
+    expect(viewport.initialSlotStart).toBe(2);
+    expect(viewport.maxSlotStart).toBe(3);
+    expect(window.rows).toHaveLength(12);
+    expect(window.rows[0]!.cells[0]?.beatId).toBe("beat-3");
+  });
+
+  it("biases toward the next unfinished step near the tail of the chart", () => {
     const chart = buildSetlistChart(
       makeWindowedPlan(15),
       makeWindowedBeatMap(
@@ -316,14 +353,18 @@ describe("setlist chart helpers: pagination", () => {
       ),
     );
 
-    const pagination = paginateSetlistChart(chart);
+    const viewport = buildSetlistChartViewport(chart);
+    const window = sliceSetlistChart(
+      chart,
+      viewport.initialSlotStart,
+      viewport.pageSize,
+    );
 
-    expect(pagination.pages).toHaveLength(2);
-    expect(pagination.initialPageIndex).toBe(1);
-    expect(pagination.pages[0]!.rows).toHaveLength(12);
-    expect(pagination.pages[1]!.rows).toHaveLength(3);
-    expect(pagination.pages[0]!.rows[0]!.cells[0]?.beatId).toBe("beat-1");
-    expect(pagination.pages[1]!.rows[0]!.cells[0]?.beatId).toBe("beat-13");
+    expect(viewport.initialSlotStart).toBe(3);
+    expect(viewport.maxSlotStart).toBe(3);
+    expect(window.rows).toHaveLength(12);
+    expect(window.rows[0]!.cells[0]?.beatId).toBe("beat-4");
+    expect(window.rows[9]!.cells[9]?.beatId).toBe("beat-13");
   });
 
   it("falls back to the last page when every beat is terminal", () => {
@@ -332,12 +373,17 @@ describe("setlist chart helpers: pagination", () => {
       makeWindowedBeatMap(25, () => "shipped"),
     );
 
-    const pagination = paginateSetlistChart(chart);
+    const viewport = buildSetlistChartViewport(chart);
+    const window = sliceSetlistChart(
+      chart,
+      viewport.initialSlotStart,
+      viewport.pageSize,
+    );
 
-    expect(pagination.pages).toHaveLength(3);
-    expect(pagination.initialPageIndex).toBe(2);
-    expect(pagination.pages[0]!.rows[0]!.cells[0]?.beatId).toBe("beat-1");
-    expect(pagination.pages[2]!.rows[0]!.cells[0]?.beatId).toBe("beat-25");
+    expect(viewport.initialSlotStart).toBe(13);
+    expect(viewport.maxSlotStart).toBe(13);
+    expect(window.rows[0]!.cells[0]?.beatId).toBe("beat-14");
+    expect(window.rows[11]!.cells[11]?.beatId).toBe("beat-25");
   });
 
   it("keeps a single page when the chart has at most twelve steps", () => {
@@ -349,11 +395,16 @@ describe("setlist chart helpers: pagination", () => {
       ),
     );
 
-    const pagination = paginateSetlistChart(chart);
+    const viewport = buildSetlistChartViewport(chart);
+    const window = sliceSetlistChart(
+      chart,
+      viewport.initialSlotStart,
+      viewport.pageSize,
+    );
 
-    expect(pagination.pages).toHaveLength(1);
-    expect(pagination.initialPageIndex).toBe(0);
-    expect(pagination.pages[0]!.rows).toHaveLength(12);
-    expect(pagination.pages[0]!.rows[11]!.cells[11]?.beatId).toBe("beat-12");
+    expect(viewport.maxSlotStart).toBe(0);
+    expect(viewport.initialSlotStart).toBe(0);
+    expect(window.rows).toHaveLength(12);
+    expect(window.rows[11]!.cells[11]?.beatId).toBe("beat-12");
   });
 });

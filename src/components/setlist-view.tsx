@@ -35,8 +35,10 @@ import { cn } from "@/lib/utils";
 
 export function SetlistView({
   repoPath,
+  activeBeatIds,
 }: {
   repoPath?: string;
+  activeBeatIds?: ReadonlySet<string>;
 }) {
   const [requestedPlanId, setRequestedPlanId] = useState<string | null>(null);
   const {
@@ -54,6 +56,7 @@ export function SetlistView({
     repoPath,
     selectedPlanId,
     summaryBeatMap,
+    activeBeatIds,
   );
   const emptyState = getEmptySetlistState(
     repoPath,
@@ -322,6 +325,7 @@ function useSelectedPlanData(
   repoPath: string | undefined,
   selectedPlanId: string | null,
   beatMap: ReadonlyMap<string, Beat>,
+  activeBeatIds: ReadonlySet<string> | undefined,
 ) {
   const planQuery = useQuery({
     queryKey: ["setlist-plan", repoPath, selectedPlanId],
@@ -371,9 +375,10 @@ function useSelectedPlanData(
       ? buildSetlistChart(
           selectedPlanRecord.plan,
           chartBeatMap,
+          { activeBeatIds },
         )
       : null,
-    [chartBeatMap, selectedPlanRecord],
+    [activeBeatIds, chartBeatMap, selectedPlanRecord],
   );
 
   return { planQuery, selectedPlanRecord, chart };
