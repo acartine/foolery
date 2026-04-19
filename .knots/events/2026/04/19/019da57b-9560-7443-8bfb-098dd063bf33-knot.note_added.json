@@ -1,0 +1,15 @@
+{
+  "event_id": "019da57b-9560-7443-8bfb-098dd063bf33",
+  "occurred_at": "2026-04-19T11:23:53.055943Z",
+  "knot_id": "foolery-33ce",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review update:\n- Current main and the live dev server at http://127.0.0.1:3000 do not reproduce the reported behavior for `/Users/cartine/knots`. Repo-scoped backend.list({ state: \"queued\" }) returns 26 queued knots and zero shipped rows; the rendered Queues page likewise shows ready-for-planning / ready-for-implementation rows, not shipped knots.\n- The user's “last 48 hours” window does not match source history. Between 2026-04-17 and 2026-04-19, no commit touched the queue data-selection path (`use-beats-query`, `api.ts`, `beats-multi-repo`, `app/api/beats/route.ts`, `app/api/beats/ready/route.ts`, `knots-backend-mappers.ts`). The only related UI commit in that window is `d1298668` (auto-scroll fix), which only changes row focus/scroll behavior.\n- The earliest commit that explicitly allows shipped rows in queue-phase views is `b87a2347` (2026-03-17): “Include all descendants of queue-state parents in phase-filtered views.” Its stated purpose is to show the full picture under queued parents, including shipped/abandoned/in-progress children. `67259f75` (2026-03-23) then adds ancestor-chain inclusion to support that hierarchy model.\n- Conclusion: the current plan to immediately reroute Queues to `listReady()` is premature because the reported bug is not currently reproducible on main. Before code changes, we need a revised plan that distinguishes: (a) the intentionally hierarchical queue semantics introduced in March, from (b) whatever runtime/URL/cache/environment-specific state caused the user to see four shipped knots.\n- Recommended next planning focus: capture the exact failing URL/runtime state if it recurs, and evaluate a design that preserves `b87a2347`'s hierarchy intent while separating claimable-work roots from contextual descendants.",
+    "datetime": "2026-04-19T11:23:53.055943Z",
+    "entry_id": "019da57b-9560-7443-8bfb-09789c167c4f",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "desktop"
+  }
+}

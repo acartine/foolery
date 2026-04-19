@@ -1,0 +1,17 @@
+{
+  "event_id": "019da572-5e07-7e11-b1ef-c376f7a76180",
+  "occurred_at": "2026-04-19T11:13:49.063319Z",
+  "knot_id": "foolery-33ce",
+  "type": "knot.created",
+  "data": {
+    "body": "Investigate why the Queues screen for the Knots project is showing shipped knots. Update the queues data path so it only surfaces claimable/unblocked work, including multi-repo scope, and add regression tests for the ready route and client helpers. Do not move the knot to a terminal state.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Fix queues screen claimable knot filtering",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

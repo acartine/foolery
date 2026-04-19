@@ -1,0 +1,15 @@
+{
+  "event_id": "019da573-3976-7892-b817-d41e32f5b9e1",
+  "occurred_at": "2026-04-19T11:14:45.237874Z",
+  "knot_id": "foolery-33ce",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Investigation summary:\n- Root cause: the Queues screen currently fetches generic queued results through `fetchBeatsForScope(...)`, which calls `/api/beats?state=queued`.\n- In the Knots backend, `applyFilters(..., { state: \"queued\" })` intentionally includes descendants of queued parents via `includeDescendantsOfQueueParents(...)` in `src/lib/backends/knots-backend-mappers.ts`. That behavior is why shipped descendants can appear in the Queues screen.\n- The screen should instead use ready/claimable semantics, not generic queued semantics. `KnotsBackend.listReady()` already filters to agent-claimable and unblocked knots, so shipped knots naturally fall out there.\n- Secondary issue: the existing `/api/beats/ready` route is legacy/stale for Knots. It queries `open` and `in_progress` via `backend.list(...)`, which does not align with Knots `ready_for_*` states. It also lacks the `scope=all` aggregate/streaming path used by the Queues screen.\n\nImplementation plan:\n1. Update `/api/beats/ready` to use `backend.listReady(...)` for repo-scoped requests and add `scope=all` aggregate + NDJSON streaming parity with `/api/beats`.\n2. Extend `src/lib/beats-multi-repo.ts` with ready-aware aggregate/stream helpers (or a shared loader flag) so multi-repo Queues can fetch claimable work consistently.\n3. Add scope-aware ready fetch helpers in `src/lib/api.ts` and switch Queues view callers (`src/app/beats/use-beats-query.ts`, `src/hooks/use-beats-screen-warmup.ts`) to the ready path while leaving other views on the generic list route.\n4. Add regression tests for `/api/beats/ready` repo/all scope behavior and for the client scope helper selecting `/api/beats/ready?scope=all`.\n\nComplexity and risk:\n- Complexity: moderate; the logic is already present, but the ready route and shared client helpers need to be aligned.\n- Main risk: changing shared helpers too broadly could affect non-Queues views, so the switch should stay explicitly scoped to the Queues view.\n\nValidation plan:\n- Targeted tests for the ready route and API helpers.\n- Then run queue-related or route-level tests to verify shipped descendants no longer appear when the Queues screen loads claimable work.",
+    "datetime": "2026-04-19T11:14:45.237874Z",
+    "entry_id": "019da573-3976-7892-b817-d409a50a0833",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "desktop"
+  }
+}

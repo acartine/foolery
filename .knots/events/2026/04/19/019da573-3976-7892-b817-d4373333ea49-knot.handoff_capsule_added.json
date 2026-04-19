@@ -1,0 +1,15 @@
+{
+  "event_id": "019da573-3976-7892-b817-d4373333ea49",
+  "occurred_at": "2026-04-19T11:14:45.237874Z",
+  "knot_id": "foolery-33ce",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Queues regression root cause confirmed: the screen is using `/api/beats?state=queued`, and Knots queued filtering deliberately includes descendants of queued parents, which can pull shipped knots into the table. Fix path is to route Queues through true ready semantics (`listReady`) for both repo and all-repo scope, then add regression tests around the ready route and scope-aware client helpers.",
+    "datetime": "2026-04-19T11:14:45.237874Z",
+    "entry_id": "019da573-3976-7892-b817-d42c9af696f6",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "desktop"
+  }
+}
