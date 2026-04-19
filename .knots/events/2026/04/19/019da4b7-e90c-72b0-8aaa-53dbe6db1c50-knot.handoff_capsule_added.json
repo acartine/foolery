@@ -1,0 +1,15 @@
+{
+  "event_id": "019da4b7-e90c-72b0-8aaa-53dbe6db1c50",
+  "occurred_at": "2026-04-19T07:50:09.420036Z",
+  "knot_id": "foolery-5510",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planned a smart Setlist viewport refinement: default the 12-slot window to the earliest unfinished slot rather than the first page, keep earlier completed steps reachable, and add subtle active-beat treatment driven by running terminal session beats.",
+    "datetime": "2026-04-19T07:50:09.420036Z",
+    "entry_id": "019da4b7-e90c-72b0-8aaa-53cc6e18b419",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "desktop"
+  }
+}

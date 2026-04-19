@@ -1,0 +1,15 @@
+{
+  "event_id": "019da4b7-e90c-72b0-8aaa-53bc8110ad4e",
+  "occurred_at": "2026-04-19T07:50:09.420036Z",
+  "knot_id": "foolery-5510",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation plan:\n1. Replace the current fixed-page Setlist windowing helper with a viewport model that keeps a 12-slot visible window but chooses an initial `slotStart` based on the earliest non-terminal slot, so leading completed steps can start off-screen while still remaining reachable via Earlier navigation.\n2. Compute slot-level terminal status from the chart model instead of using only the first unfinished row. This keeps parallel steps correct: a slot stays visible if any beat in that step is still active.\n3. Thread running terminal beat ids from `src/app/beats/page.tsx` into `SetlistView`, collecting both `beatId` and `beatIds` so scene sessions can mark all active beats. Extend the Setlist chart model to flag active cells.\n4. Update `src/components/setlist-chart-panel.tsx` styling so active beats get a slightly darker outline, a slightly darker beat-id header band, and a restrained motion cue that reads as in-progress without overpowering the chart. Add reduced-motion safety.\n5. Expand Setlist tests to cover smart initial viewport offset, slot-level completion behavior, active-beat tagging, and the no-extra-navigation case when the plan fits inside 12 steps.\n\nFiles likely touched:\n- `src/app/beats/page.tsx`\n- `src/components/setlist-view.tsx`\n- `src/components/setlist-chart-panel.tsx`\n- `src/lib/setlist-chart.ts`\n- `src/lib/__tests__/setlist-chart.test.ts`\n- `src/app/globals.css` if a shared animation utility is cleaner there\n\nComplexity: medium.\nRisks: keeping the viewport math intuitive when the initial start is not page-aligned, and making the active animation noticeable without adding noisy motion.",
+    "datetime": "2026-04-19T07:50:09.420036Z",
+    "entry_id": "019da4b7-e90c-72b0-8aaa-53a2dc2a06a3",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "desktop"
+  }
+}

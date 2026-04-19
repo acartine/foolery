@@ -1,0 +1,15 @@
+{
+  "event_id": "019da4bd-f185-7cd1-82fe-93b0f57acb65",
+  "occurred_at": "2026-04-19T07:56:44.804684Z",
+  "knot_id": "foolery-5510",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation complete on branch `worktree-foolery-5510-setlist-refinement` at commit `782db815`. The Setlist viewport now starts at the earliest unfinished slot that can fit inside the 12-step window, earlier completed steps remain reachable with Earlier navigation, and running terminal-session beats are highlighted with darker in-progress styling and animation. Validation passed: `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build`.",
+    "datetime": "2026-04-19T07:56:44.804684Z",
+    "entry_id": "019da4bd-f185-7cd1-82fe-93af8f7ceadf",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "desktop"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019da4b5-d3c3-7b11-a314-5994aefa013e",
+  "occurred_at": "2026-04-19T07:47:52.899102Z",
+  "knot_id": "foolery-5510",
+  "type": "knot.created",
+  "data": {
+    "body": "Adjust the Setlist chart so the default viewport is biased toward upcoming work by shifting completed leading steps off-screen when possible while keeping earlier completed steps reachable via left navigation. Also add stronger visual treatment for beats with an active lease, including a slightly darker outline, a slightly darker beat-id header band, and a tasteful in-progress animation. Implement in a dedicated worktree and validate with tests plus repo quality gates.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Refine setlist viewport and active beat cues",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
