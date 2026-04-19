@@ -393,7 +393,7 @@ function indexBeat(
   }
 }
 
-function PlanSummaryCard({
+export function PlanSummaryCard({
   plan,
   preview,
   selected,
@@ -451,32 +451,6 @@ function PlanSummaryCard({
             {plan.plan.mode ?? "groom"}
           </span>
         </div>
-
-        {!selected && (
-          <div className="space-y-2 pt-1">
-            {preview.previewBeats.map((beat) => (
-              <div
-                key={beat.id}
-                className="rounded-lg border border-border/60 bg-background/80 px-3 py-2"
-              >
-                <span className="font-mono text-[11px] text-muted-foreground">
-                  {beat.label}
-                </span>
-                {beat.title ? (
-                  <p className="text-sm font-medium leading-tight">
-                    {beat.title}
-                  </p>
-                ) : null}
-              </div>
-            ))}
-            {preview.remainingBeats > 0 && (
-              <p className="text-xs text-muted-foreground">
-                +{preview.remainingBeats} more beat
-                {preview.remainingBeats === 1 ? "" : "s"}
-              </p>
-            )}
-          </div>
-        )}
       </div>
     </button>
   );
