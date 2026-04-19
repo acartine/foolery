@@ -1,13 +1,23 @@
 "use client";
 
-import { CheckCircle2 } from "lucide-react";
+import {
+  useMemo,
+  useState,
+} from "react";
+import {
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   isTerminalSetlistState,
+  paginateSetlistChart,
   type SetlistChartModel,
 } from "@/lib/setlist-chart";
 import { buildBeatFocusHref } from "@/lib/beat-navigation";
+import { Button } from "@/components/ui/button";
 
 export function SetlistChartPanel({
   chart,
@@ -16,17 +26,81 @@ export function SetlistChartPanel({
   chart: SetlistChartModel;
   repoPath?: string;
 }) {
-  const waveGroups = buildWaveGroups(chart);
-  const lastRowByWave = buildLastRowByWave(chart);
-  const searchParams = useSearchParams();
+  const pagination = useMemo(
+    () => paginateSetlistChart(chart),
+    [chart],
+  );
+  const paginationKey = useMemo(
+    () => buildPaginationKey(chart, pagination.initialPageIndex),
+    [chart, pagination.initialPageIndex],
+  );
 
   return (
-    <div className="flex flex-col">
+    <PaginatedSetlistChart
+      key={paginationKey}
+      chart={chart}
+      pagination={pagination}
+      repoPath={repoPath}
+    />
+  );
+}
+
+function PaginatedSetlistChart({
+  chart,
+  pagination,
+  repoPath,
+}: {
+  chart: SetlistChartModel;
+  pagination: ReturnType<typeof paginateSetlistChart>;
+  repoPath?: string;
+}) {
+  const [pageIndex, setPageIndex] = useState(pagination.initialPageIndex);
+  const searchParams = useSearchParams();
+  const currentPage = pagination.pages[pageIndex] ?? pagination.pages[0];
+  const waveGroups = buildWaveGroups(currentPage.slots);
+  const lastRowByWave = buildLastRowByWave(currentPage);
+
+  return (
+    <div className="flex flex-col gap-2">
+      {pagination.pages.length > 1 ? (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="text-xs text-muted-foreground">
+            Steps {currentPage.slotStart + 1}-{currentPage.slotEnd}
+            {" "}of {chart.slots.length}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setPageIndex((value) => Math.max(value - 1, 0))}
+              disabled={pageIndex === 0}
+            >
+              <ChevronLeft className="size-4" />
+              Earlier
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                setPageIndex((value) =>
+                  Math.min(value + 1, pagination.pages.length - 1)
+                )}
+              disabled={pageIndex >= pagination.pages.length - 1}
+            >
+              Later
+              <ChevronRight className="size-4" />
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
       <div className="overflow-auto">
         <div
           className="grid w-full gap-x-0 gap-y-[4px] pb-[4px]"
           style={{
-            gridTemplateColumns: `repeat(${chart.slots.length}, minmax(0, 1fr))`,
+            gridTemplateColumns: `repeat(${currentPage.slots.length}, minmax(0, 1fr))`,
           }}
         >
           {waveGroups.map((wave) => (
@@ -48,12 +122,12 @@ export function SetlistChartPanel({
           ))}
         </div>
 
-        {chart.rows.map((row, rowIndex) => (
+        {currentPage.rows.map((row, rowIndex) => (
           <ChartRow
             key={row.beatId}
             row={row}
             rowIndex={rowIndex}
-            slots={chart.slots}
+            slots={currentPage.slots}
             lastRowByWave={lastRowByWave}
             detailHrefBuilder={(beatId) =>
               buildBeatFocusHref(
@@ -68,8 +142,19 @@ export function SetlistChartPanel({
   );
 }
 
-function buildWaveGroups(chart: SetlistChartModel) {
-  return chart.slots.reduce<Array<{
+function buildPaginationKey(
+  chart: SetlistChartModel,
+  initialPageIndex: number,
+): string {
+  return [
+    initialPageIndex,
+    chart.slots.map((slot) => slot.id).join(","),
+    chart.rows.map((row) => `${row.beatId}:${row.state ?? ""}`).join(","),
+  ].join("::");
+}
+
+function buildWaveGroups(slots: SetlistChartModel["slots"]) {
+  return slots.reduce<Array<{
     id: string;
     waveLabel: string;
     detail: string;
@@ -95,7 +180,7 @@ function buildWaveGroups(chart: SetlistChartModel) {
   }, []);
 }
 
-function buildLastRowByWave(chart: SetlistChartModel) {
+function buildLastRowByWave(chart: Pick<SetlistChartModel, "rows" | "slots">) {
   const lastRowByWave = new Map<string, number>();
 
   chart.rows.forEach((row, rowIndex) => {

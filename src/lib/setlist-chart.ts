@@ -55,6 +55,21 @@ export interface SetlistChartModel {
   rows: SetlistChartRow[];
 }
 
+export interface PaginatedSetlistChartPage {
+  index: number;
+  slotStart: number;
+  slotEnd: number;
+  slots: SetlistChartSlot[];
+  rows: SetlistChartRow[];
+}
+
+export interface PaginatedSetlistChartModel {
+  initialPageIndex: number;
+  pages: PaginatedSetlistChartPage[];
+}
+
+export const SETLIST_CHART_PAGE_SIZE = 12;
+
 const TERMINAL_SETLIST_STATES = new Set([
   "shipped",
   "abandoned",
@@ -141,6 +156,28 @@ export function countWorkableSetlistRows(
   ).length;
 }
 
+export function paginateSetlistChart(
+  chart: SetlistChartModel,
+  pageSize = SETLIST_CHART_PAGE_SIZE,
+): PaginatedSetlistChartModel {
+  const normalizedPageSize = Math.max(pageSize, 1);
+  const pageCount = Math.max(
+    Math.ceil(chart.slots.length / normalizedPageSize),
+    1,
+  );
+  const pages = Array.from({ length: pageCount }, (_, pageIndex) =>
+    buildSetlistChartPage(chart, pageIndex, normalizedPageSize)
+  );
+  const initialSlotIndex = findInitialSetlistSlotIndex(chart);
+
+  return {
+    initialPageIndex: initialSlotIndex >= 0
+      ? Math.floor(initialSlotIndex / normalizedPageSize)
+      : pageCount - 1,
+    pages,
+  };
+}
+
 function buildRow(
   beatId: string,
   beatMap: ReadonlyMap<string, Beat>,
@@ -188,6 +225,44 @@ function uniqueBeatIds(beatIds: string[]): string[] {
       beatIds.filter((beatId) => beatId.trim().length > 0),
     ),
   );
+}
+
+function buildSetlistChartPage(
+  chart: SetlistChartModel,
+  pageIndex: number,
+  pageSize: number,
+): PaginatedSetlistChartPage {
+  const slotStart = pageIndex * pageSize;
+  const slotEnd = Math.min(slotStart + pageSize, chart.slots.length);
+  const slots = chart.slots.slice(slotStart, slotEnd);
+  const rows = chart.rows
+    .map((row) => ({
+      ...row,
+      cells: row.cells.slice(slotStart, slotEnd),
+    }))
+    .filter((row) => row.cells.some((cell) => cell !== null));
+
+  return {
+    index: pageIndex,
+    slotStart,
+    slotEnd,
+    slots,
+    rows,
+  };
+}
+
+function findInitialSetlistSlotIndex(
+  chart: SetlistChartModel,
+): number {
+  const nextRow = chart.rows.find(
+    (row) => !isTerminalSetlistState(row.state),
+  );
+
+  if (!nextRow) {
+    return -1;
+  }
+
+  return nextRow.cells.findIndex((cell) => cell !== null);
 }
 
 function toPreviewBeat(

@@ -4,6 +4,7 @@ import {
   buildSetlistPlanPreview,
   countWorkableSetlistRows,
   isTerminalSetlistState,
+  paginateSetlistChart,
 } from "@/lib/setlist-chart";
 import type { PlanDocument, PlanSummary } from "@/lib/orchestration-plan-types";
 import type { Beat } from "@/lib/types";
@@ -102,6 +103,56 @@ function makeParallelPlan(): PlanDocument {
     unassignedBeatIds: [],
     assumptions: [],
   };
+}
+
+function makeWindowedPlan(stepCount: number): PlanDocument {
+  const beatIds = Array.from(
+    { length: stepCount },
+    (_, index) => `beat-${index + 1}`,
+  );
+
+  return {
+    repoPath: "/tmp/repo",
+    beatIds,
+    summary: "Windowed setlist view",
+    waves: [
+      {
+        waveIndex: 1,
+        name: "Windowed wave",
+        objective: "Step through pages of work.",
+        agents: [],
+        beats: beatIds.map((beatId) => ({
+          id: beatId,
+          title: `Beat ${beatId}`,
+        })),
+        steps: beatIds.map((beatId, index) => ({
+          stepIndex: index + 1,
+          beatIds: [beatId],
+          notes: `Schedule ${beatId}`,
+        })),
+      },
+    ],
+    unassignedBeatIds: [],
+    assumptions: [],
+  };
+}
+
+function makeWindowedBeatMap(
+  stepCount: number,
+  getState: (index: number) => Beat["state"],
+): Map<string, Beat> {
+  return new Map(
+    Array.from({ length: stepCount }, (_, index) => {
+      const beatId = `beat-${index + 1}`;
+      return [
+        beatId,
+        makeBeat(beatId, {
+          title: `Beat ${beatId}`,
+          state: getState(index),
+        }),
+      ];
+    }),
+  );
 }
 
 describe("setlist chart helpers: scheduled rows", () => {
@@ -252,5 +303,57 @@ describe("setlist chart helpers: display fallbacks", () => {
     expect(isTerminalSetlistState("closed")).toBe(true);
     expect(isTerminalSetlistState("ready_for_implementation")).toBe(false);
     expect(isTerminalSetlistState(undefined)).toBe(false);
+  });
+});
+
+describe("setlist chart helpers: pagination", () => {
+  it("starts on the page containing the next unfinished beat", () => {
+    const chart = buildSetlistChart(
+      makeWindowedPlan(15),
+      makeWindowedBeatMap(
+        15,
+        (index) => index < 12 ? "shipped" : "ready_for_implementation",
+      ),
+    );
+
+    const pagination = paginateSetlistChart(chart);
+
+    expect(pagination.pages).toHaveLength(2);
+    expect(pagination.initialPageIndex).toBe(1);
+    expect(pagination.pages[0]!.rows).toHaveLength(12);
+    expect(pagination.pages[1]!.rows).toHaveLength(3);
+    expect(pagination.pages[0]!.rows[0]!.cells[0]?.beatId).toBe("beat-1");
+    expect(pagination.pages[1]!.rows[0]!.cells[0]?.beatId).toBe("beat-13");
+  });
+
+  it("falls back to the last page when every beat is terminal", () => {
+    const chart = buildSetlistChart(
+      makeWindowedPlan(25),
+      makeWindowedBeatMap(25, () => "shipped"),
+    );
+
+    const pagination = paginateSetlistChart(chart);
+
+    expect(pagination.pages).toHaveLength(3);
+    expect(pagination.initialPageIndex).toBe(2);
+    expect(pagination.pages[0]!.rows[0]!.cells[0]?.beatId).toBe("beat-1");
+    expect(pagination.pages[2]!.rows[0]!.cells[0]?.beatId).toBe("beat-25");
+  });
+
+  it("keeps a single page when the chart has at most twelve steps", () => {
+    const chart = buildSetlistChart(
+      makeWindowedPlan(12),
+      makeWindowedBeatMap(
+        12,
+        (index) => index < 4 ? "shipped" : "ready_for_implementation",
+      ),
+    );
+
+    const pagination = paginateSetlistChart(chart);
+
+    expect(pagination.pages).toHaveLength(1);
+    expect(pagination.initialPageIndex).toBe(0);
+    expect(pagination.pages[0]!.rows).toHaveLength(12);
+    expect(pagination.pages[0]!.rows[11]!.cells[11]?.beatId).toBe("beat-12");
   });
 });
