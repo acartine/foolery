@@ -1,0 +1,9 @@
+{
+  "event_id": "019da950-ebf7-7d41-bfbe-686e7de42f63",
+  "occurred_at": "2026-04-20T05:15:46.039612Z",
+  "knot_id": "foolery-24b8",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/gate-owner-claimability"
+  }
+}

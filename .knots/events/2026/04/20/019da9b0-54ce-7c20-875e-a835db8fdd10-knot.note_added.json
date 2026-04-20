@@ -1,0 +1,15 @@
+{
+  "event_id": "019da9b0-54ce-7c20-875e-a835db8fdd10",
+  "occurred_at": "2026-04-20T06:59:58.798742Z",
+  "knot_id": "foolery-8916",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan:\n1. Extend Knots profile/workflow descriptors to retain queue_states, action_states, queue_actions, and per-state owners from Loom/Knots profile metadata.\n2. Make runtime claimability derive from `state in queue_states` and `owners.states[state].kind`, with no hardcoded state-name inference on the Knots path.\n3. Update Knots backend filtering/mapping tests to cover a custom `evaluate` profile (`ready_to_evaluate` -> `evaluating`).\n4. Run lint, typecheck, unit tests, and build in `/Users/cartine/foolery/.worktrees/foolery-custom-workflow-claimability`.",
+    "datetime": "2026-04-20T06:59:58.798742Z",
+    "entry_id": "019da9b0-54ce-7c20-875e-a82dd0995e96",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

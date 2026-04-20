@@ -1,0 +1,15 @@
+{
+  "event_id": "019da950-ebf7-7d41-bfbe-688d098b9697",
+  "occurred_at": "2026-04-20T05:15:46.039612Z",
+  "knot_id": "foolery-24b8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Artifact: branch codex/gate-owner-claimability\nCommit: bea08873d40d600fcfd6db0572b8811ee2fd28f7\nRemote: pushed to origin/codex/gate-owner-claimability and origin/main\nValidation: bun run lint; bunx tsc --noEmit; bun run test; bun run build\nSummary: agent-owned gate beats now follow owner-based claimability in take/UI surfaces and wave readiness, while human-owned gate beats remain escalations.",
+    "datetime": "2026-04-20T05:15:46.039612Z",
+    "entry_id": "019da950-ebf7-7d41-bfbe-687714549030",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

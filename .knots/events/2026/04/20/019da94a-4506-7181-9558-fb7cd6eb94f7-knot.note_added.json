@@ -1,0 +1,15 @@
+{
+  "event_id": "019da94a-4506-7181-9558-fb7cd6eb94f7",
+  "occurred_at": "2026-04-20T05:08:30.086573Z",
+  "knot_id": "foolery-24b8",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan:\n1. Remove the shared `type === \"gate\"` take veto and rely on owner/claimability fields.\n2. Patch UI action affordances that still hide gate beats regardless of ownership.\n3. Update wave/readiness API handling so gate beats do not automatically imply human approval.\n4. Add regression tests for agent-owned vs human-owned gate behavior, then run quality gates.",
+    "datetime": "2026-04-20T05:08:30.086573Z",
+    "entry_id": "019da94a-4506-7181-9558-fb69607e5edb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

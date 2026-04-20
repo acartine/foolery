@@ -1,0 +1,17 @@
+{
+  "event_id": "019da947-115a-7320-baf4-dc67b1b72a81",
+  "occurred_at": "2026-04-20T05:05:00.250316Z",
+  "knot_id": "foolery-24b8",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nMake Foolery treat Knots `gate` items according to workflow ownership rather than beat type. Agent-owned queued gate items should be claimable and runnable in the GUI and API. Human-owned gate items should remain non-claimable and surface through Escalations.\n\nVerification:\n1. Run targeted tests covering `canTakeBeat`, ready-route behavior, and gate action affordances; confirm agent-owned queued gate beats are allowed while human-owned gate beats stay blocked.\n2. Open the relevant view/component tests and confirm Escalations still keys off `requiresHumanAction`, not `type`.\n3. Run full repo quality gates in the dedicated worktree: `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build`.\n\nConstraints:\n- Implement in `/Users/cartine/foolery/.worktrees/foolery-gate-owner-claimability`.\n- Do not change notification-bell behavior unless later requested.\n- Do not move the knot to a terminal state unless explicitly instructed.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Honor gate owner claimability in GUI and API",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

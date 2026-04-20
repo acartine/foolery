@@ -1,0 +1,17 @@
+{
+  "event_id": "019da978-2bbc-73d3-91af-96cb4bab09c6",
+  "occurred_at": "2026-04-20T05:58:38.268219Z",
+  "knot_id": "foolery-8916",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nMake Foolery derive owner and claimability correctly for Knots profiles with non-SDLC states, such as the `evaluate` profile used by gate knots (`ready_to_evaluate` -> `evaluating`). Agent-owned queued custom workflow states must be takeable in the GUI/API, while human-owned custom workflow queue states must remain non-claimable and surface as escalations where applicable.\n\nVerification:\n1. Add regression coverage for a custom profile descriptor with `ready_to_evaluate` and `evaluating`, confirming runtime owner/claimability is agent-owned + claimable in the queued state and not claimable in the active state.\n2. Add a Knots backend mapping test covering a gate knot on the `evaluate` profile and confirm the mapped beat is agent-claimable when queued.\n3. Run `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build` in the dedicated worktree.\n\nConstraints:\n- Implement in `/Users/cartine/foolery/.worktrees/foolery-custom-workflow-claimability`.\n- Do not regress built-in SDLC workflow handling.\n- Do not change unrelated notification behavior.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Honor custom Knots workflow claimability",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

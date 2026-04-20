@@ -1,0 +1,9 @@
+{
+  "event_id": "019da947-1163-7a03-b68d-f7d00045c1f4",
+  "occurred_at": "2026-04-20T05:05:00.250316Z",
+  "knot_id": "foolery-24b8",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Agent-owned queued gate beats are takeable in Foolery UI surfaces that currently expose Take!/Scene! actions.\n2. Human-owned gate beats remain non-claimable and continue to appear under Escalations via `requiresHumanAction=true`.\n3. `/api/beats/ready` and related ready/claimable paths do not exclude gate beats solely because `type=\"gate\"`.\n4. Wave/readiness surfaces no longer force all gate beats into human-only readiness; they follow owner-derived claimability and human-action semantics.\n5. Regression tests cover both agent-owned and human-owned gate cases."
+  }
+}
