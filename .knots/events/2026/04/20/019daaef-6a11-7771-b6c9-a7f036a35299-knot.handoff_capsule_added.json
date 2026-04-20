@@ -1,0 +1,18 @@
+{
+  "event_id": "019daaef-6a11-7771-b6c9-a7f036a35299",
+  "occurred_at": "2026-04-20T12:48:30.22506Z",
+  "knot_id": "foolery-6858",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation complete on commit 52001ba4. Key additions are src/lib/settings-dispatch-targets.ts and scripts/dispatch-pools.sh for shared bundled target metadata; Settings and foolery setup now expose grouped workflow targets with Add to all and workflow-specific pools; runtime step-agent resolution now prefers workflow-aware target ids with legacy fallback; coverage covers target derivation, pool fallback, setup writer and interactive flows, and settings grouping wiring. All quality gates passed: lint, tsc, test, build.",
+    "datetime": "2026-04-20T12:48:30.22506Z",
+    "entry_id": "019daaef-6a11-7771-b6c9-a7ee00f0dae6",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "2026-04-20"
+  },
+  "precondition": {
+    "profile_etag": "019daad9-d998-7573-9b97-c80b028e0c74"
+  }
+}

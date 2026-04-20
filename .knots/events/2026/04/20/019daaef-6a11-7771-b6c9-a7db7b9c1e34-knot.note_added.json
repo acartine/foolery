@@ -1,0 +1,18 @@
+{
+  "event_id": "019daaef-6a11-7771-b6c9-a7db7b9c1e34",
+  "occurred_at": "2026-04-20T12:48:30.22506Z",
+  "knot_id": "foolery-6858",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation complete at commit 52001ba4. Added grouped bundled workflow dispatch targets shared by Settings and setup, threaded workflow/profile-aware pool resolution into runtime step-agent selection, and introduced Add to all bulk seeding plus legacy fallback compatibility. Added coverage for dispatch target derivation, workflow-target pool resolution, setup writer persistence, grouped setup interaction, and settings grouping wiring. Verified with bun run lint, bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-04-20T12:48:30.22506Z",
+    "entry_id": "019daaef-6a11-7771-b6c9-a7ca1f2841b0",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "2026-04-20"
+  },
+  "precondition": {
+    "profile_etag": "019daad9-d998-7573-9b97-c80b028e0c74"
+  }
+}

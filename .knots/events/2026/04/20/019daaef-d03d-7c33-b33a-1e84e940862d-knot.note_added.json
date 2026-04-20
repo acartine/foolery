@@ -1,0 +1,15 @@
+{
+  "event_id": "019daaef-d03d-7c33-b33a-1e84e940862d",
+  "occurred_at": "2026-04-20T12:48:56.381932Z",
+  "knot_id": "foolery-6858",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review complete. Approved. Commit 52001ba4 satisfies the dispatch-setup acceptance criteria: Settings now groups every bundled workflow target and offers Add to all, foolery setup mirrors the same grouped bundled targets and bulk-seed flow, runtime pool resolution is workflow/profile-aware with legacy fallback, and coverage verifies grouped target derivation plus UI and setup bulk-apply behavior. Sanity gates passed cleanly: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-04-20T12:48:56.381932Z",
+    "entry_id": "019daaef-d03d-7c33-b33a-1e7a052c0d04",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "2026-04-20"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019daaf4-6766-7870-aa53-4801f46c6dde",
+  "occurred_at": "2026-04-20T12:53:57.222303Z",
+  "knot_id": "foolery-6858",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review complete. Approved. The shipped result is live on main at a7ca91ef, the knot tags now point at branch:codex/6858-workflow-dispatch and commit:a7ca91ef, and remote GitHub Actions completed successfully for that shipped commit (CI 24667475114, Coverage Badge 24667475132). The only remote annotation was a non-blocking coverage regression warning inside the successful CI run; no blocking regressions were reported.",
+    "datetime": "2026-04-20T12:53:57.222303Z",
+    "entry_id": "019daaf4-6766-7870-aa53-47f9e53b7154",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "2026-04-20"
+  }
+}

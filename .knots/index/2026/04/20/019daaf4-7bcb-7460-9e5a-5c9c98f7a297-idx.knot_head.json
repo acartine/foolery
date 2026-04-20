@@ -1,0 +1,21 @@
+{
+  "event_id": "019daaf4-7bcb-7460-9e5a-5c9c98f7a297",
+  "occurred_at": "2026-04-20T12:54:02.443775Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6858",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Improve bundled workflow dispatch setup",
+    "type": "work",
+    "updated_at": "2026-04-20T12:54:02.443775Z",
+    "workflow_id": "work_sdlc"
+  }
+}

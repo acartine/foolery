@@ -1,0 +1,15 @@
+{
+  "event_id": "019daaf3-5b5e-7b91-947d-225d89cb8e8a",
+  "occurred_at": "2026-04-20T12:52:48.606431Z",
+  "knot_id": "foolery-6858",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipped artifact is origin/main at a7ca91ef. Branch codex/6858-workflow-dispatch was rebased onto origin/main before shipment, then main was fast-forwarded and pushed. Remote verification: CI run 24667475114 passed, Coverage Badge run 24667475132 passed, with coverage-regression annotations reported as warnings only.",
+    "datetime": "2026-04-20T12:52:48.606431Z",
+    "entry_id": "019daaf3-5b5e-7b91-947d-224b073d308e",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "2026-04-20"
+  }
+}
