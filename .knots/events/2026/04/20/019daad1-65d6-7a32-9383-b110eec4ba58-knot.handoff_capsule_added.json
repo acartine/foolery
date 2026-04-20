@@ -1,0 +1,15 @@
+{
+  "event_id": "019daad1-65d6-7a32-9383-b110eec4ba58",
+  "occurred_at": "2026-04-20T12:15:43.061868Z",
+  "knot_id": "foolery-9e12",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Remote main artifact is available at commit dd669f9d on origin/main. The immediate Setlist invalidation fix and its tests were merged by fast-forward after full gates passed.",
+    "datetime": "2026-04-20T12:15:43.061868Z",
+    "entry_id": "019daad1-65d6-7a32-9383-b10881f4bada",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "2026-04-20"
+  }
+}
