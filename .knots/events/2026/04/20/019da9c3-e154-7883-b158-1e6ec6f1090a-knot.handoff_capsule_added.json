@@ -1,0 +1,15 @@
+{
+  "event_id": "019da9c3-e154-7883-b158-1e6ec6f1090a",
+  "occurred_at": "2026-04-20T07:21:19.956836Z",
+  "knot_id": "foolery-8916",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: codex/custom-workflow-claimability\nCommit: 42dd78e9\nChecks: bun run lint; bunx tsc --noEmit; bun run test; bun run build\nVerification: real Maestro evaluate gates now derive claimability from profile queue/owner metadata; e.g. maestro-2123 is agent-claimable in ready_to_evaluate and maestro-ea79 is non-claimable in evaluating.",
+    "datetime": "2026-04-20T07:21:19.956836Z",
+    "entry_id": "019da9c3-e154-7883-b158-1e5a38a3fdab",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "5"
+  }
+}

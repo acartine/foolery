@@ -1,0 +1,9 @@
+{
+  "event_id": "019da9c3-e154-7883-b158-1e4a839f34d6",
+  "occurred_at": "2026-04-20T07:21:19.956836Z",
+  "knot_id": "foolery-8916",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/custom-workflow-claimability"
+  }
+}
