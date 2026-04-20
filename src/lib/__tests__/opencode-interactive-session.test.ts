@@ -33,6 +33,11 @@ import {
 const DEFAULT_WATCHDOG_TIMEOUT_MS =
   interactiveSessionTimeoutMinutesToMs(10);
 
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
+
 // ── Helpers ──────────────────────────────────────────
 
 function makeInteractionLog() {
@@ -259,6 +264,37 @@ describe("opencode interactive: completion", () => {
     vi.advanceTimersByTime(2000);
     expect(endSpy).toHaveBeenCalledOnce();
   });
+
+  it("disposes the OpenCode server when close fires", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValue({ ok: true });
+    vi.stubGlobal("fetch", fetchMock);
+    const { config, httpSession } =
+      makeConfigWithHttp();
+    httpSession.processStdoutLine(
+      "opencode server listening on " +
+      "http://127.0.0.1:5555",
+    );
+    const rt = createSessionRuntime(config);
+    const child = makeChild();
+    rt.wireStdout(child);
+
+    rt.injectLine(child, JSON.stringify({
+      type: "step_finish",
+      part: { reason: "stop" },
+    }));
+
+    vi.advanceTimersByTime(2000);
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://127.0.0.1:5555/instance/dispose",
+        expect.objectContaining({
+          method: "POST",
+          signal: expect.any(AbortSignal),
+        }),
+      );
+    });
+  });
 });
 
 // ── Watchdog timeout ────────────────────────────────
@@ -465,6 +501,9 @@ describe("OpenCodeHttpSession", () => {
   });
 
   it("interruptTurn clears pending", () => {
+    vi.useFakeTimers();
+    const killSpy = vi.spyOn(process, "kill")
+      .mockImplementation(() => true);
     const onEvent = vi.fn();
     const session = createOpenCodeHttpSession(
       onEvent, vi.fn(),
@@ -474,6 +513,10 @@ describe("OpenCodeHttpSession", () => {
     session.startTurn(child, "initial prompt");
     const result = session.interruptTurn(child);
     expect(result).toBe(true);
+    expect(killSpy).toHaveBeenCalledWith(
+      -(child.pid as number), "SIGTERM",
+    );
+    vi.useRealTimers();
   });
 
   it("startTurn returns true when ready", () => {
@@ -495,5 +538,50 @@ describe("OpenCodeHttpSession", () => {
       child, "hello",
     );
     expect(sent).toBe(true);
+  });
+
+  it("interruptTurn disposes a ready server", async () => {
+    const onEvent = vi.fn();
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ id: "ses_123" }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ parts: [] }),
+      })
+      .mockResolvedValueOnce({ ok: true });
+    const killSpy = vi.spyOn(process, "kill")
+      .mockImplementation(() => true);
+    vi.stubGlobal("fetch", fetchMock);
+    const session = createOpenCodeHttpSession(
+      onEvent, vi.fn(),
+    );
+
+    session.processStdoutLine(
+      "opencode server listening on " +
+      "http://127.0.0.1:9999",
+    );
+
+    const child = makeChild();
+    expect(session.startTurn(child, "hello")).toBe(true);
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    const interrupted = session.interruptTurn(child);
+    expect(interrupted).toBe(true);
+
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://127.0.0.1:9999/instance/dispose",
+        expect.objectContaining({
+          method: "POST",
+          signal: expect.any(AbortSignal),
+        }),
+      );
+    });
+    expect(killSpy).not.toHaveBeenCalled();
   });
 });

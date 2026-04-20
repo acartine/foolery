@@ -14,6 +14,9 @@ import type { ChildProcess } from "node:child_process";
 import type {
   PromptDispatchHooks,
 } from "@/lib/session-prompt-delivery";
+import {
+  terminateProcessGroup,
+} from "@/lib/agent-session-process";
 
 // ── Types ─────────────────────────────────────────────
 
@@ -71,6 +74,7 @@ interface SessionState {
   sessionId: string | null;
   ready: boolean;
   turnInFlight: boolean;
+  shutdownInFlight: Promise<void> | null;
   pendingTurn: {
     child: ChildProcess; prompt: string;
   } | null;
@@ -80,6 +84,7 @@ interface SessionState {
 
 const SERVER_URL_PATTERN =
   /server listening on (https?:\/\/\S+)/;
+const CONTROL_REQUEST_TIMEOUT_MS = 1_500;
 
 // ── HTTP helpers ──────────────────────────────────────
 
@@ -131,6 +136,30 @@ async function sendMessage(
       OpenCodeMessageResponse;
   } catch {
     return null;
+  }
+}
+
+async function postControlRequest(
+  baseUrl: string,
+  path: string,
+): Promise<boolean> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, CONTROL_REQUEST_TIMEOUT_MS);
+  try {
+    const resp = await fetch(
+      `${baseUrl}${path}`,
+      {
+        method: "POST",
+        signal: controller.signal,
+      },
+    );
+    return resp.ok;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
@@ -266,6 +295,38 @@ function flushPendingTurn(
   void doTurn(s, cb, prompt, hooks);
 }
 
+async function disposeServer(
+  s: SessionState,
+  child: ChildProcess,
+): Promise<void> {
+  const baseUrl = s.serverUrl;
+  if (!baseUrl) {
+    terminateProcessGroup(
+      child,
+      "opencode_interrupt_before_ready",
+    );
+    return;
+  }
+
+  if (s.turnInFlight && s.sessionId) {
+    await postControlRequest(
+      baseUrl,
+      `/session/${s.sessionId}/abort`,
+    );
+  }
+
+  const disposed = await postControlRequest(
+    baseUrl,
+    "/instance/dispose",
+  );
+  if (disposed) return;
+
+  terminateProcessGroup(
+    child,
+    "opencode_interrupt_dispose_failed",
+  );
+}
+
 // ── Factory ───────────────────────────────────────────
 
 export function createOpenCodeHttpSession(
@@ -278,6 +339,7 @@ export function createOpenCodeHttpSession(
     sessionId: null,
     ready: false,
     turnInFlight: false,
+    shutdownInFlight: null,
     pendingTurn: null,
   };
   const cb: SessionCallbacks = {
@@ -308,8 +370,15 @@ export function createOpenCodeHttpSession(
       return true;
     },
 
-    interruptTurn() {
+    interruptTurn(child) {
       s.pendingTurn = null;
+      if (s.shutdownInFlight) return true;
+      s.shutdownInFlight = disposeServer(
+        s,
+        child,
+      ).finally(() => {
+        s.shutdownInFlight = null;
+      });
       return true;
     },
   };
