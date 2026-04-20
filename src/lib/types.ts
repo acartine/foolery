@@ -153,7 +153,14 @@ export interface TerminalSession {
 }
 
 export interface TerminalEvent {
-  type: "stdout" | "stdout_detail" | "stderr" | "exit" | "stream_end" | "agent_switch";
+  type:
+    | "stdout"
+    | "stdout_detail"
+    | "stderr"
+    | "exit"
+    | "stream_end"
+    | "agent_switch"
+    | "beat_state_observed";
   data: string;
   timestamp: number;
 }

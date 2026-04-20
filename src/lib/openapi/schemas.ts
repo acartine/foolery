@@ -147,7 +147,17 @@ const coreSchemas = {
     type: "object",
     required: ["type", "data", "timestamp"],
     properties: {
-      type: { type: "string", enum: ["stdout", "stderr", "exit", "stream_end"] },
+      type: {
+        type: "string",
+        enum: [
+          "stdout",
+          "stderr",
+          "exit",
+          "stream_end",
+          "agent_switch",
+          "beat_state_observed",
+        ],
+      },
       data: { type: "string" },
       timestamp: { type: "number" },
     },

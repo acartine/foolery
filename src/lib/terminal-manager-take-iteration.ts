@@ -130,6 +130,15 @@ async function fetchPostExitState(
           postExitState: r.data.state,
         },
       );
+      ctx.pushEvent({
+        type: "beat_state_observed",
+        data: JSON.stringify({
+          beatId: ctx.beatId,
+          state: r.data.state,
+          reason: "post_exit_state_observed",
+        }),
+        timestamp: Date.now(),
+      });
       return r.data.state;
     }
   } catch {

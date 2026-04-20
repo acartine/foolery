@@ -63,6 +63,13 @@ class SessionConnectionManager {
           return;
         }
 
+        if (event.type === "beat_state_observed") {
+          if (this.queryClient) {
+            void invalidateBeatListQueries(this.queryClient);
+          }
+          return;
+        }
+
         if (event.type === "exit") {
           // Exit is terminal; ignore duplicate exit events from reconnect/replay.
           if (conn.exitReceived) return;

@@ -93,8 +93,31 @@ afterEach(() => {
   sessionConnections.stopSync();
 });
 
-describe("SessionConnectionManager: connection lifecycle", () => {
-    it("connect() is idempotent", () => {
+function expectSharedBeatQueryInvalidation(
+  invalidateQueries: ReturnType<typeof vi.fn>,
+): void {
+  expect(invalidateQueries).toHaveBeenNthCalledWith(1, {
+    queryKey: ["beats"],
+    refetchType: "active",
+  });
+  expect(invalidateQueries).toHaveBeenNthCalledWith(2, {
+    queryKey: ["setlist-plan"],
+    refetchType: "active",
+  });
+  expect(invalidateQueries).toHaveBeenNthCalledWith(3, {
+    queryKey: ["setlist-plan-beat"],
+    refetchType: "active",
+  });
+}
+
+function createMockQueryClient(): import("@tanstack/react-query").QueryClient {
+  return {
+    invalidateQueries: vi.fn().mockResolvedValue(undefined),
+  } as unknown as import("@tanstack/react-query").QueryClient;
+}
+
+describe("SessionConnectionManager: connection lifecycle state handling", () => {
+  it("connect() is idempotent", () => {
     const mockConnect = vi.mocked(connectToSession);
     sessionConnections.connect("sess-1");
     sessionConnections.connect("sess-1");
@@ -121,18 +144,41 @@ describe("SessionConnectionManager: connection lifecycle", () => {
   });
 
   it("exit event invalidates beat queries for background completions", () => {
-    const mockQueryClient = { invalidateQueries: vi.fn().mockResolvedValue(undefined) } as unknown as import("@tanstack/react-query").QueryClient;
+    const mockQueryClient = createMockQueryClient();
     sessionConnections.startSync(mockQueryClient);
 
     sessionConnections.connect("sess-4");
     capturedOnEvent!({ type: "exit", data: "0", timestamp: Date.now() });
 
-    expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({
-      queryKey: ["beats"],
-      refetchType: "active",
-    });
+    expectSharedBeatQueryInvalidation(
+      vi.mocked(mockQueryClient.invalidateQueries),
+    );
   });
 
+  it("beat_state_observed invalidates setlist-sensitive queries immediately", () => {
+    const mockQueryClient = createMockQueryClient();
+    sessionConnections.startSync(mockQueryClient);
+
+    sessionConnections.connect("sess-4b");
+    capturedOnEvent!({
+      type: "beat_state_observed",
+      data: JSON.stringify({
+        beatId: "beat-4b",
+        state: "shipped",
+        reason: "post_exit_state_observed",
+      }),
+      timestamp: Date.now(),
+    });
+
+    expectSharedBeatQueryInvalidation(
+      vi.mocked(mockQueryClient.invalidateQueries),
+    );
+    expect(mockUpdateStatus).not.toHaveBeenCalled();
+    expect(mockAddNotification).not.toHaveBeenCalled();
+  });
+});
+
+describe("SessionConnectionManager: connection lifecycle buffering", () => {
   it("subscribe() receives forwarded events", () => {
     sessionConnections.connect("sess-5");
     const listener = vi.fn();
@@ -209,7 +255,6 @@ describe("SessionConnectionManager: connection lifecycle", () => {
 
     expect(sessionConnections.getConnectedIds()).not.toContain("sess-11");
   });
-
 });
 
 describe("SessionConnectionManager: sync and notification", () => {

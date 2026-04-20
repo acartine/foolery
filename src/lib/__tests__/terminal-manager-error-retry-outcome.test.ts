@@ -132,7 +132,7 @@ vi.mock("@/lib/agent-outcome-stats", () => ({
   appendOutcomeRecord: vi.fn(async () => undefined),
 }));
 
-import { createSession } from "@/lib/terminal-manager";
+import { createSession, getSession } from "@/lib/terminal-manager";
 import { rollbackBeatState } from "@/lib/memory-manager-commands";
 import { appendOutcomeRecord } from "@/lib/agent-outcome-stats";
 
@@ -195,7 +195,7 @@ function clearOutcomeSessions(): void {
   sessions?.clear();
 }
 
-describe("agent-outcome-stats classification via terminal-manager", () => {
+function registerOutcomeLifecycle(): void {
   beforeEach(async () => {
     await setupOutcomeMocks();
   });
@@ -203,9 +203,12 @@ describe("agent-outcome-stats classification via terminal-manager", () => {
   afterEach(() => {
     clearOutcomeSessions();
   });
+}
 
-  describe("success classification", () => {
-    it("records success=true when beat advances to next queue state", async () => {
+describe("success classification: next queue state", () => {
+  registerOutcomeLifecycle();
+
+  it("records success=true when beat advances to next queue state", async () => {
     loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
 
     backend.get.mockResolvedValueOnce({
@@ -256,6 +259,67 @@ describe("agent-outcome-stats classification via terminal-manager", () => {
     expect(record.claimedState).toBe("ready_for_implementation");
     expect(record.postExitState).toBe("ready_for_implementation_review");
   });
+});
+
+describe("success classification: beat state event", () => {
+  registerOutcomeLifecycle();
+
+  it("emits a beat_state_observed event after post-exit state fetch", async () => {
+    loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
+
+    backend.get.mockResolvedValueOnce({
+      ok: true,
+      data: {
+        id: "foolery-e004", title: "Observed state event test",
+        state: "ready_for_implementation", isAgentClaimable: true,
+      },
+    });
+    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    backend.list.mockResolvedValue({ ok: true, data: [] });
+    backend.buildTakePrompt.mockResolvedValueOnce({
+      ok: true, data: { prompt: "initial prompt" },
+    });
+
+    const session = await createSession("foolery-e004", "/tmp/repo");
+    expect(spawnedChildren).toHaveLength(1);
+
+    backend.get.mockResolvedValueOnce({
+      ok: true,
+      data: {
+        id: "foolery-e004", title: "Observed state event test",
+        state: "ready_for_implementation_review", isAgentClaimable: true,
+      },
+    });
+    backend.get.mockResolvedValueOnce({
+      ok: true,
+      data: {
+        id: "foolery-e004", title: "Observed state event test",
+        state: "ready_for_implementation_review", isAgentClaimable: true,
+      },
+    });
+    backend.buildTakePrompt.mockResolvedValueOnce({
+      ok: true, data: { prompt: "next prompt" },
+    });
+
+    spawnedChildren[0].emit("close", 0, null);
+
+    await waitFor(() => {
+      const buffer = getSession(session.id)?.buffer ?? [];
+      const observedEvent = buffer.find(
+        (event) => event.type === "beat_state_observed",
+      );
+      expect(observedEvent).toBeDefined();
+      expect(JSON.parse(observedEvent!.data)).toEqual({
+        beatId: "foolery-e004",
+        state: "ready_for_implementation_review",
+        reason: "post_exit_state_observed",
+      });
+    });
+  });
+});
+
+describe("success classification: prior queue state", () => {
+  registerOutcomeLifecycle();
 
   it("records success=true when beat moves to prior queue state (review rejection)", async () => {
     loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
@@ -306,9 +370,7 @@ describe("agent-outcome-stats classification via terminal-manager", () => {
     expect(record.success).toBe(true);
     expect(record.claimedState).toBe("ready_for_implementation_review");
     expect(record.postExitState).toBe("ready_for_implementation");
-    });
   });
-
 });
 
 function mockBeat(
