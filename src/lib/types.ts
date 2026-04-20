@@ -397,15 +397,10 @@ export type ActionName =
   | "breakdown"
   | "scopeRefinement";
 
-export type SettingsPoolStep =
-  | "orchestration"
-  | "planning"
-  | "plan_review"
-  | "implementation"
-  | "implementation_review"
-  | "shipment"
-  | "shipment_review"
-  | "scope_refinement";
+export type SettingsPoolTargetId = string;
+
+/** @deprecated Use SettingsPoolTargetId. */
+export type SettingsPoolStep = SettingsPoolTargetId;
 
 export interface AgentRemovalActionUsage {
   action: ActionName;
@@ -413,7 +408,9 @@ export interface AgentRemovalActionUsage {
 }
 
 export interface AgentRemovalPoolUsage {
-  step: SettingsPoolStep;
+  targetId: SettingsPoolTargetId;
+  targetLabel: string;
+  targetGroupLabel: string;
   affectedEntries: number;
   remainingEntries: number;
   requiresReplacement: boolean;
@@ -439,7 +436,7 @@ export interface AgentRemovalRequest {
     Record<ActionName, string>
   >;
   poolDecisions?: Partial<
-    Record<SettingsPoolStep, AgentRemovalPoolDecision>
+    Record<SettingsPoolTargetId, AgentRemovalPoolDecision>
   >;
 }
 

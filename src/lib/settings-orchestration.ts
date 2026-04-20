@@ -11,6 +11,9 @@ import {
   toCliTarget,
 } from "@/lib/settings-agent-targets";
 import {
+  workflowAwarePoolTargetIdsForStep,
+} from "@/lib/settings-dispatch-targets";
+import {
   getLastStepAgent,
   recordStepAgent,
   resolvePoolAgent,
@@ -70,8 +73,14 @@ function resolveStepFromPool(
   settings: FoolerySettings,
   beatId: string | undefined,
   fallbackAction: ActionName | undefined,
+  workflowOrProfileId?: string,
 ): AgentTarget | null {
   const poolAgents = settings.agents;
+  const [targetId, ...fallbackTargetIds] =
+    workflowAwarePoolTargetIdsForStep(
+      step,
+      workflowOrProfileId,
+    );
 
   let excludeAgentId: string | undefined;
   if (beatId && isReviewStep(step)) {
@@ -90,10 +99,11 @@ function resolveStepFromPool(
       `registeredAgents=[${Object.keys(poolAgents).join(", ")}]`,
   );
   const poolAgent = resolvePoolAgent(
-    step,
+    targetId,
     settings.pools,
     poolAgents,
     excludeAgentId,
+    fallbackTargetIds,
   );
   if (poolAgent) {
     if (beatId && poolAgent.agentId) {
@@ -120,6 +130,7 @@ export function resolveStepAgent(
   settings: FoolerySettings,
   fallbackAction?: ActionName,
   beatId?: string,
+  workflowOrProfileId?: string,
 ): AgentTarget {
   if (settings.dispatchMode === "advanced") {
     const result = resolveStepFromPool(
@@ -127,6 +138,7 @@ export function resolveStepAgent(
       settings,
       beatId,
       fallbackAction,
+      workflowOrProfileId,
     );
     if (result) return result;
   }

@@ -122,6 +122,45 @@ async function runPartialSelectionWriter(
   return { raw, parsed };
 }
 
+async function runBundledWorkflowPoolWriter(
+  scriptName: "setup.sh" | "agent-wizard.sh",
+) {
+  const homeDir = await mkdtemp(join(tmpdir(), "foolery-settings-writer-"));
+  createdHomes.push(homeDir);
+
+  const scriptPath = join(process.cwd(), "scripts", scriptName);
+  await execFileAsync(
+    "bash",
+    [
+      "-lc",
+      `
+        source "$1"
+        REGISTERED_AGENTS=(codex-gpt-5 claude)
+        _kv_set AGENT_COMMANDS codex-gpt-5 codex
+        _kv_set AGENT_LABELS codex-gpt-5 "OpenAI Codex"
+        _kv_set AGENT_MODELS codex-gpt-5 gpt-5
+        _kv_set AGENT_COMMANDS claude claude
+        _kv_set AGENT_LABELS claude "Claude Code"
+        _kv_set DISPATCH dispatch_mode advanced
+        _kv_set POOL_AGENT_work_sdlc__autopilot__planning 0 codex-gpt-5
+        _kv_set POOL_WEIGHT_work_sdlc__autopilot__planning codex-gpt-5 4
+        _kv_set POOL_COUNT work_sdlc__autopilot__planning 1
+        _write_settings_toml
+      `,
+      "bash",
+      scriptPath,
+    ],
+    {
+      env: { ...process.env, HOME: homeDir },
+    },
+  );
+
+  const settingsPath = join(homeDir, ".config", "foolery", "settings.toml");
+  const raw = await readFile(settingsPath, "utf8");
+  const parsed = parse(raw) as Record<string, unknown>;
+  return { raw, parsed };
+}
+
 afterEach(async () => {
   await Promise.all(
     createdHomes.splice(0).map((homeDir) =>
@@ -161,6 +200,7 @@ function expectDefaultSettingsOutput(
       interactiveSessionTimeoutMinutes: 10,
     },
     pools: {
+      orchestration: [],
       planning: [],
       plan_review: [],
       implementation: [],
@@ -242,6 +282,30 @@ describe("settings writers", () => {
       });
       expect(agents).not.toHaveProperty("codex");
       expect(agents).not.toHaveProperty("gemini");
+    },
+  );
+
+  it.each(["setup.sh", "agent-wizard.sh"] as const)(
+    "writes bundled workflow target pools in %s",
+    async (scriptName) => {
+      const { raw, parsed } =
+        await runBundledWorkflowPoolWriter(scriptName);
+
+      expect(raw).toContain('dispatchMode = "advanced"');
+      expect(raw).toContain("[[pools.work_sdlc__autopilot__planning]]");
+      expect(parsed.pools).toMatchObject({
+        orchestration: [],
+        planning: [],
+        plan_review: [],
+        implementation: [],
+        implementation_review: [],
+        shipment: [],
+        shipment_review: [],
+        scope_refinement: [],
+        work_sdlc__autopilot__planning: [
+          { agentId: "codex-gpt-5", weight: 4 },
+        ],
+      });
     },
   );
 });

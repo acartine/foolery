@@ -5,6 +5,11 @@ import type {
   PoolsSettings,
   RegisteredAgentConfig,
 } from "@/lib/schemas";
+import {
+  dispatchPoolTargetGroupLabel,
+  dispatchPoolTargetLabel,
+  workflowAwarePoolTargetIdsForStep,
+} from "@/lib/settings-dispatch-targets";
 import { WorkflowStep } from "@/lib/workflows";
 
 /**
@@ -73,13 +78,23 @@ export function hasAlternativeAgent(
   pools: PoolsSettings,
   agents: Record<string, RegisteredAgentConfig>,
   excludeAgentId: string,
+  workflowOrProfileId?: string,
 ): boolean {
-  const pool = pools[step];
-  if (!pool || pool.length === 0) return false;
-  const valid = pool.filter(
-    (entry) => entry.weight > 0 && agents[entry.agentId] && entry.agentId !== excludeAgentId,
-  );
-  return valid.length > 0;
+  for (const targetId of workflowAwarePoolTargetIdsForStep(
+    step,
+    workflowOrProfileId,
+  )) {
+    const pool = pools[targetId];
+    if (!pool || pool.length === 0) continue;
+    const valid = pool.filter(
+      (entry) =>
+        entry.weight > 0 &&
+        agents[entry.agentId] &&
+        entry.agentId !== excludeAgentId,
+    );
+    if (valid.length > 0) return true;
+  }
+  return false;
 }
 
 /**
@@ -114,14 +129,26 @@ function selectWeighted(
  * @param excludeAgentId - Agent ID to exclude for cross-agent review.
  */
 export function resolvePoolAgent(
-  step: keyof PoolsSettings,
+  targetId: string,
   pools: PoolsSettings,
   agents: Record<string, RegisteredAgentConfig>,
   excludeAgentId?: string | ReadonlySet<string>,
+  fallbackTargetIds: readonly string[] = [],
 ): AgentTarget | null {
-  const pool = pools[step];
-  if (!pool || pool.length === 0) return null;
-  return selectFromPool(pool, agents, excludeAgentId);
+  for (const candidateTargetId of [
+    targetId,
+    ...fallbackTargetIds.filter((fallbackId) => fallbackId !== targetId),
+  ]) {
+    const pool = pools[candidateTargetId];
+    if (!pool || pool.length === 0) continue;
+    const resolved = selectFromPool(
+      pool,
+      agents,
+      excludeAgentId,
+    );
+    if (resolved) return resolved;
+  }
+  return null;
 }
 
 function toExcludedAgentIds(
@@ -221,17 +248,6 @@ export function swapActionsAgent(
   };
 }
 
-const DEFAULT_POOL_STEPS: ReadonlyArray<keyof PoolsSettings> = [
-  "orchestration",
-  WorkflowStep.Planning,
-  WorkflowStep.PlanReview,
-  WorkflowStep.Implementation,
-  WorkflowStep.ImplementationReview,
-  WorkflowStep.Shipment,
-  WorkflowStep.ShipmentReview,
-  "scope_refinement",
-];
-
 export interface SwapPoolsAgentResult {
   affectedEntries: number;
   affectedSteps: number;
@@ -280,8 +296,8 @@ export function swapPoolsAgent(
   const updates: Partial<PoolsSettings> = {};
   let affectedEntries = 0;
   let affectedSteps = 0;
-  for (const step of DEFAULT_POOL_STEPS) {
-    const stepEntries = pools[step];
+  for (const [targetId, stepEntries] of Object.entries(pools)) {
+    if (!stepEntries) continue;
     const entryMatches = stepEntries.filter(
       (entry) => entry.agentId === fromAgentId,
     ).length;
@@ -289,7 +305,7 @@ export function swapPoolsAgent(
 
     const swappedEntries = swapPoolAgent(stepEntries, fromAgentId, toAgentId);
     if (swappedEntries !== stepEntries) {
-      updates[step] = swappedEntries;
+      updates[targetId] = swappedEntries;
       affectedEntries += entryMatches;
       affectedSteps += 1;
     }
@@ -308,7 +324,10 @@ export function swapPoolsAgent(
     affectedEntries,
     affectedSteps,
     updates,
-    updatedPools: { ...pools, ...updates },
+    updatedPools: {
+      ...pools,
+      ...updates,
+    },
   };
 }
 
@@ -336,9 +355,11 @@ export function countDispatchAgentOccurrences(
 
   let affectedEntries = 0;
   let affectedSteps = 0;
-  for (const step of DEFAULT_POOL_STEPS) {
-    const stepEntries = pools[step];
-    const stepMatches = stepEntries.filter((entry) => entry.agentId === agentId).length;
+  for (const stepEntries of Object.values(pools)) {
+    if (!stepEntries) continue;
+    const stepMatches = stepEntries.filter(
+      (entry) => entry.agentId === agentId,
+    ).length;
     if (stepMatches === 0) continue;
     affectedEntries += stepMatches;
     affectedSteps += 1;
@@ -349,6 +370,28 @@ export function countDispatchAgentOccurrences(
     affectedEntries,
     affectedSteps,
   };
+}
+
+export interface DispatchPoolUsage {
+  targetId: string;
+  targetLabel: string;
+  targetGroupLabel: string;
+  entries: PoolEntry[];
+}
+
+export function listDispatchPoolUsages(
+  pools: PoolsSettings,
+): DispatchPoolUsage[] {
+  return Object.entries(pools).flatMap(([targetId, entries]) => (
+    entries && entries.length > 0
+      ? [{
+        targetId,
+        targetLabel: dispatchPoolTargetLabel(targetId),
+        targetGroupLabel: dispatchPoolTargetGroupLabel(targetId),
+        entries,
+      }]
+      : []
+  ));
 }
 
 function toAgentTarget(

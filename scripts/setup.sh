@@ -14,6 +14,8 @@ if [[ -f "${SETUP_SCRIPT_DIR}/model-picker.sh" ]]; then
   source "${SETUP_SCRIPT_DIR}/model-picker.sh"
   _HAS_MODEL_PICKER=1
 fi
+# shellcheck source=dispatch-pools.sh
+source "${SETUP_SCRIPT_DIR}/dispatch-pools.sh"
 # shellcheck source=toml-reader.sh
 source "${SETUP_SCRIPT_DIR}/toml-reader.sh"
 
@@ -728,44 +730,40 @@ _write_settings_toml() {
 
     printf '\n[pools]\n'
     if [[ "$dm" == "advanced" ]]; then
-      # Empty pools must be written under [pools] before
-      # any [[pools.X]] array-of-tables sections.
-      local step
-      for step in planning plan_review implementation \
-        implementation_review shipment shipment_review \
-        scope_refinement; do
+      # Empty legacy/shared pools must be written under [pools]
+      # before any [[pools.X]] array-of-tables sections.
+      local target_id
+      for target_id in "${DISPATCH_LEGACY_SETTINGS_TARGET_IDS[@]}"; do
         local count
-        count="$(_kv_get POOL_COUNT "$step" "0")"
+        count="$(_kv_get POOL_COUNT "$target_id" "0")"
         if [[ "$count" -eq 0 ]]; then
-          printf '%s = []\n' "$step"
+          printf '%s = []\n' "$target_id"
         fi
       done
       # Non-empty pools as array-of-tables.
-      for step in planning plan_review implementation \
-        implementation_review shipment shipment_review \
-        scope_refinement; do
+      for target_id in \
+        "${DISPATCH_LEGACY_SETTINGS_TARGET_IDS[@]}" \
+        "${DISPATCH_WORKFLOW_TARGET_IDS[@]}"; do
         local count
-        count="$(_kv_get POOL_COUNT "$step" "0")"
+        count="$(_kv_get POOL_COUNT "$target_id" "0")"
         if [[ "$count" -gt 0 ]]; then
           printf '\n'
           local j
           for ((j = 0; j < count; j++)); do
             local agent_id weight
-            agent_id="$(_kv_get "POOL_AGENT_${step}" \
+            agent_id="$(_kv_get "POOL_AGENT_${target_id}" \
               "$j" "")"
-            weight="$(_kv_get "POOL_WEIGHT_${step}" \
+            weight="$(_kv_get "POOL_WEIGHT_${target_id}" \
               "$agent_id" "1")"
             printf '[[pools.%s]]\nagentId = "%s"\nweight = %d\n' \
-              "$step" "$agent_id" "$weight"
+              "$target_id" "$agent_id" "$weight"
           done
         fi
       done
     else
-      local step
-      for step in planning plan_review implementation \
-        implementation_review shipment shipment_review \
-        scope_refinement; do
-        printf '%s = []\n' "$step"
+      local target_id
+      for target_id in "${DISPATCH_LEGACY_SETTINGS_TARGET_IDS[@]}"; do
+        printf '%s = []\n' "$target_id"
       done
     fi
   } > "$_AGENT_SETTINGS_FILE"
@@ -1065,40 +1063,70 @@ _agent_wizard() {
 # Dispatch wizard — basic (per-action) or advanced (weighted pools)
 # ---------------------------------------------------------------------------
 
-_ALL_POOL_STEPS=(
-  planning plan_review implementation
-  implementation_review shipment shipment_review
-  scope_refinement
-)
-_ALL_POOL_LABELS=(
-  "Planning" "Plan Review" "Implementation"
-  "Impl Review" "Shipment" "Ship Review"
-  "Scope Refinement"
-)
+_pool_source_target() {
+  local target_id="$1"
+  local exact_count
+  exact_count="$(_kv_get POOL_COUNT "$target_id" "0")"
+  if [[ "$exact_count" -gt 0 ]]; then
+    printf '%s' "$target_id"
+    return
+  fi
+
+  local legacy_target
+  legacy_target="$(_dispatch_target_legacy_id "$target_id")"
+  if [[ "$legacy_target" != "$target_id" ]]; then
+    local legacy_count
+    legacy_count="$(_kv_get POOL_COUNT "$legacy_target" "0")"
+    if [[ "$legacy_count" -gt 0 ]]; then
+      printf '%s' "$legacy_target"
+      return
+    fi
+  fi
+
+  printf '%s' "$target_id"
+}
+
+_show_pool_entries() {
+  local source_target="$1"
+  local existing_count="$2"
+  local j
+  for ((j = 0; j < existing_count; j++)); do
+    local eid ew
+    eid="$(_kv_get "POOL_AGENT_${source_target}" "$j" "")"
+    ew="$(_kv_get "POOL_WEIGHT_${source_target}" "$eid" "1")"
+    printf '    - %s (weight %d)\n' \
+      "$eid" "$ew" >"$_SETUP_OUTPUT"
+  done
+}
 
 _prompt_single_pool() {
-  local step="$1" label="$2"
+  local target_id="$1"
   if [[ ${#REGISTERED_AGENTS[@]} -eq 0 ]]; then
     return 0
   fi
 
-  local existing_count
-  existing_count="$(_kv_get POOL_COUNT "$step" "0")"
+  local label description
+  label="$(_dispatch_target_label "$target_id")"
+  description="$(_dispatch_target_description "$target_id")"
+  local source_target existing_count
+  source_target="$(_pool_source_target "$target_id")"
+  existing_count="$(_kv_get POOL_COUNT "$source_target" "0")"
 
-  _setup_heading "Pool: $label"
+  _setup_heading "Target: $label"
+  if [[ -n "$description" ]]; then
+    printf '  %s\n' "$description" >"$_SETUP_OUTPUT"
+  fi
+
+  if [[ "$source_target" != "$target_id" && "$existing_count" -gt 0 ]]; then
+    printf '  Current pool inherits from legacy "%s".\n' \
+      "$(_dispatch_target_label "$source_target")" >"$_SETUP_OUTPUT"
+  fi
 
   # Show existing pool and offer to keep it.
   if [[ "$existing_count" -gt 0 ]]; then
     printf '  Current pool (%d agent(s)):\n' \
       "$existing_count" >"$_SETUP_OUTPUT"
-    local j
-    for ((j = 0; j < existing_count; j++)); do
-      local eid ew
-      eid="$(_kv_get "POOL_AGENT_${step}" "$j" "")"
-      ew="$(_kv_get "POOL_WEIGHT_${step}" "$eid" "1")"
-      printf '    - %s (weight %d)\n' \
-        "$eid" "$ew" >"$_SETUP_OUTPUT"
-    done
+    _show_pool_entries "$source_target" "$existing_count"
     printf '  1) Keep current\n' >"$_SETUP_OUTPUT"
     printf '  2) Reconfigure\n' >"$_SETUP_OUTPUT"
     local keep_choice
@@ -1140,12 +1168,56 @@ _prompt_single_pool() {
         weight=1
       fi
 
-      _kv_set "POOL_AGENT_${step}" "$pool_count" "$agent_id"
-      _kv_set "POOL_WEIGHT_${step}" "$agent_id" "$weight"
+      _kv_set "POOL_AGENT_${target_id}" "$pool_count" "$agent_id"
+      _kv_set "POOL_WEIGHT_${target_id}" "$agent_id" "$weight"
       pool_count=$((pool_count + 1))
     fi
   done
-  _kv_set POOL_COUNT "$step" "$pool_count"
+  _kv_set POOL_COUNT "$target_id" "$pool_count"
+}
+
+_prompt_bulk_pool_seed() {
+  if [[ ${#REGISTERED_AGENTS[@]} -eq 0 ]]; then
+    return 0
+  fi
+
+  _setup_heading "Add to all"
+  printf '  Seed one agent choice across bundled workflow targets,\n' >"$_SETUP_OUTPUT"
+  printf '  then adjust any target individually below.\n' >"$_SETUP_OUTPUT"
+
+  local count=${#REGISTERED_AGENTS[@]}
+  local i
+  for ((i = 0; i < count; i++)); do
+    printf '  %d) %s\n' "$((i + 1))" \
+      "${REGISTERED_AGENTS[$i]}" >"$_SETUP_OUTPUT"
+  done
+  printf '  0) Skip\n' >"$_SETUP_OUTPUT"
+
+  local choice
+  _setup_prompt "Choice [0]: "
+  read -r choice || choice=""
+  choice="${choice:-0}"
+
+  if ! [[ "$choice" =~ ^[0-9]+$ ]] \
+    || ((choice < 1 || choice > count)); then
+    return 0
+  fi
+
+  local agent_id weight
+  agent_id="${REGISTERED_AGENTS[$((choice - 1))]}"
+  _setup_prompt "Weight for $agent_id [1]: "
+  read -r weight || weight=""
+  weight="${weight:-1}"
+  if ! [[ "$weight" =~ ^[0-9]+$ ]] || ((weight < 1)); then
+    weight=1
+  fi
+
+  local target_id
+  for target_id in "${DISPATCH_WORKFLOW_TARGET_IDS[@]}"; do
+    _kv_set "POOL_AGENT_${target_id}" "0" "$agent_id"
+    _kv_set "POOL_WEIGHT_${target_id}" "$agent_id" "$weight"
+    _kv_set POOL_COUNT "$target_id" "1"
+  done
 }
 
 _prompt_pool_config() {
@@ -1155,10 +1227,24 @@ _prompt_pool_config() {
     return 0
   fi
 
-  local i
-  for ((i = 0; i < ${#_ALL_POOL_STEPS[@]}; i++)); do
-    _prompt_single_pool \
-      "${_ALL_POOL_STEPS[$i]}" "${_ALL_POOL_LABELS[$i]}"
+  _prompt_bulk_pool_seed
+
+  local group_id
+  for group_id in "${DISPATCH_GROUP_IDS[@]}"; do
+    _setup_heading "Dispatch Group: $(_dispatch_group_label "$group_id")"
+    printf '  %s\n' \
+      "$(_dispatch_group_description "$group_id")" >"$_SETUP_OUTPUT"
+
+    local -a group_targets=()
+    local target_id
+    while IFS= read -r target_id; do
+      [[ -n "$target_id" ]] || continue
+      group_targets+=("$target_id")
+    done < <(_dispatch_group_target_ids "$group_id")
+
+    for target_id in "${group_targets[@]}"; do
+      _prompt_single_pool "$target_id"
+    done
   done
 }
 
@@ -1179,15 +1265,34 @@ _show_existing_dispatch() {
       fi
     done
   else
-    local i step label count
-    for ((i = 0; i < ${#_ALL_POOL_STEPS[@]}; i++)); do
-      step="${_ALL_POOL_STEPS[$i]}"
-      label="${_ALL_POOL_LABELS[$i]}"
-      count="$(_kv_get POOL_COUNT "$step" "0")"
-      if [[ "$count" -gt 0 ]]; then
-        printf '  %s: %s agent(s)\n' \
-          "$label" "$count" >"$_SETUP_OUTPUT"
-      fi
+    local group_id
+    for group_id in "${DISPATCH_GROUP_IDS[@]}"; do
+      local group_printed=0
+      local target_id
+      while IFS= read -r target_id; do
+        [[ -n "$target_id" ]] || continue
+        local source_target count
+        source_target="$(_pool_source_target "$target_id")"
+        count="$(_kv_get POOL_COUNT "$source_target" "0")"
+        if [[ "$count" -le 0 ]]; then
+          continue
+        fi
+        if [[ "$group_printed" -eq 0 ]]; then
+          printf '  [%s]\n' \
+            "$(_dispatch_group_label "$group_id")" >"$_SETUP_OUTPUT"
+          group_printed=1
+        fi
+        if [[ "$source_target" == "$target_id" ]]; then
+          printf '    %s: %s agent(s)\n' \
+            "$(_dispatch_target_label "$target_id")" \
+            "$count" >"$_SETUP_OUTPUT"
+        else
+          printf '    %s: %s agent(s) via legacy %s\n' \
+            "$(_dispatch_target_label "$target_id")" \
+            "$count" \
+            "$(_dispatch_target_label "$source_target")" >"$_SETUP_OUTPUT"
+        fi
+      done < <(_dispatch_group_target_ids "$group_id")
     done
   fi
 }

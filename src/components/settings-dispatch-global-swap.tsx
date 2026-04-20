@@ -67,8 +67,8 @@ function buildScopeParts(
     );
     const stepLabel = pluralise(
       occ.affectedSteps,
-      "step",
-      "steps",
+      "target",
+      "targets",
     );
     parts.push(
       `${occ.affectedEntries} pool ${entryLabel}` +
@@ -133,8 +133,8 @@ async function performGlobalSwap(
     );
     const stepLabel = pluralise(
       poolSwap.affectedSteps,
-      "step",
-      "steps",
+      "target",
+      "targets",
     );
     affected.push(
       `${poolSwap.affectedEntries} pool ${entryLabel}` +
@@ -272,7 +272,7 @@ function collectUsedAgentIds(
         (agentId) => agentId.length > 0,
       ),
       ...Object.values(pools).flatMap(
-        (entries) => entries.map((e) => e.agentId),
+        (entries) => (entries ?? []).map((e) => e.agentId),
       ),
     ]),
   ];

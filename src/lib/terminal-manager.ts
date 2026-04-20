@@ -200,7 +200,10 @@ async function resolveSessionAgent(
 ): Promise<CliAgentTarget> {
   return prepared.resolved
     ? await getStepAgent(
-      prepared.resolved.step, "take", beatId,
+      prepared.resolved.step,
+      "take",
+      beatId,
+      prepared.beat.profileId ?? prepared.beat.workflowId,
     )
     : await getActionAgent("take");
 }

@@ -255,7 +255,9 @@ describe("removeRegisteredAgent planning", () => {
     ]);
     expect(impact.poolUsages).toEqual([
       {
-        step: "implementation",
+        targetId: "implementation",
+        targetLabel: "Implementation",
+        targetGroupLabel: "Workflow Pools",
         affectedEntries: 1,
         remainingEntries: 1,
         requiresReplacement: false,
@@ -332,7 +334,7 @@ describe("removeRegisteredAgent planning", () => {
         },
       }),
     ).rejects.toThrow(
-      'Pool "plan_review" requires a replacement agent',
+      'Pool "Plan Review" requires a replacement agent',
     );
   });
 });

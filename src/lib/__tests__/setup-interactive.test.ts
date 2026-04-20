@@ -10,8 +10,14 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { parse } from "smol-toml";
+import { bundledDispatchPoolGroups } from "@/lib/settings-dispatch-targets";
 
 const createdHomes: string[] = [];
+const groupedDispatchTargets = bundledDispatchPoolGroups()
+  .flatMap((group) => group.targets.map((target) => target.id));
+const bundledWorkflowTargetCount = groupedDispatchTargets.filter(
+  (targetId) => targetId.startsWith("work_sdlc__"),
+).length;
 
 /**
  * Run a bash snippet with piped stdin input and _SETUP_INPUT
@@ -208,6 +214,40 @@ agentId = "codex-gpt-5"
 weight = 1
 `;
 
+function fallbackPoolInput(): string {
+  return "\n0\n\n\n0\n0\n0\n";
+}
+
+function buildSingleTargetOverrideInput(): string {
+  const existingCounts = new Map<string, number>([
+    ["planning", 2],
+    ["implementation", 1],
+    ["implementation_review", 1],
+  ]);
+  const inputTokens = [""];
+  for (const targetId of groupedDispatchTargets) {
+    if (targetId === "orchestration" || targetId === "scope_refinement") {
+      inputTokens.push("0");
+      continue;
+    }
+    if (targetId === "work_sdlc__autopilot__planning") {
+      inputTokens.push("2", "1", "5", "0");
+      continue;
+    }
+    const fallbackId = targetId.split("__").at(-1)!;
+    inputTokens.push(existingCounts.get(fallbackId) ? "" : "0");
+  }
+  return `${inputTokens.join("\n")}\n`;
+}
+
+function buildBulkApplyInput(): string {
+  const inputTokens = ["1", "3", "0", "0"];
+  for (let i = 0; i < bundledWorkflowTargetCount; i++) {
+    inputTokens.push("");
+  }
+  return `${inputTokens.join("\n")}\n`;
+}
+
 describe("basic dispatch keep-by-default", () => {
   it(
     "pressing Enter preserves current action mappings",
@@ -271,16 +311,6 @@ describe("advanced pool keep-by-default", () => {
   it(
     "pressing Enter keeps all existing pools",
     async () => {
-      // For each of the 7 pool steps:
-      //   - 4 steps have existing entries → press
-      //     Enter (default=1=Keep current)
-      //   - 3 steps are empty → no keep/reconfig
-      //     prompt, goes to add-agent; press 0 to
-      //     skip
-      // Order: planning(has), plan_review(empty),
-      //   implementation(has), impl_review(has),
-      //   shipment(empty), ship_review(empty),
-      //   scope_refinement(empty)
       const snippet = `
         source "$1"
         _read_settings_toml \
@@ -292,7 +322,7 @@ describe("advanced pool keep-by-default", () => {
         "setup.sh",
         SEED_ADVANCED,
         snippet,
-        "\n0\n\n\n0\n0\n0\n",
+        fallbackPoolInput(),
       );
 
       const pools = parsed.pools as Record<
@@ -320,16 +350,8 @@ describe("advanced pool keep-by-default", () => {
   );
 
   it(
-    "reconfiguring one pool preserves others",
+    "reconfiguring one bundled workflow target preserves other pools",
     async () => {
-      // planning: choose "2" (Reconfigure), then add
-      //   agent 1 with weight 5, then 0 to finish
-      // plan_review(empty): 0
-      // implementation: Enter (keep)
-      // impl_review: Enter (keep)
-      // shipment(empty): 0
-      // ship_review(empty): 0
-      // scope_refinement(empty): 0
       const snippet = `
         source "$1"
         _read_settings_toml \
@@ -341,29 +363,75 @@ describe("advanced pool keep-by-default", () => {
         "setup.sh",
         SEED_ADVANCED,
         snippet,
-        "2\n1\n5\n0\n0\n\n\n0\n0\n0\n",
+        buildSingleTargetOverrideInput(),
       );
 
       const pools = parsed.pools as Record<
         string,
         Array<{ agentId: string; weight: number }>
       >;
-      // planning was reconfigured
-      expect(pools.planning).toHaveLength(1);
-      expect(pools.planning[0]).toMatchObject({
+      expect(pools["work_sdlc__autopilot__planning"]).toHaveLength(1);
+      expect(
+        pools["work_sdlc__autopilot__planning"][0],
+      ).toMatchObject({
         agentId: "claude-sonnet",
         weight: 5,
       });
-      // implementation kept
+      // legacy planning stays intact for untouched bundled targets
+      expect(pools.planning).toHaveLength(2);
+      expect(pools.planning[0]).toMatchObject({
+        agentId: "claude-sonnet",
+        weight: 3,
+      });
+      expect(pools.planning[1]).toMatchObject({
+        agentId: "codex-gpt-5",
+        weight: 1,
+      });
       expect(pools.implementation).toHaveLength(1);
       expect(pools.implementation[0]).toMatchObject({
         agentId: "claude-sonnet",
         weight: 2,
       });
-      // impl_review kept
       expect(
         pools.implementation_review,
       ).toHaveLength(1);
+    },
+  );
+});
+
+describe("advanced pool add to all", () => {
+  it(
+    "bulk applies one agent across bundled workflow targets",
+    async () => {
+      const snippet = `
+        source "$1"
+        _read_settings_toml \
+          "\$HOME/.config/foolery/settings.toml"
+        _prompt_pool_config
+        _write_settings_toml
+      `;
+      const { parsed } = await runInteractive(
+        "setup.sh",
+        SEED_ADVANCED,
+        snippet,
+        buildBulkApplyInput(),
+      );
+
+      const pools = parsed.pools as Record<
+        string,
+        Array<{ agentId: string; weight: number }>
+      >;
+      expect(
+        pools["work_sdlc__autopilot__planning"],
+      ).toMatchObject([{ agentId: "claude-sonnet", weight: 3 }]);
+      expect(
+        pools["work_sdlc__autopilot_with_pr__shipment_review"],
+      ).toMatchObject([{ agentId: "claude-sonnet", weight: 3 }]);
+      expect(
+        pools["work_sdlc__semiauto_no_planning__implementation"],
+      ).toMatchObject([{ agentId: "claude-sonnet", weight: 3 }]);
+      expect(pools.orchestration).toEqual([]);
+      expect(pools.scope_refinement).toEqual([]);
     },
   );
 });

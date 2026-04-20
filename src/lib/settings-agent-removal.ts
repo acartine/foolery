@@ -1,5 +1,6 @@
-import type { FoolerySettings } from "@/lib/schemas";
+import type { FoolerySettings, PoolEntry } from "@/lib/schemas";
 import {
+  listDispatchPoolUsages,
   swapPoolAgent,
 } from "@/lib/agent-pool";
 import type {
@@ -9,7 +10,6 @@ import type {
   AgentRemovalPoolDecision,
   AgentRemovalPoolUsage,
   AgentRemovalRequest,
-  SettingsPoolStep,
 } from "@/lib/types";
 
 const ACTION_NAMES: readonly ActionName[] = [
@@ -17,17 +17,6 @@ const ACTION_NAMES: readonly ActionName[] = [
   "scene",
   "breakdown",
   "scopeRefinement",
-];
-
-const POOL_STEPS: readonly SettingsPoolStep[] = [
-  "orchestration",
-  "planning",
-  "plan_review",
-  "implementation",
-  "implementation_review",
-  "shipment",
-  "shipment_review",
-  "scope_refinement",
 ];
 
 function buildActionUsages(
@@ -45,8 +34,8 @@ function buildPoolUsages(
   settings: FoolerySettings,
   agentId: string,
 ): AgentRemovalPoolUsage[] {
-  return POOL_STEPS.flatMap((step) => {
-    const entries = settings.pools[step] ?? [];
+  return listDispatchPoolUsages(settings.pools).flatMap((usage) => {
+    const entries = usage.entries;
     const affectedEntries = entries.filter(
       (entry) => entry.agentId === agentId,
     ).length;
@@ -54,7 +43,9 @@ function buildPoolUsages(
 
     const remainingEntries = entries.length - affectedEntries;
     return [{
-      step,
+      targetId: usage.targetId,
+      targetLabel: usage.targetLabel,
+      targetGroupLabel: usage.targetGroupLabel,
       affectedEntries,
       remainingEntries,
       requiresReplacement: remainingEntries === 0,
@@ -139,19 +130,20 @@ function applyActionReplacements(
 }
 
 function applyPoolDecision(
-  entries: FoolerySettings["pools"][SettingsPoolStep],
+  entries: PoolEntry[] | undefined,
   removedAgentId: string,
   decision: AgentRemovalPoolDecision,
   replacementAgentId?: string,
 ) {
+  const currentEntries = entries ?? [];
   if (decision.mode === "replace") {
     return swapPoolAgent(
-      entries,
+      currentEntries,
       removedAgentId,
       replacementAgentId!,
     );
   }
-  return entries.filter(
+  return currentEntries.filter(
     (entry) => entry.agentId !== removedAgentId,
   );
 }
@@ -165,10 +157,10 @@ function applyPoolReplacements(
 
   for (const usage of impact.poolUsages) {
     const decision =
-      request.poolDecisions?.[usage.step];
+      request.poolDecisions?.[usage.targetId];
     if (!decision) {
       throw new Error(
-        `Pool "${usage.step}" requires an explicit removal decision`,
+        `Pool "${usage.targetLabel}" requires an explicit removal decision`,
       );
     }
 
@@ -180,11 +172,11 @@ function applyPoolReplacements(
         settings,
         request.id,
         decision.replacementAgentId,
-        `Pool "${usage.step}"`,
+        `Pool "${usage.targetLabel}"`,
       )
       : undefined;
     const nextEntries = applyPoolDecision(
-      updatedPools[usage.step],
+      updatedPools[usage.targetId] ?? [],
       request.id,
       decision,
       replacementAgentId,
@@ -192,10 +184,10 @@ function applyPoolReplacements(
 
     if (nextEntries.length === 0) {
       throw new Error(
-        `Pool "${usage.step}" cannot be left empty`,
+        `Pool "${usage.targetLabel}" cannot be left empty`,
       );
     }
-    updatedPools[usage.step] = nextEntries;
+    updatedPools[usage.targetId] = nextEntries;
   }
 
   return updatedPools;

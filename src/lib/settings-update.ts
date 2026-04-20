@@ -23,7 +23,10 @@ export function mergeSettingsPartial(
       ? { ...current.scopeRefinement, ...partial.scopeRefinement }
       : current.scopeRefinement,
     pools: partial.pools !== undefined
-      ? { ...current.pools, ...partial.pools }
+      ? {
+        ...current.pools,
+        ...partial.pools,
+      }
       : current.pools,
     dispatchMode: partial.dispatchMode !== undefined
       ? partial.dispatchMode

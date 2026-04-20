@@ -23,7 +23,7 @@ import type {
   AgentRemovalImpact,
   AgentRemovalRequest,
   RegisteredAgent,
-  SettingsPoolStep,
+  SettingsPoolTargetId,
 } from "@/lib/types";
 import { AgentDisplayLabel } from "@/components/agent-display-label";
 
@@ -34,22 +34,11 @@ const ACTION_LABELS: Record<ActionName, string> = {
   scopeRefinement: "Scope Refinement",
 };
 
-const STEP_LABELS: Record<SettingsPoolStep, string> = {
-  orchestration: "Orchestration",
-  planning: "Planning",
-  plan_review: "Plan Review",
-  implementation: "Implementation",
-  implementation_review: "Implementation Review",
-  shipment: "Shipment",
-  shipment_review: "Shipment Review",
-  scope_refinement: "Scope Refinement",
-};
-
 type PoolModes = Partial<
-  Record<SettingsPoolStep, "remove" | "replace">
+  Record<SettingsPoolTargetId, "remove" | "replace">
 >;
 type PoolReplacements = Partial<
-  Record<SettingsPoolStep, string>
+  Record<SettingsPoolTargetId, string>
 >;
 type ActionReplacements = Partial<
   Record<ActionName, string>
@@ -100,7 +89,7 @@ function buildInitialPoolModes(
 ): PoolModes {
   return Object.fromEntries(
     impact.poolUsages.map((usage) => [
-      usage.step,
+      usage.targetId,
       usage.requiresReplacement
         ? "replace"
         : "remove",
@@ -117,13 +106,13 @@ function buildPoolDecisions(
     impact.poolUsages.map((usage) => {
       const mode = usage.requiresReplacement
         ? "replace"
-        : poolModes[usage.step] ?? "remove";
-      return [usage.step, {
+        : poolModes[usage.targetId] ?? "remove";
+      return [usage.targetId, {
         mode,
         ...(mode === "replace"
           ? {
             replacementAgentId:
-              poolReplacements[usage.step],
+              poolReplacements[usage.targetId],
           }
           : {}),
       }];
@@ -147,10 +136,10 @@ function isConfirmDisabled(
     impact.poolUsages.some((usage) => {
       const mode = usage.requiresReplacement
         ? "replace"
-        : poolModes[usage.step] ?? "remove";
+        : poolModes[usage.targetId] ?? "remove";
       return (
         mode === "replace"
-        && !poolReplacements[usage.step]
+        && !poolReplacements[usage.targetId]
       );
     });
 
@@ -227,11 +216,11 @@ function PoolUsageCard({
   poolReplacement: string;
   usage: AgentRemovalImpact["poolUsages"][number];
   onModeChange: (
-    step: SettingsPoolStep,
+    targetId: SettingsPoolTargetId,
     value: "remove" | "replace",
   ) => void;
   onReplacementChange: (
-    step: SettingsPoolStep,
+    targetId: SettingsPoolTargetId,
     value: string,
   ) => void;
 }) {
@@ -239,9 +228,10 @@ function PoolUsageCard({
     <div className="rounded-lg border border-primary/15 bg-background/60 p-3 space-y-3">
       <div>
         <p className="text-xs font-medium">
-          {STEP_LABELS[usage.step]}
+          {usage.targetLabel}
         </p>
         <p className="text-[11px] text-muted-foreground">
+          {usage.targetGroupLabel}.{" "}
           {usage.affectedEntries} matching entr
           {usage.affectedEntries === 1 ? "y" : "ies"}.{" "}
           {usage.remainingEntries > 0
@@ -255,7 +245,7 @@ function PoolUsageCard({
           value={mode}
           onValueChange={(value) =>
             onModeChange(
-              usage.step,
+              usage.targetId,
               value as "remove" | "replace",
             )
           }
@@ -280,7 +270,7 @@ function PoolUsageCard({
           agentIds={impact.replacementAgentIds}
           agents={agents}
           onChange={(value) =>
-            onReplacementChange(usage.step, value)
+            onReplacementChange(usage.targetId, value)
           }
           placeholder="select replacement agent"
         />
@@ -302,11 +292,11 @@ function PoolUsageSection({
   poolModes: PoolModes;
   poolReplacements: PoolReplacements;
   onModeChange: (
-    step: SettingsPoolStep,
+    targetId: SettingsPoolTargetId,
     value: "remove" | "replace",
   ) => void;
   onReplacementChange: (
-    step: SettingsPoolStep,
+    targetId: SettingsPoolTargetId,
     value: string,
   ) => void;
 }) {
@@ -324,16 +314,16 @@ function PoolUsageSection({
       </div>
       {impact.poolUsages.map((usage) => (
         <PoolUsageCard
-          key={usage.step}
+          key={usage.targetId}
           agents={agents}
           impact={impact}
           mode={
             usage.requiresReplacement
               ? "replace"
-              : poolModes[usage.step] ?? "remove"
+              : poolModes[usage.targetId] ?? "remove"
           }
           poolReplacement={
-            poolReplacements[usage.step] ?? ""
+            poolReplacements[usage.targetId] ?? ""
           }
           usage={usage}
           onModeChange={onModeChange}

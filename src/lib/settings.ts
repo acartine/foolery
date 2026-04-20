@@ -386,7 +386,7 @@ export async function removeRegisteredAgent(
           (usage) => usage.action,
         ),
         poolUsages: impact.poolUsages.map(
-          (usage) => usage.step,
+          (usage) => usage.targetId,
         ),
       },
     );
@@ -419,6 +419,7 @@ export async function getStepAgent(
   step: WorkflowStep,
   fallbackAction?: ActionName,
   beatId?: string,
+  workflowOrProfileId?: string,
 ): Promise<AgentTarget> {
   const settings = await loadSettings();
   return resolveStepAgent(
@@ -426,6 +427,7 @@ export async function getStepAgent(
     settings,
     fallbackAction,
     beatId,
+    workflowOrProfileId,
   );
 }
 

@@ -205,6 +205,7 @@ export const poolsSettingsSchema = z
     shipment_review: z.array(poolEntrySchema).default([]),
     scope_refinement: z.array(poolEntrySchema).default([]),
   })
+  .catchall(z.array(poolEntrySchema))
   .default({
     orchestration: [],
     planning: [],
@@ -229,12 +230,30 @@ export const foolerySettingsSchema = z.object({
   terminalLightTheme: z.boolean().default(false),
 });
 
-export type FoolerySettings = z.infer<typeof foolerySettingsSchema>;
 export type RegisteredAgentConfig = z.infer<typeof registeredAgentSchema>;
 export type ActionAgentMappings = z.infer<typeof actionAgentMappingsSchema>;
 export type BackendSettings = z.infer<typeof backendSettingsSchema>;
 export type DefaultsSettings = z.infer<typeof defaultsSettingsSchema>;
 export type ScopeRefinementSettings = z.infer<typeof scopeRefinementSettingsSchema>;
 export type PoolEntry = z.infer<typeof poolEntrySchema>;
-export type PoolsSettings = z.infer<typeof poolsSettingsSchema>;
 export type DispatchMode = z.infer<typeof dispatchModeSchema>;
+
+type FoolerySettingsSchemaShape = z.infer<typeof foolerySettingsSchema>;
+
+type BasePoolsSettings = {
+  orchestration: PoolEntry[];
+  planning: PoolEntry[];
+  plan_review: PoolEntry[];
+  implementation: PoolEntry[];
+  implementation_review: PoolEntry[];
+  shipment: PoolEntry[];
+  shipment_review: PoolEntry[];
+  scope_refinement: PoolEntry[];
+};
+
+export type PoolsSettings = BasePoolsSettings
+  & Partial<Record<string, PoolEntry[]>>;
+
+export type FoolerySettings = Omit<FoolerySettingsSchemaShape, "pools"> & {
+  pools: PoolsSettings;
+};

@@ -15,6 +15,8 @@ if [[ -f "${_WIZARD_SCRIPT_DIR}/model-picker.sh" ]]; then
   source "${_WIZARD_SCRIPT_DIR}/model-picker.sh"
   _HAS_MODEL_PICKER=1
 fi
+# shellcheck source=dispatch-pools.sh
+source "${_WIZARD_SCRIPT_DIR}/dispatch-pools.sh"
 # shellcheck source=toml-reader.sh
 source "${_WIZARD_SCRIPT_DIR}/toml-reader.sh"
 
@@ -319,41 +321,37 @@ _write_settings_toml() {
 
     printf '\n[pools]\n'
     if [[ "$dm" == "advanced" ]]; then
-      local step
-      for step in planning plan_review implementation \
-        implementation_review shipment shipment_review \
-        scope_refinement; do
+      local target_id
+      for target_id in "${DISPATCH_LEGACY_SETTINGS_TARGET_IDS[@]}"; do
         local count
-        count="$(_kv_get POOL_COUNT "$step" "0")"
+        count="$(_kv_get POOL_COUNT "$target_id" "0")"
         if [[ "$count" -eq 0 ]]; then
-          printf '%s = []\n' "$step"
+          printf '%s = []\n' "$target_id"
         fi
       done
-      for step in planning plan_review implementation \
-        implementation_review shipment shipment_review \
-        scope_refinement; do
+      for target_id in \
+        "${DISPATCH_LEGACY_SETTINGS_TARGET_IDS[@]}" \
+        "${DISPATCH_WORKFLOW_TARGET_IDS[@]}"; do
         local count
-        count="$(_kv_get POOL_COUNT "$step" "0")"
+        count="$(_kv_get POOL_COUNT "$target_id" "0")"
         if [[ "$count" -gt 0 ]]; then
           printf '\n'
           local j
           for ((j = 0; j < count; j++)); do
             local agent_id weight
-            agent_id="$(_kv_get "POOL_AGENT_${step}" \
+            agent_id="$(_kv_get "POOL_AGENT_${target_id}" \
               "$j" "")"
-            weight="$(_kv_get "POOL_WEIGHT_${step}" \
+            weight="$(_kv_get "POOL_WEIGHT_${target_id}" \
               "$agent_id" "1")"
             printf '[[pools.%s]]\nagentId = "%s"\nweight = %d\n' \
-              "$step" "$agent_id" "$weight"
+              "$target_id" "$agent_id" "$weight"
           done
         fi
       done
     else
-      local step
-      for step in planning plan_review implementation \
-        implementation_review shipment shipment_review \
-        scope_refinement; do
-        printf '%s = []\n' "$step"
+      local target_id
+      for target_id in "${DISPATCH_LEGACY_SETTINGS_TARGET_IDS[@]}"; do
+        printf '%s = []\n' "$target_id"
       done
     fi
   } > "$SETTINGS_FILE"
