@@ -1,0 +1,9 @@
+{
+  "event_id": "019dab19-18c5-7a50-ad07-9628b6a01ff0",
+  "occurred_at": "2026-04-20T13:34:01.91987Z",
+  "knot_id": "foolery-c751",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. No backend factory, auto-routing path, or API lookup defaults to the BD/cli backend when `repoPath` is missing, unknown, or unsupported.\n2. `GET /api/beats/[id]` and related beat-detail lookup paths fail explicitly when repo context is required but unavailable, instead of querying BD and surfacing downstream storage errors like `table not found: issues`.\n3. Repos detected as `knots` continue to resolve through the Knots backend, and repos detected as `beads` continue to resolve through BD only when that repo type is explicitly detected.\n4. Automated test coverage exists for the no-fallback behavior so future changes cannot reintroduce BD as an implicit default."
+  }
+}

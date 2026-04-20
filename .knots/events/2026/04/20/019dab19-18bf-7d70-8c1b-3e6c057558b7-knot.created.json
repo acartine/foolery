@@ -1,0 +1,17 @@
+{
+  "event_id": "019dab19-18bf-7d70-8c1b-3e6c057558b7",
+  "occurred_at": "2026-04-20T13:34:01.91987Z",
+  "knot_id": "foolery-c751",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nRemove every implicit fallback or default path that routes Foolery into the BD/cli backend when repo context is missing, unknown, or otherwise unresolved. Backend resolution should fail explicitly instead of silently choosing BD, and beat-detail/API paths should surface a hard error rather than querying the wrong storage backend.\n\nVerification:\n1. Run `curl -sS http://127.0.0.1:3000/api/beats/maestro-8d02` in a session where `/Users/cartine/maestro` is registered but `_repo` is omitted. Expected: an explicit hard error about missing or unresolvable repo/backend context, and no BD/issues-table lookup error.\n2. Run `curl -sS \"http://127.0.0.1:3000/api/beats/maestro-8d02?_repo=%2FUsers%2Fcartine%2Fmaestro\"`. Expected: the knot-backed beat detail still loads successfully.\n3. Run the targeted automated tests added or updated for backend resolution and beat-detail routing. Expected: tests prove that unknown or missing repo context does not fall back to BD/cli anywhere in the covered code paths.\n\nConstraints:\n- BD/cli may still be used for repos that are explicitly detected as `beads`, but never as a default or fallback.\n- Prefer explicit failures over silent compatibility behavior when repo context is absent or unsupported.\n- Audit code paths beyond `GET /api/beats/[id]` so the invariant is enforced consistently, not just patched in one route.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Remove BD fallback defaults",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
