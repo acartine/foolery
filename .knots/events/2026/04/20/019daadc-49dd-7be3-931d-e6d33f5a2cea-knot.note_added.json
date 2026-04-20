@@ -1,0 +1,15 @@
+{
+  "event_id": "019daadc-49dd-7be3-931d-e6d33f5a2cea",
+  "occurred_at": "2026-04-20T12:27:36.796987Z",
+  "knot_id": "foolery-98e6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[Codex 2026-04-20] Rehydrating knot state after metadata drift. The implementation, review, and shipment evidence already recorded on this knot still apply: branch knot-98e6-shutdown-opencode, shipped commit d8c82704 on GitHub main, and passing remote Actions runs 24666326928/24666326932. Advancing the workflow again is correcting the tracker state, not redoing the code work.",
+    "datetime": "2026-04-20T12:27:36.796987Z",
+    "entry_id": "019daadc-49dd-7be3-931d-e6c0e0f0b6b5",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

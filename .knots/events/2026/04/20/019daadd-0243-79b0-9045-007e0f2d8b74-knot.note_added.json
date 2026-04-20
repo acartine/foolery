@@ -1,0 +1,15 @@
+{
+  "event_id": "019daadd-0243-79b0-9045-007e0f2d8b74",
+  "occurred_at": "2026-04-20T12:28:24.003541Z",
+  "knot_id": "foolery-98e6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[Codex 2026-04-20] Shipment review approved. Verified shipped code at commit d8c82704 on GitHub main, confirmed knot tags branch:knot-98e6-shutdown-opencode and commit:d8c8270414941240c36ba70f4c935a737cd66faa, and confirmed remote GitHub Actions checks ci and coverage both completed successfully. No additional regressions were introduced beyond the already-noted non-failing coverage-regression annotations in ci.",
+    "datetime": "2026-04-20T12:28:24.003541Z",
+    "entry_id": "019daadd-0243-79b0-9045-006f55f386ff",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

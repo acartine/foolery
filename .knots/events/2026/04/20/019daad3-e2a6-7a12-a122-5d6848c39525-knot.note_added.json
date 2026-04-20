@@ -1,0 +1,15 @@
+{
+  "event_id": "019daad3-e2a6-7a12-a122-5d6848c39525",
+  "occurred_at": "2026-04-20T12:18:26.086815Z",
+  "knot_id": "foolery-98e6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation plan:\n1. Confirm the intended OpenCode contract for `serve` in Foolery terms: treat `turn_ended` as end-of-turn only, and require explicit transport teardown for one-turn-per-process sessions.\n2. Update `src/lib/opencode-http-session.ts` so the HTTP transport can actively shut down its own OpenCode backend on interrupt/close instead of only clearing in-memory pending state. Keep the behavior scoped to the standalone server spawned by Foolery.\n3. Preserve the shared runtime contract in `src/lib/agent-session-runtime-helpers.ts`: `doCloseInput()` should remain transport-neutral, but OpenCode interrupt must now have real teardown semantics behind the existing hook.\n4. Expand OpenCode transport tests in `src/lib/__tests__/opencode-interactive-session.test.ts` to cover the shutdown path after `turn_ended`, including proof that interrupt/close attempts explicit server teardown rather than relying on stdin EOF alone.\n5. Run focused tests for OpenCode interactive runtime behavior first, then broader quality gates (`bun run lint`, `bunx tsc --noEmit`, targeted/related tests, and `bun run build`).\n\nComplexity and risks:\n- Medium complexity: transport-level change with async teardown semantics.\n- Main risk is over-eager teardown during legitimate follow-up turns; the fix should only apply when Foolery has already chosen to close the session.\n- Secondary risk is assuming the availability/shape of OpenCode teardown endpoints; tests should mock fetch behavior and cover graceful fallback behavior.\n\nTest strategy:\n- Unit-test the OpenCode HTTP session teardown path directly.\n- Verify the runtime still schedules close after `turn_ended` with no follow-up.\n- Verify follow-up-capable paths are unaffected because they never call close until Foolery decides the session is done.",
+    "datetime": "2026-04-20T12:18:26.086815Z",
+    "entry_id": "019daad3-e2a6-7a12-a122-5d5799a2d450",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019daad8-d278-7430-828b-1a40c56d7ee7",
+  "occurred_at": "2026-04-20T12:23:49.62432Z",
+  "knot_id": "foolery-98e6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[Codex 2026-04-20] Implementation review approved. Reviewed branch knot-98e6-shutdown-opencode at commit d8c82704 against the investigation acceptance criteria. The change matches the proven failure mode: after turn_ended, Foolery now explicitly tears down persistent OpenCode HTTP servers instead of assuming stdin EOF will end them. Tests cover ready and not-ready shutdown behavior, plus runtime close-path disposal, and the recorded sanity gates for the artifact all passed.",
+    "datetime": "2026-04-20T12:23:49.62432Z",
+    "entry_id": "019daad8-d278-7430-828b-1a39a936ca5a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

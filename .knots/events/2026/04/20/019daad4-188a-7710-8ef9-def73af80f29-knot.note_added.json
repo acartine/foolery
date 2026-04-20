@@ -1,0 +1,15 @@
+{
+  "event_id": "019daad4-188a-7710-8ef9-def73af80f29",
+  "occurred_at": "2026-04-20T12:18:39.882442Z",
+  "knot_id": "foolery-98e6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review:\n- Approved. The plan is feasible and scoped to the actual failure mode: OpenCode HTTP transport teardown after `turn_ended`.\n- The proposed change preserves the transport-neutral runtime contract and keeps the behavioral change inside the OpenCode adapter, which minimizes cross-transport regression risk.\n- Test coverage is sufficient if it proves explicit teardown happens on interrupt/close and that normal follow-up-capable paths still rely on Foolery's close decision rather than transport-specific heuristics.\n- No additional blockers identified for implementation.",
+    "datetime": "2026-04-20T12:18:39.882442Z",
+    "entry_id": "019daad4-188a-7710-8ef9-dee5fb7445df",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019daad9-7c94-7fd2-80ff-eebeb8b8694e",
+  "occurred_at": "2026-04-20T12:24:33.171746Z",
+  "knot_id": "foolery-6858",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Planning complete. Current advanced dispatch is flat step-keyed, the CLI omits orchestration, and runtime selection lacks workflow context. Implement workflow-aware bundled target pools with legacy compatibility, then update both the UI and setup flows to use grouped sections and bulk apply.",
+    "datetime": "2026-04-20T12:24:33.171746Z",
+    "entry_id": "019daad9-7c94-7fd2-80ff-eea9275e33a0",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "2026-04-20"
+  }
+}

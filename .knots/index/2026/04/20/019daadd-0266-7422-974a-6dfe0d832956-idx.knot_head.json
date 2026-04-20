@@ -1,0 +1,21 @@
+{
+  "event_id": "019daadd-0266-7422-974a-6dfe0d832956",
+  "occurred_at": "2026-04-20T12:28:24.038122Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-98e6",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Investigate shipped OpenCode take sessions staying open",
+    "type": "work",
+    "updated_at": "2026-04-20T12:28:24.038122Z",
+    "workflow_id": "work_sdlc"
+  }
+}

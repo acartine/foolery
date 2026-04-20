@@ -1,0 +1,9 @@
+{
+  "event_id": "019daad8-d257-7701-8d27-1656ef137ddc",
+  "occurred_at": "2026-04-20T12:23:49.591658Z",
+  "knot_id": "foolery-98e6",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:knot-98e6-shutdown-opencode"
+  }
+}

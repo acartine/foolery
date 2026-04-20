@@ -1,0 +1,15 @@
+{
+  "event_id": "019daad9-7c94-7fd2-80ff-ee936bc4192d",
+  "occurred_at": "2026-04-20T12:24:33.171746Z",
+  "knot_id": "foolery-6858",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete. Implementation will add workflow-aware advanced dispatch targets derived from installed bundled profiles, normalize legacy flat pools into the new grouped target model, thread workflow and profile context through step-agent resolution, rebuild Settings and setup and agent-wizard around grouped sections plus Add to all, and add schema, resolution, UI, and setup coverage before full gates.",
+    "datetime": "2026-04-20T12:24:33.171746Z",
+    "entry_id": "019daad9-7c94-7fd2-80ff-ee8d9a877cd3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019daad8-7686-7e93-a341-706b9fd930b2",
+  "occurred_at": "2026-04-20T12:23:26.086461Z",
+  "knot_id": "foolery-98e6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[Codex 2026-04-20] Implementation complete. Fix committed as d8c82704 on branch knot-98e6-shutdown-opencode. The OpenCode HTTP adapter now explicitly aborts any in-flight session and disposes the OpenCode server on interrupt/close, with process-group termination as fallback before readiness or if dispose fails. Verification completed in /tmp/foolery-98e6: bun run vitest src/lib/__tests__/opencode-interactive-session.test.ts, bun run vitest src/lib/__tests__/on-turn-ended-transports.test.ts, bun run lint, bunx tsc --noEmit, bun run build, and bun run test all passed.",
+    "datetime": "2026-04-20T12:23:26.086461Z",
+    "entry_id": "019daad8-7686-7e93-a341-7050ddacfa5e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

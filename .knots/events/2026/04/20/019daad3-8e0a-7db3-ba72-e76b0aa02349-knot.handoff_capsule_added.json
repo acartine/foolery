@@ -1,0 +1,15 @@
+{
+  "event_id": "019daad3-8e0a-7db3-ba72-e76b0aa02349",
+  "occurred_at": "2026-04-20T12:18:04.426931Z",
+  "knot_id": "foolery-98e6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "OpenCode shipment hang investigation handoff:\n- Sample: beat `maestro-5711`, session `term-1776684836608-lz67bp`, lease `maestro-c73b`. The knot advanced to `shipped` at `2026-04-20T11:37:34.726010Z`, and Foolery logged `turn_ended` at `2026-04-20T11:37:38.990Z`.\n- After `turn_ended`, the OpenCode child did not exit naturally; it kept emitting `service=bus type=file.watcher.updated publishing` until manually terminated later. Treat that later SIGTERM only as an end marker, not as proof of the bug.\n- This was not a take-loop follow-up or auto ship follow-up path. `promptSource` stayed `initial`, there was no `take_loop_follow_up_sent`, and Knots disables auto ship follow-up (`supportsAutoFollowUp(memoryManagerType) => false`).\n- Strongest current hypothesis: Foolery assumes closing stdin is enough to end an OpenCode HTTP session. The shared runtime schedules `doCloseInput()` after `turn_ended`, and that calls `config.httpSession?.interruptTurn(child)` plus `child.stdin?.end()`. But the local `OpenCodeHttpSession.interruptTurn()` implementation only clears `pendingTurn` and returns true; it does not abort the session, dispose the server, or kill the process.\n- Web research adds that `opencode serve` is documented as a persistent multi-client server, not a one-turn worker. The official server API exposes explicit teardown/session controls like `POST /session/:id/abort`, `DELETE /session/:id`, and `POST /instance/dispose`, and the SDK exposes `session.abort()`, `session.delete()`, and `server.close()`. That makes it likely that Foolery must explicitly terminate the OpenCode server/session instead of expecting EOF on stdin to shut it down.\n- Nearby local code to inspect/change: `src/lib/opencode-http-session.ts`, `src/lib/agent-session-runtime-helpers.ts`, and OpenCode interactive session tests in `src/lib/__tests__/opencode-interactive-session.test.ts`.",
+    "datetime": "2026-04-20T12:18:04.426931Z",
+    "entry_id": "019daad3-8e0a-7db3-ba72-e75ab94a0482",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
