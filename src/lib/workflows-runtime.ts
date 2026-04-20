@@ -18,6 +18,7 @@ import {
   resolveStep,
   StepPhase,
   type WorkflowStep,
+  queueStateForStep,
   normalizeProfileId,
   extractWorkflowProfileLabel,
   extractWorkflowStateLabel,
@@ -121,6 +122,117 @@ function stepOwnerKind(
   step: WorkflowStep,
 ): ActionOwnerKind {
   return workflow.owners?.[step] ?? "agent";
+}
+
+export type WorkflowStatePhase =
+  | StepPhase
+  | "terminal";
+
+function stateOwnerKind(
+  workflow: MemoryWorkflowDescriptor,
+  state: string,
+): ActionOwnerKind | null {
+  return workflow.stateOwners?.[state] ?? null;
+}
+
+function queueActionForState(
+  workflow: MemoryWorkflowDescriptor,
+  state: string,
+): string | null {
+  return workflow.queueActions?.[state] ?? null;
+}
+
+function queueStateForActionState(
+  workflow: MemoryWorkflowDescriptor,
+  actionState: string,
+): string | null {
+  const match = Object.entries(
+    workflow.queueActions ?? {},
+  ).find(([, mappedActionState]) =>
+    mappedActionState === actionState
+  );
+  return match?.[0] ?? null;
+}
+
+export function workflowStatePhase(
+  workflow: MemoryWorkflowDescriptor,
+  state: string | null | undefined,
+): WorkflowStatePhase | null {
+  const normalized = normalizeState(state);
+  if (!normalized) return null;
+  if (
+    workflow.terminalStates.includes(normalized) ||
+    normalized === "deferred"
+  ) {
+    return "terminal";
+  }
+  if (
+    workflow.queueStates?.includes(normalized) ||
+    queueActionForState(workflow, normalized)
+  ) {
+    return StepPhase.Queued;
+  }
+  if (
+    workflow.actionStates?.includes(normalized) ||
+    queueStateForActionState(workflow, normalized)
+  ) {
+    return StepPhase.Active;
+  }
+  return resolveStep(normalized)?.phase ?? null;
+}
+
+export function workflowOwnerKindForState(
+  workflow: MemoryWorkflowDescriptor,
+  state: string | null | undefined,
+): ActionOwnerKind {
+  const normalized = normalizeState(state);
+  if (!normalized) return "none";
+  if (workflowStatePhase(workflow, normalized) === "terminal") {
+    return "none";
+  }
+  const explicitOwner = stateOwnerKind(
+    workflow,
+    normalized,
+  );
+  if (explicitOwner) return explicitOwner;
+  const resolved = resolveStep(normalized);
+  if (!resolved) return "none";
+  return stepOwnerKind(workflow, resolved.step);
+}
+
+export function workflowActionStateForState(
+  workflow: MemoryWorkflowDescriptor,
+  state: string | null | undefined,
+): string | undefined {
+  const normalized = normalizeState(state);
+  if (!normalized) return undefined;
+  const phase = workflowStatePhase(workflow, normalized);
+  if (phase === StepPhase.Active) return normalized;
+  if (phase !== StepPhase.Queued) return undefined;
+  return (
+    queueActionForState(workflow, normalized) ??
+    resolveStep(normalized)?.step
+  );
+}
+
+export function workflowQueueStateForState(
+  workflow: MemoryWorkflowDescriptor,
+  state: string | null | undefined,
+): string | undefined {
+  const normalized = normalizeState(state);
+  if (!normalized) return undefined;
+  const phase = workflowStatePhase(workflow, normalized);
+  if (phase === StepPhase.Queued) return normalized;
+  if (phase !== StepPhase.Active) return undefined;
+  const explicitQueueState = queueStateForActionState(
+    workflow,
+    normalized,
+  );
+  if (explicitQueueState) return explicitQueueState;
+  const resolved = resolveStep(normalized);
+  return resolved
+    ? queueStateForStep(resolved.step)
+    : undefined;
 }
 
 // ── State normalization ──────────────────────────────────────
@@ -249,18 +361,6 @@ export function deriveWorkflowState(
 
 // ── Runtime state derivation ─────────────────────────────────
 
-function ownerForCurrentState(
-  state: string,
-  workflow: MemoryWorkflowDescriptor,
-): { nextActionState?: string; ownerKind: ActionOwnerKind } {
-  const resolved = resolveStep(state);
-  if (!resolved) return { ownerKind: "none" };
-  return {
-    nextActionState: resolved.step,
-    ownerKind: stepOwnerKind(workflow, resolved.step),
-  };
-}
-
 export interface WorkflowRuntimeState {
   state: string;
   nextActionState?: string;
@@ -277,17 +377,35 @@ export function deriveWorkflowRuntimeState(
     workflowState,
     workflow,
   );
-  const owner = ownerForCurrentState(normalizedState, workflow);
-  const resolved = resolveStep(normalizedState);
+  const phase = workflowStatePhase(
+    workflow,
+    normalizedState,
+  );
+  const explicitOwner = stateOwnerKind(
+    workflow,
+    normalizedState,
+  );
+  const ownerKind = workflowOwnerKindForState(
+    workflow,
+    normalizedState,
+  );
 
   return {
     state: normalizedState,
-    nextActionState: owner.nextActionState,
-    nextActionOwnerKind: owner.ownerKind,
-    requiresHumanAction: owner.ownerKind === "human",
+    nextActionState: workflowActionStateForState(
+      workflow,
+      normalizedState,
+    ),
+    nextActionOwnerKind: ownerKind,
+    requiresHumanAction:
+      ownerKind === "human" &&
+      (
+        phase === StepPhase.Queued ||
+        explicitOwner === null
+      ),
     isAgentClaimable:
-      resolved?.phase === StepPhase.Queued &&
-      owner.ownerKind === "agent",
+      phase === StepPhase.Queued &&
+      ownerKind === "agent",
   };
 }
 
@@ -371,9 +489,12 @@ export function isQueueOrTerminal(
     ];
   if (terminalStates.includes(state)) return true;
   if (state === "deferred") return true;
-  const resolved = resolveStep(state);
-  if (!resolved) return true;
-  return resolved.phase === StepPhase.Queued;
+  if (!workflow) {
+    const resolved = resolveStep(state);
+    if (!resolved) return true;
+    return resolved.phase === StepPhase.Queued;
+  }
+  return workflowStatePhase(workflow, state) !== StepPhase.Active;
 }
 
 // ── Pipeline ordering (re-exported) ──────────────────────────

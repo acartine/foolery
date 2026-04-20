@@ -14,8 +14,6 @@ import type { KnotEdge, KnotRecord } from "@/lib/knots";
 import {
   deriveWorkflowRuntimeState,
   normalizeStateForWorkflow,
-  resolveStep,
-  StepPhase,
 } from "@/lib/workflows";
 
 import {
@@ -215,10 +213,18 @@ export function applyFilters(
 
   const isQueuedPhaseFilter = filters.state === "queued";
   const isActivePhaseFilter = filters.state === "in_action";
+  const isExactQueueStateFilter =
+    typeof filters.state === "string" &&
+    filters.state !== "queued" &&
+    filters.state !== "in_action" &&
+    beats.some(
+      (beat) =>
+        beat.state === filters.state &&
+        isQueuedBeat(beat)
+    );
   const hidesLeaseType =
     filters.state === "queued" ||
-    (typeof filters.state === "string" &&
-      resolveStep(filters.state)?.phase === StepPhase.Queued);
+    isExactQueueStateFilter;
   const visibleBeats = hidesLeaseType
     ? beats.filter((beat) => beat.type !== "lease")
     : beats;
@@ -231,15 +237,9 @@ export function applyFilters(
       return false;
     if (filters.state) {
       if (filters.state === "queued") {
-        if (
-          resolveStep(b.state)?.phase !== StepPhase.Queued
-        )
-          return false;
+        if (!isQueuedBeat(b)) return false;
       } else if (filters.state === "in_action") {
-        if (
-          resolveStep(b.state)?.phase !== StepPhase.Active
-        )
-          return false;
+        if (!isActiveBeat(b)) return false;
       } else {
         if (b.state !== filters.state) return false;
       }
@@ -299,7 +299,7 @@ function includeDescendantsOfQueueParents(
 
   const queueParentIds = new Set<string>();
   for (const b of allBeats) {
-    if (resolveStep(b.state)?.phase === StepPhase.Queued) {
+    if (isQueuedBeat(b)) {
       queueParentIds.add(b.id);
     }
   }
@@ -378,4 +378,18 @@ export function matchExpression(
 
 export function memoryManagerKey(repoPath?: string): string {
   return repoPath ?? process.cwd();
+}
+
+function isQueuedBeat(beat: Beat): boolean {
+  return (
+    typeof beat.nextActionState === "string" &&
+    beat.nextActionState !== beat.state
+  );
+}
+
+function isActiveBeat(beat: Beat): boolean {
+  return (
+    typeof beat.nextActionState === "string" &&
+    beat.nextActionState === beat.state
+  );
 }

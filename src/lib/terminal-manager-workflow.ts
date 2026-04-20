@@ -6,10 +6,11 @@ import {
 } from "@/lib/memory-manager-commands";
 import type { Beat, MemoryWorkflowDescriptor } from "@/lib/types";
 import {
-  StepPhase,
   defaultWorkflowDescriptor,
-  resolveStep,
-  queueStateForStep,
+  StepPhase,
+  workflowOwnerKindForState,
+  workflowQueueStateForState,
+  workflowStatePhase,
 } from "@/lib/workflows";
 import {
   buildShipFollowUpBoundaryLines,
@@ -172,6 +173,10 @@ export function resolveWorkflowForBeat(
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
   fallbackWorkflow: MemoryWorkflowDescriptor,
 ): MemoryWorkflowDescriptor {
+  if (beat.profileId) {
+    const matched = workflowsById.get(beat.profileId);
+    if (matched) return matched;
+  }
   if (beat.workflowId) {
     const matched = workflowsById.get(beat.workflowId);
     if (matched) return matched;
@@ -210,12 +215,17 @@ export function isAgentOwnedActionState(
   beat: Beat,
   workflow: MemoryWorkflowDescriptor,
 ): boolean {
-  const resolved = resolveStep(beat.state);
-  if (!resolved || resolved.phase !== StepPhase.Active) {
+  if (
+    workflowStatePhase(workflow, beat.state) !==
+    StepPhase.Active
+  ) {
     return false;
   }
   const ownerKind =
-    workflow.owners?.[resolved.step] ??
+    workflowOwnerKindForState(
+      workflow,
+      beat.state,
+    ) ??
     beat.nextActionOwnerKind ??
     "agent";
   return ownerKind === "agent";
@@ -245,10 +255,13 @@ export async function rollbackAgentOwnedActionStateToQueue(
     return { beat, rolledBack: false };
   }
 
-  const resolved = resolveStep(beat.state);
-  if (!resolved) return { beat, rolledBack: false };
-
-  const rollbackState = queueStateForStep(resolved.step);
+  const rollbackState = workflowQueueStateForState(
+    workflow,
+    beat.state,
+  );
+  if (!rollbackState) {
+    return { beat, rolledBack: false };
+  }
   const tag =
     `[terminal-manager] [${contextLabel}] [step-failure]`;
   console.warn(

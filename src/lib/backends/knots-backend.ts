@@ -38,10 +38,12 @@ import {
   propagateError,
   fromKnots,
   loadKnotRecordWithRehydrate,
-  mapForProfiles,
   isBlockedByEdges,
   collectAliases,
 } from "@/lib/backends/knots-backend-helpers";
+import {
+  mapForProfiles,
+} from "@/lib/backends/knots-backend-workflows";
 
 import {
   toBeat,

@@ -47,8 +47,10 @@ export interface MemoryWorkflowDescriptor {
   promptProfileId: string;
   profileId?: string;
   owners?: MemoryWorkflowOwners;
+  stateOwners?: Record<string, ActionOwnerKind>;
   queueStates?: string[];
   actionStates?: string[];
+  queueActions?: Record<string, string>;
   reviewQueueStates?: string[];
   humanQueueStates?: string[];
 }

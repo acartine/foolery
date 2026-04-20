@@ -137,8 +137,13 @@ export interface KnotProfileDefinition {
   implementation_review_mode?: "required" | "optional" | "skipped";
   output?: "remote_main" | "pr" | "remote" | "local";
   owners: KnotProfileOwners;
+  workflow_id?: string;
   initial_state: string;
   states: string[];
+  queue_states?: string[];
+  action_states?: string[];
+  queue_actions?: Record<string, string>;
+  action_kinds?: Record<string, string>;
   terminal_states: string[];
   transitions?: Array<{ from: string; to: string }>;
 }

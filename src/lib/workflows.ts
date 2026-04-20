@@ -390,8 +390,14 @@ function cloneWorkflowDescriptor(
       ? workflow.transitions.map((t) => ({ ...t }))
       : undefined,
     owners: workflow.owners ? { ...workflow.owners } : undefined,
+    stateOwners: workflow.stateOwners
+      ? { ...workflow.stateOwners }
+      : undefined,
     queueStates: workflow.queueStates ? [...workflow.queueStates] : undefined,
     actionStates: workflow.actionStates ? [...workflow.actionStates] : undefined,
+    queueActions: workflow.queueActions
+      ? { ...workflow.queueActions }
+      : undefined,
     reviewQueueStates: workflow.reviewQueueStates ? [...workflow.reviewQueueStates] : undefined,
     humanQueueStates: workflow.humanQueueStates ? [...workflow.humanQueueStates] : undefined,
   };
@@ -456,7 +462,10 @@ export function withWorkflowProfileLabel(labels: string[], profileId: string): s
 
 // ── Re-exports from workflows-runtime.ts ─────────────────────
 
-export type { WorkflowRuntimeState } from "@/lib/workflows-runtime";
+export type {
+  WorkflowRuntimeState,
+  WorkflowStatePhase,
+} from "@/lib/workflows-runtime";
 
 export {
   PROFILE_DESCRIPTIONS,
@@ -465,6 +474,10 @@ export {
   deriveProfileId,
   deriveWorkflowState,
   deriveWorkflowRuntimeState,
+  workflowStatePhase,
+  workflowOwnerKindForState,
+  workflowActionStateForState,
+  workflowQueueStateForState,
   inferWorkflowMode,
   inferFinalCutState,
   inferRetakeState,

@@ -20,8 +20,11 @@ import {
   isQueueOrTerminal,
   nextQueueStateForStep,
   priorQueueStateForStep,
-  queueStateForStep,
   resolveStep,
+  StepPhase,
+  workflowActionStateForState,
+  workflowQueueStateForState,
+  workflowStatePhase,
 } from "@/lib/workflows";
 import type { InteractionLog } from "@/lib/interaction-logger";
 import {
@@ -97,7 +100,7 @@ export async function enforceQueueTerminalInvariant(
   }
 
   return await rollbackInvariantViolation(
-    ctx, current, tag,
+    ctx, current, workflow, tag,
   );
 }
 
@@ -138,6 +141,7 @@ async function checkDanglingLease(
 async function rollbackInvariantViolation(
   ctx: TakeLoopContext,
   current: Beat,
+  workflow: MemoryWorkflowDescriptor,
   tag: string,
 ): Promise<boolean> {
   console.warn(
@@ -154,16 +158,17 @@ async function rollbackInvariantViolation(
     timestamp: Date.now(),
   });
 
-  const resolved = resolveStep(current.state);
-  if (!resolved) {
+  const rollbackState = workflowQueueStateForState(
+    workflow,
+    current.state,
+  );
+  if (!rollbackState) {
     console.error(
-      `${tag} cannot resolve step for state ` +
+      `${tag} cannot resolve queue state for ` +
       `"${current.state}" — skipping rollback`,
     );
     return false;
   }
-
-  const rollbackState = queueStateForStep(resolved.step);
   console.warn(
     `${tag} [WARN] rolling back from ` +
     `"${current.state}" to "${rollbackState}"`,
@@ -238,11 +243,24 @@ export function classifyIterationSuccess(
   exitCode: number,
   claimedState: string,
   postExitState: string,
+  workflow?: MemoryWorkflowDescriptor,
 ): boolean {
   if (exitCode !== 0) return false;
+  if (postExitState === "unknown") return false;
+  if (workflow) {
+    const expectedTargets =
+      expectedSuccessTargets(
+        workflow,
+        claimedState,
+      );
+    if (expectedTargets.size > 0) {
+      return expectedTargets.has(postExitState);
+    }
+  }
   const resolved = resolveStep(claimedState);
   if (!resolved) return false;
-  const nextQueue = nextQueueStateForStep(resolved.step);
+  const nextQueue =
+    nextQueueStateForStep(resolved.step);
   const priorQueue =
     priorQueueStateForStep(resolved.step);
   if (nextQueue && postExitState === nextQueue) {
@@ -252,6 +270,34 @@ export function classifyIterationSuccess(
     return true;
   }
   return false;
+}
+
+function expectedSuccessTargets(
+  workflow: MemoryWorkflowDescriptor,
+  claimedState: string,
+): Set<string> {
+  const actionState = workflowActionStateForState(
+    workflow,
+    claimedState,
+  );
+  if (!actionState) return new Set();
+
+  const targets = new Set<string>();
+  for (const transition of workflow.transitions ?? []) {
+    if (transition.from !== actionState) continue;
+    const phase = workflowStatePhase(
+      workflow,
+      transition.to,
+    );
+    if (
+      phase === StepPhase.Queued &&
+      transition.to !== claimedState
+    ) {
+      targets.add(transition.to);
+    }
+  }
+
+  return targets;
 }
 
 // ─── Re-exports for convenience ──────────────────────

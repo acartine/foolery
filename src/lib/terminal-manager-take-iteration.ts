@@ -8,6 +8,7 @@ import { loadSettings } from "@/lib/settings";
 import {
   isQueueOrTerminal,
   resolveStep,
+  workflowActionStateForState,
 } from "@/lib/workflows";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
@@ -67,8 +68,21 @@ export async function handleTakeIterationClose(
   });
 
   const resolved = resolveStep(claimedState);
+  const workflow = resolveWorkflowForBeat(
+    { ...ctx.beat, state: claimedState },
+    ctx.workflowsById,
+    ctx.fallbackWorkflow,
+  );
+  const claimedStep =
+    workflowActionStateForState(
+      workflow,
+      claimedState,
+    ) ?? resolved?.step;
   const success = classifyIterationSuccess(
-    code, claimedState, postExitState,
+    code,
+    claimedState,
+    postExitState,
+    workflow,
   );
   const altAvailable = await checkAlternativeAgent(
     ctx, iterationAgent, resolved,
@@ -76,7 +90,9 @@ export async function handleTakeIterationClose(
 
   const record = buildOutcomeRecord(
     ctx, iterationAgent, claimedState,
-    resolved, code, postExitState,
+    claimedStep,
+    code,
+    postExitState,
     altAvailable, success,
   );
 
@@ -160,7 +176,7 @@ function buildOutcomeRecord(
   ctx: TakeLoopContext,
   iterationAgent: CliAgentTarget,
   claimedState: string,
-  resolved: ReturnType<typeof resolveStep>,
+  claimedStep: string | undefined,
   code: number,
   postExitState: string,
   altAvailable: boolean,
@@ -181,7 +197,7 @@ function buildOutcomeRecord(
       command: iterationAgent.command,
     },
     claimedState,
-    claimedStep: resolved?.step,
+    claimedStep,
     exitCode: code,
     postExitState,
     rolledBack: false,

@@ -4,6 +4,7 @@
  * which agent should claim the next iteration.
  */
 import { getBackend } from "@/lib/backend-instance";
+import { loadSettings } from "@/lib/settings";
 import {
   rollbackBeatState,
 } from "@/lib/memory-manager-commands";
@@ -20,8 +21,11 @@ import {
 } from "@/lib/lease-audit";
 import {
   StepPhase,
-  queueStateForStep,
   resolveStep,
+  workflowActionStateForState,
+  workflowOwnerKindForState,
+  workflowQueueStateForState,
+  workflowStatePhase,
 } from "@/lib/workflows";
 import {
   resolveWorkflowForBeat,
@@ -73,74 +77,74 @@ export async function buildNextTakePrompt(
   }
 
   let resolved = resolveStep(current.state);
-  let stepOwner = resolved
-    ? workflow.owners?.[resolved.step] ?? "agent"
-    : "none";
+  let phase = workflowStatePhase(workflow, current.state);
+  let stepOwner = workflowOwnerKindForState(
+    workflow,
+    current.state,
+  );
   let stepFailureRollback = false;
 
   if (
-    resolved?.phase === StepPhase.Active &&
+    phase === StepPhase.Active &&
     stepOwner === "agent"
   ) {
     const r = await rollbackStepFailure(
-      ctx, current, resolved,
+      ctx, current, workflow,
     );
     if (!r) return null;
     current = r.current;
     workflow = r.workflow;
     resolved = r.resolved;
     stepOwner = r.stepOwner;
+    phase = workflowStatePhase(workflow, current.state);
     stepFailureRollback = true;
   }
 
-  if (!resolved || stepOwner !== "agent") {
-    return handleNotAgentOwned(ctx, current, resolved);
+  if (phase !== StepPhase.Queued || stepOwner !== "agent") {
+    return handleNotAgentOwned(
+      ctx,
+      current,
+      workflow,
+      resolved,
+    );
   }
 
-  const queueType = resolved.step;
+  const queueType =
+    workflowActionStateForState(
+      workflow,
+      current.state,
+    ) ?? current.state;
   const count = (
     ctx.claimsPerQueueType.get(queueType) ?? 0
   ) + 1;
   ctx.claimsPerQueueType.set(queueType, count);
-  const agentResult = await selectStepAgent(
-    ctx, resolved, queueType,
-    stepFailureRollback, lastErrorAgentId,
-  );
-  if (agentResult === "stop") return null;
-  const { stepAgentOverride, maxClaims } = agentResult;
+  let stepAgentOverride:
+    | import("@/lib/types-agent-target").CliAgentTarget
+    | undefined;
+  let maxClaims = await loadMaxClaimsLimit();
+  if (resolved) {
+    const agentResult = await selectStepAgent(
+      ctx, resolved, queueType,
+      stepFailureRollback, lastErrorAgentId,
+    );
+    if (agentResult === "stop") return null;
+    stepAgentOverride = agentResult.stepAgentOverride;
+    maxClaims = agentResult.maxClaims;
+  }
 
   if (count > maxClaims) {
     return handleMaxClaims(
       ctx, current, queueType, count, maxClaims,
     );
   }
-  const rotated = await rotateLeaseForClaim(
+  return buildClaimPromptResult(
     ctx,
-    current.state,
-    stepAgentOverride,
-  );
-  if (!rotated) {
-    return null;
-  }
-  ctx.entry.knotsLeaseStep = queueType;
-
-  console.log(
-    `${tag} claiming ${beatId} ` +
-    `from state=${current.state}`,
-  );
-  const takeResult = await getBackend().buildTakePrompt(
+    current,
     beatId,
-    { knotsLeaseId: ctx.entry.knotsLeaseId },
     repoPath,
-  );
-  if (!takeResult.ok || !takeResult.data) {
-    logClaimFailure(ctx, takeResult);
-    return null;
-  }
-
-  return finalizeClaim(
-    ctx, current, queueType,
-    stepAgentOverride, takeResult.data.prompt,
+    queueType,
+    stepAgentOverride,
+    tag,
   );
 }
 
@@ -177,6 +181,57 @@ async function rotateLeaseForClaim(
     });
     return false;
   }
+}
+
+async function loadMaxClaimsLimit(): Promise<number> {
+  try {
+    const settings = await loadSettings();
+    return settings.maxClaimsPerQueueType ?? 10;
+  } catch {
+    return 10;
+  }
+}
+
+async function buildClaimPromptResult(
+  ctx: TakeLoopContext,
+  current: Beat,
+  beatId: string,
+  repoPath: string | undefined,
+  queueType: string,
+  stepAgentOverride?: import(
+    "@/lib/types-agent-target"
+  ).CliAgentTarget,
+  tag?: string,
+): Promise<NextTakeResult | null> {
+  const rotated = await rotateLeaseForClaim(
+    ctx,
+    current.state,
+    stepAgentOverride,
+  );
+  if (!rotated) return null;
+  ctx.entry.knotsLeaseStep = queueType;
+
+  console.log(
+    `${tag ?? "[terminal-manager]"} claiming ` +
+    `${beatId} from state=${current.state}`,
+  );
+  const takeResult = await getBackend().buildTakePrompt(
+    beatId,
+    { knotsLeaseId: ctx.entry.knotsLeaseId },
+    repoPath,
+  );
+  if (!takeResult.ok || !takeResult.data) {
+    logClaimFailure(ctx, takeResult);
+    return null;
+  }
+
+  return finalizeClaim(
+    ctx,
+    current,
+    queueType,
+    stepAgentOverride,
+    takeResult.data.prompt,
+  );
 }
 
 // ─── Sub-helpers ─────────────────────────────────────
@@ -266,9 +321,7 @@ function handleTerminalState(
 async function rollbackStepFailure(
   ctx: TakeLoopContext,
   current: Beat,
-  resolved: NonNullable<
-    ReturnType<typeof resolveStep>
-  >,
+  workflow: MemoryWorkflowDescriptor,
 ): Promise<{
   current: Beat;
   workflow: MemoryWorkflowDescriptor;
@@ -277,32 +330,26 @@ async function rollbackStepFailure(
 } | null> {
   const tag =
     `[terminal-manager] [${ctx.id}] [take-loop]`;
-  const rollState =
-    queueStateForStep(resolved.step);
+  const rollState = workflowQueueStateForState(
+    workflow,
+    current.state,
+  );
+  if (!rollState) {
+    console.error(
+      `${tag} cannot resolve queue state ` +
+      `for active state "${current.state}"`,
+    );
+    return null;
+  }
   const failedAgent =
     toExecutionAgentInfo(ctx.agent).agentName;
-  console.warn(
-    `${tag} [STEP_FAILURE] ` +
-    `agent "${failedAgent}" ` +
-    `left ${ctx.beatId} in active ` +
-    `state="${current.state}" — ` +
-      `rolling back to "${rollState}"`,
+  announceStepFailureRollback(
+    ctx,
+    current,
+    rollState,
+    failedAgent,
+    tag,
   );
-  recordTakeLoopLifecycle(ctx, "loop_stop", {
-    claimedState: current.state,
-    loopDecision:
-      `step_failure_rollback:${current.state}->${rollState}`,
-  });
-  ctx.pushEvent({
-    type: "stdout",
-    data: `\x1b[33m--- Step failure: ` +
-      `agent "${failedAgent}" ` +
-      `left ${ctx.beatId} ` +
-      `in active state "${current.state}", ` +
-      `rolling back to "${rollState}" ` +
-      `---\x1b[0m\n`,
-    timestamp: Date.now(),
-  });
 
   try {
     await rollbackBeatState(
@@ -332,57 +379,112 @@ async function rollbackStepFailure(
     return null;
   }
 
-  const rr = await getBackend().get(
-    ctx.beatId, ctx.repoPath,
+  return reloadAfterRollback(
+    ctx,
+    rollState,
+    tag,
   );
-  if (!rr.ok || !rr.data) {
+}
+
+function announceStepFailureRollback(
+  ctx: TakeLoopContext,
+  current: Beat,
+  rollbackState: string,
+  failedAgent: string | undefined,
+  tag: string,
+): void {
+  console.warn(
+    `${tag} [STEP_FAILURE] ` +
+    `agent "${failedAgent}" ` +
+    `left ${ctx.beatId} in active ` +
+    `state="${current.state}" — ` +
+    `rolling back to "${rollbackState}"`,
+  );
+  recordTakeLoopLifecycle(ctx, "loop_stop", {
+    claimedState: current.state,
+    loopDecision:
+      `step_failure_rollback:${current.state}->${rollbackState}`,
+  });
+  ctx.pushEvent({
+    type: "stdout",
+    data: `\x1b[33m--- Step failure: ` +
+      `agent "${failedAgent}" ` +
+      `left ${ctx.beatId} in active state ` +
+      `"${current.state}", rolling back to ` +
+      `"${rollbackState}" ---\x1b[0m\n`,
+    timestamp: Date.now(),
+  });
+}
+
+async function reloadAfterRollback(
+  ctx: TakeLoopContext,
+  rollbackState: string,
+  tag: string,
+): Promise<{
+  current: Beat;
+  workflow: MemoryWorkflowDescriptor;
+  resolved: ReturnType<typeof resolveStep>;
+  stepOwner: ActionOwnerKind;
+} | null> {
+  const result = await getBackend().get(
+    ctx.beatId,
+    ctx.repoPath,
+  );
+  if (!result.ok || !result.data) {
     console.log(
       `${tag} STOP: failed to reload ` +
       `${ctx.beatId} after step failure rollback`,
     );
     recordTakeLoopLifecycle(ctx, "loop_stop", {
-      claimedState: rollState,
+      claimedState: rollbackState,
       loopDecision: "reload_after_rollback_failed",
     });
     return null;
   }
 
-  const wf = resolveWorkflowForBeat(
-    rr.data, ctx.workflowsById,
+  const workflow = resolveWorkflowForBeat(
+    result.data,
+    ctx.workflowsById,
     ctx.fallbackWorkflow,
   );
-  const newR = resolveStep(rr.data.state);
-  const newOwner = newR
-    ? wf.owners?.[newR.step] ?? "agent" : "none";
   console.log(
     `${tag} step failure rollback result: ` +
     `beat=${ctx.beatId} ` +
-    `state=${rr.data.state} ` +
+    `state=${result.data.state} ` +
     `isAgentClaimable=` +
-    `${rr.data.isAgentClaimable}`,
+    `${result.data.isAgentClaimable}`,
   );
   return {
-    current: rr.data, workflow: wf,
-    resolved: newR, stepOwner: newOwner,
+    current: result.data,
+    workflow,
+    resolved: resolveStep(result.data.state),
+    stepOwner: workflowOwnerKindForState(
+      workflow,
+      result.data.state,
+    ),
   };
 }
 
 function handleNotAgentOwned(
   ctx: TakeLoopContext,
   current: Beat,
+  workflow: MemoryWorkflowDescriptor,
   resolved: ReturnType<typeof resolveStep>,
 ): null {
   const tag =
     `[terminal-manager] [${ctx.id}] [take-loop]`;
-  const stepName = resolved?.step ?? "none";
-  const phase = resolved?.phase ?? "none";
-  const wf = resolveWorkflowForBeat(
-    current, ctx.workflowsById,
-    ctx.fallbackWorkflow,
+  const stepName =
+    workflowActionStateForState(
+      workflow,
+      current.state,
+    ) ?? resolved?.step ?? "none";
+  const phase =
+    workflowStatePhase(workflow, current.state) ??
+    "none";
+  const ownerKind = workflowOwnerKindForState(
+    workflow,
+    current.state,
   );
-  const ownerKind = resolved
-    ? wf.owners?.[resolved.step] ?? "agent"
-    : "none";
   console.log(
     `${tag} STOP: not agent-owned — ` +
     `state=${current.state} ` +

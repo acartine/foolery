@@ -6,25 +6,12 @@
 import type { BackendResult } from "@/lib/backend-port";
 import type { BackendErrorCode } from "@/lib/backend-errors";
 import { isRetryableByDefault } from "@/lib/backend-errors";
-import type {
-  ActionOwnerKind,
-  Invariant,
-  MemoryWorkflowDescriptor,
-  MemoryWorkflowOwners,
-  WorkflowMode,
-} from "@/lib/types";
+import type { Invariant } from "@/lib/types";
 import type {
   KnotEdge,
-  KnotProfileDefinition,
   KnotRecord,
 } from "@/lib/knots";
 import * as knots from "@/lib/knots";
-import {
-  inferWorkflowMode,
-  profileDisplayName,
-  resolveStep,
-  StepPhase,
-} from "@/lib/workflows";
 
 // ── Result helpers ──────────────────────────────────────────────────
 
@@ -372,105 +359,6 @@ export function isBlockedByEdges(
   return edges.some(
     (edge) => edge.kind === "blocked_by" && edge.src === id
   );
-}
-
-// ── Workflow / profile mapping ──────────────────────────────────────
-
-type OwnerStep = "planning" | "plan_review" | "implementation"
-  | "implementation_review" | "shipment" | "shipment_review";
-
-function normalizeOwners(
-  profile: KnotProfileDefinition,
-): MemoryWorkflowOwners {
-  const o = profile.owners;
-  const get = (key: OwnerStep): ActionOwnerKind =>
-    o.states?.[key]?.kind ?? o[key]?.kind ?? "none";
-  return {
-    planning: get("planning"),
-    plan_review: get("plan_review"),
-    implementation: get("implementation"),
-    implementation_review: get("implementation_review"),
-    shipment: get("shipment"),
-    shipment_review: get("shipment_review"),
-  };
-}
-
-function modeFromOwners(
-  owners: MemoryWorkflowOwners,
-  profile: KnotProfileDefinition,
-): WorkflowMode {
-  const hasHuman = Object.values(owners).some(
-    (kind) => kind === "human"
-  );
-  if (hasHuman) return "coarse_human_gated";
-  return inferWorkflowMode(
-    profile.id,
-    profile.description,
-    profile.states
-  );
-}
-
-export function toDescriptor(
-  profile: KnotProfileDefinition,
-): MemoryWorkflowDescriptor {
-  const states = profile.states.map((state) =>
-    state.trim().toLowerCase()
-  );
-  const owners = normalizeOwners(profile);
-  const queueStates = states.filter(
-    (s) => resolveStep(s)?.phase === StepPhase.Queued
-  );
-  const actionStates = states.filter(
-    (s) => resolveStep(s)?.phase === StepPhase.Active
-  );
-  const reviewQueueStates = queueStates.filter((state) => {
-    const resolved = resolveStep(state);
-    return resolved ? resolved.step.endsWith("_review") : false;
-  });
-  const humanQueueStates = queueStates.filter((queueState) => {
-    const resolved = resolveStep(queueState);
-    if (!resolved) return false;
-    return owners[resolved.step] === "human";
-  });
-  const mode = modeFromOwners(owners, profile);
-
-  return {
-    id: profile.id,
-    profileId: profile.id,
-    backingWorkflowId: profile.id,
-    label: profileDisplayName(profile.id),
-    mode,
-    initialState: profile.initial_state.trim().toLowerCase(),
-    states,
-    terminalStates: profile.terminal_states.map((state) =>
-      state.trim().toLowerCase()
-    ),
-    transitions: profile.transitions?.map((transition) => ({
-      from: transition.from.trim().toLowerCase(),
-      to: transition.to.trim().toLowerCase(),
-    })),
-    finalCutState: humanQueueStates[0] ?? null,
-    retakeState: states.includes("ready_for_implementation")
-      ? "ready_for_implementation"
-      : profile.initial_state,
-    promptProfileId: profile.id,
-    owners,
-    queueStates,
-    actionStates,
-    reviewQueueStates,
-    humanQueueStates,
-  };
-}
-
-export function mapForProfiles(
-  profiles: KnotProfileDefinition[],
-): MemoryWorkflowDescriptor[] {
-  const descriptors = profiles.map(toDescriptor);
-  const deduped = new Map<string, MemoryWorkflowDescriptor>();
-  for (const descriptor of descriptors) {
-    deduped.set(descriptor.id, descriptor);
-  }
-  return Array.from(deduped.values());
 }
 
 export function normalizeProfileId(
