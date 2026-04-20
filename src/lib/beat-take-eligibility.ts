@@ -11,7 +11,6 @@ export function canTakeBeat(beat: TakeEligibleBeat): boolean {
     beat.state === "abandoned" ||
     beat.state === "closed";
   if (isTerminal) return false;
-  if (beat.type === "gate") return false;
   if (beat.nextActionOwnerKind === "human") return false;
   return beat.isAgentClaimable !== false;
 }

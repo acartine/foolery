@@ -21,6 +21,7 @@ import {
   builtinProfileDescriptor,
   isRollbackTransition,
 } from "@/lib/workflows";
+import { canTakeBeat } from "@/lib/beat-take-eligibility";
 import {
   validNextStates,
 } from "./beat-column-states";
@@ -253,10 +254,7 @@ export function actionColumn(
         beat.state === "shipped"
         || beat.state === "abandoned"
         || beat.state === "closed";
-      if (isTerminal || beat.type === "gate") {
-        return null;
-      }
-      if (beat.nextActionOwnerKind === "human") {
+      if (isTerminal) {
         return null;
       }
       const isActive = Boolean(
@@ -289,6 +287,9 @@ export function actionColumn(
             Rolling...
           </span>
         );
+      }
+      if (!canTakeBeat(beat)) {
+        return null;
       }
       return renderShipButton(
         beat,

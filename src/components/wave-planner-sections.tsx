@@ -149,7 +149,7 @@ function BeatCardActions({
         scene {beat.waveLevel ?? "-"}
       </Badge>
 
-      {onShip && beat.type !== "gate" && (
+      {onShip && (
         <div className="flex items-center gap-1">
           {isActiveShipping ? (
             <>

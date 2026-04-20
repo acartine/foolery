@@ -439,7 +439,7 @@ export function ownerTypeColumn(): ColumnDef<Beat> {
         beat.state === "shipped"
         || beat.state === "abandoned"
         || beat.state === "closed";
-      if (isTerminal || beat.type === "gate") {
+      if (isTerminal) {
         return null;
       }
       const kind = beat.nextActionOwnerKind;

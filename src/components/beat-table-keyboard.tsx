@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useReactTable } from "@tanstack/react-table";
 import type { Beat } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
+import { canTakeBeat } from "@/lib/beat-take-eligibility";
 import { persistExpandedIds } from "@/components/beat-table-expand";
 
 type KeyboardHookParams = {
@@ -271,11 +272,7 @@ function handleShipKey(
 ): void {
   if (!ctx.onShipBeat || idx < 0) return;
   const beat = rows[idx].original;
-  if (
-    beat.state === "shipped" ||
-    beat.state === "closed" ||
-    beat.type === "gate"
-  ) return;
+  if (!canTakeBeat(beat)) return;
   const inherited =
     ctx.parentRollingBeatIds.has(beat.id) ||
     Boolean(

@@ -31,6 +31,10 @@ function inferReadiness(
   isInFinalCut: boolean,
   aliasesById: ReadonlyMap<string, readonly string[] | undefined>,
 ): { readiness: WaveReadiness; reason: string } {
+  const requiresHumanAction =
+    beat.requiresHumanAction
+    || beat.nextActionOwnerKind === "human";
+
   if (isUnschedulable) {
     return {
       readiness: "unschedulable",
@@ -38,17 +42,12 @@ function inferReadiness(
     };
   }
 
-  if (beat.type === "gate") {
-    return {
-      readiness: "gate",
-      reason: "Gate beat. Requires human approval before progressing.",
-    };
-  }
-
-  if (isInFinalCut) {
+  if (isInFinalCut || requiresHumanAction) {
     return {
       readiness: "humanAction",
-      reason: "Awaiting human action. Not eligible for shipping.",
+      reason: requiresHumanAction && beat.type === "gate"
+        ? "Awaiting human approval for this gate."
+        : "Awaiting human action. Not eligible for shipping.",
     };
   }
 
@@ -72,6 +71,13 @@ function inferReadiness(
     return {
       readiness: "blocked",
       reason: `Waiting on ${beat.blockedBy.map((id) => labelBeat(id, aliasesById)).join(", ")}`,
+    };
+  }
+
+  if (beat.isAgentClaimable) {
+    return {
+      readiness: "runnable",
+      reason: "Ready to ship.",
     };
   }
 
@@ -108,7 +114,7 @@ function computeSummary(plan: WavePlan): WaveSummary {
     if (beat.readiness === "in_progress") inProgress += 1;
     if (beat.readiness === "blocked") blocked += 1;
     if (beat.readiness === "humanAction") humanAction += 1;
-    if (beat.readiness === "gate") gates += 1;
+    if (beat.type === "gate") gates += 1;
   }
 
   return {
@@ -191,6 +197,9 @@ function buildWaveBeats(
       title: b.title,
       type: b.type,
       state: b.state,
+      nextActionOwnerKind: b.nextActionOwnerKind,
+      requiresHumanAction: b.requiresHumanAction,
+      isAgentClaimable: b.isAgentClaimable,
       priority: b.priority,
       labels: b.labels ?? [],
       blockedBy,

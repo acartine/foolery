@@ -164,6 +164,9 @@ export interface WaveBeat {
   title: string;
   type: string;
   state: string;
+  nextActionOwnerKind?: ActionOwnerKind;
+  requiresHumanAction?: boolean;
+  isAgentClaimable?: boolean;
   priority: BeatPriority;
   labels: string[];
   blockedBy: string[];

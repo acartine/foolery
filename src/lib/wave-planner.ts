@@ -60,17 +60,11 @@ export function computeWaves(
 
   // Group by level
   const waveMap = new Map<number, WaveBeat[]>();
-  const gateMap = new Map<number, WaveBeat>();
 
   for (const [id, level] of levels) {
     const beat = beatMap.get(id)!;
-    if (beat.type === "gate") {
-      // Gates guard their wave
-      gateMap.set(level, beat);
-    } else {
-      if (!waveMap.has(level)) waveMap.set(level, []);
-      waveMap.get(level)!.push(beat);
-    }
+    if (!waveMap.has(level)) waveMap.set(level, []);
+    waveMap.get(level)!.push(beat);
   }
 
   // Build sorted waves
@@ -83,12 +77,10 @@ export function computeWaves(
     waves.push({
       level: i,
       beats: waveBeats,
-      gate: gateMap.get(i),
     });
   }
 
-  // Filter out empty waves (only a gate, no beats)
-  const filteredWaves = waves.filter((w) => w.beats.length > 0 || w.gate);
+  const filteredWaves = waves.filter((w) => w.beats.length > 0);
 
   // Unschedulable = circular dependencies (not processed)
   const unschedulable = beats

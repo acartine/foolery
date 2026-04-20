@@ -22,12 +22,23 @@ describe("canTakeBeat", () => {
     expect(canTakeBeat(makeBeat({ state: "closed" }))).toBe(false);
   });
 
-  it("blocks gate beats", () => {
-    expect(canTakeBeat(makeBeat({ type: "gate" }))).toBe(false);
+  it("allows agent-owned gate beats when they are claimable", () => {
+    expect(canTakeBeat(makeBeat({ type: "gate" }))).toBe(true);
   });
 
   it("blocks human-owned next actions", () => {
     expect(canTakeBeat(makeBeat({ nextActionOwnerKind: "human" }))).toBe(false);
+  });
+
+  it("blocks human-owned gate beats", () => {
+    expect(
+      canTakeBeat(
+        makeBeat({
+          type: "gate",
+          nextActionOwnerKind: "human",
+        }),
+      ),
+    ).toBe(false);
   });
 
   it("blocks beats explicitly marked not claimable", () => {
