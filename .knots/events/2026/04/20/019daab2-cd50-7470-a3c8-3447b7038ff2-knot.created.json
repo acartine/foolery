@@ -1,0 +1,17 @@
+{
+  "event_id": "019daab2-cd50-7470-a3c8-3447b7038ff2",
+  "occurred_at": "2026-04-20T11:42:17.936824Z",
+  "knot_id": "foolery-f219",
+  "type": "knot.created",
+  "data": {
+    "body": "Determine why beat maestro-5711 reports that it used OpenCode, compare configured dispatch agents with runtime labeling, and identify whether this is a config issue, a fallback path, or a presentation bug.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Investigate OpenCode label on maestro-5711",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

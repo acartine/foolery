@@ -1,0 +1,9 @@
+{
+  "event_id": "019daabe-7764-7ad3-b2ea-7dfe4c370419",
+  "occurred_at": "2026-04-20T11:55:02.367178Z",
+  "knot_id": "foolery-98e6",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The investigation identifies the exact post-`turn_ended` runtime path that allowed the OpenCode take loop to remain open after shipment.\n2. The report correlates beat `maestro-5711`, session `term-1776684836608-lz67bp`, lease `maestro-c73b`, and the relevant timestamps across session, lease, and server logs.\n3. The report states the expected harness behavior once the beat reaches `shipped` and contrasts it with the observed delayed shutdown.\n4. The knot contains concrete log samples that demonstrate `turn_ended`, continued logging after shipment, and the eventual forced shutdown.\n5. Any remaining uncertainty is called out explicitly as an evidence-backed inference rather than presented as fact."
+  }
+}

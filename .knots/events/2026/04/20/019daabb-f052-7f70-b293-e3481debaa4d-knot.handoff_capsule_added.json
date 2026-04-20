@@ -1,0 +1,15 @@
+{
+  "event_id": "019daabb-f052-7f70-b293-e3481debaa4d",
+  "occurred_at": "2026-04-20T11:52:16.721745Z",
+  "knot_id": "foolery-9e12",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan recorded for option 1: treat authoritative state-change observations as immediate invalidation points. The intended implementation is to emit a semantic refresh-hint event from the take-loop when Foolery observes post-exit beat state, then have the client session manager invalidate the shared beat queries plus Setlist fallback queries right away instead of waiting for session exit or focus restore. Main touched files should be `src/lib/beat-query-cache.ts`, `src/lib/types.ts`, `src/lib/session-connection-manager.ts`, and the take-loop files. Biggest risk is only invalidating `['beats']` again and missing `['setlist-plan-beat', ...]`, which is the stale path most likely to keep this bug alive.",
+    "datetime": "2026-04-20T11:52:16.721745Z",
+    "entry_id": "019daabb-f052-7f70-b293-e33e5fc61d7a",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "2026-04-20"
+  }
+}

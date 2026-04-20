@@ -1,0 +1,9 @@
+{
+  "event_id": "019daab8-f2d9-7be2-a2df-4b41058217d1",
+  "occurred_at": "2026-04-20T11:49:00.754791Z",
+  "knot_id": "foolery-6858",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Settings > Dispatch exposes dispatch configuration for every bundled workflow target.\n2. `foolery setup` exposes dispatch configuration for every bundled workflow target.\n3. Both UI and CLI organize bundled workflow targets into clear grouped sections rather than one flat list.\n4. Settings > Dispatch includes an \"Add to all\" flow that bulk-applies a dispatch choice across eligible bundled workflow targets and persists correctly.\n5. `foolery setup` includes an equivalent bulk-apply flow that persists the same configuration shape.\n6. Automated coverage verifies grouped dispatch configuration and \"Add to all\" behavior in both the settings UI and setup flow."
+  }
+}

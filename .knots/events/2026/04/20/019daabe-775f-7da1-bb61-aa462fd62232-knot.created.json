@@ -1,0 +1,17 @@
+{
+  "event_id": "019daabe-775f-7da1-bb61-aa462fd62232",
+  "occurred_at": "2026-04-20T11:55:02.367178Z",
+  "knot_id": "foolery-98e6",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nUnderstand why Foolery leaves an OpenCode take session alive after the beat has already advanced to `shipped`, and document the exact runtime/lease/session sequence for `maestro-5711` before proposing a fix. The investigation should explain expected vs actual harness behavior once a turn reaches `turn_ended` and the knot is no longer actionable.\n\nVerification:\n1. Inspect `/Users/cartine/foolery/.foolery-logs/maestro/2026-04-20/term-1776684836608-lz67bp.jsonl` and confirm the sequence `turn_ended` at `2026-04-20T11:37:38.990Z`, repeated `stderr_observed` entries with `service=bus type=file.watcher.updated publishing` afterward, and delayed `child_close` / `session_end` around `2026-04-20T11:54:20.595Z`.\n2. Inspect `/Users/cartine/foolery/.foolery-logs/_leases/2026-04-20/leases.jsonl` and confirm how lease `maestro-c73b` was created, whether it terminated cleanly, and whether termination timing matches the delayed session shutdown.\n3. Trace the take-loop runtime code path that handles `turn_ended` for OpenCode-backed sessions and identify the branch that keeps the harness alive after the beat has already reached `shipped`.\n4. Record the expected stop condition for bundled/custom workflows after shipment and the concrete root cause or most likely cause, labeled as inference where needed.\n\nConstraints:\nUse `maestro-5711`, session `term-1776684836608-lz67bp`, and lease `maestro-c73b` as the primary sample. Preserve these log samples in the investigation context: `2026-04-20T11:37:38.990Z event=turn_ended resultIsError=false`, repeated `service=bus type=file.watcher.updated publishing` while the beat was already shipped, and `2026-04-20T11:54:20.595Z event=child_close childSignal=SIGTERM`. Focus on understanding the failure mode first, not just patching it.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Investigate shipped OpenCode take sessions staying open",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

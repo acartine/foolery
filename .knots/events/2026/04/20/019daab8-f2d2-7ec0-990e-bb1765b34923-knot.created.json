@@ -1,0 +1,17 @@
+{
+  "event_id": "019daab8-f2d2-7ec0-990e-bb1765b34923",
+  "occurred_at": "2026-04-20T11:49:00.754791Z",
+  "knot_id": "foolery-6858",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nMake dispatch configuration cover every bundled workflow without turning setup into a giant flat list. Settings > Dispatch and `foolery setup` should organize bundled workflow targets into clear groups, and both surfaces should offer a fast \"Add to all\" path for seeding the same dispatch choice across eligible bundled workflow targets.\n\nVerification:\n1. Open Settings > Dispatch and verify every bundled workflow target is configurable, grouped into clear workflow-oriented sections, and not presented as one flat list.\n2. Run `foolery setup`, enter the dispatch wizard, and verify the CLI presents the same bundled workflow coverage and grouped structure instead of a giant flat list.\n3. In Settings > Dispatch, use \"Add to all\" to apply a dispatch choice across eligible bundled workflow targets, save, and confirm the expected settings are persisted while remaining individually editable.\n4. Repeat the same bulk-apply flow through `foolery setup` and confirm it writes the same persisted configuration shape.\n\nConstraints:\n- Scope is limited to bundled workflows; custom workflow authoring is out of scope.\n- UI and CLI organization should stay aligned so users do not learn two different dispatch models.\n- \"Add to all\" should speed up setup without preventing per-target overrides afterward.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Improve bundled workflow dispatch setup",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

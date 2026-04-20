@@ -1,0 +1,15 @@
+{
+  "event_id": "019daac2-df86-70c2-8960-a62dba4e3ebf",
+  "occurred_at": "2026-04-20T11:59:51.174512Z",
+  "knot_id": "foolery-9e12",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented option 1. Foolery now emits a semantic beat_state_observed event as soon as post-exit backend state is observed, and the client invalidates both shared beat queries and Setlist fallback queries immediately instead of waiting for exit-only refresh. Focused tests were added for the query invalidation path and event emission, and the full quality gates passed in /Users/cartine/foolery/.worktrees/foolery-9e12.",
+    "datetime": "2026-04-20T11:59:51.174512Z",
+    "entry_id": "019daac2-df86-70c2-8960-a61630a9bd18",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "2026-04-20"
+  }
+}

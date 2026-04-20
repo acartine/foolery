@@ -1,0 +1,15 @@
+{
+  "event_id": "019daac2-df86-70c2-8960-a600b5026545",
+  "occurred_at": "2026-04-20T11:59:51.174512Z",
+  "knot_id": "foolery-9e12",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented immediate Setlist invalidation on authoritative beat-state observation. Added a beat_state_observed terminal event, emit it after post-exit state fetch in the take loop, and invalidate active ['beats'], ['setlist-plan'], and ['setlist-plan-beat'] queries from the session connection manager. Validation passed in worktree /Users/cartine/foolery/.worktrees/foolery-9e12: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-04-20T11:59:51.174512Z",
+    "entry_id": "019daac2-df86-70c2-8960-a5f1659b78d0",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

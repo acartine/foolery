@@ -1,0 +1,15 @@
+{
+  "event_id": "019daac1-404e-7e31-a554-76e204a48715",
+  "occurred_at": "2026-04-20T11:58:04.878145Z",
+  "knot_id": "foolery-98e6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "2026-04-20 investigation update:\n- Primary sample: beat `maestro-5711`, session `term-1776684836608-lz67bp`, lease `maestro-c73b`. Knots step history shows the beat advanced from `ready_to_evaluate` to `shipped` at `2026-04-20T11:37:34.726010Z`, before Foolery logged `turn_ended` at `2026-04-20T11:37:38.990Z`.\n- Session log evidence: after `turn_ended`, OpenCode kept emitting `service=bus type=file.watcher.updated publishing` every ~30s and no natural `child_close` happened before manual termination.\n- This was not a take-loop follow-up or ship-follow-up issue. `promptSource` stayed `initial`, there is no `take_loop_follow_up_sent`, and Knots disables auto ship follow-up (`supportsAutoFollowUp(memoryManagerType) => false` in `src/lib/memory-manager-commands.ts`).\n- Strong code-path hypothesis: after `turn_ended`, Foolery only schedules `doCloseInput()` (2s grace in `src/lib/terminal-manager-types.ts`), which calls `config.httpSession?.interruptTurn(child)` and `child.stdin?.end()` (`src/lib/agent-session-runtime-helpers.ts`). For OpenCode HTTP, `interruptTurn()` is documented as killing the server process, but the implementation only clears `pendingTurn` and returns true (`src/lib/opencode-http-session.ts`). That means the harness assumes EOF on stdin will end `opencode serve`, but the server can remain alive and keep logging watcher/bus events indefinitely.\n- This appears systemic for OpenCode interactive sessions, not unique to `maestro-5711`: the server log shows other `ready_to_evaluate` OpenCode sessions (`maestro-5697`, `maestro-ea79`) exhibiting the same periodic `file.watcher.updated` chatter until manually terminated.",
+    "datetime": "2026-04-20T11:58:04.878145Z",
+    "entry_id": "019daac1-404e-7e31-a554-76d047346607",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019daaba-b22d-7ee2-b7cf-a588e1efe1f6",
+  "occurred_at": "2026-04-20T11:50:55.277043Z",
+  "knot_id": "foolery-9e12",
+  "type": "knot.created",
+  "data": {
+    "body": "When Foolery knows a beat state may have changed during take-loop progress or session lifecycle, invalidate the active Setlist-related beat queries immediately instead of waiting for session exit or window refocus. Investigate the session/iteration hooks, implement a shared invalidation path for known state-change moments, and add focused validation for the touched behavior. Do not move the knot to a terminal state without explicit user instruction.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Invalidate setlist on known beat state changes",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
