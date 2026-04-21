@@ -44,6 +44,10 @@ Each Git worktree is a separate checkout and does not share `node_modules`.
 
 These are enforced by ESLint (`max-lines`, `max-lines-per-function`, `max-len`).
 
+## kno Workflows Are Authoritative
+
+kno `.loom` workflows are the single source of truth; Foolery TS must never override, extend, or post-process them (no synthetic transitions, no parallel canonical graph). Correction actions that skip gates must be named as such and invoke kno idiomatically with `force: true` (see `KnotsBackend.close()`); details in `docs/DEVELOPING.md`.
+
 ## Fail Loudly, Never Silently
 
 Silent fallbacks on configured resources are banned.

@@ -345,6 +345,25 @@ chore(deps): bump next to 16.1.6
 
 Keep titles under 72 characters. Use imperative mood ("add", "fix", not "added", "fixes"). Use the body for context when the title alone isn't enough.
 
+## kno Workflows Are Authoritative
+
+The workflows defined in kno (`.loom` files in the [knots](https://github.com/acartine/knots) repo) are the **single source of truth** for legal state transitions, terminal states, wildcard transitions, and profile behaviour. Foolery TypeScript must treat them as read-only.
+
+Do **not**, under any circumstances:
+
+- Post-process, augment, mutate, extend, or "patch up" the transitions, states, or terminal lists returned by `kno profile show` / `kno profile list`.
+- Inject synthetic `* -> <terminal>` or any other transitions into a `MemoryWorkflowDescriptor` to make the UI "offer more options".
+- Maintain a parallel hand-rolled copy of the workflow graph in TypeScript (e.g. a `canonicalTransitions()` that overrides or supplements kno).
+- Assume a transition is legal because Foolery's in-memory descriptor says so. If kno rejects it, kno is right.
+
+If the UI needs to offer a jump that the workflow does not allow as a normal transition, that is a **correction / cleaning action**, not a workflow extension. Design it explicitly as such and invoke kno idiomatically:
+
+- Name the action for what it is (e.g. "Mark as shipped (override gates)", "Abandon", "Close") — not a generic "change state".
+- Route it through a dedicated backend path that passes kno's `force` flag (see `KnotsBackend.close()` in `src/lib/backends/knots-backend.ts`).
+- Never use a generic `update({ state })` call to move a knot to a state the workflow would otherwise forbid.
+
+**Historical incident this rule protects against:** commit `29311507` (2026-04-21) added `withWildcardTerminals` in `src/lib/backends/knots-backend-workflows.ts`, which fabricated `* -> shipped` transitions that did not exist in `work_sdlc.loom`. The dispatch-adjacency check then saw the fake wildcard, omitted `force`, and every bulk "Move to Shipped" on `autopilot_no_planning` was rejected by kno. Knot `102e` tracks the removal and the establishment of this rule.
+
 ## Contribution Guidelines
 
 Foolery builds on top of memory managers like [Knots](https://github.com/acartine/knots) and [Beads](https://github.com/steveyegge/beads). Key contribution values:
