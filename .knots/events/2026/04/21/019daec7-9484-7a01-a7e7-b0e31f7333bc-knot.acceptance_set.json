@@ -1,0 +1,9 @@
+{
+  "event_id": "019daec7-9484-7a01-a7e7-b0e31f7333bc",
+  "occurred_at": "2026-04-21T06:43:28.516245Z",
+  "knot_id": "foolery-f354",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. On the queue screen, clicking the state control on a single row surfaces 'Shipped' as a selectable option; selecting it transitions that knot to Shipped and the row reflects the new state immediately.\n2. On the beat detail view, the state control includes 'Shipped' as an option; selecting it transitions the knot to Shipped and the UI updates without a full page reload.\n3. With multiple knots selected on the queue screen, the multi-select action bar includes a 'Ship' action; triggering it transitions all selected knots to Shipped and the queue list reflects their updated states.\n4. Shipping a knot that is already in a terminal state (e.g., already Shipped, Cancelled) either shows an appropriate error or is excluded from the action — no silent failure.\n5. Validate using Playwright MCP: navigate to the queue screen, select a knot in a non-terminal state, trigger the Ship action, and assert the row state updates to Shipped without a page refresh. Repeat for multi-select (select 2+ knots, ship, assert all rows update). Open beat detail for a non-shipped knot, ship it, assert the state badge reflects Shipped."
+  }
+}

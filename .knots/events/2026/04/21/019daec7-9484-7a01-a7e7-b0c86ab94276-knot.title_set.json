@@ -1,0 +1,10 @@
+{
+  "event_id": "019daec7-9484-7a01-a7e7-b0c86ab94276",
+  "occurred_at": "2026-04-21T06:43:28.516245Z",
+  "knot_id": "foolery-f354",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Queues: Allow state change to shipped",
+    "to": "Queues: Add 'Ship' state transition from queue screen, beat detail, and multi-select"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019daec7-9484-7a01-a7e7-b0d26659ecd1",
+  "occurred_at": "2026-04-21T06:43:28.516245Z",
+  "knot_id": "foolery-f354",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Agents frequently create knots and abandon them even after the code is merged and reviewed. To allow manual resolution, users need a 'Shipped' state option surfaced in three places: the queue screen (per-row state control), the beat detail view (state control), and the multi-select action bar. All three entry points should trigger the same state transition to 'Shipped'."
+  }
+}

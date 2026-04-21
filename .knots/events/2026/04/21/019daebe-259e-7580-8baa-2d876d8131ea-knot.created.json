@@ -1,0 +1,17 @@
+{
+  "event_id": "019daebe-259e-7580-8baa-2d876d8131ea",
+  "occurred_at": "2026-04-21T06:33:10.302461Z",
+  "knot_id": "foolery-f354",
+  "type": "knot.created",
+  "data": {
+    "body": "Happens a lot where agents create knots and then don't follow through, even though the code is merged and reviewed.  So when we click on state from\n- queue screen\n- beat detail\nwe want the option to move it to \"Shipped\"\n\nlikewise, we want the same with multi select as well.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Queues: Allow state change to shipped",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

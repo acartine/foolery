@@ -1,0 +1,21 @@
+{
+  "event_id": "019daebc-2a26-7e33-90a4-6dbef09c27d4",
+  "occurred_at": "2026-04-21T06:31:00.384463Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4a42",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Fix setlist missing-knot handling and cold rehydrate",
+    "type": "work",
+    "updated_at": "2026-04-21T06:31:00.384463Z",
+    "workflow_id": "work_sdlc"
+  }
+}
