@@ -24,7 +24,6 @@ All Next.js API route handlers under `src/app/api/` that interact with beads.
 | `src/app/api/beats/ready/route.ts` | GET | List open + in_progress beads; applies ancestor-chain filter | `listBeads` |
 | `src/app/api/beats/merge/route.ts` | POST | Merge two beads: append description/notes/labels from consumed bead to survivor, close consumed | `showBead`, `updateBead`, `closeBead` |
 | `src/app/api/waves/route.ts` | GET | Compute wave plan from all non-closed beads and their dependency graph | `listBeads`, `listDeps` |
-| `src/app/api/breakdown/route.ts` | POST, DELETE | Start or abort a breakdown session; fetches parent bead to seed prompt | `showBead` |
 | `src/app/api/terminal/route.ts` | GET, POST, DELETE | List terminal sessions; create Take!/Scene! sessions referencing bead IDs; abort sessions | (indirect via `terminal-manager`) |
 | `src/app/api/agent-history/route.ts` | GET | Read agent interaction history, optionally filtered by bead ID | (indirect via `agent-history`) |
 | `src/app/api/orchestration/restage/route.ts` | POST | Create a restaged orchestration session from an edited wave plan with bead references | (indirect via `orchestration-manager`) |
@@ -84,7 +83,6 @@ Internal infrastructure:
 | `TerminalSession` | Terminal session tied to bead ID(s) |
 | `WaveBead`, `Wave`, `WavePlan` | Wave planner types built from beads + deps |
 | `OrchestrationWaveBead`, `OrchestrationWave`, `OrchestrationPlan` | Orchestration plan types referencing beads |
-| `BreakdownBeadSpec`, `BreakdownWave`, `BreakdownPlan` | Breakdown plan types for decomposing beads |
 
 ### `src/lib/api.ts` -- Client-Side API Layer (188 lines)
 
@@ -186,31 +184,6 @@ Uses `listBeads()`, `showBead()` from `@/lib/bd`. Invokes `onAgentComplete()` po
 
 Uses `addDep`, `closeBead`, `createBead`, `listBeads`, `removeDep`, `showBead`, `updateBead` from `@/lib/bd`.
 
-### `src/lib/breakdown-manager.ts` -- Breakdown Manager (~600 lines)
-
-| Export | Purpose |
-|--------|---------|
-| `createBreakdownSession()` | Start AI breakdown of a parent bead into sub-beads |
-| `applyBreakdownPlan()` | Apply breakdown: create child beads under parent |
-
-Uses `addDep`, `createBead`, `listBeads` from `@/lib/bd`.
-
-### `src/lib/breakdown-api.ts` -- Client Breakdown API
-
-| Export | Purpose |
-|--------|---------|
-| `startBreakdown()` | POST to start breakdown with parentBeatId |
-| `applyBreakdown()` | POST to apply breakdown plan |
-| `connectToBreakdown()` | SSE connection for breakdown events |
-
-### `src/lib/breakdown-prompt.ts` -- Breakdown Prompt Builder
-
-| Export | Purpose |
-|--------|---------|
-| `buildBeadBreakdownPrompt()` | Generate breakdown prompt from bead title/description |
-| `DIRECT_PREFILL_KEY` | LocalStorage key for direct-mode bead prefill |
-| `setDirectPrefillPayload()`, `consumeDirectPrefillPayload()` | Stash/retrieve bead data for direct-mode |
-
 ### `src/lib/doctor.ts` -- Health Diagnostics (~600+ lines)
 
 | Export | Purpose |
@@ -282,7 +255,6 @@ Components in `src/components/` that consume or display beads data.
 | `src/components/retake-dialog.tsx` | Dialog to re-take a bead | `Bead` with label manipulation |
 | `src/components/retakes-view.tsx` | View for beads in retry stage | `fetchBeads`, `updateBead` |
 | `src/components/final-cut-view.tsx` | View for beads in human action queue | `fetchBeads` |
-| `src/components/breakdown-view.tsx` | Breakdown session UI; generates sub-beads from parent | `startBreakdown`, `applyBreakdown`, references parentBeatId |
 | `src/components/orchestration-view.tsx` | Orchestration session UI; plans wave execution of beads | Bead references in orchestration plans |
 | `src/components/existing-orchestrations-view.tsx` | List existing orchestration sessions | Orchestration sessions referencing beads |
 | `src/components/wave-planner.tsx` | Wave plan visualization | Fetches `/api/waves`, displays `WavePlan` with `WaveBead[]` |
@@ -291,7 +263,7 @@ Components in `src/components/` that consume or display beads data.
 | `src/components/terminal-panel.tsx` | Terminal panel for agent sessions | `ActiveTerminal` with `beatId`, `beatIds` |
 | `src/components/directory-browser.tsx` | Browse directories; identifies beads repos | `DirEntry.isBeadsRepo` |
 | `src/components/repo-registry.tsx` | Manage registered repos | `RegisteredRepo[]` (repos containing `.beads/`) |
-| `src/components/settings-actions-section.tsx` | Settings for action-to-agent mappings | References bead actions (take, scene, direct, breakdown) |
+| `src/components/settings-actions-section.tsx` | Settings for action-to-agent mappings | References bead actions (take, scene, direct, scopeRefinement) |
 | `src/components/settings-repos-section.tsx` | Settings for repo management | `RegisteredRepo[]` |
 | `src/components/url-state-sync.tsx` | Sync URL params to Zustand store | Bead filter state (status, type, priority) |
 | `src/components/agent-history-view.tsx` | View agent interaction history | `AgentHistoryPayload` with bead references |
@@ -329,7 +301,7 @@ Next.js page routes that display beads.
 | Path | Purpose |
 |------|---------|
 | `src/app/page.tsx` | Root redirect to `/beads` |
-| `src/app/beads/page.tsx` | Main beads dashboard: table, filters, lightbox, orchestration, breakdown, retakes, final-cut views |
+| `src/app/beads/page.tsx` | Main beads dashboard: table, filters, lightbox, orchestration, retakes, final-cut views |
 | `src/app/beads/[id]/page.tsx` | Bead detail redirect: redirects `/beads/:id` to `/beads?bead=:id` |
 
 ---
@@ -405,7 +377,6 @@ Test files in `src/lib/__tests__/` that exercise beads modules.
 | `src/lib/__tests__/bead-sort-tiebreaker.test.ts` | Sort tiebreaker edge cases |
 | `src/lib/__tests__/bead-review-fields.test.ts` | Review field extraction |
 | `src/lib/__tests__/bead-columns-helpers.test.ts` | Column helper functions |
-| `src/lib/__tests__/breakdown-prompt.test.ts` | Breakdown prompt generation |
 | `src/lib/__tests__/doctor.test.ts` | Doctor diagnostics |
 | `src/lib/__tests__/doctor-applyfix.test.ts` | Doctor fix application |
 | `src/lib/__tests__/ready-ancestor-filter.test.ts` | Ready ancestor-chain filter |

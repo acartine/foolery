@@ -298,7 +298,7 @@ _write_settings_toml() {
 
     printf '[actions]\n'
     local action
-    for action in take scene breakdown scopeRefinement; do
+    for action in take scene scopeRefinement; do
       printf '%s = "%s"\n' "$action" \
         "$(_kv_get ACTION_MAP "$action" "")"
     done
@@ -549,11 +549,10 @@ EOF
 
 # Prompt for per-action agent mappings (multiple agents).
 _prompt_action_mappings() {
-  local -a action_names=(take scene breakdown)
+  local -a action_names=(take scene)
   local -a action_labels=(
     '"Take!" (execute single beat)'
     '"Scene!" (multi-beat orchestration)'
-    '"Breakdown" (decomposition)'
   )
 
   local i
@@ -659,7 +658,7 @@ maybe_agent_wizard() {
     fi
     # Only set action mappings if not already configured
     local action
-    for action in take scene breakdown; do
+    for action in take scene; do
       local existing
       existing="$(_kv_get ACTION_MAP "$action" "")"
       if [[ -z "$existing" ]]; then

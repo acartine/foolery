@@ -83,7 +83,6 @@ try {
   assert.deepEqual(actionsPayload.data, {
     take: agentId,
     scene: agentId,
-    breakdown: agentId,
     scopeRefinement: agentId,
   });
 

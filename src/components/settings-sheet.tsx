@@ -58,7 +58,6 @@ const DEFAULTS: SettingsData = {
   actions: {
     take: "",
     scene: "",
-    breakdown: "",
     scopeRefinement: "",
   },
   backend: {

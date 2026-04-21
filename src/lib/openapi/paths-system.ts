@@ -292,6 +292,47 @@ export const systemPaths = {
     },
   },
 
+  "/api/scope-refinement/status": {
+    get: {
+      tags: ["Scope refinement"],
+      summary: "Get scope refinement queue and worker status",
+      description:
+        "Returns the current scope-refinement queue depth, recent completions, " +
+        "and the health of the background worker that processes jobs.",
+      operationId: "getScopeRefinementStatus",
+      responses: {
+        "200": {
+          description: "Scope refinement status snapshot",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  data: {
+                    type: "object",
+                    properties: {
+                      queueSize: { type: "integer", minimum: 0 },
+                      completions: {
+                        type: "array",
+                        items: { type: "object", additionalProperties: true },
+                        description: "Recent scope-refinement completion events",
+                      },
+                      worker: {
+                        type: "object",
+                        additionalProperties: true,
+                        description: "Scope-refinement worker health snapshot",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+
   "/api/agent-history/message-types": {
     get: {
       tags: ["System"],

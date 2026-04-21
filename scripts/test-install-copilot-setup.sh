@@ -143,6 +143,5 @@ assert_contains 'model = "gpt-5.2"' "$SETTINGS_FILE"
 assert_contains "[agents.codex]" "$SETTINGS_FILE"
 assert_contains 'take = "copilot-claude-sonnet-4-5"' "$SETTINGS_FILE"
 assert_contains 'scene = "copilot-gpt-5-2"' "$SETTINGS_FILE"
-assert_contains 'breakdown = "codex"' "$SETTINGS_FILE"
 
 log "PASS: installed launcher configured Copilot from isolated setup."

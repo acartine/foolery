@@ -47,7 +47,6 @@ SSE stream to xterm in browser → agent completes → workflow state advances.
 - **Execution backend**: `src/lib/execution-backend.ts` — `StructuredExecutionBackend` (lease/iteration/snapshot lifecycle)
 - **Session lifecycle**: `src/lib/terminal-manager.ts` — `createSession()`, `abortSession()`
 - **Orchestration**: `src/lib/orchestration-manager.ts` — `createOrchestrationSession()`
-- **Breakdown**: `src/lib/breakdown-manager.ts` — `createBreakdownSession()`
 - **Agent dispatch**: `src/lib/agent-pool.ts` — `selectFromPool()`
 - **Workflows**: `src/lib/workflows.ts` — step definitions, state mappings
 - **Registry**: `src/lib/registry.ts` — `loadRegistry()`, `addRepo()`, `removeRepo()`

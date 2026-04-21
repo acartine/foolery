@@ -93,8 +93,7 @@ function parseSessionStart(
   if (
     rawType !== "take" &&
     rawType !== "scene" &&
-    rawType !== "direct" &&
-    rawType !== "breakdown"
+    rawType !== "direct"
   ) {
     return null;
   }

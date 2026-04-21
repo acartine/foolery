@@ -18,7 +18,6 @@ React components for the Foolery UI.
 - **`setlist-view.tsx`** — Setlist / execution-plan Gantt view for staged beats
 - **`final-cut-view.tsx`** — Post-session review surface for final-cut beats
 - **`retakes-view.tsx`** — Retake review interface for failed or incomplete beats
-- **`breakdown-view.tsx`** — AI breakdown session viewer
 - **`lease-audit-view.tsx`** — Lease audit log browser
 - **`settings-sheet.tsx`** — Settings side-sheet with agents, repos, dispatch, and defaults tabs
 - **`directory-browser.tsx`** — Filesystem directory picker (used by repo registration)

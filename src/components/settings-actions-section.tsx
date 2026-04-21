@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import {
   Zap,
   Clapperboard,
-  Layers,
   Sparkles,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
@@ -47,12 +46,6 @@ const ACTION_DEFS: ActionDef[] = [
     label: "Scene!",
     description: "Multi-beat orchestration",
     icon: Clapperboard,
-  },
-  {
-    name: "breakdown",
-    label: "Breakdown",
-    description: "Decompose into sub-beats",
-    icon: Layers,
   },
   {
     name: "scopeRefinement",

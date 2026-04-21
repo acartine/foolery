@@ -80,7 +80,6 @@ export interface ConversationLogTheme {
   /* badge tones */
   badgeInteractionScene: string;
   badgeInteractionDirect: string;
-  badgeInteractionBreakdown: string;
   badgeInteractionDefault: string;
   badgeStatusCompleted: string;
   badgeStatusError: string;
@@ -285,8 +284,6 @@ const LIGHT: ConversationLogTheme = {
   badgeInteractionDirect:
     "border-emerald-300"
     + " bg-emerald-50 text-emerald-800",
-  badgeInteractionBreakdown:
-    "border-rose-300 bg-rose-50 text-rose-800",
   badgeInteractionDefault:
     "border-sky-300 bg-sky-50 text-sky-800",
   badgeStatusCompleted:
@@ -497,9 +494,6 @@ const DARK: ConversationLogTheme = {
   badgeInteractionDirect:
     "border-emerald-500/40"
     + " bg-emerald-500/20 text-emerald-100",
-  badgeInteractionBreakdown:
-    "border-rose-500/40"
-    + " bg-rose-500/20 text-rose-100",
   badgeInteractionDefault:
     "border-cyan-500/40"
     + " bg-cyan-500/20 text-cyan-100",

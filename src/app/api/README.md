@@ -12,7 +12,6 @@ Next.js API route handlers serving the Foolery REST API.
 - **`workflows/`** — Workflow descriptor listing (`route.ts`)
 - **`settings/`** — Settings read/write (`route.ts`), agent management, and action dispatch
 - **`registry/`** — Repository registration and browsing (`route.ts`, `browse/`)
-- **`breakdown/`** — AI breakdown session endpoints
 - **`capabilities/`** — Backend capability introspection
 - **`doctor/`** — Diagnostic health checks
 - **`lease-audit/`** — Knots lease audit log
@@ -22,3 +21,4 @@ Next.js API route handlers serving the Foolery REST API.
 - **`app-update/`** — App update check endpoint
 - **`version/`** — App version endpoint
 - **`openapi.json/`** — Serves the OpenAPI 3.1.0 spec
+- **`docs/`** — Serves a rendered Redoc view of the OpenAPI spec at `/api/docs`

@@ -16,7 +16,6 @@ describe("BeatDetailContent", () => {
       takeCount: 1,
       sceneCount: 0,
       directCount: 0,
-      breakdownCount: 0,
       tokenUsageByAgent: [{
         agentLabel: "Codex",
         agentModel: "o3",

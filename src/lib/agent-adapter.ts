@@ -5,7 +5,7 @@
  *   1. Dialect resolution  — detect agent CLI type from command name
  *   2. Arg building        — construct correct CLI args per dialect
  *   3. Event normalization — convert JSONL events to the Claude shapes
- *                            that orchestration/breakdown/terminal parsers expect
+ *                            that orchestration/terminal parsers expect
  */
 
 import type { RegisteredAgent } from "@/lib/types";
@@ -138,7 +138,7 @@ export function buildGeminiInteractiveArgs(
 }
 
 /**
- * Build CLI args for a one-shot prompt invocation (orchestration / breakdown).
+ * Build CLI args for a one-shot prompt invocation (orchestration).
  *
  * Claude: `claude -p ... --output-format stream-json`
  * Codex: `codex exec ... --json`

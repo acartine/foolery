@@ -35,7 +35,7 @@ async function runWriter(scriptName: "setup.sh" | "agent-wizard.sh") {
         _kv_set AGENT_LABELS claude "Claude Code"
         _kv_set ACTION_MAP take codex-gpt-5
         _kv_set ACTION_MAP scene claude
-        _kv_set ACTION_MAP breakdown codex-gpt-5-2
+        _kv_set ACTION_MAP scopeRefinement codex-gpt-5-2
         _write_settings_toml
       `,
       "bash",
@@ -69,7 +69,7 @@ async function runZeroSelectionWriter(
         _register_model_agents copilot
         _kv_set ACTION_MAP take copilot
         _kv_set ACTION_MAP scene copilot
-        _kv_set ACTION_MAP breakdown copilot
+        _kv_set ACTION_MAP scopeRefinement copilot
         _write_settings_toml
       `,
       "bash",
@@ -191,8 +191,7 @@ function expectDefaultSettingsOutput(
     actions: {
       take: "codex-gpt-5",
       scene: "claude",
-      breakdown: "codex-gpt-5-2",
-      scopeRefinement: "",
+      scopeRefinement: "codex-gpt-5-2",
     },
     backend: { type: "auto" },
     defaults: {
@@ -254,8 +253,7 @@ describe("settings writers", () => {
       expect(parsed.actions).toMatchObject({
         take: "copilot",
         scene: "copilot",
-        breakdown: "copilot",
-        scopeRefinement: "",
+        scopeRefinement: "copilot",
       });
       expect((parsed.agents as Record<string, unknown>).copilot).not.toHaveProperty(
         "model",

@@ -123,7 +123,7 @@ Foolery supports two dispatch modes for assigning agents to work, configurable u
 
 ### Simple (One agent per action)
 
-Map one registered agent to each action type: **Take!** (execute a single beat), **Scene!** (multi-beat orchestration), and **Breakdown** (decompose work into sub-beats). If you want to change your default agent, the Swap Agent tool updates all matching mappings at once.
+Map one registered agent to each action type: **Take!** (execute a single beat) and **Scene!** (multi-beat orchestration). If you want to change your default agent, the Swap Agent tool updates all matching mappings at once.
 
 ![Simple dispatch](docs/screenshots/dispatch-simple-20260314.png)
 

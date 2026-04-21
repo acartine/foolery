@@ -83,7 +83,6 @@ model = "gpt-5"
 [actions]
 take = "claude-sonnet"
 scene = "codex-gpt-5"
-breakdown = "claude-sonnet"
 scopeRefinement = "claude-sonnet"
 
 [backend]
@@ -155,7 +154,6 @@ describe("additive TOML reader", () => {
         expect(parsed.actions).toMatchObject({
           take: "claude-sonnet",
           scene: "codex-gpt-5",
-          breakdown: "claude-sonnet",
           scopeRefinement: "claude-sonnet",
         });
 
@@ -234,7 +232,6 @@ describe("additive agent registration", () => {
         expect(parsed.actions).toMatchObject({
           take: "claude-sonnet",
           scene: "codex-gpt-5",
-          breakdown: "claude-sonnet",
           scopeRefinement: "claude-sonnet",
         });
       },
@@ -385,7 +382,6 @@ model = "gpt-5"
 [actions]
 take = ""
 scene = ""
-breakdown = ""
 scopeRefinement = ""
 
 [backend]

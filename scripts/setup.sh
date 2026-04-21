@@ -707,7 +707,7 @@ _write_settings_toml() {
 
     printf '[actions]\n'
     local action
-    for action in take scene breakdown scopeRefinement; do
+    for action in take scene scopeRefinement; do
       printf '%s = "%s"\n' "$action" \
         "$(_kv_get ACTION_MAP "$action" "")"
     done
@@ -951,11 +951,10 @@ EOF
 }
 
 _prompt_action_mappings() {
-  local -a action_names=(take scene breakdown scopeRefinement)
+  local -a action_names=(take scene scopeRefinement)
   local -a action_labels=(
     '"Take!" (execute single beat)'
     '"Scene!" (multi-beat orchestration)'
-    '"Breakdown" (decomposition)'
     '"Scope Refinement" (refine new beats)'
   )
 
@@ -1046,7 +1045,7 @@ _agent_wizard() {
     fi
     # Only set action mappings if not already configured
     local action
-    for action in take scene breakdown scopeRefinement; do
+    for action in take scene scopeRefinement; do
       local existing
       existing="$(_kv_get ACTION_MAP "$action" "")"
       if [[ -z "$existing" ]]; then
@@ -1258,7 +1257,7 @@ _show_existing_dispatch() {
   printf '  Mode: %s\n' "$dm" >"$_SETUP_OUTPUT"
   if [[ "$dm" == "basic" ]]; then
     local action val
-    for action in take scene breakdown scopeRefinement; do
+    for action in take scene scopeRefinement; do
       val="$(_kv_get ACTION_MAP "$action" "")"
       if [[ -n "$val" ]]; then
         printf '  %s -> %s\n' "$action" "$val" >"$_SETUP_OUTPUT"

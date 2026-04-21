@@ -15,7 +15,6 @@ import type {
 const ACTION_NAMES: readonly ActionName[] = [
   "take",
   "scene",
-  "breakdown",
   "scopeRefinement",
 ];
 

@@ -30,7 +30,6 @@ import { AgentDisplayLabel } from "@/components/agent-display-label";
 const ACTION_LABELS: Record<ActionName, string> = {
   take: "Take",
   scene: "Scene",
-  breakdown: "Breakdown",
   scopeRefinement: "Scope Refinement",
 };
 

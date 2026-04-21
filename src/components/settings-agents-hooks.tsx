@@ -31,7 +31,6 @@ async function setDefaultAgentForActions(
   const mappings: ActionAgentMappings = {
     take: agentId,
     scene: agentId,
-    breakdown: agentId,
     scopeRefinement: agentId,
   };
   return saveActions(mappings);

@@ -206,7 +206,6 @@ export function swapPoolAgent(
 const ACTION_NAMES: readonly ActionName[] = [
   "take",
   "scene",
-  "breakdown",
   "scopeRefinement",
 ];
 

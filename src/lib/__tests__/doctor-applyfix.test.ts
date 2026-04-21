@@ -81,7 +81,6 @@ const DEFAULT_SETTINGS = {
   actions: {
     take: "",
     scene: "",
-    breakdown: "",
   },
   backend: { type: "auto" as const },
 };

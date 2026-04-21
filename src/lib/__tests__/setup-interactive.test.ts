@@ -133,7 +133,6 @@ model = "gpt-5"
 [actions]
 take = "claude-sonnet"
 scene = "codex-gpt-5"
-breakdown = "claude-sonnet"
 scopeRefinement = "claude-sonnet"
 
 [backend]
@@ -176,7 +175,6 @@ model = "gpt-5"
 [actions]
 take = ""
 scene = ""
-breakdown = ""
 scopeRefinement = ""
 
 [backend]
@@ -252,9 +250,8 @@ describe("basic dispatch keep-by-default", () => {
   it(
     "pressing Enter preserves current action mappings",
     async () => {
-      // Four Enter presses = accept default for each
-      // of the 4 action choices (take, scene,
-      // breakdown, scopeRefinement).
+      // Three Enter presses = accept default for each
+      // of the 3 action choices (take, scene, scopeRefinement).
       const snippet = `
         source "$1"
         _read_settings_toml \
@@ -266,13 +263,12 @@ describe("basic dispatch keep-by-default", () => {
         "setup.sh",
         SEED_BASIC,
         snippet,
-        "\n\n\n\n",
+        "\n\n\n",
       );
 
       expect(parsed.actions).toMatchObject({
         take: "claude-sonnet",
         scene: "codex-gpt-5",
-        breakdown: "claude-sonnet",
         scopeRefinement: "claude-sonnet",
       });
     },
@@ -282,7 +278,7 @@ describe("basic dispatch keep-by-default", () => {
     "changing one mapping preserves the others",
     async () => {
       // First action (take): pick agent 2 (codex)
-      // Remaining three: press Enter to keep.
+      // Remaining two: press Enter to keep.
       const snippet = `
         source "$1"
         _read_settings_toml \
@@ -294,13 +290,12 @@ describe("basic dispatch keep-by-default", () => {
         "setup.sh",
         SEED_BASIC,
         snippet,
-        "2\n\n\n\n",
+        "2\n\n\n",
       );
 
       expect(parsed.actions).toMatchObject({
         take: "codex-gpt-5",
         scene: "codex-gpt-5",
-        breakdown: "claude-sonnet",
         scopeRefinement: "claude-sonnet",
       });
     },
@@ -441,7 +436,7 @@ describe("dispatch wizard mode default", () => {
     "defaults to current dispatch mode on Enter",
     async () => {
       // Dispatch wizard: Enter (default basic),
-      //   then 4 Enter for action mappings.
+      //   then 3 Enter for action mappings.
       const snippet = `
         source "$1"
         _read_settings_toml \
@@ -453,14 +448,13 @@ describe("dispatch wizard mode default", () => {
         "setup.sh",
         SEED_BASIC,
         snippet,
-        "\n\n\n\n\n",
+        "\n\n\n\n",
       );
 
       expect(parsed.dispatchMode).toBe("basic");
       expect(parsed.actions).toMatchObject({
         take: "claude-sonnet",
         scene: "codex-gpt-5",
-        breakdown: "claude-sonnet",
         scopeRefinement: "claude-sonnet",
       });
     },

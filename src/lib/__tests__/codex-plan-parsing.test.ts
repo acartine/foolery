@@ -77,7 +77,7 @@ describe("Codex plan parsing: NDJSON plan events", () => {
     const normalize = createLineNormalizer("codex");
 
     const taggedPlan = [
-      "<breakdown_plan_json>",
+      "<plan_json>",
       JSON.stringify({
         summary: "Test",
         waves: [
@@ -90,7 +90,7 @@ describe("Codex plan parsing: NDJSON plan events", () => {
         ],
         assumptions: [],
       }),
-      "</breakdown_plan_json>",
+      "</plan_json>",
     ].join("\n");
 
     normalize({
@@ -100,8 +100,8 @@ describe("Codex plan parsing: NDJSON plan events", () => {
 
     const result = normalize({ type: "turn.completed", usage: {} });
     const resultText = (result as { result: string }).result;
-    expect(resultText).toContain("<breakdown_plan_json>");
-    expect(resultText).toContain("</breakdown_plan_json>");
+    expect(resultText).toContain("<plan_json>");
+    expect(resultText).toContain("</plan_json>");
   });
 
 });

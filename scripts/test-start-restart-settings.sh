@@ -54,7 +54,6 @@ write_partial_settings() {
 [actions]
 take = ""
 scene = ""
-breakdown = ""
 TOML
 }
 

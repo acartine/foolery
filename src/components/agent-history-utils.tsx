@@ -360,10 +360,6 @@ export function interactionTypeTone(
     return "border-emerald-500/40"
       + " bg-emerald-500/20 text-emerald-100";
   }
-  if (iType === "breakdown") {
-    return "border-rose-500/40"
-      + " bg-rose-500/20 text-rose-100";
-  }
   return "border-cyan-500/40"
     + " bg-cyan-500/20 text-cyan-100";
 }
@@ -373,7 +369,6 @@ export function interactionTypeLabel(
 ): string {
   if (iType === "scene") return "Scene!";
   if (iType === "direct") return "Planning";
-  if (iType === "breakdown") return "Breakdown";
   return "Take!";
 }
 

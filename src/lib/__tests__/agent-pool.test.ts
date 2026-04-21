@@ -401,8 +401,7 @@ describe("swapActionsAgent", () => {
   const baseActions: ActionAgentMappings = {
     take: "claude",
     scene: "sonnet",
-    breakdown: "claude",
-    scopeRefinement: "sonnet",
+    scopeRefinement: "claude",
   };
 
   it("swaps the source agent across all mapped actions", () => {
@@ -410,13 +409,12 @@ describe("swapActionsAgent", () => {
     expect(result.affectedActions).toBe(2);
     expect(result.updates).toEqual({
       take: "codex",
-      breakdown: "codex",
+      scopeRefinement: "codex",
     });
     expect(result.updatedActions).toEqual({
       take: "codex",
       scene: "sonnet",
-      breakdown: "codex",
-      scopeRefinement: "sonnet",
+      scopeRefinement: "codex",
     });
   });
 
@@ -439,8 +437,7 @@ describe("countDispatchAgentOccurrences", () => {
   const actions: ActionAgentMappings = {
     take: "claude",
     scene: "sonnet",
-    breakdown: "claude",
-    scopeRefinement: "codex",
+    scopeRefinement: "claude",
   };
 
   const pools: PoolsSettings = {

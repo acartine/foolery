@@ -262,6 +262,56 @@ export const beatsPaths = {
     },
   },
 
+  "/api/beats/{id}/refine-scope": {
+    post: {
+      tags: ["Scope refinement"],
+      summary: "Enqueue a scope refinement job for a beat",
+      description:
+        "Queues the configured scope-refinement agent to re-evaluate the beat's " +
+        "acceptance criteria. Returns 503 when no scope-refinement agent is configured.",
+      operationId: "refineBeatScope",
+      parameters: [beatIdParam],
+      requestBody: {
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                _repo: { type: "string", description: "Repository path for multi-repo support" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        "200": {
+          description: "Scope refinement job enqueued",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  ok: { type: "boolean" },
+                  data: {
+                    type: "object",
+                    properties: {
+                      jobId: { type: "string" },
+                      beatId: { type: "string" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        "503": {
+          description: "Scope refinement agent not configured",
+          content: { "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } } },
+        },
+      },
+    },
+  },
+
   "/api/beats/ready": {
     get: {
       tags: ["Beats"],

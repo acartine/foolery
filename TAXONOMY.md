@@ -19,7 +19,7 @@ Last auto-run: 2026-04-16 · Scope: `/` (full repo)
 ## Nouns
 
 ### Action <!-- auto -->
-A dispatchable agent operation mapped to one or more agents. One of `take`, `scene`, `breakdown`, `scopeRefinement`.
+A dispatchable agent operation mapped to one or more agents. One of `take`, `scene`, `scopeRefinement`.
 - `src/lib/types.ts:382` — `ActionName` union
 - `src/lib/schemas.ts:134` — action schema
 
@@ -89,15 +89,6 @@ Integer severity 0 (lowest) through 4 (emergency/blocker).
 Open string categorization of a beat: `work`, `task`, `bug`, `feature`, `chore`, `epic`, `merge-request`, `molecule`, `gate`.
 - `src/lib/types.ts:10`
 - `docs/MANIFEST.md:156`
-
-### Breakdown <!-- auto --> ⚠ overloaded
-(a) The AI-driven decomposition of a parent beat into waves of sub-beats; (b) a named agent Action. Session is `BreakdownSession`.
-- `src/lib/types.ts:334`
-- `README.md:125`
-
-### BreakdownPlan <!-- auto -->
-Structured output of a breakdown session: summary, waves (each with objective and beats), assumptions.
-- `src/lib/types.ts:322`
 
 ### Capsule <!-- auto -->
 Bundled session artifact (context, output, metadata) produced at handoff between agents or between agent and human.
@@ -263,7 +254,7 @@ Agent-driven clarification of a beat's scope or acceptance criteria. Queued via 
 - `src/stores/scope-refinement-pending-store.ts`
 
 ### Session <!-- auto --> ⚠ overloaded
-An umbrella term. Could mean `TerminalSession`, `OrchestrationSession`, `BreakdownSession`, or `AgentSessionRuntime`. Always qualify.
+An umbrella term. Could mean `TerminalSession`, `OrchestrationSession`, or `AgentSessionRuntime`. Always qualify.
 - `src/lib/types.ts:138`
 - `src/lib/agent-session-runtime.ts:139`
 
@@ -298,7 +289,7 @@ A single agent response cycle within an interactive session (one prompt in, one 
 - `docs/interactive-agent-session-protocol.md:19`
 
 ### Wave <!-- auto --> ⚠ ambiguous
-A parallel-executable group of beats. Multiple `Wave` types exist across planners: `Wave` (wave-planner), `OrchestrationWave`, `PlanWave`, `ExecutionPlanWaveRecord`, `BreakdownWave`.
+A parallel-executable group of beats. Multiple `Wave` types exist across planners: `Wave` (wave-planner), `OrchestrationWave`, `PlanWave`, `ExecutionPlanWaveRecord`.
 - `src/lib/types.ts:175` — `Wave` (wave-planner form)
 - `src/lib/types.ts:234` — `OrchestrationWave`
 - See Review Queue
@@ -401,13 +392,12 @@ Legacy compat state; normalized to `implementation`.
 ## Verbs
 
 ### abort <!-- auto -->
-Terminate a session without completing its work. Applies to `TerminalSession`, `OrchestrationSession`, `BreakdownSession`.
+Terminate a session without completing its work. Applies to `TerminalSession` and `OrchestrationSession`.
 - `src/lib/terminal-manager.ts:131`
 - `docs/interactive-agent-session-protocol.md:263`
 
 ### apply <!-- auto -->
-Materialize a breakdown or orchestration plan into real beats in the registry.
-- `src/lib/breakdown-api.ts:45`
+Materialize an orchestration plan into real beats in the registry.
 - `docs/API.md:624`
 
 ### audit <!-- auto -->
@@ -419,11 +409,6 @@ Inspect leases / permissions / registry state for validity and coverage; does no
 Populate missing fields with defaults (e.g. `memoryManagerType` on pre-existing repos, pool entries on legacy settings).
 - `src/lib/registry.ts:203` — `backfillMissingRepoMemoryManagerTypes`
 - `src/lib/settings-maintenance.ts:217`
-
-### breakdown <!-- auto -->
-Decompose a parent beat into waves of child beats via AI agent. Also an Action name.
-- `src/lib/breakdown-manager.ts`
-- `src/lib/breakdown-api.ts:10`
 
 ### cascade-close <!-- auto -->
 Close a parent beat and all open descendants, leaf-first.
@@ -647,10 +632,10 @@ Terms needing human attention. Resolve and remove.
 - ⚠ **Backend — overloaded**. `BackendPort` (memory-manager backend) and the *execution backend* (`StructuredExecutionBackend`, `src/lib/execution-backend.ts`) are both called "backend" in prose and code. Consider renaming the execution-side to "Execution Engine" or always qualifying.
 - ⚠ **BackendError — overloaded**. Exists as an interface (`src/lib/backend-port.ts:24`) and as an `Error` subclass (`src/lib/backend-errors.ts:52`). Code imports from both. Decide which is canonical.
 - ⚠ **Plan — ambiguous**. Four distinct types: `WavePlan` (planner output), `OrchestrationPlan` (AI plan for a scene), `PlanDocument` (persisted orchestration plan), `ExecutionPlan` (Knots-native). Prose calls all of them "the plan." Consider a naming convention.
-- ⚠ **Wave — ambiguous**. Five `Wave` shapes: `Wave` (wave-planner), `OrchestrationWave`, `PlanWave`, `ExecutionPlanWaveRecord`, `BreakdownWave`. Consider a shared supertype or disambiguating suffixes in prose.
-- ⚠ **Session — overloaded**. `TerminalSession`, `OrchestrationSession`, `BreakdownSession`, `AgentSessionRuntime` all get called "session" in comments and UI copy. Always qualify in code and docs.
+- ⚠ **Wave — ambiguous**. Four `Wave` shapes: `Wave` (wave-planner), `OrchestrationWave`, `PlanWave`, `ExecutionPlanWaveRecord`. Consider a shared supertype or disambiguating suffixes in prose.
+- ⚠ **Session — overloaded**. `TerminalSession`, `OrchestrationSession`, `AgentSessionRuntime` all get called "session" in comments and UI copy. Always qualify in code and docs.
 - ⚠ **Step — ambiguous**. `WorkflowStep` (Planning…ShipmentReview), `OrchestrationWaveStep`, `PlanStep`, and "settings pool step" all coexist. Different shapes, related concepts.
 - ⚠ **Retake — overloaded**. The Retakes view (`src/components/retakes-view.tsx`) and the retake operation (`src/lib/retake.ts`) share a name. Usually fine in context; flag if prose gets confusing.
-- ⚠ **Take / Scene / Breakdown — overloaded**. Each is simultaneously a verb (the action), a noun (the session/artifact), and an `Action` enum value. Context usually disambiguates but flagging for new-contributor orientation.
+- ⚠ **Take / Scene — overloaded**. Each is simultaneously a verb (the action), a noun (the session/artifact), and an `Action` enum value. Context usually disambiguates but flagging for new-contributor orientation.
 - ⚠ **RegisteredRepo — divergence**. Identical interface declared in `src/lib/types.ts:114` and `src/lib/registry.ts:8`. Pick one canonical source and re-export from the other.
 - ⚠ **closed vs shipped — overloaded terminal state**. Both are terminal; `closed` is legacy/Beads, `shipped` is Knots canonical. `workflows-runtime.ts` normalizes between them. Consider a clear guideline for new code.

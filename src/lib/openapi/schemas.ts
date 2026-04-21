@@ -163,66 +163,6 @@ const coreSchemas = {
     },
   },
 
-  BreakdownPlan: {
-    type: "object",
-    required: ["summary", "waves", "assumptions"],
-    properties: {
-      summary: { type: "string" },
-      waves: {
-        type: "array",
-        items: {
-          type: "object",
-          required: ["waveIndex", "name", "objective", "beats"],
-          properties: {
-            waveIndex: { type: "integer" },
-            name: { type: "string" },
-            objective: { type: "string" },
-            beats: {
-              type: "array",
-              items: {
-                type: "object",
-                required: ["title", "type", "priority"],
-                properties: {
-                  title: { type: "string" },
-                  type: { type: "string" },
-                  priority: { type: "integer", enum: [0, 1, 2, 3, 4] },
-                  description: { type: "string" },
-                },
-              },
-            },
-            notes: { type: "string" },
-          },
-        },
-      },
-      assumptions: { type: "array", items: { type: "string" } },
-    },
-  },
-
-  BreakdownSession: {
-    type: "object",
-    required: ["id", "repoPath", "parentBeatId", "status", "startedAt"],
-    properties: {
-      id: { type: "string" },
-      repoPath: { type: "string" },
-      parentBeatId: { type: "string" },
-      status: { type: "string", enum: ["running", "completed", "error", "aborted"] },
-      startedAt: { type: "string", format: "date-time" },
-      completedAt: { type: "string", format: "date-time" },
-      error: { type: "string" },
-      plan: { $ref: "#/components/schemas/BreakdownPlan" },
-    },
-  },
-
-  BreakdownEvent: {
-    type: "object",
-    required: ["type", "data", "timestamp"],
-    properties: {
-      type: { type: "string", enum: ["log", "plan", "status", "error", "exit"] },
-      data: { oneOf: [{ type: "string" }, { $ref: "#/components/schemas/BreakdownPlan" }] },
-      timestamp: { type: "number" },
-    },
-  },
-
   OrchestrationEvent: {
     type: "object",
     required: ["type", "data", "timestamp"],
@@ -268,7 +208,7 @@ const coreSchemas = {
             steps: {
               type: "array",
               items: {
-                $ref: "#/components/schemas/OrchestrationWaveStep",
+                $ref: "#/components/schemas/PlanStep",
               },
             },
             notes: { type: "string" },
@@ -413,7 +353,6 @@ const coreSchemas = {
         properties: {
           take: { type: "string" },
           scene: { type: "string" },
-          breakdown: { type: "string" },
           scopeRefinement: { type: "string" },
         },
       },

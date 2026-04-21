@@ -118,27 +118,11 @@ into parent-first DFS order with depth annotations.
 
 **Sorting**: `src/lib/bead-sort.ts` provides natural sort with tiebreakers.
 
-### 1.6 Breakdown / Orchestration
+### 1.6 Orchestration
 
-AI-assisted decomposition and orchestration of work.
+AI-assisted multi-bead coordination of work.
 
-#### 1.6.1 Breakdown (single-bead decomposition)
-
-| Entry point | Route / File | Method |
-|---|---|---|
-| Breakdown view | `src/components/breakdown-view.tsx` | UI |
-| Start session | `POST /api/breakdown` | API |
-| Stream events | `GET /api/breakdown/[sessionId]` (SSE) | API |
-| Apply plan | `POST /api/breakdown/apply` | API |
-| Abort session | `DELETE /api/breakdown` | API |
-
-Backend: `src/lib/breakdown-manager.ts`
-
-Flow: parent bead selected -> agent spawned with decomposition prompt ->
-NDJSON stream of wave drafts -> final plan -> user applies -> child beads
-created under parent with wave slugs and dependency edges.
-
-#### 1.6.2 Orchestration (multi-bead coordination)
+#### 1.6.1 Orchestration (multi-bead coordination)
 
 | Entry point | Route / File | Method |
 |---|---|---|
@@ -376,25 +360,7 @@ computeWavePlan(repoPath?: string) -> WavePlan
             computedAt: string }
 ```
 
-### 2.6 Breakdown Operations
-
-```
-startBreakdown(repoPath: string, parentBeatId: string) -> BreakdownSession
-  Composite: getBead(parentBeatId) + spawn agent process + stream events.
-
-streamBreakdownEvents(sessionId: string) -> AsyncStream<BreakdownEvent>
-  SSE stream of log, plan, status, error, exit events.
-
-applyBreakdownPlan(sessionId: string, repoPath: string) -> ApplyBreakdownResult
-  Composite: for each wave in plan, createBead (wave container as epic) +
-  addDep (chain waves sequentially) + createBead (child tasks under wave).
-  Output: { createdBeadIds: string[], waveCount: number }
-
-abortBreakdown(sessionId: string) -> void
-  Sends SIGTERM/SIGKILL to agent process.
-```
-
-### 2.7 Orchestration Operations
+### 2.6 Orchestration Operations
 
 ```
 startOrchestration(repoPath: string, objective?: string) -> OrchestrationSession
@@ -418,7 +384,7 @@ restageOrchestration(repoPath: string, plan: OrchestrationPlan,
 abortOrchestration(sessionId: string) -> void
 ```
 
-### 2.8 Doctor Operations
+### 2.7 Doctor Operations
 
 ```
 runDoctor() -> DoctorReport
@@ -529,7 +495,6 @@ fetchBeadsFromAllRepos(repos: RegisteredRepo[], filters?) -> BeadWithRepo[]
 | **Status transitions** | `updateBead` (status field), `closeBead`, `computeEntryLabels`, `computePassLabels`, `computeRetryLabels` |
 | **Sync / collaboration** | (internal to bd.ts exec pipeline: serialization, locking, auto-sync, timeout retry) |
 | **Query / filter** | `listBeads`, `searchBeads`, `queryBeads`, `getReadyBeads`, `buildHierarchy`, `filterByVisibleAncestorChain`, `fetchBeadsFromAllRepos` |
-| **Breakdown** | `startBreakdown` (uses `getBead`, agent spawn), `streamBreakdownEvents`, `applyBreakdownPlan` (uses `createBead`, `addDep`), `abortBreakdown` |
 | **Orchestration** | `startOrchestration`, `streamOrchestrationEvents`, `listOrchestrationSessions`, `applyOrchestrationPlan` (uses `createBead`, `addDep`), `restageOrchestration`, `abortOrchestration` |
 | **Wave planning** | `computeWavePlan` (uses `listBeads`, `listDeps`, `computeWaves`, `inferReadiness`) |
 | **Merge** | `mergeBeads` (uses `getBead` x2, `updateBead`, `closeBead`) |
@@ -551,6 +516,6 @@ Operations that multiple workflows depend on:
 | Error suppression (`bd-error-suppression.ts`) | List, show, ready endpoints |
 | Bead normalization (`normalizeBead`) | All read operations |
 | Label normalization and mutual exclusion | Update, doctor |
-| Wave slug allocation (`wave-slugs.ts`) | Breakdown apply, orchestration apply |
-| Interaction logger (`interaction-logger.ts`) | Breakdown, orchestration, terminal |
-| Agent adapter (`agent-adapter.ts`) | Breakdown, orchestration, terminal |
+| Wave slug allocation (`wave-slugs.ts`) | Orchestration apply |
+| Interaction logger (`interaction-logger.ts`) | Orchestration, terminal |
+| Agent adapter (`agent-adapter.ts`) | Orchestration, terminal |

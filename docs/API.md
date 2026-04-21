@@ -11,7 +11,6 @@ Reference for agent clients automating Foolery operations. All endpoints live un
 - [Dependencies](#dependencies)
 - [Wave Planning](#wave-planning)
 - [Terminal Sessions](#terminal-sessions)
-- [Breakdown (AI Planning)](#breakdown-ai-planning)
 - [Orchestration (Multi-Agent)](#orchestration-multi-agent)
 - [Execution Plans](#execution-plans)
 - [Settings and Agents](#settings-and-agents)
@@ -26,7 +25,7 @@ Reference for agent clients automating Foolery operations. All endpoints live un
 
 ## Overview
 
-Foolery is a local web UI and API for agent-driven software work. It sits on top of Knots and Beads backends and exposes JSON endpoints for creating, querying, and managing beats, dependencies, execution waves, terminal sessions, breakdown runs, and multi-agent orchestration.
+Foolery is a local web UI and API for agent-driven software work. It sits on top of Knots and Beads backends and exposes JSON endpoints for creating, querying, and managing beats, dependencies, execution waves, terminal sessions, and multi-agent orchestration.
 
 Key facts:
 - All endpoints return JSON and accept JSON request bodies.
@@ -541,111 +540,6 @@ Body:
 Response:
 ```json
 { "ok": true }
-```
-
----
-
-## Breakdown (AI Planning)
-
-Breaks down a large beat into sub-beats using AI analysis.
-
-### Start Breakdown
-
-```
-POST /api/breakdown
-```
-
-Body:
-```json
-{
-  "parentBeatId": "large-beat-id",
-  "_repo": "/path/to/repo"
-}
-```
-
-Both fields are required.
-
-Response (201):
-```json
-{
-  "data": {
-    "id": "session-uuid",
-    "repoPath": "/path/to/repo",
-    "parentBeatId": "large-beat-id",
-    "status": "running",
-    "startedAt": "2025-01-15T10:00:00Z"
-  }
-}
-```
-
-### Stream Breakdown (SSE)
-
-```
-GET /api/breakdown/{sessionId}
-```
-
-Returns a Server-Sent Events stream. Event types: `log`, `plan`, `status`, `error`, `exit`.
-
-The `plan` event contains the breakdown plan:
-```json
-{
-  "type": "plan",
-  "data": {
-    "summary": "Split into 3 implementation waves",
-    "waves": [
-      {
-        "waveIndex": 1,
-        "name": "Foundation",
-        "objective": "Set up base infrastructure",
-        "beats": [{ "title": "Create schema", "type": "work", "priority": 2 }]
-      }
-    ],
-    "assumptions": ["Existing DB is PostgreSQL"]
-  },
-  "timestamp": 1705312800000
-}
-```
-
-### Abort Breakdown
-
-```
-DELETE /api/breakdown
-```
-
-Body:
-```json
-{ "sessionId": "session-uuid" }
-```
-
-Response:
-```json
-{ "ok": true }
-```
-
-### Apply Breakdown Plan
-
-```
-POST /api/breakdown/apply
-```
-
-Creates sub-beats from the breakdown plan.
-
-Body:
-```json
-{
-  "sessionId": "session-uuid",
-  "_repo": "/path/to/repo"
-}
-```
-
-Response:
-```json
-{
-  "data": {
-    "createdBeatIds": ["new-1", "new-2", "new-3"],
-    "waveCount": 2
-  }
-}
 ```
 
 ---
@@ -1169,8 +1063,7 @@ Response:
     "actions": {
       "take": "claude-opus",
       "scene": "",
-      "direct": "",
-      "breakdown": ""
+      "direct": ""
     },
     "backend": { "type": "auto" },
     "defaults": { "profileId": "" },
@@ -1212,7 +1105,7 @@ Response:
 ```json
 {
   "ok": true,
-  "data": { "take": "", "scene": "", "direct": "", "breakdown": "" }
+  "data": { "take": "", "scene": "", "direct": "" }
 }
 ```
 
@@ -1502,7 +1395,7 @@ Response:
 
 ## SSE Streaming Guide
 
-Terminal, Breakdown, and Orchestration endpoints support Server-Sent Events (SSE) for real-time output streaming.
+Terminal and Orchestration endpoints support Server-Sent Events (SSE) for real-time output streaming.
 
 ### Connecting
 
@@ -1510,7 +1403,6 @@ Send a GET request to the session's stream endpoint. No special `Accept` header 
 
 ```
 GET /api/terminal/{sessionId}
-GET /api/breakdown/{sessionId}
 GET /api/orchestration/{sessionId}
 ```
 
@@ -1535,12 +1427,12 @@ data: {"type":"exit","data":"0","timestamp":1705312801000}
 | `stderr` | string | Standard error from the process |
 | `exit` | string (exit code) | Process exited |
 
-**Breakdown and Orchestration sessions:**
+**Orchestration sessions:**
 
 | Type | Data | Description |
 |------|------|-------------|
 | `log` | string | Progress log message |
-| `plan` | object | The generated plan (BreakdownPlan or OrchestrationPlan) |
+| `plan` | object | The generated plan (OrchestrationPlan) |
 | `status` | string | Session status change |
 | `error` | string | Error message |
 | `exit` | string | Session finished |
@@ -1628,26 +1520,7 @@ curl -N http://localhost:3000/api/terminal/session-uuid
 # Wait for: data: {"type":"exit","data":"0","timestamp":...}
 ```
 
-### Recipe 4: Break Down a Large Beat
-
-```bash
-# Start AI breakdown
-curl -X POST http://localhost:3000/api/breakdown \
-  -H "Content-Type: application/json" \
-  -d '{"parentBeatId": "large-beat", "_repo": "/path/to/repo"}'
-# Response: { "data": { "id": "session-uuid", ... } }
-
-# Stream until you receive a "plan" event
-curl -N http://localhost:3000/api/breakdown/session-uuid
-
-# Apply the plan to create sub-beats
-curl -X POST http://localhost:3000/api/breakdown/apply \
-  -H "Content-Type: application/json" \
-  -d '{"sessionId": "session-uuid", "_repo": "/path/to/repo"}'
-# Response: { "data": { "createdBeatIds": [...], "waveCount": 2 } }
-```
-
-### Recipe 5: Multi-Agent Orchestration
+### Recipe 4: Multi-Agent Orchestration
 
 ```bash
 # Start orchestration planning
@@ -1665,7 +1538,7 @@ curl -X POST http://localhost:3000/api/orchestration/apply \
   -d '{"sessionId": "session-uuid", "_repo": "/path/to/repo"}'
 ```
 
-### Recipe 6: Add Dependencies
+### Recipe 5: Add Dependencies
 
 ```bash
 # Make beat-B block beat-A (beat-A cannot start until beat-B is done)

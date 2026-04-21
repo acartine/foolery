@@ -32,7 +32,7 @@ import {
 import { DEFAULT_SCOPE_REFINEMENT_PROMPT } from "@/lib/scope-refinement-defaults";
 
 const DEFAULT_ACTIONS = {
-  take: "", scene: "", breakdown: "", scopeRefinement: "",
+  take: "", scene: "", scopeRefinement: "",
 };
 
 const DEFAULT_POOLS = {
@@ -117,13 +117,13 @@ describe("loadSettings", () => {
         '[actions]',
         'take = "claude"',
         'scene = "claude-opus"',
-        'breakdown = "codex"',
+        'scopeRefinement = "codex"',
       ].join("\n"),
     );
     const settings = await loadSettings();
     expect(settings.actions.take).toBe("");
     expect(settings.actions.scene).toBe("claude-opus");
-    expect(settings.actions.breakdown).toBe("");
+    expect(settings.actions.scopeRefinement).toBe("");
   });
 
   it("prunes orphan pool entries whose agent ids aren't registered", async () => {
@@ -260,7 +260,7 @@ describe("backfillMissingSettingsDefaults", () => {
         'maxClaimsPerQueueType = 10',
         'terminalLightTheme = false',
         '[actions]', 'take = ""', 'scene = ""',
-        'breakdown = ""', 'scopeRefinement = ""',
+        'scopeRefinement = ""',
         '[backend]', 'type = "cli"',
         '[defaults]',
         'profileId = ""',

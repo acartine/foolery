@@ -314,64 +314,6 @@ export interface ApplyOrchestrationOverrides {
   waveSlugs?: Record<string, string>;
 }
 
-// ── Breakdown types ──────────────────────────────────────
-
-export interface BreakdownBeatSpec {
-  title: string;
-  type: string;
-  priority: BeatPriority;
-  description?: string;
-}
-
-export interface BreakdownWave {
-  waveIndex: number;
-  name: string;
-  objective: string;
-  beats: BreakdownBeatSpec[];
-  notes?: string;
-}
-
-export interface BreakdownPlan {
-  summary: string;
-  waves: BreakdownWave[];
-  assumptions: string[];
-}
-
-export type BreakdownSessionStatus =
-  | "running"
-  | "completed"
-  | "error"
-  | "aborted";
-
-export interface BreakdownSession {
-  id: string;
-  repoPath: string;
-  parentBeatId: string;
-  status: BreakdownSessionStatus;
-  startedAt: string;
-  completedAt?: string;
-  error?: string;
-  plan?: BreakdownPlan;
-}
-
-export type BreakdownEventType =
-  | "log"
-  | "plan"
-  | "status"
-  | "error"
-  | "exit";
-
-export interface BreakdownEvent {
-  type: BreakdownEventType;
-  data: string | BreakdownPlan;
-  timestamp: number;
-}
-
-export interface ApplyBreakdownResult {
-  createdBeatIds: string[];
-  waveCount: number;
-}
-
 // ── Agent management types ──────────────────────────────────
 
 export interface RegisteredAgent {
@@ -394,7 +336,6 @@ export interface RegisteredAgent {
 export type ActionName =
   | "take"
   | "scene"
-  | "breakdown"
   | "scopeRefinement";
 
 export type SettingsPoolTargetId = string;

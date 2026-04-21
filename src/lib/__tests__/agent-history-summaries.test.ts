@@ -173,38 +173,6 @@ describe("summaries: repo path and time filtering", () => {
 describe("summaries: interaction types and status", () => {
   setupTempDir();
 
-  it("includes breakdown sessions in beat summaries", async () => {
-    await writeLog(
-      tempDir, "repo-a/2026-02-20/breakdown-a.jsonl",
-      [
-        {
-          kind: "session_start", ts: "2026-02-20T15:00:00.000Z",
-          sessionId: "breakdown-a", interactionType: "breakdown",
-          repoPath: "/tmp/repo-a", beatIds: ["foo-bd"],
-        },
-        {
-          kind: "prompt", ts: "2026-02-20T15:00:01.000Z",
-          sessionId: "breakdown-a",
-          prompt: "ID: foo-bd\nTitle: Breakdown beat",
-          source: "initial",
-        },
-        {
-          kind: "session_end", ts: "2026-02-20T15:02:00.000Z",
-          sessionId: "breakdown-a", status: "completed",
-          exitCode: 0,
-        },
-      ],
-    );
-
-    const history = await readAgentHistory({ logRoot: tempDir });
-    expect(history.beats).toHaveLength(1);
-    expect(history.beats[0]?.beatId).toBe("foo-bd");
-    expect(history.beats[0]?.breakdownCount).toBe(1);
-    expect(history.beats[0]?.takeCount).toBe(0);
-    expect(history.beats[0]?.sessionCount).toBe(1);
-    expect(history.beats[0]?.title).toBe("Breakdown beat");
-  });
-
   it("parses sessions with beatIds field name", async () => {
     await writeLog(
       tempDir, "repo-a/2026-02-20/logger-format.jsonl",

@@ -303,8 +303,6 @@ function updateBeatMap(
           start.interactionType === "scene" ? 1 : 0,
         directCount:
           start.interactionType === "direct" ? 1 : 0,
-        breakdownCount:
-          start.interactionType === "breakdown" ? 1 : 0,
         tokenUsageByAgent: [],
       });
     }
@@ -329,7 +327,5 @@ function incrementInteractionCount(
     beat.sceneCount += 1;
   } else if (start.interactionType === "direct") {
     beat.directCount += 1;
-  } else if (start.interactionType === "breakdown") {
-    beat.breakdownCount += 1;
   }
 }

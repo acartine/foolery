@@ -172,7 +172,6 @@ function interactionLabel(
 ): string {
   if (iType === "scene") return "scene";
   if (iType === "direct") return "direct";
-  if (iType === "breakdown") return "breakdown";
   return iType;
 }
 
@@ -184,7 +183,5 @@ function interactionBadgeTone(
     return theme.badgeInteractionScene;
   if (iType === "direct")
     return theme.badgeInteractionDirect;
-  if (iType === "breakdown")
-    return theme.badgeInteractionBreakdown;
   return theme.badgeInteractionDefault;
 }

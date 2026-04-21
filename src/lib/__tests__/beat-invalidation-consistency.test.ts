@@ -83,7 +83,6 @@ describe("beat invalidation consistency", () => {
       "app/beats/use-beat-detail.ts",
       "app/beats/use-bulk-actions.ts",
       "components/app-header.tsx",
-      "components/breakdown-view-actions.ts",
       "components/create-beat-dialog.tsx",
       "components/merge-beats-dialog.tsx",
       "components/settings-repos-section.tsx",

@@ -11,7 +11,6 @@ import { plansPaths } from "@/lib/openapi/paths-plans";
 import { wavesPaths } from "@/lib/openapi/paths-waves";
 import {
   terminalPaths,
-  breakdownPaths,
   orchestrationPaths,
 } from "@/lib/openapi/paths-streaming";
 import { settingsPaths } from "@/lib/openapi/paths-settings";
@@ -24,7 +23,7 @@ export const openApiSpec = {
     version: "1.0.0",
     description:
       "Work-item orchestration API for Foolery. Manages beats (work items), " +
-      "wave planning, agent terminals, breakdown sessions, orchestration, " +
+      "wave planning, agent terminals, orchestration, " +
       "settings, and repository registry.",
   },
   servers: [{ url: "/" }],
@@ -34,10 +33,10 @@ export const openApiSpec = {
     { name: "Plans", description: "Persisted execution plans and step driving" },
     { name: "Waves", description: "Wave-based execution planning" },
     { name: "Terminal", description: "Agent terminal sessions and SSE streams" },
-    { name: "Breakdown", description: "Beat breakdown planning sessions" },
     { name: "Orchestration", description: "Multi-wave orchestration sessions" },
     { name: "Settings", description: "Application and agent configuration" },
     { name: "Registry", description: "Repository registration and browsing" },
+    { name: "Scope refinement", description: "AI scope-refinement jobs, worker health, and queue status" },
     { name: "System", description: "Diagnostics, version, capabilities, workflows, and history" },
   ],
   paths: {
@@ -46,7 +45,6 @@ export const openApiSpec = {
     ...plansPaths,
     ...wavesPaths,
     ...terminalPaths,
-    ...breakdownPaths,
     ...orchestrationPaths,
     ...settingsPaths,
     ...registryPaths,

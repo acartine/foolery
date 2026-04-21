@@ -13,7 +13,7 @@ Foolery exists to make multi-step software work legible. Instead of juggling ter
 ### Key Features
 
 - **Beat capture and triage**: Create, edit, filter, and organize beats across repos
-- **Agent dispatch**: Launch single-beat work, multi-beat scenes, and breakdown passes from one UI
+- **Agent dispatch**: Launch single-beat work and multi-beat scenes from one UI
 - **Review lanes**: Separate active execution, human follow-up, retakes, and history into distinct operating surfaces
 - **Backend abstraction**: Route per repo to Knots or Beads through the same app contract
 - **Keyboard-first workflow**: Fast navigation and action execution without living in terminal tabs
@@ -197,7 +197,6 @@ Foolery exposes a RESTful JSON API over Next.js API Routes. The complete referen
 | Dependencies | `GET/POST /api/beats/[id]/deps`, `GET /api/beats/batch-deps` |
 | Waves | `GET /api/waves` |
 | Terminal | `GET/POST/DELETE /api/terminal`, `GET /api/terminal/[sessionId]` (SSE) |
-| Breakdown | `POST/DELETE /api/breakdown`, `GET /api/breakdown/[sessionId]` (SSE), `POST /api/breakdown/apply` |
 | Orchestration | `GET/POST/DELETE /api/orchestration`, `GET /api/orchestration/[sessionId]` (SSE), `POST /api/orchestration/apply` |
 | Settings | `GET/PUT/PATCH /api/settings`, `GET/POST/DELETE /api/settings/agents` |
 | Registry | `GET/POST/DELETE /api/registry`, `GET /api/registry/browse` |

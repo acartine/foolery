@@ -204,7 +204,6 @@ export function normalizeSettingsAgents(
 const ACTION_KEYS = [
   "take",
   "scene",
-  "breakdown",
   "scopeRefinement",
 ] as const;
 

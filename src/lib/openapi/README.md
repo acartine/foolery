@@ -9,7 +9,7 @@ Modular OpenAPI 3.1.0 path and schema definitions assembled by `openapi-spec.ts`
 - **`paths-beats.ts`** — Beat CRUD and listing endpoints
 - **`paths-deps.ts`** — Dependency management endpoints
 - **`paths-waves.ts`** — Wave planning endpoints
-- **`paths-streaming.ts`** — Terminal, breakdown, and orchestration SSE endpoints
+- **`paths-streaming.ts`** — Terminal and orchestration SSE endpoints
 - **`paths-settings.ts`** — Settings and agent configuration endpoints
 - **`paths-system.ts`** — Registry and system health endpoints
 - **`paths-plans.ts`** — Execution-plan persistence endpoints
