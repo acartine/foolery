@@ -1,0 +1,15 @@
+{
+  "event_id": "019daede-ae0a-7123-9e0d-58c8edfcfa31",
+  "occurred_at": "2026-04-21T07:08:42.378029Z",
+  "knot_id": "foolery-f354",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "# Handoff — Plan ready for review\n\n**Core change:** Add one wildcard transition `{ from: \"*\", to: \"shipped\" }` to `canonicalTransitions()` in `src/lib/workflows.ts:253`. This surfaces \"Shipped\" as a forward dropdown option for every non-terminal state in both the per-row queue dropdown and the beat-detail state dropdown (both already driven by `validNextStates()`).\n\n**Secondary change:** Add a terminal-state guard in `src/app/beats/use-bulk-actions.ts` so bulk-Ship on a selection that mixes live and already-shipped knots partitions them, dispatches only for the live ones, and surfaces skipped IDs via a toast. Prevents the silent-skip behavior forbidden by acceptance #4.\n\n**No-op for:** `beat-column-defs-extra.tsx`, `beat-detail-state-dropdown.tsx`, `filter-bar.tsx`, `api/beats/[id]/route.ts`, `knots-backend*.ts` — all already support this transition.\n\n**Tests:** extend `beat-columns-valid-next-states.test.ts`, `bulk-edit-terminal-states.test.ts`, and the knots-backend-update tests. Playwright flow per acceptance #5: single-row ship, multi-select ship, detail-view ship.\n\n**Risk:** low; one-line production change plus a bulk guard. Watch for existing tests that implicitly assume `shipped` is only reachable from `shipment_review`.\n\n**No child knots created** — scope fits in a single knot.",
+    "datetime": "2026-04-21T07:08:42.378029Z",
+    "entry_id": "019daede-ae0a-7123-9e0d-58b610abf4ee",
+    "model": "claude-opus-4-7",
+    "username": "Claude",
+    "version": "4.7"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019dafe8-275f-74b3-8c8a-9af763aecf7d",
+  "occurred_at": "2026-04-21T11:58:40.468606Z",
+  "knot_id": "foolery-1a64",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. `.claude/skills/foolery-configure/SKILL.md` exists with name=`foolery-configure` and a concise top-level description that lists the triggers (`foolery setup`, configure foolery, add/remove agents, change dispatch pools, mount a repo).\n2. Skill body instructs the agent to: (a) load current state from `~/.config/foolery/settings.toml`, `~/.config/foolery/registry.json`, and `foolery config schema`; (b) detect `claude`, `codex`, `opencode`, `gemini`, `copilot` on PATH and probe each for available models; (c) ask at most four questions (which agents, which models, dispatch mode, repos to mount); (d) write both files atomically via tempfile + mv; (e) run `foolery config validate` and not hand off until it passes.\n3. Skill body includes the agent-id convention `<vendor>-<model-slug>` and the eight canonical pool step names (`orchestration`, `planning`, `plan_review`, `implementation`, `implementation_review`, `shipment`, `shipment_review`, `scope_refinement`).\n4. Skill body explicitly preserves a pre-existing `[scopeRefinement].prompt` byte-for-byte and never drops previously registered `[agents.*]` entries.\n5. SKILL.md is ≤ 200 lines total and free of Claude-Code-specific tool names (e.g. no `Read`, `Edit`, `Bash` — use \"shell\", \"cat\", \"write\").\n6. `bun run lint`, `bunx tsc --noEmit`, `bun run test`, `bun run build` all exit 0."
+  }
+}

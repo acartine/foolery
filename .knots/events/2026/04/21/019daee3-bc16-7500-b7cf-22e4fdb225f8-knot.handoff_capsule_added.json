@@ -1,0 +1,18 @@
+{
+  "event_id": "019daee3-bc16-7500-b7cf-22e4fdb225f8",
+  "occurred_at": "2026-04-21T07:14:13.65489Z",
+  "knot_id": "foolery-f354",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "# Handoff — planning refresh complete\n\nThe implementation should stay small and centered on two code paths.\n\n- Add a wildcard `* -> shipped` transition in `src/lib/workflows.ts` so the queue-row and beat-detail dropdowns automatically surface `Shipped` for non-terminal knots.\n- Add a bulk-action guard in `src/app/beats/use-bulk-actions.ts` so bulk ship skips already-terminal knots with visible feedback instead of silently doing nothing.\n- Cover the change with transition tests, bulk-action feedback tests, backend patch coverage, and Playwright validation for queue row, bulk multi-select, and beat detail flows.\n- No child knots were created.",
+    "datetime": "2026-04-21T07:14:13.65489Z",
+    "entry_id": "019daee3-bc16-7500-b7cf-22d29386fc37",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  },
+  "precondition": {
+    "profile_etag": "019daee2-9ecf-7402-9b48-860f6c0b9699"
+  }
+}

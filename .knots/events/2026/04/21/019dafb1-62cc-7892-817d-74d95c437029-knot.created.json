@@ -1,0 +1,17 @@
+{
+  "event_id": "019dafb1-62cc-7892-817d-74d95c437029",
+  "occurred_at": "2026-04-21T10:58:51.212636Z",
+  "knot_id": "foolery-3b8a",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nThe test `rotates to a different pooled agent on error retry in basic mode` at `src/lib/__tests__/terminal-manager-queue-claims.test.ts:486` fails under default vitest parallel execution but passes with `--fileParallelism=false` and when run in isolation. CI has been red since commit `4b391366` (\"unify agent dispatch on workflow descriptor; delete silent fallbacks\") because of this flake.\n\nVerification:\n1. `bun run test` exits 0 with default parallelism.\n2. `bun run test:coverage` exits 0 (CI-equivalent run).\n3. The test continues to assert `selected=\"agent-b\"` on iteration 2 after a child close exit 1 with `basicSettingsWithTwoAgents`.\n4. No other test files regressed.\n\nConstraints:\n- Root-cause the failure (race between parallel worker state, timing of waitFor, or a legitimate dispatch bug) rather than marking the test sequential or skipped.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Stabilize terminal-manager-queue-claims basic-mode rotation test under parallelism",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

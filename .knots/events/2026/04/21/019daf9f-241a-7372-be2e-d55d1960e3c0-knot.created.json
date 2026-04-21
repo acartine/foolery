@@ -1,0 +1,17 @@
+{
+  "event_id": "019daf9f-241a-7372-be2e-d55d1960e3c0",
+  "occurred_at": "2026-04-21T10:38:55.514179Z",
+  "knot_id": "foolery-e33e",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nMake the Foolery settings schema the authoritative, self-documenting, machine-readable spec so any frontier agent (Claude, Codex, OpenCode, Gemini, Copilot) can read an exact definition of the target file and produce a valid ~/.config/foolery/settings.toml. This is the prerequisite for replacing the ~3000-line `foolery setup` bash wizard with an agent-driven skill.\n\nVerification:\n1. `bun run lint` exits 0.\n2. `bunx tsc --noEmit` exits 0.\n3. `bun run test` exits 0 (all green).\n4. `bun run build` exits 0.\n5. Run `foolery config schema` (after rebuild via `bash scripts/build-cli.sh` if needed) and pipe to `jq \".properties | keys\"`; expect the top-level keys `agents`, `actions`, `backend`, `defaults`, `scopeRefinement`, `pools`, `dispatchMode`, `maxConcurrentSessions`, `maxClaimsPerQueueType`, `terminalLightTheme` to all be present.\n6. Pipe the same output to `jq \".properties.agents.description\"` and confirm a non-null description string (proof that `.describe(...)` flowed into JSON Schema output).\n7. `foolery config validate ~/.config/foolery/settings.toml` prints \"OK\" to stdout and exits 0 against the current user config.\n8. Create `/tmp/foolery-bad.toml` containing `maxConcurrentSessions = 999`, run `foolery config validate /tmp/foolery-bad.toml`; expect exit code 1 and a stderr message naming the field `maxConcurrentSessions` and the valid range (1-20).\n9. Open `docs/SETTINGS.md`: confirm every top-level field in `foolerySettingsSchema` is documented with name, type, default, validation range (where applicable), description, and example. Confirm the file states that `src/lib/schemas.ts` is the authoritative source.\n\nConstraints:\n- Do NOT remove `scripts/setup.sh` or the wizard scripts; that is a follow-on knot.\n- Do NOT mark this knot SHIPPED — the user will review.\n- Prefer Zod v4 native `z.toJSONSchema()` over adding new dependencies; only add `zod-to-json-schema` if v4 native is insufficient, and document why in the ship notes.\n- Max 500 LOC per file, max 100 LOC per function, max 100 columns per line (project-enforced by ESLint).\n- Follow \"fail loudly, never silently\" — validate errors must name the exact field path and expected shape.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Self-document Foolery settings schema for agent-driven config",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

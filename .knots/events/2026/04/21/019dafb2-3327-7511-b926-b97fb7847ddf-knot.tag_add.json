@@ -1,0 +1,9 @@
+{
+  "event_id": "019dafb2-3327-7511-b926-b97fb7847ddf",
+  "occurred_at": "2026-04-21T10:59:44.551518Z",
+  "knot_id": "foolery-e33e",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:e33e/config-schema"
+  }
+}

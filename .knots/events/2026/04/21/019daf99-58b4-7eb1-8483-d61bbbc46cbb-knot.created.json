@@ -1,0 +1,17 @@
+{
+  "event_id": "019daf99-58b4-7eb1-8483-d61bbbc46cbb",
+  "occurred_at": "2026-04-21T10:32:35.764312Z",
+  "knot_id": "foolery-d7b7",
+  "type": "knot.created",
+  "data": {
+    "body": "cartine@adrian:~$ foolery doctor\nnode:fs:440\n    return binding.readFileUtf8(path, stringToFlags(options.flag));\n                   ^\n\nError: ENOENT: no such file or directory, open /proc/1135470/fd/pipe:[77157002]\n    at Object.readFileSync (node:fs:440:20)\n    at defaultLoadImpl (node:internal/modules/cjs/loader:1148:17)\n    at loadSource (node:internal/modules/cjs/loader:1838:20)\n    at Object..js (node:internal/modules/cjs/loader:1936:44)\n    at Module.load (node:internal/modules/cjs/loader:1533:32)\n    at Module._load (node:internal/modules/cjs/loader:1335:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47 {\n  errno: -2,\n  code: ENOENT,\n  syscall: open,\n  path: /proc/1135470/fd/pipe:[77157002]\n}\n",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "foolery doctor fails ENOENT on linux",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

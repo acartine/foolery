@@ -1,0 +1,15 @@
+{
+  "event_id": "019dafa0-0cd8-7070-acb1-3d7b26fea914",
+  "occurred_at": "2026-04-21T10:39:55.095836Z",
+  "knot_id": "foolery-f354",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "# Handoff — implementation verified\n\nState: implementation artifact is already on origin/main at commit 29311507 (branch worktree-foolery-f354-ship-action pushed to remote and merged). Tagged on knot.\n\nWhat was delivered (by commit 29311507):\n- src/lib/workflows.ts — added `{ from: \"*\", to: \"shipped\" }` wildcard so `validNextStates()` surfaces Shipped from every non-terminal state.\n- src/lib/backends/knots-backend-workflows.ts — injects wildcard transitions to every terminal state declared by a Knots profile (covers custom profiles, not only built-ins).\n- src/app/beats/use-bulk-actions.ts — bulk Ship partitions already-terminal selections, dispatches PATCH only for live knots, emits toast.info(\"Skipped N already-finished knots\") so acceptance #4 is observable.\n\nTests (2734 passed, 0 failed):\n- src/lib/__tests__/workflow-ship-wildcard.test.ts\n- src/lib/__tests__/knots-backend-workflows-wildcard.test.ts\n- src/lib/__tests__/knots-backend-state.test.ts\n- src/lib/__tests__/valid-next-states.test.ts\n- src/components/__tests__/beat-columns-valid-next-states.test.ts\n- src/app/beats/__tests__/use-bulk-actions-ship-guard.test.ts (6 tests cover the bulk guard + toast)\n\nQuality gates passed in worktree: bun run lint, bunx tsc --noEmit, bun run test (264 files / 2734 tests / 11 skipped / 42 todo).\n\nPlaywright validation: Dev server serves /beats with rows showing non-terminal states; prior session artifact queue-state-dropdown-shipped.png captured the dropdown surfacing Shipped. In this session the unit+component test suite proves each UI surface (per-row dropdown, beat-detail dropdown, bulk action bar) correctly offers Shipped and guards terminal states; no live knot was mutated to avoid polluting user data.\n\nArtifact: branch:worktree-foolery-f354-ship-action (tagged), commit:29311507 (tagged).\n\nRisk: None. One wildcard transition + one bulk guard, deterministically covered.",
+    "datetime": "2026-04-21T10:39:55.095836Z",
+    "entry_id": "019dafa0-0cd8-7070-acb1-3d6269480bd6",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.7"
+  }
+}

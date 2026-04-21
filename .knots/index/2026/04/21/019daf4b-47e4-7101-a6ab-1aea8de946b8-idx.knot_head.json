@@ -1,0 +1,37 @@
+{
+  "event_id": "019daf4b-47e4-7101-a6ab-1aea8de946b8",
+  "occurred_at": "2026-04-21T09:07:19.652747Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4ca4",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Unify dispatch on workflow descriptor; delete silent fallbacks",
+    "type": "work",
+    "updated_at": "2026-04-21T09:07:19.652747Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019daf4b-3b1d-7511-a28a-a312b07aca90"
+  }
+}

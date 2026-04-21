@@ -1,0 +1,17 @@
+{
+  "event_id": "019dafe8-2754-7ff1-9105-c5696f1d0182",
+  "occurred_at": "2026-04-21T11:58:40.468606Z",
+  "knot_id": "foolery-1a64",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nReplace the ~3000-line `foolery setup` bash wizard with a single agent-driven skill. Any frontier agent (Claude, Codex, OpenCode, Gemini, Copilot) invokes the skill, detects CLIs on PATH, asks at most four questions, and writes a validated ~/.config/foolery/settings.toml + ~/.config/foolery/registry.json. The skill leans on the already-shipped `foolery config schema` and `foolery config validate` commands (knot e33e) as the stable contract for the target file.\n\nThis knot ships ONLY the skill file. Deleting `scripts/setup.sh` and rerouting the launcher are scoped as separate follow-on knots so the skill can be validated in the wild first.\n\nVerification:\n1. `.claude/skills/foolery-configure/SKILL.md` exists with YAML frontmatter matching the existing convention in `.claude/skills/ship-release/SKILL.md`.\n2. The skill body references `foolery config schema` and `foolery config validate` verbatim so the agent has a machine-readable spec.\n3. The skill instructs the agent to write to `~/.config/foolery/settings.toml` and `~/.config/foolery/registry.json` atomically (tempfile + mv).\n4. The skill preserves existing configuration by default — never drops registered agents or custom `[scopeRefinement].prompt`.\n5. The skill enumerates the four allowed questions and nothing more.\n6. The skill caps itself at ~120 lines so it stays readable.\n7. Quality gates green: `bun run lint`, `bunx tsc --noEmit`, `bun run test`, `bun run build`.\n\nConstraints:\n- Do NOT delete `scripts/setup.sh`, `scripts/agent-wizard.sh`, `scripts/dispatch-pools.sh`, `scripts/model-picker.sh`, or `scripts/toml-reader.sh` — follow-on knot.\n- Do NOT modify `scripts/install.sh` `setup_cmd` — follow-on knot.\n- Agent-agnostic tone: no Claude-only tool names in the body; use plain shell/file verbs.\n- Follow the \"fail loudly, never silently\" rule: skill must tell the agent to ask the user when a value is missing, never to pick a default.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add foolery-configure skill: agent-driven settings.toml generation",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

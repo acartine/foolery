@@ -1,0 +1,21 @@
+{
+  "event_id": "019dafe5-24d9-7cb1-aed3-a93ea15357bc",
+  "occurred_at": "2026-04-21T11:55:23.225032Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e33e",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Self-document Foolery settings schema for agent-driven config",
+    "type": "work",
+    "updated_at": "2026-04-21T11:55:23.225032Z",
+    "workflow_id": "work_sdlc"
+  }
+}

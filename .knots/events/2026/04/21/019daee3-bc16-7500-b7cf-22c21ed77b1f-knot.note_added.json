@@ -1,0 +1,18 @@
+{
+  "event_id": "019daee3-bc16-7500-b7cf-22c21ed77b1f",
+  "occurred_at": "2026-04-21T07:14:13.65489Z",
+  "knot_id": "foolery-f354",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "# Implementation Plan — foolery-f354 (planning refresh)\n\n## Goal\n\nExpose a manual `Shipped` transition in all three queue/detail entry points while preserving the existing workflow rules for terminal knots.\n\n## Root Cause\n\n`validNextStates()` is derived from `canonicalTransitions()` in `src/lib/workflows.ts`. That transition list currently allows wildcard moves to `deferred` and `abandoned`, but not to `shipped`, so the single-row queue control and beat-detail control never offer `Shipped` outside the normal workflow path.\n\nThe bulk action bar already exposes `shipped`, but mixed selections can silently skip already-terminal knots because no feedback is shown when the requested target state is unchanged.\n\n## Planned Changes\n\n1. Update `src/lib/workflows.ts` so `canonicalTransitions()` includes `{ from: \"*\", to: \"shipped\" }` alongside the existing wildcard terminal transitions.\n2. Update `src/app/beats/use-bulk-actions.ts` to partition selected knots before bulk shipping, dispatching updates only for non-terminal items and surfacing a toast when terminal knots are skipped.\n3. Reuse the existing queue-row and beat-detail state dropdown logic without structural changes, since both already consume `validNextStates()` and already become read-only once a knot is terminal.\n\n## Files Expected To Change\n\n- `src/lib/workflows.ts`\n- `src/app/beats/use-bulk-actions.ts`\n- `src/components/__tests__/beat-columns-valid-next-states.test.ts`\n- `src/lib/__tests__/knots-backend-update*.test.ts` (exact file to confirm during implementation)\n- `src/components/__tests__/bulk-edit-terminal-states.test.ts`\n\n## Test Strategy\n\n1. Add transition tests proving `Shipped` is offered from representative non-terminal states such as `planning`, `implementation`, `ready_for_planning`, and `ready_for_implementation`.\n2. Add/update backend patch tests to confirm shipping from a non-terminal state no longer needs a forced transition patch.\n3. Add/update bulk-action tests to confirm already-terminal selections are excluded from dispatch and produce user-visible feedback.\n4. Validate with Playwright on the queue list, bulk multi-select flow, and beat detail view, confirming each updates to `Shipped` without a full page reload.\n\n## Complexity And Risks\n\n- Complexity is low: one workflow transition change, one bulk-action guard, and focused test coverage.\n- Main risk is existing tests or assumptions that treat `shipped` as reachable only from `shipment_review`.\n- Secondary risk is any downstream code expecting `force: true` on ship transitions; current inspection suggests transition logic is the only force consumer.\n\n## Dependencies And Child Knots\n\n- No extra dependencies are required; the backend already understands `shipped` as a terminal state.\n- No child knots created; the work fits in a single implementation pass.",
+    "datetime": "2026-04-21T07:14:13.65489Z",
+    "entry_id": "019daee3-bc16-7500-b7cf-22bd1ac2851b",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  },
+  "precondition": {
+    "profile_etag": "019daee2-9ecf-7402-9b48-860f6c0b9699"
+  }
+}

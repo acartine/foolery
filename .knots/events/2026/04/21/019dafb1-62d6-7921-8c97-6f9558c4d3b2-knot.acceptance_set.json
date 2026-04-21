@@ -1,0 +1,9 @@
+{
+  "event_id": "019dafb1-62d6-7921-8c97-6f9558c4d3b2",
+  "occurred_at": "2026-04-21T10:58:51.212636Z",
+  "knot_id": "foolery-3b8a",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Running `bun run test` (default vitest settings) on main completes with exit 0.\n2. Running `bun run test:coverage` completes with exit 0.\n3. The target test file still contains an assertion that verifies cross-agent rotation on error retry (no behavior coverage loss).\n4. If the root cause is a real dispatch bug introduced by 4b391366, the underlying code (not the test) is fixed."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019daf5b-0032-7c13-983a-211c4fe2085f",
+  "occurred_at": "2026-04-21T09:24:29.874733Z",
+  "knot_id": "foolery-f354",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "Foolery take-loop: rolled back from implementation_review to ready_for_implementation_review — agent \"Codex\" left knot in action state",
+    "datetime": "2026-04-21T09:24:29.874733Z",
+    "entry_id": "019daf5b-0032-7c13-983a-210e199e0771",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

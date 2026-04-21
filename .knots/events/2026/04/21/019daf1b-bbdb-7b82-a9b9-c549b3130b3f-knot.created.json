@@ -1,0 +1,17 @@
+{
+  "event_id": "019daf1b-bbdb-7b82-a9b9-c549b3130b3f",
+  "occurred_at": "2026-04-21T08:15:23.611141Z",
+  "knot_id": "foolery-4ca4",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nEliminate the hardcoded SDLC step map and every silent agent-selection fallback in Foolery so that every workflow (SDLC, gate, explore, and any future workflow) dispatches through one identical code path driven purely by the workflow descriptor. When dispatch cannot resolve an agent, the code must fail hard with an unmissable red-banner error in logs and in the session buffer — never fall back to the first-registered agent (the current silent fallback sends all gate-state dispatches to OpenCode because it happens to be first in the user's TOML).\n\nVerification:\n1. rg -n \"getFallbackCommand|RESOLVED_STEP_MAP\" src/ → zero matches.\n2. rg -n \"FOOLERY DISPATCH FAILURE\" src/lib/ → at least one match in the dispatch code.\n3. rg -n \"if \\(prepared\\.resolved\\)\" src/lib/terminal-manager.ts → zero matches.\n4. rg -n \"resolveStep\\(\" src/ → any remaining matches accept a MemoryWorkflowDescriptor argument (no bare-state-string signature).\n5. bun install --frozen-lockfile && bun run lint && bunx tsc --noEmit && bun run test && bun run build → all pass.\n6. Unit test asserts: with [[pools.evaluating]] empty/missing, dispatch for a beat in state ready_to_evaluate throws with message containing \"FOOLERY DISPATCH FAILURE\"; with the pool populated, the selected agent comes only from that pool (never OpenCode unless OpenCode is in that pool).\n7. Live smoke against user settings (~/.config/foolery/settings.toml): POST /api/terminal with a beat in ready_to_evaluate returns a session whose agentCommand matches the Claude Opus 4.7 or Codex GPT-5.4 path from [[pools.evaluating]] — never /opt/homebrew/bin/opencode.\n8. Final commits are pushed to origin/main (not a PR). git log origin/main | head shows the landed commits.\n\nConstraints:\n- One unified code branch handles every workflow type. Adding a new workflow must require zero changes to resolveSessionAgent or its equivalent.\n- Pool key derivation is purely descriptor-driven: for a beat in state S under workflow W, the pool key is W.queueActions[S] (the action state S transitions into).\n- getFallbackCommand is deleted; no ?? \"claude\" or ?? first agent anywhere in the dispatch path.\n- Hard-fail message must include the literal string \"FOOLERY DISPATCH FAILURE\" and name the beat id, state, workflow id, and derived pool key.\n- Banner also written as a stderr event to the terminal session buffer so the UI surfaces it.\n- Update /Users/cartine/foolery/CLAUDE.md with a \"Fail Loudly, Never Silently\" section; update AGENTS.md with the same rule if it exists.\n- Out of scope: reworking legacy actions.* mappings beyond removing their silent-fallback use in dispatch; UI pool editor changes; any OpenCode runtime behavior.\n- Git worktree policy applies: do the work in a dedicated worktree, merge final integrated changes to origin/main, no PR.\n- Tag this knot fake-fixed-already — this bug has been \"fixed\" multiple times without landing.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Unify dispatch on workflow descriptor; delete silent fallbacks",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

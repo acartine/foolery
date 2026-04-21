@@ -1,0 +1,20 @@
+{
+  "event_id": "019daf20-40f5-7111-94d5-888df98d9a89",
+  "occurred_at": "2026-04-21T08:20:19.829788Z",
+  "knot_id": "foolery-9dee",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "Claude",
+        "agent_type": "cli",
+        "model": "claude-opus-4-7",
+        "model_version": "4.7",
+        "provider": "Anthropic"
+      },
+      "lease_type": "agent",
+      "nickname": "foolery-f354-resume",
+      "timeout_seconds": 600
+    }
+  }
+}

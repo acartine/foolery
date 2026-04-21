@@ -1,0 +1,17 @@
+{
+  "event_id": "019daff4-54d9-7f50-b0c4-c83ec3792997",
+  "occurred_at": "2026-04-21T12:11:58.553659Z",
+  "knot_id": "foolery-3cea",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nBefore overwriting `~/.config/foolery/settings.toml` or `~/.config/foolery/registry.json`, the skill must write the new content to a tempfile, run `diff -u <current> <tempfile> | less -R` (falling back to `more -R` if less is absent), and ask the user \"Apply these changes? [y/N]\" on stdin. Abort on empty/N. On a fresh install (target file absent), skip the diff and just write atomically.\n\nVerification:\n1. `.claude/skills/foolery-configure/SKILL.md` still parses as valid frontmatter + body (check with `head -n 10`).\n2. Body contains the exact phrase `diff -u` and references `less` or `more` for pagination.\n3. Body distinguishes \"existing config\" path (diff + confirm) from \"fresh install\" path (write directly).\n4. Body still enumerates the four allowed questions and nothing more.\n5. File stays ≤ 200 lines.\n6. `bun run lint`, `bunx tsc --noEmit`, `bun run test`, `bun run build` all exit 0.\n\nConstraints:\n- Touch only `.claude/skills/foolery-configure/SKILL.md`.\n- Do not re-introduce Claude-Code-specific tool names (no `Read`, `Edit`, `Bash`) — plain shell verbs only.\n- Preserve every rule already in the file (atomic tempfile+mv, pool step names, placeholders, preserve rules for `[agents.*]` and `[scopeRefinement].prompt`, `foolery config validate` gate).",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "foolery-configure: show piped diff and confirm before writing over an existing config",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

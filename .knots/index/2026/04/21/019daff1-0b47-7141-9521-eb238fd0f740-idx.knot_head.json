@@ -1,0 +1,37 @@
+{
+  "event_id": "019daff1-0b47-7141-9521-eb238fd0f740",
+  "occurred_at": "2026-04-21T12:08:23.111398Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3b8a",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Stabilize terminal-manager-queue-claims basic-mode rotation test under parallelism",
+    "type": "work",
+    "updated_at": "2026-04-21T12:08:23.111398Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019daff1-010c-7121-9e6e-8d1c68d5fd5f"
+  }
+}

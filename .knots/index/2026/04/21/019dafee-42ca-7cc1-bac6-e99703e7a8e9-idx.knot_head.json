@@ -1,0 +1,21 @@
+{
+  "event_id": "019dafee-42ca-7cc1-bac6-e99703e7a8e9",
+  "occurred_at": "2026-04-21T12:05:20.714327Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1a64",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add foolery-configure skill: agent-driven settings.toml generation",
+    "type": "work",
+    "updated_at": "2026-04-21T12:05:20.714327Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019dafeb-cb97-7f43-8626-f7a6e74b8a2b",
+  "occurred_at": "2026-04-21T12:02:39.127487Z",
+  "knot_id": "foolery-1a64",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:1a64/foolery-configure-skill"
+  }
+}

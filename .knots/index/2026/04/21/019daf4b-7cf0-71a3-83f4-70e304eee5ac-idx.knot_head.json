@@ -1,0 +1,21 @@
+{
+  "event_id": "019daf4b-7cf0-71a3-83f4-70e304eee5ac",
+  "occurred_at": "2026-04-21T09:07:33.232889Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4ca4",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Unify dispatch on workflow descriptor; delete silent fallbacks",
+    "type": "work",
+    "updated_at": "2026-04-21T09:07:33.232889Z",
+    "workflow_id": "work_sdlc"
+  }
+}
