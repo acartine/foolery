@@ -28,6 +28,16 @@ export const LEGACY_SETTINGS_POOL_TARGET_IDS = [
   ...LEGACY_STEP_POOL_TARGET_IDS,
 ] as const;
 
+export const EXECUTION_PLAN_SDLC_POOL_TARGET_IDS = [
+  "design",
+  "review",
+  "orchestration",
+] as const;
+
+export const EXPLORE_SDLC_POOL_TARGET_IDS = ["exploration"] as const;
+
+export const GATE_SDLC_POOL_TARGET_IDS = ["evaluating"] as const;
+
 export type SharedDispatchPoolTargetId =
   (typeof SHARED_DISPATCH_POOL_TARGET_IDS)[number];
 
@@ -35,7 +45,10 @@ export type LegacyStepPoolTargetId =
   (typeof LEGACY_STEP_POOL_TARGET_IDS)[number];
 
 export type LegacyDispatchPoolTargetId =
-  (typeof LEGACY_SETTINGS_POOL_TARGET_IDS)[number];
+  (typeof LEGACY_SETTINGS_POOL_TARGET_IDS)[number]
+  | (typeof EXECUTION_PLAN_SDLC_POOL_TARGET_IDS)[number]
+  | (typeof EXPLORE_SDLC_POOL_TARGET_IDS)[number]
+  | (typeof GATE_SDLC_POOL_TARGET_IDS)[number];
 
 export interface DispatchPoolTargetDefinition {
   id: string;
@@ -93,6 +106,22 @@ const STEP_META: Record<
   scope_refinement: {
     label: "Scope Refinement",
     description: "Agent refines newly created beats after creation",
+  },
+  design: {
+    label: "Design",
+    description: "Agent drafts the execution plan",
+  },
+  review: {
+    label: "Review",
+    description: "Agent reviews the execution plan",
+  },
+  exploration: {
+    label: "Exploration",
+    description: "Agent explores the problem space",
+  },
+  evaluating: {
+    label: "Evaluating",
+    description: "Agent evaluates a gate condition",
   },
 };
 
@@ -237,6 +266,95 @@ export function bundledDispatchPoolGroups(): DispatchPoolTargetGroupDefinition[]
     ...SHARED_GROUPS,
     ...builtinWorkflowDescriptors().map(buildWorkflowGroupDefinition),
   ];
+}
+
+function buildLegacyTarget(
+  id: LegacyDispatchPoolTargetId,
+  groupId: string,
+  groupLabel: string,
+  groupDescription: string,
+): DispatchPoolTargetDefinition {
+  return {
+    id,
+    label: STEP_META[id].label,
+    description: STEP_META[id].description,
+    groupId,
+    groupLabel,
+    groupDescription,
+    legacyTargetId: id,
+  };
+}
+
+const KNOTS_SDLC_DESCRIPTION =
+  "Beat delivery: plan, review, implement, review, ship, review";
+const EXECUTION_PLAN_DESCRIPTION =
+  "Authoring and orchestrating an execution plan";
+const EXPLORATION_DESCRIPTION =
+  "Open-ended exploration of a problem space";
+const GATE_DESCRIPTION =
+  "Read-only evaluation of a gate condition";
+
+function buildGroup(
+  id: string,
+  label: string,
+  description: string,
+  actionIds: ReadonlyArray<LegacyDispatchPoolTargetId>,
+): DispatchPoolTargetGroupDefinition {
+  return {
+    id,
+    label,
+    description,
+    targets: actionIds.map((actionId) =>
+      buildLegacyTarget(actionId, id, label, description),
+    ),
+  };
+}
+
+const DISPATCH_WORKFLOW_GROUPS: ReadonlyArray<DispatchPoolTargetGroupDefinition> = [
+  buildGroup(
+    "work_sdlc",
+    "Knots SDLC",
+    KNOTS_SDLC_DESCRIPTION,
+    LEGACY_STEP_POOL_TARGET_IDS,
+  ),
+  buildGroup(
+    "execution_plan_sdlc",
+    "Execution Plan",
+    EXECUTION_PLAN_DESCRIPTION,
+    EXECUTION_PLAN_SDLC_POOL_TARGET_IDS,
+  ),
+  buildGroup(
+    "explore_sdlc",
+    "Exploration",
+    EXPLORATION_DESCRIPTION,
+    EXPLORE_SDLC_POOL_TARGET_IDS,
+  ),
+  buildGroup(
+    "gate_sdlc",
+    "Gate",
+    GATE_DESCRIPTION,
+    GATE_SDLC_POOL_TARGET_IDS,
+  ),
+];
+
+export function dispatchWorkflowGroups(): DispatchPoolTargetGroupDefinition[] {
+  return DISPATCH_WORKFLOW_GROUPS.map((group) => ({
+    ...group,
+    targets: group.targets.map((target) => ({ ...target })),
+  }));
+}
+
+export function scopeRefinementDispatchTarget(): DispatchPoolTargetDefinition {
+  return buildLegacyTarget(
+    "scope_refinement",
+    "scope_refinement",
+    "Scope Refinement",
+    STEP_META.scope_refinement.description,
+  );
+}
+
+export function dispatchWorkflowPoolTargets(): DispatchPoolTargetDefinition[] {
+  return dispatchWorkflowGroups().flatMap((group) => group.targets);
 }
 
 export function bundledWorkflowDispatchPoolTargets(): DispatchPoolTargetDefinition[] {

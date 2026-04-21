@@ -3,6 +3,8 @@ import {
   buildWorkflowDispatchPoolTargetId,
   bundledDispatchPoolGroups,
   bundledWorkflowDispatchPoolTargets,
+  dispatchWorkflowGroups,
+  dispatchWorkflowPoolTargets,
   workflowAwarePoolTargetIdsForStep,
 } from "@/lib/settings-dispatch-targets";
 import { WorkflowStep } from "@/lib/workflows";
@@ -54,6 +56,45 @@ describe("settings dispatch targets", () => {
       ),
       WorkflowStep.Implementation,
     ]);
+  });
+
+  it("exposes the four loom workflows for dispatch settings", () => {
+    const groups = dispatchWorkflowGroups();
+    expect(groups.map((g) => g.id)).toEqual([
+      "work_sdlc",
+      "execution_plan_sdlc",
+      "explore_sdlc",
+      "gate_sdlc",
+    ]);
+    expect(groups.map((g) => g.label)).toEqual([
+      "Knots SDLC",
+      "Execution Plan",
+      "Exploration",
+      "Gate",
+    ]);
+    expect(groups[0]?.targets.map((t) => t.id)).toEqual([
+      "planning",
+      "plan_review",
+      "implementation",
+      "implementation_review",
+      "shipment",
+      "shipment_review",
+    ]);
+    expect(groups[1]?.targets.map((t) => t.id)).toEqual([
+      "design",
+      "review",
+      "orchestration",
+    ]);
+    expect(groups[2]?.targets.map((t) => t.id)).toEqual(["exploration"]);
+    expect(groups[3]?.targets.map((t) => t.id)).toEqual(["evaluating"]);
+  });
+
+  it("lists workflow pool targets covering every workflow's actions", () => {
+    const ids = dispatchWorkflowPoolTargets().map((t) => t.id);
+    expect(ids).toContain("planning");
+    expect(ids).toContain("design");
+    expect(ids).toContain("exploration");
+    expect(ids).toContain("evaluating");
   });
 
   it("falls back to the legacy step for unknown profiles", () => {

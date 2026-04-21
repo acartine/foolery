@@ -26,7 +26,7 @@ describe("dispatch global swap layout", () => {
 
   it("keeps the per-step pool editor focused on pool editing", () => {
     expect(poolsSectionSource).toContain(
-      "Configure weighted agent distribution per workflow step and dispatch target.",
+      "Configure weighted agent distribution per workflow.",
     );
     expect(poolsSectionSource).not.toContain("Swap Agent");
   });

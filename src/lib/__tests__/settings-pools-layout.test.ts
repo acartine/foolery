@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 describe("settings pools layout", () => {
   const source = readFileSync(
-    path.join(process.cwd(), "src/components/settings-pools-section.tsx"),
+    path.join(process.cwd(), "src/components/settings-pools-target-editor.tsx"),
     "utf8",
   );
   const labelSource = readFileSync(

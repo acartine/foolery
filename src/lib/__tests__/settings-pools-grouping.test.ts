@@ -9,15 +9,16 @@ describe("settings pools grouping", () => {
     "utf8",
   );
 
-  it("renders grouped bundled dispatch sections", () => {
-    expect(source).toContain("bundledDispatchPoolGroups()");
+  it("renders one tab per dispatch workflow", () => {
+    expect(source).toContain("dispatchWorkflowGroups()");
+    expect(source).toContain("TabsTrigger");
     expect(source).toContain("{group.label}");
     expect(source).toContain("{group.description}");
   });
 
-  it("keeps the settings-side add-to-all flow wired to bundled workflow targets", () => {
+  it("keeps the settings-side add-to-all flow wired to workflow targets", () => {
     expect(source).toContain("Add to all");
-    expect(source).toContain("bundledWorkflowDispatchPoolTargets()");
+    expect(source).toContain("dispatchWorkflowPoolTargets()");
     expect(source).toContain("DispatchPoolsBulkApply");
   });
 });
