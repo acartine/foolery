@@ -243,7 +243,15 @@ function collectWaveBeatIds(
   return Array.from(ids);
 }
 
+const PLAN_WORKFLOW_ID = "execution_plan_sdlc";
+
 export function isPlanKnot(record: KnotRecord): boolean {
+  // Plans are identified by their payload or workflow binding, not the
+  // knot `type` field — `kno` persists plans as `type: "work"` and
+  // distinguishes them via the `execution_plan` payload and the
+  // `execution_plan_sdlc` workflow id.
+  if (record.execution_plan != null) return true;
+  if (record.workflow_id === PLAN_WORKFLOW_ID) return true;
   return record.type === "execution_plan";
 }
 
