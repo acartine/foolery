@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7fd8-7f20-81ec-55afb7f3326e",
+  "occurred_at": "2026-04-21T12:47:06.712321612Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.3.2",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement KnotsBackend read paths",
+    "type": "work",
+    "updated_at": "2026-03-01T17:14:08.525762Z",
+    "workflow_id": "work_sdlc"
+  }
+}

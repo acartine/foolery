@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e4a-7bd1-8339-698285bb1689",
+  "occurred_at": "2026-04-21T12:47:06.314831108Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1b64",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Improve test coverage for knots.ts (40.59% → 70%+)",
+    "type": "work",
+    "updated_at": "2026-03-02T09:26:42.644802Z",
+    "workflow_id": "work_sdlc"
+  }
+}

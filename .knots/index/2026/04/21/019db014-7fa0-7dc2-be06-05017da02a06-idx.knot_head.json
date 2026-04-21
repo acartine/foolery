@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7fa0-7dc2-be06-05017da02a06",
+  "occurred_at": "2026-04-21T12:47:06.656425874Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-f1d5",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Settings resolution: multi-agent virtual agents",
+    "type": "work",
+    "updated_at": "2026-03-05T15:29:09.065292Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f32-7d70-93fe-9eba3c79205d",
+  "occurred_at": "2026-04-21T12:47:06.546312086Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-af02",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Take loop stops at action states: isAgentClaimable false for agent-owned action states",
+    "type": "work",
+    "updated_at": "2026-03-02T09:33:46.399123Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-8011-7b11-9e02-2a867df21bb8",
+  "occurred_at": "2026-04-21T12:47:06.76905479Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.2.2",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Normalize OpenRouter model metadata and pricing",
+    "type": "work",
+    "updated_at": "2026-03-03T22:33:59.274154Z",
+    "workflow_id": "work_sdlc"
+  }
+}

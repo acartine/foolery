@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f20-7bd0-b2d1-50a6fe8f6e53",
+  "occurred_at": "2026-04-21T12:47:06.528611951Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-9d97",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Remove Scenes view wiring from Beads UI",
+    "type": "work",
+    "updated_at": "2026-03-05T11:32:33.992389Z",
+    "workflow_id": "work_sdlc"
+  }
+}

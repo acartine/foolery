@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e31-7562-bcb5-7530f591ea6d",
+  "occurred_at": "2026-04-21T12:47:06.289735035Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-051a",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Remove Direct View",
+    "type": "work",
+    "updated_at": "2026-03-03T15:49:34.09729Z",
+    "workflow_id": "work_sdlc"
+  }
+}

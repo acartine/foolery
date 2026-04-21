@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f65-7813-b9c1-6a782a3e98f8",
+  "occurred_at": "2026-04-21T12:47:06.597988838Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-d119",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add soft coverage regression gate to CI",
+    "type": "work",
+    "updated_at": "2026-03-02T12:35:59.357514Z",
+    "workflow_id": "work_sdlc"
+  }
+}

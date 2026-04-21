@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7fc2-7280-bd1b-b04eafe06d8a",
+  "occurred_at": "2026-04-21T12:47:06.690268996Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.1.1",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Define canonical Knots/Foolery field-status-dependency mapping",
+    "type": "work",
+    "updated_at": "2026-03-03T11:15:35.304564Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e43-7940-b0da-515a758b54a5",
+  "occurred_at": "2026-04-21T12:47:06.307375526Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-121b",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Repository Selection:  All Repostories immediately changes away",
+    "type": "work",
+    "updated_at": "2026-03-14T16:10:23.302667Z",
+    "workflow_id": "work_sdlc"
+  }
+}

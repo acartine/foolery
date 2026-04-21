@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f49-7132-b46f-3c8825b9e53d",
+  "occurred_at": "2026-04-21T12:47:06.569250123Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-be4d",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Active view: Add columns for agent / model / model version",
+    "type": "work",
+    "updated_at": "2026-03-05T22:38:32.439237Z",
+    "workflow_id": "work_sdlc"
+  }
+}

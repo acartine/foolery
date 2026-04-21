@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ed0-7a21-b280-d2171178698b",
+  "occurred_at": "2026-04-21T12:47:06.448997494Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6q2x",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "invalidate final cut state on window open or agent action completion",
+    "type": "work",
+    "updated_at": "2026-03-02T14:23:52.286175Z",
+    "workflow_id": "work_sdlc"
+  }
+}

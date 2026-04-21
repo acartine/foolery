@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7fd6-7561-b163-912dc2b66fa9",
+  "occurred_at": "2026-04-21T12:47:06.710641961Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.3.1",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Build knots CLI wrapper with timeout/error classification",
+    "type": "work",
+    "updated_at": "2026-03-01T17:14:08.502478Z",
+    "workflow_id": "work_sdlc"
+  }
+}

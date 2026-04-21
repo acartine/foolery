@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ede-7d81-aefd-4f2d6b9ae22f",
+  "occurred_at": "2026-04-21T12:47:06.46267584Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-745b",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "add kno create as an alias to kno new",
+    "type": "work",
+    "updated_at": "2026-03-06T17:00:57.537353Z",
+    "workflow_id": "work_sdlc"
+  }
+}

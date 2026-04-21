@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7fa8-7c01-b303-d98b626b7956",
+  "occurred_at": "2026-04-21T12:47:06.66472582Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-f637",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Beats View: Remove profile and owner type pills from title  column",
+    "type": "work",
+    "updated_at": "2026-03-02T15:09:51.580229Z",
+    "workflow_id": "work_sdlc"
+  }
+}

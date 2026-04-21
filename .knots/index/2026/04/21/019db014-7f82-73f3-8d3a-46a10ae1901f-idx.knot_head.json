@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f82-73f3-8d3a-46a10ae1901f",
+  "occurred_at": "2026-04-21T12:47:06.626339542Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-e108",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Set file permissions to 0600 on settings.toml",
+    "type": "work",
+    "updated_at": "2026-03-03T16:49:59.068918Z",
+    "workflow_id": "work_sdlc"
+  }
+}

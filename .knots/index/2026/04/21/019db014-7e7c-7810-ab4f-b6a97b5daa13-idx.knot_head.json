@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e7c-7810-ab4f-b6a97b5daa13",
+  "occurred_at": "2026-04-21T12:47:06.364737256Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-355d",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Remove transition-lock cruft and show correct beat state",
+    "type": "work",
+    "updated_at": "2026-03-04T06:56:47.680725Z",
+    "workflow_id": "work_sdlc"
+  }
+}

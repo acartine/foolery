@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-8000-7851-83c1-dcec68d622ce",
+  "occurred_at": "2026-04-21T12:47:06.752960204Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-nh8w",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Add multi-channel local/release tooling",
+    "type": "work",
+    "updated_at": "2026-03-02T13:12:32.484599Z",
+    "workflow_id": "work_sdlc"
+  }
+}

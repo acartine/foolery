@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e73-7aa0-bf84-bdb75ec19d82",
+  "occurred_at": "2026-04-21T12:47:06.35522344Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-2f7b",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Rename dispatch mode values to meaningful names",
+    "type": "work",
+    "updated_at": "2026-03-14T18:16:11.863288Z",
+    "workflow_id": "work_sdlc"
+  }
+}

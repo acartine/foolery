@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7eac-7563-acc2-b6af18852d29",
+  "occurred_at": "2026-04-21T12:47:06.412751077Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-5690",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Beats view: Owner Type column is wrong",
+    "type": "work",
+    "updated_at": "2026-03-02T15:39:04.735248Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e5b-7d32-abdd-bb674a60be39",
+  "occurred_at": "2026-04-21T12:47:06.331950432Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-2268",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "history view: drive list from actual conversations, not beat state",
+    "type": "work",
+    "updated_at": "2026-03-02T09:39:22.582138Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7fe8-7b71-b2cd-f09bfadb38ff",
+  "occurred_at": "2026-04-21T12:47:06.728549703Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.5",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Scene theron-noir: API/UI compatibility and guardrails",
+    "type": "work",
+    "updated_at": "2026-03-03T11:15:40.388071Z",
+    "workflow_id": "work_sdlc"
+  }
+}

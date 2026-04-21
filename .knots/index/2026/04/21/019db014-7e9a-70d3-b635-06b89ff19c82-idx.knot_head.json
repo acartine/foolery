@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e9a-70d3-b635-06b89ff19c82",
+  "occurred_at": "2026-04-21T12:47:06.394615139Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-48e6",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "history page is still pretty broken",
+    "type": "work",
+    "updated_at": "2026-03-03T18:24:57.703074Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7fb5-7970-99a2-e1553e1d5d39",
+  "occurred_at": "2026-04-21T12:47:06.677084874Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-faf2",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "clicking on beat link in notification from different project results in \"beat not found\"",
+    "type": "work",
+    "updated_at": "2026-03-05T22:33:29.22391Z",
+    "workflow_id": "work_sdlc"
+  }
+}

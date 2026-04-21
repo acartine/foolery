@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e36-7ef3-9c64-082b6a5aa827",
+  "occurred_at": "2026-04-21T12:47:06.294966556Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0770",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "step-enum: beads parity tests and dead code cleanup",
+    "type": "work",
+    "updated_at": "2026-03-02T09:27:44.800052Z",
+    "workflow_id": "work_sdlc"
+  }
+}

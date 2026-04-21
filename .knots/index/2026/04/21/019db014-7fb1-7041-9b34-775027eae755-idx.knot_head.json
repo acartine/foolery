@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7fb1-7041-9b34-775027eae755",
+  "occurred_at": "2026-04-21T12:47:06.673801217Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-f8d5",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "beat detail:  Take button is grayed out / disabled ",
+    "type": "work",
+    "updated_at": "2026-03-04T06:30:28.511698Z",
+    "workflow_id": "work_sdlc"
+  }
+}

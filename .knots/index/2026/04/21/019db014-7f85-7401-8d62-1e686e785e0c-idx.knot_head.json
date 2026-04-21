@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f85-7401-8d62-1e686e785e0c",
+  "occurred_at": "2026-04-21T12:47:06.629803334Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-e372",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Terminal-manager wrapper prompt is unconditionally implementation-biased",
+    "type": "work",
+    "updated_at": "2026-03-09T09:09:54.464853Z",
+    "workflow_id": "work_sdlc"
+  }
+}

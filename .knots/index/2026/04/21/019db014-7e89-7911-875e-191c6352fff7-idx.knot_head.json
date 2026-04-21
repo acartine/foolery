@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e89-7911-875e-191c6352fff7",
+  "occurred_at": "2026-04-21T12:47:06.377155173Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-3c09",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Settings: When Agent Pools are configured, gray out/disable the action settings",
+    "type": "work",
+    "updated_at": "2026-03-03T05:18:40.577419Z",
+    "workflow_id": "work_sdlc"
+  }
+}

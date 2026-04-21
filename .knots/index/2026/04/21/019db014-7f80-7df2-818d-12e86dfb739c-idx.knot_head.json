@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f80-7df2-818d-12e86dfb739c",
+  "occurred_at": "2026-04-21T12:47:06.624457575Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-e0cc",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "b71a did not terminate after clicking terminate",
+    "type": "work",
+    "updated_at": "2026-03-10T09:08:31.771549Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f0d-7da2-b8c0-6f65f87204b1",
+  "occurred_at": "2026-04-21T12:47:06.509028757Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-9697",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add OpenCode dialect to agent-adapter",
+    "type": "work",
+    "updated_at": "2026-03-06T16:59:35.38839Z",
+    "workflow_id": "work_sdlc"
+  }
+}

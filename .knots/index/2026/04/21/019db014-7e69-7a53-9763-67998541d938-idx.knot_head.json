@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e69-7a53-9763-67998541d938",
+  "occurred_at": "2026-04-21T12:47:06.345462942Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-2a54",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Remove \"Types\" filter if the active project is not a beads project",
+    "type": "work",
+    "updated_at": "2026-03-02T09:35:45.808595Z",
+    "workflow_id": "work_sdlc"
+  }
+}

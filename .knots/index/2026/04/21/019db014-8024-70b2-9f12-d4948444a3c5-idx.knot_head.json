@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-8024-70b2-9f12-d4948444a3c5",
+  "occurred_at": "2026-04-21T12:47:06.788663763Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.4.2",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Implement OpenRouter planning executor with stream normalization",
+    "type": "work",
+    "updated_at": "2026-03-03T22:33:59.467609Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f11-73f1-a901-e08f406b5f9c",
+  "occurred_at": "2026-04-21T12:47:06.513814956Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-9861",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Log agent stdout/stderr to file",
+    "type": "work",
+    "updated_at": "2026-03-02T15:08:32.296071Z",
+    "workflow_id": "work_sdlc"
+  }
+}

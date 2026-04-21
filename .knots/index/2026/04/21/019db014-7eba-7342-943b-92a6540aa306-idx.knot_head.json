@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7eba-7342-943b-92a6540aa306",
+  "occurred_at": "2026-04-21T12:47:06.426859967Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6241",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Use OS keychain for OpenRouter API key storage",
+    "type": "work",
+    "updated_at": "2026-03-03T16:52:57.006289Z",
+    "workflow_id": "work_sdlc"
+  }
+}

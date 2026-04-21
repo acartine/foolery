@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e91-7a71-9e4b-dad9ef20b42b",
+  "occurred_at": "2026-04-21T12:47:06.385830767Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-4331",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Doctor: migrate backend.type from cli to auto",
+    "type": "work",
+    "updated_at": "2026-03-08T14:33:15.507676Z",
+    "workflow_id": "work_sdlc"
+  }
+}

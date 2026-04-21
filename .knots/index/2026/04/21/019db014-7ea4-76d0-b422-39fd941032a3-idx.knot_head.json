@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ea4-76d0-b422-39fd941032a3",
+  "occurred_at": "2026-04-21T12:47:06.404055054Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-520e",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Agent adapter: OpenRouter dialect",
+    "type": "work",
+    "updated_at": "2026-03-05T15:29:09.044842Z",
+    "workflow_id": "work_sdlc"
+  }
+}

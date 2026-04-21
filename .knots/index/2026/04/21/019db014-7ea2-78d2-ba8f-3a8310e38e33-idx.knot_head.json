@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ea2-78d2-ba8f-3a8310e38e33",
+  "occurred_at": "2026-04-21T12:47:06.40200757Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-4f1f",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Doctor: add permissions check for registry.json",
+    "type": "work",
+    "updated_at": "2026-03-08T14:55:37.863625Z",
+    "workflow_id": "work_sdlc"
+  }
+}

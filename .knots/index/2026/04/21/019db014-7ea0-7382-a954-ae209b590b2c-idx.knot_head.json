@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ea0-7382-a954-ae209b590b2c",
+  "occurred_at": "2026-04-21T12:47:06.400195336Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-4c75",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Beads: map unlabeled open/in_progress items to implementation states",
+    "type": "work",
+    "updated_at": "2026-03-08T15:34:56.443229Z",
+    "workflow_id": "work_sdlc"
+  }
+}

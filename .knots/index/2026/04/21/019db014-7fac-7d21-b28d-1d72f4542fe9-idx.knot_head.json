@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7fac-7d21-b28d-1d72f4542fe9",
+  "occurred_at": "2026-04-21T12:47:06.668521375Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-f73a",
+    "profile_id": "autopilot_no_planning",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Allow backward state edits from active beat states",
+    "type": "work",
+    "updated_at": "2026-03-04T14:30:42.780896Z",
+    "workflow_id": "work_sdlc"
+  }
+}

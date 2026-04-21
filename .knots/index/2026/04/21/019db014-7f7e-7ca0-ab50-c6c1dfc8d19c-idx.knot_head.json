@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f7e-7ca0-ab50-c6c1dfc8d19c",
+  "occurred_at": "2026-04-21T12:47:06.622709282Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-e09f",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Bug: take-loop fails for codex agents - stdin prompt sent to non-interactive process",
+    "type": "work",
+    "updated_at": "2026-03-03T06:19:15.656855Z",
+    "workflow_id": "work_sdlc"
+  }
+}

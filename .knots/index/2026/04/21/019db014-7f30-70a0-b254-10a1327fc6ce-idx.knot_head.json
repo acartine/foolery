@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f30-70a0-b254-10a1327fc6ce",
+  "occurred_at": "2026-04-21T12:47:06.544773755Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ae6b",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Still can't edit beat state",
+    "type": "work",
+    "updated_at": "2026-03-04T14:05:33.231519Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e60-7673-85fe-cc44a0e6e598",
+  "occurred_at": "2026-04-21T12:47:06.336991969Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-2722",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "OpenRouter first-class agent integration",
+    "type": "work",
+    "updated_at": "2026-03-05T15:29:05.728684Z",
+    "workflow_id": "work_sdlc"
+  }
+}

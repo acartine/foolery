@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f28-79b2-8c33-a6248e034a45",
+  "occurred_at": "2026-04-21T12:47:06.536758083Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-a994",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Take!:  convert to poll loop for knots backed beats",
+    "type": "work",
+    "updated_at": "2026-03-02T17:01:53.226068Z",
+    "workflow_id": "work_sdlc"
+  }
+}

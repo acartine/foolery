@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7efa-7330-9a19-8619ee77adc4",
+  "occurred_at": "2026-04-21T12:47:06.490782418Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-8caa",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Beat Detail:  Make lightbox wider",
+    "type": "work",
+    "updated_at": "2026-03-10T18:58:42.425267Z",
+    "workflow_id": "work_sdlc"
+  }
+}

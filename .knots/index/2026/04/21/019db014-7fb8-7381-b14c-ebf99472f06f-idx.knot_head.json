@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7fb8-7381-b14c-ebf99472f06f",
+  "occurred_at": "2026-04-21T12:47:06.680372469Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-fde6",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Phase 3: Skill prompts for beads",
+    "type": "work",
+    "updated_at": "2026-03-05T12:06:26.106859Z",
+    "workflow_id": "work_sdlc"
+  }
+}

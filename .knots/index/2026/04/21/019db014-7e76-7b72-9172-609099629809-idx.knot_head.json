@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e76-7b72-9172-609099629809",
+  "occurred_at": "2026-04-21T12:47:06.358356258Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-30bb",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "beats view: clicking on beat id to copy to clipboard is broken",
+    "type": "work",
+    "updated_at": "2026-03-02T15:19:37.026487Z",
+    "workflow_id": "work_sdlc"
+  }
+}

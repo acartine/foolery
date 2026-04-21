@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e49-7c42-a67b-110089dfa093",
+  "occurred_at": "2026-04-21T12:47:06.313165404Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-198d",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Replace kno update --status with kno next in enforceQueueTerminalInvariant",
+    "type": "work",
+    "updated_at": "2026-03-02T15:48:40.342639Z",
+    "workflow_id": "work_sdlc"
+  }
+}

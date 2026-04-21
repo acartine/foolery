@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f5a-70d2-8a68-90c5ae17d0cb",
+  "occurred_at": "2026-04-21T12:47:06.586322357Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-c873",
+    "profile_id": "autopilot_no_planning",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "retakes.png must be replaced with actual listed items",
+    "type": "work",
+    "updated_at": "2026-03-09T08:57:09.345322Z",
+    "workflow_id": "work_sdlc"
+  }
+}

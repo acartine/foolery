@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7fe4-7192-b476-bcab6db1f36c",
+  "occurred_at": "2026-04-21T12:47:06.72497016Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.4.3",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Remove Beads-only wording from orchestration and breakdown prompts",
+    "type": "work",
+    "updated_at": "2026-03-03T11:15:40.288767Z",
+    "workflow_id": "work_sdlc"
+  }
+}

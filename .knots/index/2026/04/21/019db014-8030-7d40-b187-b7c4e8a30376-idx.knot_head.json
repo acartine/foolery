@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-8030-7d40-b187-b7c4e8a30376",
+  "occurred_at": "2026-04-21T12:47:06.800210155Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.5.3",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Run regression matrix for CLI and OpenRouter modes",
+    "type": "work",
+    "updated_at": "2026-03-03T22:33:59.585962Z",
+    "workflow_id": "work_sdlc"
+  }
+}

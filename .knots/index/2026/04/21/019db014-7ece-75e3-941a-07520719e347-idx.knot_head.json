@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ece-75e3-941a-07520719e347",
+  "occurred_at": "2026-04-21T12:47:06.446809461Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6fbb",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "settings: remove default agent at bottom",
+    "type": "work",
+    "updated_at": "2026-03-03T11:35:54.067529Z",
+    "workflow_id": "work_sdlc"
+  }
+}

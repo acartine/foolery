@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-8027-7750-ad4c-ab10af34089e",
+  "occurred_at": "2026-04-21T12:47:06.791928073Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.4.4",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Integrate provider routing in breakdown manager",
+    "type": "work",
+    "updated_at": "2026-03-03T22:33:59.501895Z",
+    "workflow_id": "work_sdlc"
+  }
+}

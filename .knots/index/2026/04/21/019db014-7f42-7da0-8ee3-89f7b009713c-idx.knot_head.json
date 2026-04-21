@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f42-7da0-8ee3-89f7b009713c",
+  "occurred_at": "2026-04-21T12:47:06.56267261Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ba0e",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "settings: dispatch: pools:  add a model swap function",
+    "type": "work",
+    "updated_at": "2026-03-06T09:46:38.287566Z",
+    "workflow_id": "work_sdlc"
+  }
+}

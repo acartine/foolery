@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f5f-7331-ab00-360149ecabf5",
+  "occurred_at": "2026-04-21T12:47:06.591290885Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-cd8b",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Setup: replace openrouter with opencode in KNOWN_AGENTS",
+    "type": "work",
+    "updated_at": "2026-03-08T14:30:43.529651Z",
+    "workflow_id": "work_sdlc"
+  }
+}

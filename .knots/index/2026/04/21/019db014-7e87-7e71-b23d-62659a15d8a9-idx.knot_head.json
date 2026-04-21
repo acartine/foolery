@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e87-7e71-b23d-62659a15d8a9",
+  "occurred_at": "2026-04-21T12:47:06.375608427Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-3b7b",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "remove Approve/Reject/Built For Review, checkmark, thumbsdown",
+    "type": "work",
+    "updated_at": "2026-03-03T13:32:30.396824Z",
+    "workflow_id": "work_sdlc"
+  }
+}

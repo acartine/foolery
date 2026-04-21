@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ff2-7253-ac7e-a6397f31f32c",
+  "occurred_at": "2026-04-21T12:47:06.738987324Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.6.1",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Run backend contract harness and close Knots parity gaps",
+    "type": "work",
+    "updated_at": "2026-03-03T11:15:40.404403Z",
+    "workflow_id": "work_sdlc"
+  }
+}

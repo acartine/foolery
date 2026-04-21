@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f38-7c50-9a0e-64ecfb71de0e",
+  "occurred_at": "2026-04-21T12:47:06.552634561Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-b13d",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Settings: Agents and Dispatch agent titles should be more consistent",
+    "type": "work",
+    "updated_at": "2026-03-08T17:00:11.328458Z",
+    "workflow_id": "work_sdlc"
+  }
+}

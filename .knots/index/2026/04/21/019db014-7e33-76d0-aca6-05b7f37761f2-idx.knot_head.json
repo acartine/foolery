@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e33-76d0-aca6-05b7f37761f2",
+  "occurred_at": "2026-04-21T12:47:06.291521891Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0555",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Agent Pools: Settings UI tabs refactor and pool configuration",
+    "type": "work",
+    "updated_at": "2026-03-02T13:26:41.232802Z",
+    "workflow_id": "work_sdlc"
+  }
+}

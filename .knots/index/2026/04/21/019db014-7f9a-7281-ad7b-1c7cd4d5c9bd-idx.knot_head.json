@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f9a-7281-ad7b-1c7cd4d5c9bd",
+  "occurred_at": "2026-04-21T12:47:06.650273283Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ef28",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add retry with exponential backoff to knots.nextKnot",
+    "type": "work",
+    "updated_at": "2026-03-02T15:50:35.79678Z",
+    "workflow_id": "work_sdlc"
+  }
+}

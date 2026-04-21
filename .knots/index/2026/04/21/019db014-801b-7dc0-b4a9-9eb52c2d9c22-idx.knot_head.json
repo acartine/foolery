@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-801b-7dc0-b4a9-9eb52c2d9c22",
+  "occurred_at": "2026-04-21T12:47:06.779078681Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.3.2",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Wire frontend settings API methods for OpenRouter",
+    "type": "work",
+    "updated_at": "2026-03-03T22:33:59.379839Z",
+    "workflow_id": "work_sdlc"
+  }
+}

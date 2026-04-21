@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e2a-7d71-9cf9-2b6a3591ed52",
+  "occurred_at": "2026-04-21T12:47:06.282909638Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0143",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "History:  Filter only shows Initial Prompt, we want to see every prompt",
+    "type": "work",
+    "updated_at": "2026-03-05T08:00:35.923027Z",
+    "workflow_id": "work_sdlc"
+  }
+}

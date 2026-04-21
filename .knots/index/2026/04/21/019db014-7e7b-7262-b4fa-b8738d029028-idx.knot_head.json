@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e7b-7262-b4fa-b8738d029028",
+  "occurred_at": "2026-04-21T12:47:06.363048648Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-3440",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "OpenRouter models don't show up in model list",
+    "type": "work",
+    "updated_at": "2026-03-03T22:58:07.96429Z",
+    "workflow_id": "work_sdlc"
+  }
+}

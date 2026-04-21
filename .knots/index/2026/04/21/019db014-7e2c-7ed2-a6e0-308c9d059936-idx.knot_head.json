@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e2c-7ed2-a6e0-308c9d059936",
+  "occurred_at": "2026-04-21T12:47:06.284545405Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0237",
+    "profile_id": "autopilot_no_planning",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "reload does not remember active project",
+    "type": "work",
+    "updated_at": "2026-03-08T14:22:54.731704Z",
+    "workflow_id": "work_sdlc"
+  }
+}

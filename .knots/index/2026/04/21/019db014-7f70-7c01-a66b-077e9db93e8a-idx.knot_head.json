@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f70-7c01-a66b-077e9db93e8a",
+  "occurred_at": "2026-04-21T12:47:06.608098253Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-db94",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add 'Is This Secure?' lightbox to OpenRouter settings section",
+    "type": "work",
+    "updated_at": "2026-03-03T16:49:58.999487Z",
+    "workflow_id": "work_sdlc"
+  }
+}

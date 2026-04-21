@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f3a-7870-bf07-61ea74f15ec2",
+  "occurred_at": "2026-04-21T12:47:06.554445874Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-b382",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Improve test coverage for execution-logger.ts (4.87% → 70%+)",
+    "type": "work",
+    "updated_at": "2026-03-02T09:26:40.407608Z",
+    "workflow_id": "work_sdlc"
+  }
+}

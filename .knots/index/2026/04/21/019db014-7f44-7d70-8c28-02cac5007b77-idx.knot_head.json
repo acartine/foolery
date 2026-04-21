@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f44-7d70-8c28-02cac5007b77",
+  "occurred_at": "2026-04-21T12:47:06.56427873Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ba29",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Setup: write complete settings.toml with backend, defaults, pools, dispatchMode",
+    "type": "work",
+    "updated_at": "2026-03-08T14:37:07.876256Z",
+    "workflow_id": "work_sdlc"
+  }
+}

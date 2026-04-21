@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f27-72c1-89e1-081940f05431",
+  "occurred_at": "2026-04-21T12:47:06.535142694Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-a91e",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "clicking on profile on beats view and selecting new profile fails",
+    "type": "work",
+    "updated_at": "2026-03-03T22:22:09.006889Z",
+    "workflow_id": "work_sdlc"
+  }
+}

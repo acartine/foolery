@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7fb9-72e1-868b-9ae5f93aeff0",
+  "occurred_at": "2026-04-21T12:47:06.681983809Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-fe17",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "foolery doctor: Not handling readme's/prompts gracefully",
+    "type": "work",
+    "updated_at": "2026-03-11T13:57:14.326275Z",
+    "workflow_id": "work_sdlc"
+  }
+}

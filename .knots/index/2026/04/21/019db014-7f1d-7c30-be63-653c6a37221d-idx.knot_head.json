@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f1d-7c30-be63-653c6a37221d",
+  "occurred_at": "2026-04-21T12:47:06.525206411Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-9c91",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "migrate rollbackBeatState to use kno rb",
+    "type": "work",
+    "updated_at": "2026-03-11T06:05:20.596756Z",
+    "workflow_id": "work_sdlc"
+  }
+}

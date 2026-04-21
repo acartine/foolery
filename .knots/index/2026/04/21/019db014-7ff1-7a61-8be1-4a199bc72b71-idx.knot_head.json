@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ff1-7a61-8be1-4a199bc72b71",
+  "occurred_at": "2026-04-21T12:47:06.737310359Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.6",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Validation, docs, and rollout hardening",
+    "type": "work",
+    "updated_at": "2026-03-01T17:43:01.28794Z",
+    "workflow_id": "work_sdlc"
+  }
+}

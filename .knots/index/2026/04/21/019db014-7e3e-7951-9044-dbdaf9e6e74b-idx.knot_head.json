@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e3e-7951-9044-dbdaf9e6e74b",
+  "occurred_at": "2026-04-21T12:47:06.30261206Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0df2",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Settings:  Add some color and some pizazz",
+    "type": "work",
+    "updated_at": "2026-03-06T06:20:38.703729Z",
+    "workflow_id": "work_sdlc"
+  }
+}

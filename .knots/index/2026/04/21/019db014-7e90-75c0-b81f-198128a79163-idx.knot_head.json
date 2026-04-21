@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e90-75c0-b81f-198128a79163",
+  "occurred_at": "2026-04-21T12:47:06.384012021Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-41e0",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "history view:  beat id should be click-to-copy",
+    "type": "work",
+    "updated_at": "2026-03-04T13:45:56.222139Z",
+    "workflow_id": "work_sdlc"
+  }
+}

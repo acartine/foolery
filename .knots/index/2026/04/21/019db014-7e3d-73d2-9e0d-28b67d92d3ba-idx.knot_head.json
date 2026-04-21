@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e3d-73d2-9e0d-28b67d92d3ba",
+  "occurred_at": "2026-04-21T12:47:06.301028694Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0bbe",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Settings: Dispatch: \"Swap Agent\" functionality should be global, not per step",
+    "type": "work",
+    "updated_at": "2026-03-09T08:28:04.776459Z",
+    "workflow_id": "work_sdlc"
+  }
+}

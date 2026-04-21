@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f1e-7292-bf53-8e3a51abf8c8",
+  "occurred_at": "2026-04-21T12:47:06.526779478Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-9c9a",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Clean prompt-guidance docs, runtime packaging, and tests",
+    "type": "work",
+    "updated_at": "2026-03-12T13:34:49.426767Z",
+    "workflow_id": "work_sdlc"
+  }
+}

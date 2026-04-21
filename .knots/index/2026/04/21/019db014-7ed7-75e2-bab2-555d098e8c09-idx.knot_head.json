@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ed7-75e2-bab2-555d098e8c09",
+  "occurred_at": "2026-04-21T12:47:06.455990602Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-7171",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "search should be a minimum view of 20 characters",
+    "type": "work",
+    "updated_at": "2026-03-17T14:19:19.33968Z",
+    "workflow_id": "work_sdlc"
+  }
+}

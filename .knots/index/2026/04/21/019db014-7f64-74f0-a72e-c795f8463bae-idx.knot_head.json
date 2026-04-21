@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f64-74f0-a72e-c795f8463bae",
+  "occurred_at": "2026-04-21T12:47:06.596274682Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-d08e",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Search should work on every screen",
+    "type": "work",
+    "updated_at": "2026-03-11T08:58:34.121573Z",
+    "workflow_id": "work_sdlc"
+  }
+}

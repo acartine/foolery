@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f8f-71c1-9679-6a00cfc97970",
+  "occurred_at": "2026-04-21T12:47:06.639613746Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-e6fd",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Phase 6: Terminal manager dispatch and take loop gate removal",
+    "type": "work",
+    "updated_at": "2026-03-05T15:44:11.308013Z",
+    "workflow_id": "work_sdlc"
+  }
+}

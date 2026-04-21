@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e6e-7f61-8cc9-15b5d9e6bd1a",
+  "occurred_at": "2026-04-21T12:47:06.350535409Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-2bf1",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "kno commands on aliases like ba0e.2 should work.  currently it says knot not found.  it should resolve to 28b0",
+    "type": "work",
+    "updated_at": "2026-03-06T17:00:33.868494Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7faa-7800-abcd-332dc004fd7e",
+  "occurred_at": "2026-04-21T12:47:06.666659346Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-f646",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Show time elapsed in ui terminal subtitle along with beat state",
+    "type": "work",
+    "updated_at": "2026-03-03T11:47:29.797126Z",
+    "workflow_id": "work_sdlc"
+  }
+}

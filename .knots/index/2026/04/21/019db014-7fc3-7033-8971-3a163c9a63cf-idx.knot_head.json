@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7fc3-7033-8971-3a163c9a63cf",
+  "occurred_at": "2026-04-21T12:47:06.691948136Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.1.2",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Capture CLI fixture corpus and freeze parser behavior",
+    "type": "work",
+    "updated_at": "2026-03-03T11:15:40.13088Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7eee-70c2-b3b1-a73a33713949",
+  "occurred_at": "2026-04-21T12:47:06.478074977Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-7e3a",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Terminal manager: env injection + dialect check",
+    "type": "work",
+    "updated_at": "2026-03-05T15:29:09.127795Z",
+    "workflow_id": "work_sdlc"
+  }
+}

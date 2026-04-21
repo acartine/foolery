@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ef4-7b33-b235-6adda0a326b0",
+  "occurred_at": "2026-04-21T12:47:06.484426117Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-87ec",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "beats view: 355d and de46, can't alter state",
+    "type": "work",
+    "updated_at": "2026-03-04T06:40:41.06227Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e53-7bb0-a08e-ff591a794c5c",
+  "occurred_at": "2026-04-21T12:47:06.323546688Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1e23",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add code coverage badge and reporting to README/GitHub",
+    "type": "work",
+    "updated_at": "2026-03-02T09:26:44.906618Z",
+    "workflow_id": "work_sdlc"
+  }
+}

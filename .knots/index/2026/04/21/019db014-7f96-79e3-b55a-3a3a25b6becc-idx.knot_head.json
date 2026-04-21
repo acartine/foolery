@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f96-79e3-b55a-3a3a25b6becc",
+  "occurred_at": "2026-04-21T12:47:06.646957565Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ea38",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Tests for OpenRouter integration",
+    "type": "work",
+    "updated_at": "2026-03-05T15:29:09.106603Z",
+    "workflow_id": "work_sdlc"
+  }
+}

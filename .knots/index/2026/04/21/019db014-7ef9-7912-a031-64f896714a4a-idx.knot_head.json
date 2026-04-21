@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ef9-7912-a031-64f896714a4a",
+  "occurred_at": "2026-04-21T12:47:06.489169264Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-8bbd",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "UX Terminal: Completion animation won't trigger until you click on the tab",
+    "type": "work",
+    "updated_at": "2026-03-03T15:41:44.849317Z",
+    "workflow_id": "work_sdlc"
+  }
+}

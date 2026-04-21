@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ef1-7dc2-978d-f48f6fdc0252",
+  "occurred_at": "2026-04-21T12:47:06.48122084Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-8198",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Can't add OpenRouter model to agent Pool",
+    "type": "work",
+    "updated_at": "2026-03-03T13:19:38.061279Z",
+    "workflow_id": "work_sdlc"
+  }
+}

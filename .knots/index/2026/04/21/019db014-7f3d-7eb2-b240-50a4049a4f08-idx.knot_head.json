@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f3d-7eb2-b240-50a4049a4f08",
+  "occurred_at": "2026-04-21T12:47:06.557848849Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-b68e",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "settings:  auto-verification should be moved to the basic tab",
+    "type": "work",
+    "updated_at": "2026-03-03T07:52:40.357256Z",
+    "workflow_id": "work_sdlc"
+  }
+}

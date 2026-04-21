@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7f04-7963-af98-157609b9cc30",
+  "occurred_at": "2026-04-21T12:47:06.500249865Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-90f0",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Agent Pools: Unit tests for weighted selection",
+    "type": "work",
+    "updated_at": "2026-03-02T13:26:42.299681Z",
+    "workflow_id": "work_sdlc"
+  }
+}

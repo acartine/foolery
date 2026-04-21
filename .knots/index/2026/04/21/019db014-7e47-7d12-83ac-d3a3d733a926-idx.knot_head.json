@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e47-7d12-83ac-d3a3d733a926",
+  "occurred_at": "2026-04-21T12:47:06.311215937Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-156f",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "OpenRouter agent shim script",
+    "type": "work",
+    "updated_at": "2026-03-05T13:42:36.031042Z",
+    "workflow_id": "work_sdlc"
+  }
+}

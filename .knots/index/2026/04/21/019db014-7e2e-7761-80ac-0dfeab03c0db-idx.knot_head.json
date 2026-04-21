@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7e2e-7761-80ac-0dfeab03c0db",
+  "occurred_at": "2026-04-21T12:47:06.28643641Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-02d0",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Beat Detail: only shows natural beat id, even if alias is present",
+    "type": "work",
+    "updated_at": "2026-03-11T08:42:12.680385Z",
+    "workflow_id": "work_sdlc"
+  }
+}

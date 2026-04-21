@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ffb-7783-84e7-603fa92915d4",
+  "occurred_at": "2026-04-21T12:47:06.747510267Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ioos",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "agent message type index",
+    "type": "work",
+    "updated_at": "2026-03-02T13:51:04.87271Z",
+    "workflow_id": "work_sdlc"
+  }
+}

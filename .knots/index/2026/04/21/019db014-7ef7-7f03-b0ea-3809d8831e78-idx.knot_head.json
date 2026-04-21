@@ -1,0 +1,15 @@
+{
+  "event_id": "019db014-7ef7-7f03-b0ea-3809d8831e78",
+  "occurred_at": "2026-04-21T12:47:06.487569887Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-8aad",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "UI: Dispatch selector updates",
+    "type": "work",
+    "updated_at": "2026-03-05T15:29:09.085136Z",
+    "workflow_id": "work_sdlc"
+  }
+}
