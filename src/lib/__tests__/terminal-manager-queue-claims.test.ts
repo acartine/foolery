@@ -489,6 +489,16 @@ describe("queue claims: repeated failure rotation", () => {
       loadSettingsMock.mockResolvedValue(
         basicSettingsWithTwoAgents,
       );
+      // Pin the weighted pool selection so iteration 1 deterministically
+      // picks agent-a (the first pool entry). Without this, selectWeighted
+      // in src/lib/agent-pool.ts uses Math.random() and iteration 1 can
+      // pick agent-b ~50% of the time — which would then rotate to
+      // agent-a on retry and fail the `selected="agent-b"` assertion
+      // below. The sibling test on line 529 uses the same mock for the
+      // same reason.
+      const randomSpy = vi
+        .spyOn(Math, "random")
+        .mockReturnValue(0);
       const consoleSpy = vi
         .spyOn(console, "log")
         .mockImplementation(() => undefined);
@@ -516,6 +526,7 @@ describe("queue claims: repeated failure rotation", () => {
         expect(interactionLog.logEnd).toHaveBeenCalled();
       });
       expect(spawnedChildren).toHaveLength(2);
+      randomSpy.mockRestore();
       consoleSpy.mockRestore();
     },
   );
