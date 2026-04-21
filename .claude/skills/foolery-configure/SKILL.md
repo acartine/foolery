@@ -120,9 +120,23 @@ cannot leave a half-written config:
 
 1. Ensure `~/.config/foolery/` exists (`mkdir -p`).
 2. Write the new `settings.toml` contents to a tempfile in the same
-   directory (e.g. `settings.toml.tmp.<pid>`).
-3. `mv` the tempfile onto `settings.toml`.
-4. Repeat with `registry.json.tmp.<pid>` → `registry.json`.
+   directory (e.g. `settings.toml.tmp.<pid>`). Do the same for
+   `registry.json.tmp.<pid>` if you are changing `registry.json`.
+3. **Preview before overwriting an existing file.** For each target that
+   already exists on disk (skip this step entirely for a fresh install
+   where the target does not yet exist):
+   - Run `diff -u <existing> <tempfile>`. If the diff is empty there is
+     nothing to apply — delete the tempfile and move on.
+   - Otherwise pipe the diff through a pager so the user can scroll:
+     `diff -u <existing> <tempfile> | less -R`. If `less` is not on
+     `PATH`, fall back to `more -R`. Do not truncate or summarize the
+     diff yourself — the user reads the full patch.
+   - After the pager exits, prompt `Apply these changes? [y/N]` and read
+     one line from stdin. Accept only exact `y`, `Y`, or `yes` as
+     confirmation. Anything else (including empty input) aborts the swap
+     for that target: delete the tempfile, leave the existing file
+     untouched, and tell the user which targets were skipped.
+4. `mv` each confirmed (or fresh-install) tempfile onto its target.
 
 Use the same directory for the tempfile so the `mv` stays on one filesystem
 and is a true rename.
