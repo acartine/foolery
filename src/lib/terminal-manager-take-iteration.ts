@@ -67,12 +67,12 @@ export async function handleTakeIterationClose(
     iteration: ctx.takeIteration.value,
   });
 
-  const resolved = resolveStep(claimedState);
   const workflow = resolveWorkflowForBeat(
     { ...ctx.beat, state: claimedState },
     ctx.workflowsById,
     ctx.fallbackWorkflow,
   );
+  const resolved = resolveStep(claimedState, workflow);
   const claimedStep =
     workflowActionStateForState(
       workflow,

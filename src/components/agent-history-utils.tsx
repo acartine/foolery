@@ -4,7 +4,12 @@ import { Loader2 } from "lucide-react";
 import {
   formatModelDisplay,
 } from "@/hooks/use-agent-info";
-import { resolveStep } from "@/lib/workflows";
+import {
+  defaultWorkflowDescriptor,
+  resolveStep,
+} from "@/lib/workflows";
+
+const DEFAULT_WF = defaultWorkflowDescriptor();
 
 export const WINDOW_SIZE = 5;
 export const TITLE_ROW_HEIGHT_PX = 48;
@@ -105,7 +110,7 @@ function workflowStepLabelFromState(
   state?: string,
 ): string | null {
   if (!state) return null;
-  const resolved = resolveStep(state);
+  const resolved = resolveStep(state, DEFAULT_WF);
   if (!resolved) return null;
   return resolved.step
     .split("_")

@@ -9,12 +9,10 @@ import {
 } from "@/lib/schemas";
 import type {
   RegisteredAgent,
-  ActionName,
   AgentRemovalImpact,
   AgentRemovalRequest,
 } from "@/lib/types";
 import type { AgentTarget } from "@/lib/types-agent-target";
-import type { WorkflowStep } from "@/lib/workflows";
 import { resolvePoolAgent } from "@/lib/agent-pool";
 import {
   normalizeAgentIdentity,
@@ -32,10 +30,7 @@ import {
 import {
   serverLog,
 } from "@/lib/server-logger";
-import {
-  getFallbackCommand,
-  toCliTarget,
-} from "@/lib/settings-agent-targets";
+import { toCliTarget } from "@/lib/settings-agent-targets";
 import {
   CONFIG_DIR,
   SETTINGS_FILE,
@@ -50,7 +45,6 @@ import {
 import type { SettingsPartial } from "@/lib/settings-types";
 import {
   resolveOrchestrationAgent,
-  resolveStepAgent,
 } from "@/lib/settings-orchestration";
 import {
   mergeSettingsPartial,
@@ -227,12 +221,6 @@ export async function updateSettings(
 
 // ── Public dispatch API ──────────────────────────────────────
 
-/** Returns the dispatch fallback command for unmapped actions. */
-export async function getAgentCommand(): Promise<string> {
-  const settings = await loadSettings();
-  return getFallbackCommand(settings.agents);
-}
-
 /** Returns the registered agents map. */
 export async function getRegisteredAgents(): Promise<
   Record<string, RegisteredAgentConfig>
@@ -262,24 +250,6 @@ export async function getRegisteredAgents(): Promise<
       ];
     }),
   );
-}
-
-/** Resolves an action name to its agent config. */
-export async function getActionAgent(
-  action: ActionName,
-): Promise<AgentTarget> {
-  const settings = await loadSettings();
-  const agentId = settings.actions[action] ?? "";
-  if (
-    agentId &&
-    agentId !== "default" &&
-    settings.agents[agentId]
-  ) {
-    return toCliTarget(settings.agents[agentId], agentId);
-  }
-  return toCliTarget({
-    command: getFallbackCommand(settings.agents),
-  });
 }
 
 export async function getOrchestrationAgent(
@@ -406,29 +376,6 @@ export async function removeRegisteredAgent(
 export async function getPoolsSettings(): Promise<PoolsSettings> {
   const settings = await loadSettings();
   return settings.pools;
-}
-
-/**
- * Resolve an agent for a workflow step using pool config.
- * Falls back to the action's agent mapping if no pool is
- * configured, then to the dispatch fallback command.
- *
- * @param beatId - Beat ID for per-beat agent tracking.
- */
-export async function getStepAgent(
-  step: WorkflowStep,
-  fallbackAction?: ActionName,
-  beatId?: string,
-  workflowOrProfileId?: string,
-): Promise<AgentTarget> {
-  const settings = await loadSettings();
-  return resolveStepAgent(
-    step,
-    settings,
-    fallbackAction,
-    beatId,
-    workflowOrProfileId,
-  );
 }
 
 /** Reset the in-memory cache (useful for testing). */

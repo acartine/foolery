@@ -11,70 +11,72 @@ import {
 } from "@/lib/workflows";
 import type { MemoryWorkflowOwners } from "@/lib/types";
 
+const workflow = builtinProfileDescriptor("autopilot");
+
 describe("resolveStep", () => {
   it("maps all 6 queue states correctly", () => {
-    expect(resolveStep("ready_for_planning")).toEqual({
+    expect(resolveStep("ready_for_planning", workflow)).toEqual({
       step: WorkflowStep.Planning,
       phase: StepPhase.Queued,
     });
-    expect(resolveStep("ready_for_plan_review")).toEqual({
+    expect(resolveStep("ready_for_plan_review", workflow)).toEqual({
       step: WorkflowStep.PlanReview,
       phase: StepPhase.Queued,
     });
-    expect(resolveStep("ready_for_implementation")).toEqual({
+    expect(resolveStep("ready_for_implementation", workflow)).toEqual({
       step: WorkflowStep.Implementation,
       phase: StepPhase.Queued,
     });
-    expect(resolveStep("ready_for_implementation_review")).toEqual({
+    expect(resolveStep("ready_for_implementation_review", workflow)).toEqual({
       step: WorkflowStep.ImplementationReview,
       phase: StepPhase.Queued,
     });
-    expect(resolveStep("ready_for_shipment")).toEqual({
+    expect(resolveStep("ready_for_shipment", workflow)).toEqual({
       step: WorkflowStep.Shipment,
       phase: StepPhase.Queued,
     });
-    expect(resolveStep("ready_for_shipment_review")).toEqual({
+    expect(resolveStep("ready_for_shipment_review", workflow)).toEqual({
       step: WorkflowStep.ShipmentReview,
       phase: StepPhase.Queued,
     });
   });
 
   it("maps all 6 active states correctly", () => {
-    expect(resolveStep("planning")).toEqual({
+    expect(resolveStep("planning", workflow)).toEqual({
       step: WorkflowStep.Planning,
       phase: StepPhase.Active,
     });
-    expect(resolveStep("plan_review")).toEqual({
+    expect(resolveStep("plan_review", workflow)).toEqual({
       step: WorkflowStep.PlanReview,
       phase: StepPhase.Active,
     });
-    expect(resolveStep("implementation")).toEqual({
+    expect(resolveStep("implementation", workflow)).toEqual({
       step: WorkflowStep.Implementation,
       phase: StepPhase.Active,
     });
-    expect(resolveStep("implementation_review")).toEqual({
+    expect(resolveStep("implementation_review", workflow)).toEqual({
       step: WorkflowStep.ImplementationReview,
       phase: StepPhase.Active,
     });
-    expect(resolveStep("shipment")).toEqual({
+    expect(resolveStep("shipment", workflow)).toEqual({
       step: WorkflowStep.Shipment,
       phase: StepPhase.Active,
     });
-    expect(resolveStep("shipment_review")).toEqual({
+    expect(resolveStep("shipment_review", workflow)).toEqual({
       step: WorkflowStep.ShipmentReview,
       phase: StepPhase.Active,
     });
   });
 
   it("returns null for terminal states", () => {
-    expect(resolveStep("shipped")).toBeNull();
-    expect(resolveStep("abandoned")).toBeNull();
+    expect(resolveStep("shipped", workflow)).toBeNull();
+    expect(resolveStep("abandoned", workflow)).toBeNull();
   });
 
   it("returns null for deferred and unknown states", () => {
-    expect(resolveStep("deferred")).toBeNull();
-    expect(resolveStep("unknown_state")).toBeNull();
-    expect(resolveStep("")).toBeNull();
+    expect(resolveStep("deferred", workflow)).toBeNull();
+    expect(resolveStep("unknown_state", workflow)).toBeNull();
+    expect(resolveStep("", workflow)).toBeNull();
   });
 
   it("all WorkflowStep values are valid MemoryWorkflowOwners keys", () => {
@@ -96,13 +98,13 @@ describe("resolveStep", () => {
     const steps = Object.values(WorkflowStep);
     for (const step of steps) {
       // Active phase: step name maps back to the same step
-      const active = resolveStep(step);
+      const active = resolveStep(step, workflow);
       expect(active).not.toBeNull();
       expect(active!.step).toBe(step);
       expect(active!.phase).toBe(StepPhase.Active);
 
       // Queued phase: ready_for_<step> maps back to the same step
-      const queued = resolveStep(`ready_for_${step}`);
+      const queued = resolveStep(`ready_for_${step}`, workflow);
       expect(queued).not.toBeNull();
       expect(queued!.step).toBe(step);
       expect(queued!.phase).toBe(StepPhase.Queued);
@@ -111,8 +113,6 @@ describe("resolveStep", () => {
 });
 
 describe("isQueueOrTerminal", () => {
-  const workflow = builtinProfileDescriptor("autopilot");
-
   it("returns true for all queue states", () => {
     expect(isQueueOrTerminal("ready_for_planning", workflow)).toBe(true);
     expect(isQueueOrTerminal("ready_for_plan_review", workflow)).toBe(true);
@@ -141,50 +141,42 @@ describe("isQueueOrTerminal", () => {
   });
 
   it("returns true for unknown states (not action states)", () => {
-    expect(isQueueOrTerminal("unknown_state")).toBe(true);
-    expect(isQueueOrTerminal("")).toBe(true);
-  });
-
-  it("works without a workflow descriptor (uses defaults)", () => {
-    expect(isQueueOrTerminal("shipped")).toBe(true);
-    expect(isQueueOrTerminal("abandoned")).toBe(true);
-    expect(isQueueOrTerminal("closed")).toBe(true);
-    expect(isQueueOrTerminal("ready_for_planning")).toBe(true);
-    expect(isQueueOrTerminal("implementation")).toBe(false);
+    expect(isQueueOrTerminal("unknown_state", workflow)).toBe(true);
+    expect(isQueueOrTerminal("", workflow)).toBe(true);
   });
 });
 
 describe("isReviewStep", () => {
   it("returns true for review steps", () => {
-    expect(isReviewStep(WorkflowStep.PlanReview)).toBe(true);
-    expect(isReviewStep(WorkflowStep.ImplementationReview)).toBe(true);
-    expect(isReviewStep(WorkflowStep.ShipmentReview)).toBe(true);
+    expect(isReviewStep(WorkflowStep.PlanReview, workflow)).toBe(true);
+    expect(isReviewStep(WorkflowStep.ImplementationReview, workflow)).toBe(true);
+    expect(isReviewStep(WorkflowStep.ShipmentReview, workflow)).toBe(true);
   });
 
   it("returns false for action steps", () => {
-    expect(isReviewStep(WorkflowStep.Planning)).toBe(false);
-    expect(isReviewStep(WorkflowStep.Implementation)).toBe(false);
-    expect(isReviewStep(WorkflowStep.Shipment)).toBe(false);
+    expect(isReviewStep(WorkflowStep.Planning, workflow)).toBe(false);
+    expect(isReviewStep(WorkflowStep.Implementation, workflow)).toBe(false);
+    expect(isReviewStep(WorkflowStep.Shipment, workflow)).toBe(false);
   });
 });
 
 describe("priorActionStep", () => {
   it("maps review steps to their corresponding action steps", () => {
-    expect(priorActionStep(WorkflowStep.PlanReview)).toBe(
+    expect(priorActionStep(WorkflowStep.PlanReview, workflow)).toBe(
       WorkflowStep.Planning,
     );
-    expect(priorActionStep(WorkflowStep.ImplementationReview)).toBe(
+    expect(priorActionStep(WorkflowStep.ImplementationReview, workflow)).toBe(
       WorkflowStep.Implementation,
     );
-    expect(priorActionStep(WorkflowStep.ShipmentReview)).toBe(
+    expect(priorActionStep(WorkflowStep.ShipmentReview, workflow)).toBe(
       WorkflowStep.Shipment,
     );
   });
 
   it("returns null for non-review steps", () => {
-    expect(priorActionStep(WorkflowStep.Planning)).toBeNull();
-    expect(priorActionStep(WorkflowStep.Implementation)).toBeNull();
-    expect(priorActionStep(WorkflowStep.Shipment)).toBeNull();
+    expect(priorActionStep(WorkflowStep.Planning, workflow)).toBeNull();
+    expect(priorActionStep(WorkflowStep.Implementation, workflow)).toBeNull();
+    expect(priorActionStep(WorkflowStep.Shipment, workflow)).toBeNull();
   });
 });
 

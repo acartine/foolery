@@ -14,6 +14,7 @@ import type {
   MemoryWorkflowDescriptor,
 } from "@/lib/types";
 import {
+  defaultWorkflowDescriptor,
   resolveStep,
   StepPhase,
   extractWorkflowProfileLabel,
@@ -102,7 +103,7 @@ export function mapWorkflowStateToCompatStatus(
   ) {
     return "closed";
   }
-  const resolved = resolveStep(normalized);
+  const resolved = resolveStep(normalized, defaultWorkflowDescriptor());
   if (resolved?.phase === StepPhase.Queued) return "open";
   if (
     resolved?.phase === StepPhase.Active ||

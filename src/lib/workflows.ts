@@ -39,95 +39,24 @@ export const StepPhase = {
 export type StepPhase = (typeof StepPhase)[keyof typeof StepPhase];
 
 export interface ResolvedStep {
-  step: WorkflowStep;
+  /** Action-state name. The key used for dispatch pool lookup. */
+  step: string;
   phase: StepPhase;
 }
 
-const RESOLVED_STEP_MAP: ReadonlyMap<string, ResolvedStep> = new Map<string, ResolvedStep>([
-  ["ready_for_planning", { step: WorkflowStep.Planning, phase: StepPhase.Queued }],
-  ["planning", { step: WorkflowStep.Planning, phase: StepPhase.Active }],
-  ["ready_for_plan_review", { step: WorkflowStep.PlanReview, phase: StepPhase.Queued }],
-  ["plan_review", { step: WorkflowStep.PlanReview, phase: StepPhase.Active }],
-  ["ready_for_implementation", { step: WorkflowStep.Implementation, phase: StepPhase.Queued }],
-  ["implementation", { step: WorkflowStep.Implementation, phase: StepPhase.Active }],
-  ["ready_for_implementation_review", { step: WorkflowStep.ImplementationReview, phase: StepPhase.Queued }],
-  ["implementation_review", { step: WorkflowStep.ImplementationReview, phase: StepPhase.Active }],
-  ["ready_for_shipment", { step: WorkflowStep.Shipment, phase: StepPhase.Queued }],
-  ["shipment", { step: WorkflowStep.Shipment, phase: StepPhase.Active }],
-  ["ready_for_shipment_review", { step: WorkflowStep.ShipmentReview, phase: StepPhase.Queued }],
-  ["shipment_review", { step: WorkflowStep.ShipmentReview, phase: StepPhase.Active }],
-]);
+export {
+  resolveStep,
+  queueStateForStep,
+  nextQueueStateForStep,
+  priorQueueStateForStep,
+  isReviewStep,
+  priorActionStep,
+  deriveWorkflowStructure,
+} from "@/lib/workflow-step-nav";
 
-/** Map any raw workflow state string to its step + phase, or null for terminal/deferred/unknown. */
-export function resolveStep(state: string): ResolvedStep | null {
-  return RESOLVED_STEP_MAP.get(state) ?? null;
-}
-
-/** Returns the queue (ready_for_*) state for a given workflow step. */
-export function queueStateForStep(step: WorkflowStep): string {
-  switch (step) {
-    case WorkflowStep.Planning: return "ready_for_planning";
-    case WorkflowStep.PlanReview: return "ready_for_plan_review";
-    case WorkflowStep.Implementation: return "ready_for_implementation";
-    case WorkflowStep.ImplementationReview: return "ready_for_implementation_review";
-    case WorkflowStep.Shipment: return "ready_for_shipment";
-    case WorkflowStep.ShipmentReview: return "ready_for_shipment_review";
-  }
-}
-
-// ── Step ordering ──────────────────────────────────────────────
-
-/** Ordered workflow steps used for next/prior queue state derivation. */
-const STEP_ORDER: readonly WorkflowStep[] = [
-  WorkflowStep.Planning,
-  WorkflowStep.PlanReview,
-  WorkflowStep.Implementation,
-  WorkflowStep.ImplementationReview,
-  WorkflowStep.Shipment,
-  WorkflowStep.ShipmentReview,
-];
-
-/**
- * Returns the queue state for the step that follows the given step,
- * or null if the given step is the last step (shipment_review).
- */
-export function nextQueueStateForStep(step: WorkflowStep): string | null {
-  const idx = STEP_ORDER.indexOf(step);
-  if (idx < 0 || idx >= STEP_ORDER.length - 1) return null;
-  return queueStateForStep(STEP_ORDER[idx + 1]!);
-}
-
-/**
- * Returns the queue state for the step that precedes the given step,
- * or null if the given step is the first step (planning).
- */
-export function priorQueueStateForStep(step: WorkflowStep): string | null {
-  const idx = STEP_ORDER.indexOf(step);
-  if (idx <= 0) return null;
-  return queueStateForStep(STEP_ORDER[idx - 1]!);
-}
-
-// ── Review-step helpers ────────────────────────────────────────
-
-/** Maps each review step to the action step it reviews. */
-const REVIEW_TO_ACTION_STEP: ReadonlyMap<WorkflowStep, WorkflowStep> = new Map([
-  [WorkflowStep.PlanReview, WorkflowStep.Planning],
-  [WorkflowStep.ImplementationReview, WorkflowStep.Implementation],
-  [WorkflowStep.ShipmentReview, WorkflowStep.Shipment],
-]);
-
-/**
- * Returns true if the given step is a review step
- * (plan_review, implementation_review, shipment_review).
- */
-export function isReviewStep(step: WorkflowStep): boolean {
-  return REVIEW_TO_ACTION_STEP.has(step);
-}
-
-/** Returns the action step that precedes a review step, or null for non-review steps. */
-export function priorActionStep(step: WorkflowStep): WorkflowStep | null {
-  return REVIEW_TO_ACTION_STEP.get(step) ?? null;
-}
+import {
+  deriveWorkflowStructure,
+} from "@/lib/workflow-step-nav";
 
 interface BuiltinProfileConfig {
   id: string;
@@ -317,10 +246,10 @@ function filterTransitionsForStates(
 }
 
 function stepOwnerKind(
-  workflow: MemoryWorkflowDescriptor,
-  step: WorkflowStep,
+  owners: MemoryWorkflowOwners,
+  step: string,
 ): ActionOwnerKind {
-  return workflow.owners?.[step] ?? "agent";
+  return owners[step] ?? "agent";
 }
 
 function modeForOwners(owners: MemoryWorkflowOwners): WorkflowMode {
@@ -334,17 +263,21 @@ function descriptorFromProfileConfig(
 ): MemoryWorkflowDescriptor {
   const states = buildStates(config);
   const transitions = filterTransitionsForStates(states, config);
-  const queueStates = states.filter((s) => resolveStep(s)?.phase === StepPhase.Queued);
-  const actionStates = states.filter((s) => resolveStep(s)?.phase === StepPhase.Active);
-  const reviewQueueStates = queueStates.filter((state) => {
-    const resolved = resolveStep(state);
-    return resolved ? resolved.step.endsWith("_review") : false;
+  const terminalStates = ["shipped", "abandoned"];
+  const { queueStates, actionStates, queueActions } = deriveWorkflowStructure({
+    states,
+    transitions,
+    owners: config.owners,
+    terminalStates,
+  });
+  const reviewQueueStates = queueStates.filter((q) => {
+    const action = queueActions[q];
+    return action ? action.endsWith("_review") : false;
   });
   const mode = modeForOwners(config.owners);
-  const humanQueueStates = queueStates.filter((state) => {
-    const resolved = resolveStep(state);
-    if (!resolved) return false;
-    return stepOwnerKind({ owners: config.owners } as MemoryWorkflowDescriptor, resolved.step) === "human";
+  const humanQueueStates = queueStates.filter((q) => {
+    const action = queueActions[q];
+    return action ? stepOwnerKind(config.owners, action) === "human" : false;
   });
   const initialState = config.planningMode === "skipped"
     ? "ready_for_implementation"
@@ -359,7 +292,7 @@ function descriptorFromProfileConfig(
     mode,
     initialState,
     states,
-    terminalStates: ["shipped", "abandoned"],
+    terminalStates,
     transitions,
     finalCutState: humanQueueStates[0] ?? null,
     retakeState: states.includes("ready_for_implementation") ? "ready_for_implementation" : initialState,
@@ -367,6 +300,7 @@ function descriptorFromProfileConfig(
     owners: config.owners,
     queueStates,
     actionStates,
+    queueActions,
     reviewQueueStates,
     humanQueueStates,
   };

@@ -437,14 +437,14 @@ function toAgentTarget(
  */
 const stepAgentMap = new Map<string, string>();
 
-function stepKey(beatId: string, step: WorkflowStep): string {
+function stepKey(beatId: string, step: string): string {
   return `${beatId}:${step}`;
 }
 
 /** Record which pool agent was selected for a beat's workflow step. */
 export function recordStepAgent(
   beatId: string,
-  step: WorkflowStep,
+  step: string,
   agentId: string,
 ): void {
   stepAgentMap.set(stepKey(beatId, step), agentId);
@@ -453,7 +453,7 @@ export function recordStepAgent(
 /** Look up the pool agent that last executed a given step for a beat. */
 export function getLastStepAgent(
   beatId: string,
-  step: WorkflowStep,
+  step: string,
 ): string | undefined {
   return stepAgentMap.get(stepKey(beatId, step));
 }

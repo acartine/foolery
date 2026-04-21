@@ -1,3 +1,10 @@
+/**
+ * `getFallbackCommand` used to live here and returned the first registered
+ * agent's command as a silent fallback. That pattern was the root cause of
+ * the "all gate dispatches land on OpenCode" bug — whichever agent happened
+ * to be first in the TOML got every unrouted dispatch. It was deleted.
+ * See CLAUDE.md §"Fail Loudly, Never Silently".
+ */
 import type { RegisteredAgentConfig } from "@/lib/schemas";
 import type { RegisteredAgent } from "@/lib/types";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
@@ -5,13 +12,6 @@ import {
   formatAgentDisplayLabel,
   normalizeAgentIdentity,
 } from "@/lib/agent-identity";
-
-export function getFallbackCommand(
-  agents: Record<string, RegisteredAgentConfig>,
-): string {
-  const first = Object.values(agents)[0];
-  return first?.command ?? "claude";
-}
 
 export function toCliTarget(
   agent: RegisteredAgentConfig | RegisteredAgent,

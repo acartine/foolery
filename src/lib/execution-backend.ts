@@ -22,7 +22,7 @@ import { resolveMemoryManagerType } from "@/lib/memory-manager-commands";
 import {
   builtinProfileDescriptor,
   defaultWorkflowDescriptor,
-  resolveStep,
+  workflowActionStateForState,
 } from "@/lib/workflows";
 import {
   prepareTakeKnots,
@@ -86,7 +86,7 @@ async function loadBeatSnapshot(
   return ok({
     beat: beatResult.data,
     workflow,
-    step: resolveStep(beatResult.data.state)?.step,
+    step: workflowActionStateForState(workflow, beatResult.data.state),
     dependencies: depsResult.ok ? depsResult.data ?? [] : [],
     children: childrenResult.ok ? childrenResult.data ?? [] : [],
   });

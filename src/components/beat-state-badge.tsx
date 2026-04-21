@@ -1,6 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { resolveStep, StepPhase } from "@/lib/workflows";
+import {
+  defaultWorkflowDescriptor,
+  resolveStep,
+  StepPhase,
+} from "@/lib/workflows";
+
+const DEFAULT_WF = defaultWorkflowDescriptor();
 
 /**
  * Category-based color mapping for workflow states.
@@ -18,7 +24,7 @@ function stateColor(state: string): string {
   if (s === "blocked") return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
 
   // Workflow step states
-  const resolved = resolveStep(s);
+  const resolved = resolveStep(s, DEFAULT_WF);
   if (resolved) {
     if (resolved.phase === StepPhase.Queued) return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
     if (resolved.step.endsWith("_review")) return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";

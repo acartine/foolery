@@ -4,7 +4,6 @@
  * which agent should claim the next iteration.
  */
 import { getBackend } from "@/lib/backend-instance";
-import { loadSettings } from "@/lib/settings";
 import {
   rollbackBeatState,
 } from "@/lib/memory-manager-commands";
@@ -76,7 +75,7 @@ export async function buildNextTakePrompt(
     return handleTerminalState(ctx, current);
   }
 
-  let resolved = resolveStep(current.state);
+  let resolved = resolveStep(current.state, workflow);
   let phase = workflowStatePhase(workflow, current.state);
   let stepOwner = workflowOwnerKindForState(
     workflow,
@@ -118,19 +117,13 @@ export async function buildNextTakePrompt(
     ctx.claimsPerQueueType.get(queueType) ?? 0
   ) + 1;
   ctx.claimsPerQueueType.set(queueType, count);
-  let stepAgentOverride:
-    | import("@/lib/types-agent-target").CliAgentTarget
-    | undefined;
-  let maxClaims = await loadMaxClaimsLimit();
-  if (resolved) {
-    const agentResult = await selectStepAgent(
-      ctx, resolved, queueType,
-      stepFailureRollback, lastErrorAgentId,
-    );
-    if (agentResult === "stop") return null;
-    stepAgentOverride = agentResult.stepAgentOverride;
-    maxClaims = agentResult.maxClaims;
-  }
+  const agentResult = await selectStepAgent(
+    ctx, workflow, current.state, queueType,
+    stepFailureRollback, lastErrorAgentId,
+  );
+  if (agentResult === "stop") return null;
+  const stepAgentOverride = agentResult.stepAgentOverride;
+  const maxClaims = agentResult.maxClaims;
 
   if (count > maxClaims) {
     return handleMaxClaims(
@@ -180,15 +173,6 @@ async function rotateLeaseForClaim(
         `lease_rotation_failed:${String(err)}`,
     });
     return false;
-  }
-}
-
-async function loadMaxClaimsLimit(): Promise<number> {
-  try {
-    const settings = await loadSettings();
-    return settings.maxClaimsPerQueueType ?? 10;
-  } catch {
-    return 10;
   }
 }
 
@@ -457,7 +441,7 @@ async function reloadAfterRollback(
   return {
     current: result.data,
     workflow,
-    resolved: resolveStep(result.data.state),
+    resolved: resolveStep(result.data.state, workflow),
     stepOwner: workflowOwnerKindForState(
       workflow,
       result.data.state,

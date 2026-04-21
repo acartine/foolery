@@ -6,11 +6,14 @@ import type {
 } from "@/lib/types";
 import type { KnotProfileDefinition } from "@/lib/knots";
 import {
+  defaultWorkflowDescriptor,
   inferWorkflowMode,
   profileDisplayName,
   resolveStep,
   StepPhase,
 } from "@/lib/workflows";
+
+const DEFAULT_WF = defaultWorkflowDescriptor();
 
 type OwnerStep =
   | "planning"
@@ -74,13 +77,17 @@ function normalizeStateOwners(
 
   return Object.fromEntries(
     states.flatMap((state) => {
-      const resolved = resolveStep(state);
+      const resolved = resolveStep(state, DEFAULT_WF);
       if (!resolved) return [];
-      return [[
-        state,
-        profile.owners[resolved.step]?.kind ??
-          "none",
-      ] as const];
+      const owner = profile.owners[resolved.step];
+      let kind: ActionOwnerKind = "none";
+      if (owner && typeof owner === "object" && "kind" in owner) {
+        const ownerKind = (owner as { kind: ActionOwnerKind }).kind;
+        if (ownerKind === "agent" || ownerKind === "human") {
+          kind = ownerKind;
+        }
+      }
+      return [[state, kind] as const];
     })
   );
 }
@@ -132,7 +139,7 @@ function normalizeQueueActions(
 
   return Object.fromEntries(
     queueStates.flatMap((state) => {
-      const resolved = resolveStep(state);
+      const resolved = resolveStep(state, DEFAULT_WF);
       return resolved
         ? [[state, resolved.step] as const]
         : [];
@@ -189,14 +196,14 @@ export function toDescriptor(
   if (queueStates.length === 0) {
     queueStates = states.filter(
       (state) =>
-        resolveStep(state)?.phase ===
+        resolveStep(state, DEFAULT_WF)?.phase ===
         StepPhase.Queued
     );
   }
   if (actionStates.length === 0) {
     actionStates = states.filter(
       (state) =>
-        resolveStep(state)?.phase ===
+        resolveStep(state, DEFAULT_WF)?.phase ===
         StepPhase.Active
     );
   }
@@ -219,7 +226,7 @@ export function toDescriptor(
   );
   const owners = normalizeOwners(profile);
   const reviewQueueStates = queueStates.filter((state) => {
-    const resolved = resolveStep(state);
+    const resolved = resolveStep(state, DEFAULT_WF);
     return resolved ? resolved.step.endsWith("_review") : false;
   });
   const humanQueueStates = queueStates.filter((queueState) => {

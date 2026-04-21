@@ -15,10 +15,7 @@ import type {
   WorkflowMode,
 } from "@/lib/types";
 import {
-  resolveStep,
   StepPhase,
-  type WorkflowStep,
-  queueStateForStep,
   normalizeProfileId,
   extractWorkflowProfileLabel,
   extractWorkflowStateLabel,
@@ -119,7 +116,7 @@ function terminalStateForDescriptor(
 
 function stepOwnerKind(
   workflow: MemoryWorkflowDescriptor,
-  step: WorkflowStep,
+  step: string,
 ): ActionOwnerKind {
   return workflow.owners?.[step] ?? "agent";
 }
@@ -178,7 +175,7 @@ export function workflowStatePhase(
   ) {
     return StepPhase.Active;
   }
-  return resolveStep(normalized)?.phase ?? null;
+  return null;
 }
 
 export function workflowOwnerKindForState(
@@ -195,9 +192,12 @@ export function workflowOwnerKindForState(
     normalized,
   );
   if (explicitOwner) return explicitOwner;
-  const resolved = resolveStep(normalized);
-  if (!resolved) return "none";
-  return stepOwnerKind(workflow, resolved.step);
+  const actionState =
+    workflow.actionStates?.includes(normalized)
+      ? normalized
+      : queueActionForState(workflow, normalized);
+  if (!actionState) return "none";
+  return stepOwnerKind(workflow, actionState);
 }
 
 export function workflowActionStateForState(
@@ -209,10 +209,7 @@ export function workflowActionStateForState(
   const phase = workflowStatePhase(workflow, normalized);
   if (phase === StepPhase.Active) return normalized;
   if (phase !== StepPhase.Queued) return undefined;
-  return (
-    queueActionForState(workflow, normalized) ??
-    resolveStep(normalized)?.step
-  );
+  return queueActionForState(workflow, normalized) ?? undefined;
 }
 
 export function workflowQueueStateForState(
@@ -224,15 +221,7 @@ export function workflowQueueStateForState(
   const phase = workflowStatePhase(workflow, normalized);
   if (phase === StepPhase.Queued) return normalized;
   if (phase !== StepPhase.Active) return undefined;
-  const explicitQueueState = queueStateForActionState(
-    workflow,
-    normalized,
-  );
-  if (explicitQueueState) return explicitQueueState;
-  const resolved = resolveStep(normalized);
-  return resolved
-    ? queueStateForStep(resolved.step)
-    : undefined;
+  return queueStateForActionState(workflow, normalized) ?? undefined;
 }
 
 // ── State normalization ──────────────────────────────────────
@@ -479,21 +468,10 @@ export function beatInRetake(
  */
 export function isQueueOrTerminal(
   state: string,
-  workflow?: MemoryWorkflowDescriptor,
+  workflow: MemoryWorkflowDescriptor,
 ): boolean {
-  const terminalStates =
-    workflow?.terminalStates ?? [
-      "shipped",
-      "abandoned",
-      "closed",
-    ];
-  if (terminalStates.includes(state)) return true;
+  if (workflow.terminalStates.includes(state)) return true;
   if (state === "deferred") return true;
-  if (!workflow) {
-    const resolved = resolveStep(state);
-    if (!resolved) return true;
-    return resolved.phase === StepPhase.Queued;
-  }
   return workflowStatePhase(workflow, state) !== StepPhase.Active;
 }
 

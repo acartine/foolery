@@ -1,7 +1,10 @@
 /**
  * Agent selection and lease rotation for take-loop.
- * Extracted from terminal-manager-take-prompt.ts
- * to stay under the 500-line file limit.
+ *
+ * Single unified dispatch path via resolveDispatchAgent — no branching on
+ * workflow type, no silent fallbacks, and no hardcoded state literals.
+ * Cross-agent review exclusion is driven by the workflow descriptor's
+ * reviewQueueStates / transitions, not by a SDLC-specific enum.
  */
 import { loadSettings } from "@/lib/settings";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
@@ -27,15 +30,21 @@ import {
 import {
   isReviewStep,
   priorActionStep,
-  resolveStep,
+  StepPhase,
 } from "@/lib/workflows";
 import {
-  recordStepAgent,
-  resolvePoolAgent,
-  selectFromPoolStrict,
+  workflowStatePhase,
+} from "@/lib/workflows-runtime";
+import {
   getLastStepAgent,
+  recordStepAgent,
 } from "@/lib/agent-pool";
-import type { Beat } from "@/lib/types";
+import {
+  derivePoolKey,
+  DispatchFailureError,
+  resolveDispatchAgent,
+} from "@/lib/dispatch-pool-resolver";
+import type { Beat, MemoryWorkflowDescriptor } from "@/lib/types";
 import type {
   TakeLoopContext,
 } from "@/lib/terminal-manager-take-loop";
@@ -47,198 +56,127 @@ import {
 
 export async function selectStepAgent(
   ctx: TakeLoopContext,
-  resolved: NonNullable<ReturnType<typeof resolveStep>>,
+  workflow: MemoryWorkflowDescriptor,
+  state: string,
   queueType: string,
   stepFailureRollback: boolean,
   lastErrorAgentId?: string,
 ): Promise<
-  {
-    stepAgentOverride?: CliAgentTarget;
-    maxClaims: number;
-  }
+  { stepAgentOverride?: CliAgentTarget; maxClaims: number }
   | "stop"
 > {
-  const tag =
-    `[terminal-manager] [${ctx.id}] [take-loop]`;
-  const failedAgentId = stepFailureRollback
-    ? ctx.agent.agentId : lastErrorAgentId;
-  const isErrorRetry =
-    !!lastErrorAgentId && !stepFailureRollback;
+  const settings = await loadSettings();
+  const maxClaims = settings.maxClaimsPerQueueType ?? 10;
+  const poolKey = derivePoolKey({
+    beatId: ctx.beatId,
+    state,
+    workflow,
+    settings,
+  });
+  if (!poolKey) return { maxClaims };
 
-  let stepAgentOverride: CliAgentTarget | undefined;
-  let maxClaims = 10;
+  const failedAgentId = stepFailureRollback
+    ? ctx.agent.agentId
+    : lastErrorAgentId;
+  const isErrorRetry = !!lastErrorAgentId && !stepFailureRollback;
+  const phase = workflowStatePhase(workflow, state);
+  const isReview =
+    phase === StepPhase.Queued && isReviewStep(poolKey, workflow);
+  const priorAction =
+    isReview ? priorActionStep(poolKey, workflow) : null;
+
+  const excludeAgentIds = computeExclusions({
+    ctx,
+    queueType,
+    failedAgentId,
+    isReview,
+    priorAction,
+  });
 
   try {
-    const settings = await loadSettings();
-    maxClaims = settings.maxClaimsPerQueueType ?? 10;
-    const hasStepPool =
-      (settings.pools[resolved.step]?.length ?? 0) > 0;
-    if (
-      settings.dispatchMode === "advanced" ||
-      (!!failedAgentId && hasStepPool)
-    ) {
-      const r = selectAdvancedAgent(
-        ctx, settings, resolved, queueType,
-        failedAgentId, isErrorRetry,
-        stepFailureRollback,
-      );
-      if (r === "stop") return "stop";
-      stepAgentOverride = r;
-    } else if (isErrorRetry) {
-      console.log(
-        `${tag} STOP: error retry not possible ` +
-        `without advanced dispatch mode`,
-      );
+    const selected = resolveDispatchAgent(
+      { beatId: ctx.beatId, state, workflow, settings },
+      { excludeAgentIds, strictExclusion: isErrorRetry },
+    );
+    if (!selected) return { maxClaims };
+    if (selected.agentId) {
+      recordStepAgent(ctx.beatId, poolKey, selected.agentId);
+    }
+    logSelection(ctx, poolKey, selected, {
+      stepFailureRollback,
+      isReview,
+      excluded: excludeAgentIds,
+    });
+    return { stepAgentOverride: selected, maxClaims };
+  } catch (err) {
+    if (err instanceof DispatchFailureError) {
+      ctx.pushEvent({
+        type: "stderr",
+        data: err.banner,
+        timestamp: Date.now(),
+      });
       recordTakeLoopLifecycle(ctx, "loop_stop", {
-        loopDecision:
-          "error_retry_requires_advanced_dispatch",
+        loopDecision: `dispatch_failure:${err.info.reason}:${poolKey}`,
       });
       return "stop";
     }
-  } catch {
-    if (isErrorRetry) {
-      console.log(
-        `${tag} STOP: settings load failed ` +
-        `during error retry`,
-      );
-      recordTakeLoopLifecycle(ctx, "loop_stop", {
-        loopDecision:
-          "error_retry_settings_load_failed",
-      });
-      return "stop";
-    }
+    throw err;
   }
-
-  return { stepAgentOverride, maxClaims };
 }
 
-function selectAdvancedAgent(
-  ctx: TakeLoopContext,
-  settings: Awaited<ReturnType<typeof loadSettings>>,
-  resolved: NonNullable<
-    ReturnType<typeof resolveStep>
-  >,
-  queueType: string,
-  failedAgentId: string | undefined,
-  isErrorRetry: boolean,
-  stepFailureRollback: boolean,
-): CliAgentTarget | undefined | "stop" {
-  const tag =
-    `[terminal-manager] [${ctx.id}] [take-loop]`;
-
-  if (isErrorRetry && failedAgentId) {
-    return selectErrorRetryAgent(
-      ctx, settings, resolved, failedAgentId,
-    );
-  }
-
-  const isReview = isReviewStep(resolved.step);
-  const actionStep = isReview
-    ? priorActionStep(resolved.step) : null;
-  const lastQueueAgent =
-    ctx.lastAgentPerQueueType.get(queueType);
-  const failedQueueAgents = getFailedAgentIds(
-    ctx, queueType, failedAgentId,
+function computeExclusions(args: {
+  ctx: TakeLoopContext;
+  queueType: string;
+  failedAgentId: string | undefined;
+  isReview: boolean;
+  priorAction: string | null;
+}): Set<string> {
+  const excluded = new Set(
+    args.ctx.failedAgentsPerQueueType.get(args.queueType) ?? [],
   );
-  const pooledExclusions =
-    failedQueueAgents.size > 0
-      ? failedQueueAgents
-      : undefined;
-  const excludeId = failedAgentId
-    ?? (isReview
-      ? (ctx.agent.agentId ?? (actionStep
-        ? getLastStepAgent(ctx.beatId, actionStep)
-        : undefined))
-      : lastQueueAgent);
-
-  const poolAgent = resolvePoolAgent(
-    resolved.step, settings.pools,
-    settings.agents,
-    pooledExclusions ??
-      excludeId,
-  );
-
-  if (poolAgent?.kind === "cli") {
-    if (poolAgent.agentId) {
-      recordStepAgent(
-        ctx.beatId, resolved.step,
-        poolAgent.agentId,
+  if (args.failedAgentId) excluded.add(args.failedAgentId);
+  if (args.isReview) {
+    const activeAgentId = args.ctx.agent.agentId;
+    if (activeAgentId) excluded.add(activeAgentId);
+    if (args.priorAction) {
+      const prior = getLastStepAgent(
+        args.ctx.beatId,
+        args.priorAction,
       );
+      if (prior) excluded.add(prior);
     }
-    const reason = stepFailureRollback
-      ? "step failure retry"
-      : isReview
-        ? "cross-agent review"
-        : "pool selection";
-    console.log(
-      `${tag} ${reason}: ` +
-      `step="${resolved.step}" ` +
-      `selected="` +
-      `${poolAgent.agentId ?? poolAgent.command}" ` +
-      `(excluded: ${excludeId ?? "none"})`,
-    );
-    return poolAgent;
+  } else {
+    const last =
+      args.ctx.lastAgentPerQueueType.get(args.queueType);
+    if (last) excluded.add(last);
   }
-  return undefined;
+  return excluded;
 }
 
-function selectErrorRetryAgent(
+function logSelection(
   ctx: TakeLoopContext,
-  settings: Awaited<ReturnType<typeof loadSettings>>,
-  resolved: NonNullable<
-    ReturnType<typeof resolveStep>
-  >,
-  failedAgentId: string,
-): CliAgentTarget | undefined | "stop" {
-  const tag =
-    `[terminal-manager] [${ctx.id}] [take-loop]`;
-  const pool = settings.pools[resolved.step];
-  if (!pool || pool.length === 0) {
-    console.log(
-      `${tag} STOP: no pool configured ` +
-      `for error retry exclusion`,
-    );
-    recordTakeLoopLifecycle(ctx, "loop_stop", {
-      loopDecision: "error_retry_pool_missing",
-    });
-    return "stop";
-  }
-  const excludedAgentIds =
-    getFailedAgentIds(
-      ctx, resolved.step, failedAgentId,
-    );
-  const strictAgent = selectFromPoolStrict(
-    pool, settings.agents, excludedAgentIds,
+  poolKey: string,
+  selected: CliAgentTarget,
+  context: {
+    stepFailureRollback: boolean;
+    isReview: boolean;
+    excluded: ReadonlySet<string>;
+  },
+): void {
+  const tag = `[terminal-manager] [${ctx.id}] [take-loop]`;
+  const reason = context.stepFailureRollback
+    ? "step failure retry"
+    : context.isReview ? "cross-agent review" : "pool selection";
+  const excludedStr =
+    context.excluded.size > 0
+      ? [...context.excluded].join(", ")
+      : "none";
+  console.log(
+    `${tag} ${reason}: ` +
+    `pool="${poolKey}" ` +
+    `selected="${selected.agentId ?? selected.command}" ` +
+    `(excluded: ${excludedStr})`,
   );
-  if (!strictAgent) {
-    console.log(
-      `${tag} STOP: no alternative agent ` +
-      `for error retry ` +
-      `(excluded: ` +
-      `${[...excludedAgentIds].join(", ")})`,
-    );
-    recordTakeLoopLifecycle(ctx, "loop_stop", {
-      loopDecision:
-        `error_retry_no_alternative:${[...excludedAgentIds].join(",")}`,
-    });
-    return "stop";
-  }
-  if (strictAgent.kind === "cli") {
-    if (strictAgent.agentId) {
-      recordStepAgent(
-        ctx.beatId, resolved.step,
-        strictAgent.agentId,
-      );
-    }
-    console.log(
-      `${tag} error retry: ` +
-      `step="${resolved.step}" selected="` +
-      `${strictAgent.agentId ?? strictAgent.command}` +
-      `" (excluded: ${failedAgentId})`,
-    );
-    return strictAgent;
-  }
-  return undefined;
 }
 
 // ─── handleMaxClaims ─────────────────────────────────
@@ -521,18 +459,4 @@ function logLeaseBindingState(
       err,
     );
   });
-}
-
-function getFailedAgentIds(
-  ctx: TakeLoopContext,
-  queueType: string,
-  failedAgentId?: string,
-): Set<string> {
-  const excluded = new Set(
-    ctx.failedAgentsPerQueueType.get(queueType) ?? [],
-  );
-  if (failedAgentId) {
-    excluded.add(failedAgentId);
-  }
-  return excluded;
 }

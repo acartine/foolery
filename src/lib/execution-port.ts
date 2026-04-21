@@ -1,6 +1,5 @@
 import type { BackendResult } from "@/lib/backend-port";
 import type { Beat, BeatDependency, MemoryWorkflowDescriptor } from "@/lib/types";
-import type { WorkflowStep } from "@/lib/workflows";
 
 export type ExecutionMode = "take" | "scene" | "poll";
 
@@ -29,7 +28,8 @@ export interface ExecutionLease {
   repoPath?: string;
   beat: Beat;
   workflow: MemoryWorkflowDescriptor;
-  step?: WorkflowStep;
+  /** Action-state name (was WorkflowStep enum). */
+  step?: string;
   prompt: string;
   claimed: boolean;
   completion: ExecutionCompletionAction;
@@ -41,7 +41,8 @@ export interface ExecutionLease {
 export interface ExecutionSnapshot {
   beat: Beat;
   workflow: MemoryWorkflowDescriptor;
-  step?: WorkflowStep;
+  /** Action-state name (was WorkflowStep enum). */
+  step?: string;
   dependencies: BeatDependency[];
   children: Beat[];
 }

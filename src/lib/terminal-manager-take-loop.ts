@@ -243,26 +243,21 @@ export function classifyIterationSuccess(
   exitCode: number,
   claimedState: string,
   postExitState: string,
-  workflow?: MemoryWorkflowDescriptor,
+  workflow: MemoryWorkflowDescriptor,
 ): boolean {
   if (exitCode !== 0) return false;
   if (postExitState === "unknown") return false;
-  if (workflow) {
-    const expectedTargets =
-      expectedSuccessTargets(
-        workflow,
-        claimedState,
-      );
-    if (expectedTargets.size > 0) {
-      return expectedTargets.has(postExitState);
-    }
+  const expectedTargets = expectedSuccessTargets(
+    workflow,
+    claimedState,
+  );
+  if (expectedTargets.size > 0) {
+    return expectedTargets.has(postExitState);
   }
-  const resolved = resolveStep(claimedState);
+  const resolved = resolveStep(claimedState, workflow);
   if (!resolved) return false;
-  const nextQueue =
-    nextQueueStateForStep(resolved.step);
-  const priorQueue =
-    priorQueueStateForStep(resolved.step);
+  const nextQueue = nextQueueStateForStep(resolved.step, workflow);
+  const priorQueue = priorQueueStateForStep(resolved.step, workflow);
   if (nextQueue && postExitState === nextQueue) {
     return true;
   }

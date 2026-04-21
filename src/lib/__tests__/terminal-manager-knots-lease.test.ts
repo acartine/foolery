@@ -87,10 +87,38 @@ vi.mock("@/lib/regroom", () => ({
   regroomAncestors: vi.fn(async () => undefined),
 }));
 
+const { stubDispatchSettings } = vi.hoisted(() => {
+  const pool = [{ agentId: "codex", weight: 1 }];
+  const settings = {
+    dispatchMode: "advanced",
+    agents: {
+      codex: {
+        command: "codex",
+        agent_type: "cli",
+        vendor: "codex",
+        label: "Codex",
+        model: "gpt-5.4-codex",
+      },
+    },
+    actions: { take: "", scene: "", scopeRefinement: "" },
+    pools: {
+      orchestration: pool,
+      planning: pool,
+      plan_review: pool,
+      implementation: pool,
+      implementation_review: pool,
+      shipment: pool,
+      shipment_review: pool,
+      scope_refinement: pool,
+    },
+  };
+  return {
+    stubDispatchSettings: (): Record<string, unknown> => ({ ...settings }),
+  };
+});
+
 vi.mock("@/lib/settings", () => ({
-  getActionAgent: vi.fn(async () => ({ command: "codex", label: "Codex", kind: "cli", model: "gpt-5.4-codex" })),
-  getStepAgent: vi.fn(async () => ({ command: "codex", label: "Codex", kind: "cli", model: "gpt-5.4-codex" })),
-  loadSettings: vi.fn(async () => ({ dispatchMode: "single", pools: {}, agents: {} })),
+  loadSettings: vi.fn(async () => stubDispatchSettings()),
 }));
 
 vi.mock("@/lib/memory-manager-commands", () => ({

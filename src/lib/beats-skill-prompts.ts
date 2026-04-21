@@ -168,7 +168,7 @@ function buildShipmentReviewPrompt(beatId: string, currentState: string): string
 }
 
 export function getBeatsSkillPrompt(
-  step: WorkflowStepValue,
+  step: string,
   beatId: string,
   currentState: string,
 ): string {

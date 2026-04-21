@@ -96,20 +96,6 @@ vi.mock("@/lib/regroom", () => ({
 const loadSettingsMock = vi.fn();
 
 vi.mock("@/lib/settings", () => ({
-  getActionAgent: vi.fn(async () => ({
-    command: "claude",
-    label: "Claude",
-    agentId: "agent-a",
-    model: "opus",
-    version: "4.6",
-  })),
-  getStepAgent: vi.fn(async () => ({
-    command: "claude",
-    label: "Claude",
-    agentId: "agent-a",
-    model: "opus",
-    version: "4.6",
-  })),
   loadSettings: (...args: unknown[]) => loadSettingsMock(...args),
 }));
 
@@ -159,30 +145,42 @@ async function waitFor(
   }
 }
 
-// Settings with two agents in the implementation pool
+// Pools include a third agent (agent-c) so the take-loop child
+// retry test can select a third alternative when the review-state
+// exclusions remove both agent-a (prior implementation action) and
+// agent-b (active agent that just errored).
+const threeAgentPool = [
+  { agentId: "agent-a", weight: 1 },
+  { agentId: "agent-b", weight: 1 },
+  { agentId: "agent-c", weight: 1 },
+];
 const advancedSettingsWithTwoAgents = {
   dispatchMode: "advanced",
   maxClaimsPerQueueType: 10,
+  actions: { take: "", scene: "", scopeRefinement: "" },
   pools: {
-    planning: [{ agentId: "agent-a", weight: 1 }, { agentId: "agent-b", weight: 1 }],
-    plan_review: [{ agentId: "agent-a", weight: 1 }, { agentId: "agent-b", weight: 1 }],
-    implementation: [
-      { agentId: "agent-a", weight: 1 },
-      { agentId: "agent-b", weight: 1 },
-    ],
-    implementation_review: [
-      { agentId: "agent-a", weight: 1 },
-      { agentId: "agent-b", weight: 1 },
-    ],
-    shipment: [{ agentId: "agent-a", weight: 1 }, { agentId: "agent-b", weight: 1 }],
-    shipment_review: [
-      { agentId: "agent-a", weight: 1 },
-      { agentId: "agent-b", weight: 1 },
-    ],
+    orchestration: threeAgentPool,
+    planning: threeAgentPool,
+    plan_review: threeAgentPool,
+    implementation: threeAgentPool,
+    implementation_review: threeAgentPool,
+    shipment: threeAgentPool,
+    shipment_review: threeAgentPool,
+    scope_refinement: threeAgentPool,
   },
   agents: {
-    "agent-a": { command: "claude", label: "Claude", model: "opus", version: "4.6" },
-    "agent-b": { command: "codex", label: "Codex", model: "o4-mini", version: "1.0" },
+    "agent-a": {
+      command: "claude", agent_type: "cli", vendor: "claude",
+      label: "Claude", model: "opus", version: "4.6",
+    },
+    "agent-b": {
+      command: "codex", agent_type: "cli", vendor: "codex",
+      label: "Codex", model: "o4-mini", version: "1.0",
+    },
+    "agent-c": {
+      command: "gemini", agent_type: "cli", vendor: "gemini",
+      label: "Gemini", model: "pro", version: "1.0",
+    },
   },
 };
 
@@ -190,16 +188,22 @@ const advancedSettingsWithTwoAgents = {
 const advancedSettingsOneAgent = {
   dispatchMode: "advanced",
   maxClaimsPerQueueType: 10,
+  actions: { take: "", scene: "", scopeRefinement: "" },
   pools: {
+    orchestration: [{ agentId: "agent-a", weight: 1 }],
     planning: [{ agentId: "agent-a", weight: 1 }],
     plan_review: [{ agentId: "agent-a", weight: 1 }],
     implementation: [{ agentId: "agent-a", weight: 1 }],
     implementation_review: [{ agentId: "agent-a", weight: 1 }],
     shipment: [{ agentId: "agent-a", weight: 1 }],
     shipment_review: [{ agentId: "agent-a", weight: 1 }],
+    scope_refinement: [{ agentId: "agent-a", weight: 1 }],
   },
   agents: {
-    "agent-a": { command: "claude", label: "Claude", model: "opus", version: "4.6" },
+    "agent-a": {
+      command: "claude", agent_type: "cli", vendor: "claude",
+      label: "Claude", model: "opus", version: "4.6",
+    },
   },
 };
 

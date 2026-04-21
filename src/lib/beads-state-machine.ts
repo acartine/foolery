@@ -100,13 +100,12 @@ export async function claimBeat(
   }
 
   const beat = getResult.data;
-  const resolved = resolveStep(beat.state);
+  const workflow = resolveWorkflow(beat);
+  const resolved = resolveStep(beat.state, workflow);
 
   if (!resolved || resolved.phase !== StepPhase.Queued) {
     throw stateMismatchError(beatId, "queued", beat.state);
   }
-
-  const workflow = resolveWorkflow(beat);
   const runtime = deriveWorkflowRuntimeState(workflow, beat.state);
 
   if (!runtime.isAgentClaimable) {

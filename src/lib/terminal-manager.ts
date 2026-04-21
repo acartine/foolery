@@ -5,11 +5,15 @@ import {
   noopInteractionLog,
   type InteractionLog,
 } from "@/lib/interaction-logger";
+import { loadSettings } from "@/lib/settings";
 import {
-  getActionAgent,
-  getStepAgent,
-  loadSettings,
-} from "@/lib/settings";
+  DispatchFailureError,
+  derivePoolKey,
+  resolveDispatchAgent,
+} from "@/lib/dispatch-pool-resolver";
+import {
+  resolveWorkflowForBeat,
+} from "@/lib/workflows-pipeline";
 import {
   DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
 } from "@/lib/interactive-session-timeout";
@@ -121,14 +125,21 @@ export async function createSession(
     beatId, repoPath,
   );
   const agent = await resolveSessionAgent(
-    prepared, beatId,
+    prepared, settings, beatId,
   );
   const agentInfo = toExecutionAgentInfo(agent);
 
-  if (prepared.resolved && agent.agentId) {
-    recordStepAgent(
-      beatId, prepared.resolved.step, agent.agentId,
-    );
+  const preparedWorkflow =
+    resolveWorkflowForBeat(prepared.beat, prepared.workflowsById)
+    ?? prepared.fallbackWorkflow;
+  const preparedPoolKey = derivePoolKey({
+    beatId,
+    state: prepared.beat.state,
+    workflow: preparedWorkflow,
+    settings,
+  });
+  if (preparedPoolKey && agent.agentId) {
+    recordStepAgent(beatId, preparedPoolKey, agent.agentId);
   }
 
   const id = generateId();
@@ -148,7 +159,7 @@ export async function createSession(
     emitter, buffer, interactionLog,
   };
   sessions.set(id, entry);
-  await setupKnotsLease(entry, id, prepared, agentInfo);
+  await setupKnotsLease(entry, id, prepared, agentInfo, preparedPoolKey);
 
   const prompt = await resolveSessionPrompt(
     customPrompt, prepared, entry,
@@ -196,16 +207,25 @@ export async function createSession(
 
 async function resolveSessionAgent(
   prepared: PreparedTargets,
+  settings: Awaited<ReturnType<typeof loadSettings>>,
   beatId: string,
 ): Promise<CliAgentTarget> {
-  return prepared.resolved
-    ? await getStepAgent(
-      prepared.resolved.step,
-      "take",
+  const workflow =
+    resolveWorkflowForBeat(prepared.beat, prepared.workflowsById)
+    ?? prepared.fallbackWorkflow;
+  const selected = resolveDispatchAgent(
+    { beatId, state: prepared.beat.state, workflow, settings },
+  );
+  if (!selected) {
+    throw new DispatchFailureError({
       beatId,
-      prepared.beat.profileId ?? prepared.beat.workflowId,
-    )
-    : await getActionAgent("take");
+      state: prepared.beat.state,
+      workflowId: workflow.id,
+      poolKey: null,
+      reason: "no_pool_key",
+    });
+  }
+  return selected;
 }
 
 function buildSession(
@@ -260,6 +280,7 @@ async function setupKnotsLease(
   id: string,
   prepared: PreparedTargets,
   agentInfo: ReturnType<typeof toExecutionAgentInfo>,
+  poolKey: string | null,
 ): Promise<void> {
   let started = false;
   entry.releaseKnotsLease = (
@@ -302,7 +323,7 @@ async function setupKnotsLease(
     !prepared.effectiveParent
   ) {
     await acquireKnotsLease(
-      entry, id, prepared, agentInfo,
+      entry, id, prepared, agentInfo, poolKey,
     );
   }
 }
@@ -312,6 +333,7 @@ async function acquireKnotsLease(
   id: string,
   prepared: PreparedTargets,
   agentInfo: ReturnType<typeof toExecutionAgentInfo>,
+  poolKey: string | null,
 ): Promise<void> {
   const knotsLeaseId = await ensureKnotsLease({
     repoPath: prepared.resolvedRepoPath,
@@ -323,7 +345,7 @@ async function acquireKnotsLease(
   });
   entry.knotsLeaseId = knotsLeaseId;
   entry.knotsLeaseSeq = (entry.knotsLeaseSeq ?? 0) + 1;
-  entry.knotsLeaseStep = prepared.resolved?.step;
+  entry.knotsLeaseStep = poolKey ?? undefined;
   entry.knotsLeaseAgentInfo = agentInfo;
   logAttachedKnotsLease({
     repoPath: prepared.resolvedRepoPath,

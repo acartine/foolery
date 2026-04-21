@@ -31,11 +31,11 @@ describe("forwardTransitionTarget: exhaustive profile coverage", () => {
 
       it("every queued state has a forward target to its active counterpart", () => {
         for (const state of workflow.states) {
-          const resolved = resolveStep(state);
+          const resolved = resolveStep(state, workflow);
           if (!resolved || resolved.phase !== StepPhase.Queued) continue;
           const target = forwardTransitionTarget(state, workflow);
           expect(target).not.toBeNull();
-          const targetResolved = resolveStep(target!);
+          const targetResolved = resolveStep(target!, workflow);
           expect(targetResolved).not.toBeNull();
           expect(targetResolved!.phase).toBe(StepPhase.Active);
           expect(targetResolved!.step).toBe(resolved.step);
@@ -44,11 +44,11 @@ describe("forwardTransitionTarget: exhaustive profile coverage", () => {
 
       it("every active state has a forward target to the next queue or terminal", () => {
         for (const state of workflow.states) {
-          const resolved = resolveStep(state);
+          const resolved = resolveStep(state, workflow);
           if (!resolved || resolved.phase !== StepPhase.Active) continue;
           const target = forwardTransitionTarget(state, workflow);
           expect(target).not.toBeNull();
-          const targetResolved = resolveStep(target!);
+          const targetResolved = resolveStep(target!, workflow);
           if (targetResolved) {
             expect(targetResolved.phase).toBe(StepPhase.Queued);
           } else {

@@ -81,10 +81,17 @@ function matchesBeatFilter(b: Beat, filters: BeatListFilters): boolean {
     return false;
   }
   if (filters.state) {
+    const beatWorkflow = builtinProfileDescriptor(
+      b.profileId ?? b.workflowId,
+    );
     if (filters.state === "queued") {
-      if (resolveStep(b.state)?.phase !== StepPhase.Queued) return false;
+      if (resolveStep(b.state, beatWorkflow)?.phase !== StepPhase.Queued) {
+        return false;
+      }
     } else if (filters.state === "in_action") {
-      if (resolveStep(b.state)?.phase !== StepPhase.Active) return false;
+      if (resolveStep(b.state, beatWorkflow)?.phase !== StepPhase.Active) {
+        return false;
+      }
     } else {
       if (b.state !== filters.state) return false;
     }
@@ -122,7 +129,10 @@ function includeDescendantsOfQueueParents(
 
   const queueParentIds = new Set<string>();
   for (const b of allBeats) {
-    if (resolveStep(b.state)?.phase === StepPhase.Queued) {
+    const beatWorkflow = builtinProfileDescriptor(
+      b.profileId ?? b.workflowId,
+    );
+    if (resolveStep(b.state, beatWorkflow)?.phase === StepPhase.Queued) {
       queueParentIds.add(b.id);
     }
   }

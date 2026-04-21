@@ -18,17 +18,13 @@ vi.mock("node:fs/promises", () => ({
 
 import {
   getRegisteredAgents,
-  getActionAgent,
   getOrchestrationAgent,
   getScopeRefinementAgent,
   addRegisteredAgent,
   getAgentRemovalImpact,
   removeRegisteredAgent,
-  getStepAgent,
   _resetCache,
 } from "@/lib/settings";
-import { WorkflowStep } from "@/lib/workflows";
-import { recordStepAgent, _resetStepAgentMap } from "@/lib/agent-pool";
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -59,67 +55,6 @@ describe("getRegisteredAgents", () => {
       agent_name: "Claude",
       label: "Claude",
     });
-  });
-});
-
-describe("getActionAgent", () => {
-  it("falls back to first registered agent when mapping is empty", async () => {
-    mockReadFile.mockResolvedValue('[agents.claude]\ncommand = "claude"');
-    const agent = await getActionAgent("take");
-    expect(agent.command).toBe("claude");
-  });
-
-  it("falls back to 'claude' when no agents registered", async () => {
-    mockReadFile.mockRejectedValue(new Error("ENOENT"));
-    const agent = await getActionAgent("take");
-    expect(agent.command).toBe("claude");
-  });
-
-  it("falls back when mapping is legacy 'default'", async () => {
-    const toml = ['[actions]', 'take = "default"'].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const agent = await getActionAgent("take");
-    expect(agent.command).toBe("claude");
-  });
-
-  it("returns registered agent when action is mapped", async () => {
-    const toml = [
-      '[agents.codex]', 'command = "codex"', 'model = "o3"',
-      'label = "OpenAI Codex"',
-      '[actions]', 'take = "codex"',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const agent = await getActionAgent("take");
-    expect(agent.command).toBe("codex");
-    expect(agent.model).toBe("o3");
-    expect(agent).toMatchObject({
-      provider: "Codex",
-      agent_name: "Codex",
-      lease_model: "o3",
-      label: "Codex o3",
-    });
-  });
-
-  it("preserves provider metadata for mapped agents", async () => {
-    const toml = [
-      '[agents.glm]', 'command = "/opt/homebrew/bin/opencode"',
-      'provider = "OpenCode"',
-      'model = "openrouter/z-ai/glm-5"',
-      'label = "OpenCode openrouter/z-ai/glm-5"',
-      '[actions]', 'take = "glm"',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const agent = await getActionAgent("take");
-    expect(agent.command).toBe("/opt/homebrew/bin/opencode");
-    expect(agent.provider).toBe("OpenCode");
-    expect(agent.model).toBe("openrouter/z-ai/glm-5");
-  });
-
-  it("falls back when mapped agent id is not registered", async () => {
-    const toml = ['[actions]', 'take = "missing"'].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const agent = await getActionAgent("take");
-    expect(agent.command).toBe("claude");
   });
 });
 
@@ -199,6 +134,18 @@ describe("getOrchestrationAgent", () => {
 
     expect(agent.command).toBe("claude");
     expect(agent.model).toBe("gpt-5.4");
+  });
+
+  it("throws FOOLERY DISPATCH FAILURE when no pool and no scene mapping", async () => {
+    const toml = [
+      'dispatchMode = "advanced"',
+      '[agents.claude]', 'command = "claude"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    await expect(getOrchestrationAgent()).rejects.toThrow(
+      /FOOLERY DISPATCH FAILURE/,
+    );
   });
 });
 
@@ -339,149 +286,3 @@ describe("removeRegisteredAgent planning", () => {
   });
 });
 
-describe("getStepAgent: dispatch mode resolution", () => {
-  it("uses pool when dispatchMode is advanced and pool is configured", async () => {
-    const toml = [
-      'dispatchMode = "advanced"',
-      '[agents.sonnet]', 'command = "claude"',
-      'model = "sonnet-4"', 'label = "Claude Sonnet"',
-      '[actions]', 'take = "sonnet"',
-      '[[pools.implementation]]', 'agentId = "sonnet"', 'weight = 1',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const agent = await getStepAgent(WorkflowStep.Implementation, "take");
-    expect(agent.model).toBe("sonnet-4");
-    expect(agent).toMatchObject({
-      provider: "Claude",
-      agent_name: "Claude",
-      lease_model: "sonnet/claude",
-      label: "Claude Sonnet 4",
-    });
-  });
-
-  it("preserves provider metadata for pool-selected agents", async () => {
-    const toml = [
-      'dispatchMode = "advanced"',
-      '[agents.glm]', 'command = "/opt/homebrew/bin/opencode"',
-      'provider = "OpenCode"',
-      'model = "openrouter/z-ai/glm-5"',
-      'label = "OpenCode openrouter/z-ai/glm-5"',
-      '[[pools.implementation]]', 'agentId = "glm"', 'weight = 1',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const agent = await getStepAgent(WorkflowStep.Implementation, "take");
-    expect(agent.command).toBe("/opt/homebrew/bin/opencode");
-    expect(agent.provider).toBe("OpenCode");
-    expect(agent.model).toBe("openrouter/z-ai/glm-5");
-  });
-
-  it("ignores pool when dispatchMode is basic", async () => {
-    const toml = [
-      'dispatchMode = "basic"',
-      '[agents.sonnet]', 'command = "claude"',
-      'model = "sonnet-4"', 'label = "Claude Sonnet"',
-      '[agents.opus]', 'command = "claude"',
-      'model = "opus"', 'label = "Claude Opus"',
-      '[actions]', 'take = "opus"',
-      '[[pools.implementation]]', 'agentId = "sonnet"', 'weight = 1',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const agent = await getStepAgent(WorkflowStep.Implementation, "take");
-    expect(agent.model).toBe("opus");
-    expect(agent.label).toBe("Claude Opus");
-  });
-
-  it("falls back to action mapping when pool step is empty", async () => {
-    const toml = [
-      'dispatchMode = "advanced"',
-      '[agents.opus]', 'command = "claude"',
-      'model = "opus"', 'label = "Claude Opus"',
-      '[actions]', 'take = "opus"',
-      '[pools]', 'planning = []', 'implementation = []',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const agent = await getStepAgent(WorkflowStep.Implementation, "take");
-    expect(agent.model).toBe("opus");
-    expect(agent.label).toBe("Claude Opus");
-  });
-
-  it("falls back to dispatch default when no pool and no action mapping", async () => {
-    const toml = [
-      'dispatchMode = "advanced"',
-      '[agents.my-default]', 'command = "my-default"',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const agent = await getStepAgent(WorkflowStep.Planning);
-    expect(agent.command).toBe("my-default");
-  });
-
-  it("defaults dispatchMode to basic when not specified", async () => {
-    const toml = [
-      '[agents.sonnet]', 'command = "claude"',
-      'model = "sonnet-4"', 'label = "Claude Sonnet"',
-      '[agents.opus]', 'command = "claude"',
-      'model = "opus"', 'label = "Claude Opus"',
-      '[actions]', 'take = "opus"',
-      '[[pools.implementation]]', 'agentId = "sonnet"', 'weight = 1',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const agent = await getStepAgent(WorkflowStep.Implementation, "take");
-    expect(agent.model).toBe("opus");
-    expect(agent.label).toBe("Claude Opus");
-  });
-
-});
-
-describe("getStepAgent: cross-agent review", () => {
-    beforeEach(() => {
-      _resetStepAgentMap();
-    });
-
-    it("excludes prior action agent when selecting for a review step", async () => {
-      const toml = [
-        'dispatchMode = "advanced"',
-        '[agents.opus]', 'command = "claude"',
-        'model = "opus"', 'label = "Claude Opus"',
-        '[agents.sonnet]', 'command = "claude"',
-        'model = "sonnet-4"', 'label = "Claude Sonnet"',
-        '[[pools.implementation]]', 'agentId = "opus"', 'weight = 3',
-        '[[pools.implementation_review]]', 'agentId = "opus"', 'weight = 3',
-        '[[pools.implementation_review]]', 'agentId = "sonnet"', 'weight = 1',
-      ].join("\n");
-      mockReadFile.mockResolvedValue(toml);
-      recordStepAgent("beat-1", WorkflowStep.Implementation, "opus");
-      const agent = await getStepAgent(
-        WorkflowStep.ImplementationReview, "take", "beat-1",
-      );
-      expect(agent.agentId).toBe("sonnet");
-      expect(agent.model).toBe("sonnet-4");
-    });
-
-    it("does not exclude when no prior agent is recorded", async () => {
-      const toml = [
-        'dispatchMode = "advanced"',
-        '[agents.opus]', 'command = "claude"',
-        'model = "opus"', 'label = "Claude Opus"',
-        '[[pools.implementation_review]]', 'agentId = "opus"', 'weight = 1',
-      ].join("\n");
-      mockReadFile.mockResolvedValue(toml);
-      const agent = await getStepAgent(
-        WorkflowStep.ImplementationReview, "take", "beat-1",
-      );
-      expect(agent.agentId).toBe("opus");
-    });
-
-    it("does not exclude for non-review steps", async () => {
-      const toml = [
-        'dispatchMode = "advanced"',
-        '[agents.opus]', 'command = "claude"',
-        'model = "opus"', 'label = "Claude Opus"',
-        '[[pools.implementation]]', 'agentId = "opus"', 'weight = 1',
-      ].join("\n");
-      mockReadFile.mockResolvedValue(toml);
-      const agent = await getStepAgent(
-        WorkflowStep.Implementation, "take", "beat-1",
-      );
-      expect(agent.agentId).toBe("opus");
-    });
-});

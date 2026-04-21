@@ -25,12 +25,14 @@ export interface Invariant {
 }
 
 export interface MemoryWorkflowOwners {
-  planning: ActionOwnerKind;
-  plan_review: ActionOwnerKind;
-  implementation: ActionOwnerKind;
-  implementation_review: ActionOwnerKind;
-  shipment: ActionOwnerKind;
-  shipment_review: ActionOwnerKind;
+  planning?: ActionOwnerKind;
+  plan_review?: ActionOwnerKind;
+  implementation?: ActionOwnerKind;
+  implementation_review?: ActionOwnerKind;
+  shipment?: ActionOwnerKind;
+  shipment_review?: ActionOwnerKind;
+  /** Custom action-state owners (indexed by action-state name). */
+  [actionState: string]: ActionOwnerKind | undefined;
 }
 
 export interface MemoryWorkflowDescriptor {

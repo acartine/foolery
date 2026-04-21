@@ -1,5 +1,11 @@
 import type { Beat } from "@/lib/types";
-import { resolveStep, StepPhase } from "@/lib/workflows";
+import {
+  defaultWorkflowDescriptor,
+  resolveStep,
+  StepPhase,
+} from "@/lib/workflows";
+
+const DEFAULT_WF = defaultWorkflowDescriptor();
 
 /**
  * Natural string comparison that treats embedded numeric segments as numbers.
@@ -48,7 +54,7 @@ export function compareBeatsByMostRecentlyUpdated(a: Beat, b: Beat): number {
 }
 
 function stateSortRank(state: Beat["state"]): number {
-  const resolved = resolveStep(state);
+  const resolved = resolveStep(state, DEFAULT_WF);
   if (resolved) {
     if (resolved.phase === StepPhase.Queued) return 0;
     // Active non-review → 1, active review → 2

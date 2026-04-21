@@ -20,7 +20,7 @@ describe("beats parity: deriveWorkflowRuntimeState", () => {
 
       it("queued agent-owned states produce isAgentClaimable=true", () => {
         for (const state of workflow.states) {
-          const resolved = resolveStep(state);
+          const resolved = resolveStep(state, workflow);
           if (!resolved || resolved.phase !== StepPhase.Queued) continue;
 
           const ownerKind = workflow.owners?.[resolved.step] ?? "agent";
@@ -34,7 +34,7 @@ describe("beats parity: deriveWorkflowRuntimeState", () => {
 
       it("active states produce isAgentClaimable=false", () => {
         for (const state of workflow.states) {
-          const resolved = resolveStep(state);
+          const resolved = resolveStep(state, workflow);
           if (!resolved || resolved.phase !== StepPhase.Active) continue;
 
           const runtime = deriveWorkflowRuntimeState(workflow, state);
@@ -51,7 +51,7 @@ describe("beats parity: deriveWorkflowRuntimeState", () => {
 
       it("all states map correctly through resolveStep", () => {
         for (const state of workflow.states) {
-          const resolved = resolveStep(state);
+          const resolved = resolveStep(state, workflow);
           const runtime = deriveWorkflowRuntimeState(workflow, state);
 
           if (resolved) {
@@ -71,7 +71,7 @@ describe("beats parity: listReady semantics", () => {
 
   it("queued phase states are the only agent-claimable states", () => {
     for (const state of workflow.states) {
-      const resolved = resolveStep(state);
+      const resolved = resolveStep(state, workflow);
       const runtime = deriveWorkflowRuntimeState(workflow, state);
 
       if (resolved?.phase === StepPhase.Queued && runtime.nextActionOwnerKind === "agent") {
@@ -84,7 +84,7 @@ describe("beats parity: listReady semantics", () => {
 
   it("active phase states are never agent-claimable", () => {
     for (const state of workflow.states) {
-      const resolved = resolveStep(state);
+      const resolved = resolveStep(state, workflow);
       if (resolved?.phase === StepPhase.Active) {
         const runtime = deriveWorkflowRuntimeState(workflow, state);
         expect(runtime.isAgentClaimable).toBe(false);
@@ -95,7 +95,7 @@ describe("beats parity: listReady semantics", () => {
   it("semiauto human-owned queue states are not agent-claimable", () => {
     const semiauto = builtinProfileDescriptor("semiauto");
     for (const state of semiauto.states) {
-      const resolved = resolveStep(state);
+      const resolved = resolveStep(state, semiauto);
       if (!resolved || resolved.phase !== StepPhase.Queued) continue;
 
       const ownerKind = semiauto.owners?.[resolved.step] ?? "agent";

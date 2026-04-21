@@ -44,6 +44,43 @@ Each Git worktree is a separate checkout and does not share `node_modules`.
 
 These are enforced by ESLint (`max-lines`, `max-lines-per-function`, `max-len`).
 
+## Fail Loudly, Never Silently
+
+Silent fallbacks on configured resources are banned.
+
+When a lookup for a configured resource (an agent, a pool, an action mapping,
+a command, a workflow descriptor, a backend) cannot resolve, the code MUST:
+
+1. Throw an error that halts the current operation.
+2. Write an ANSI-red banner block to the server log via `console.error`.
+3. Surface the failure to any user-visible session buffer as a stderr banner
+   event so the UI shows it.
+4. Include the greppable marker phrase `FOOLERY DISPATCH FAILURE` (or a
+   similarly distinctive marker for other subsystems) in both the thrown
+   error message and the banner.
+5. Name the specific thing that was missing (beat id, state, pool key,
+   workflow id, action name) and the exact config that would fix it.
+
+Do NOT:
+
+- Return "the first registered X" as a fallback (`Object.values(x)[0]`).
+- Coalesce missing configuration with `?? "default"`, `?? "claude"`,
+  `?? "implementation"`, or any other literal that hides the missing
+  configuration from the user.
+- Substitute a legacy mapping when the intended new mapping returns null.
+- Catch a dispatch failure and downgrade it to a warning.
+
+Historical incident this rule protects against: `getFallbackCommand` returned
+the first registered agent when no pool or action was configured. Since
+OpenCode was first in the user's TOML, every unrouted dispatch silently ran
+OpenCode — for months — while the real bug (non-SDLC workflow states were
+never consulting the configured pools) stayed invisible. A loud failure at
+the dispatch layer would have caught it on the first take.
+
+See `src/lib/dispatch-pool-resolver.ts` for the canonical implementation:
+`resolveDispatchAgent` + `DispatchFailureError` + `emitDispatchFailureBanner`.
+Reuse those primitives; do not invent a parallel failure mode.
+
 ## Quality Gates
 
 Before committing changes, ensure that the codebase passes all quality checks. Run the following commands:

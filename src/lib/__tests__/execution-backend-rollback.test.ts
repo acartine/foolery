@@ -45,6 +45,7 @@ vi.mock("@/lib/workflows", () => ({
   defaultWorkflowDescriptor: () => stubWorkflow,
   forwardTransitionTarget: vi.fn(),
   resolveStep: vi.fn(() => null),
+  workflowActionStateForState: vi.fn(() => undefined),
   StepPhase: { Queued: "queued" },
 }));
 

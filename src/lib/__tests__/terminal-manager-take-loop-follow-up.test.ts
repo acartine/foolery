@@ -53,8 +53,12 @@ function makeCtx(
   const pushEvent = vi.fn();
   const fallbackWorkflow = {
     id: "default", label: "default",
-    states: [], terminalStates: ["shipped"],
+    states: ["open", "planning", "shipped"],
+    terminalStates: ["shipped"],
     initialState: "open",
+    actionStates: ["planning"],
+    queueStates: [],
+    queueActions: {},
   } as unknown as TakeLoopContext["fallbackWorkflow"];
   return {
     id: "take-test",

@@ -18,7 +18,6 @@ vi.mock("node:fs/promises", () => ({
 import {
   loadSettings,
   saveSettings,
-  getAgentCommand,
   updateSettings,
   inspectSettingsDefaults,
   inspectStaleSettingsKeys,
@@ -359,20 +358,6 @@ describe("saveSettings", () => {
     expect(mockChmod).toHaveBeenCalledWith(
       expect.stringContaining("settings.toml"), 0o600,
     );
-  });
-});
-
-describe("getAgentCommand", () => {
-  it("returns the first registered agent command", async () => {
-    mockReadFile.mockResolvedValue('[agents.codex]\ncommand = "codex"');
-    const cmd = await getAgentCommand();
-    expect(cmd).toBe("codex");
-  });
-
-  it("returns 'claude' when no agents registered", async () => {
-    mockReadFile.mockRejectedValue(new Error("ENOENT"));
-    const cmd = await getAgentCommand();
-    expect(cmd).toBe("claude");
   });
 });
 

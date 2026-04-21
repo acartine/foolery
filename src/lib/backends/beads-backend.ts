@@ -156,10 +156,16 @@ export class BeadsBackend implements BackendPort {
     const entry = await this.ensureLoaded(rp);
     const blockedIds = new Set(entry.deps.map((d) => d.blockedId));
     let items = Array.from(entry.beads.values()).filter(
-      (b) =>
-        resolveStep(b.state)?.phase === StepPhase.Queued &&
-        !blockedIds.has(b.id) &&
-        !b.requiresHumanAction,
+      (b) => {
+        const beatWorkflow = builtinProfileDescriptor(
+          b.profileId ?? b.workflowId,
+        );
+        return (
+          resolveStep(b.state, beatWorkflow)?.phase === StepPhase.Queued &&
+          !blockedIds.has(b.id) &&
+          !b.requiresHumanAction
+        );
+      },
     );
     items = applyFilters(items, filters);
     return ok(items);
@@ -429,8 +435,11 @@ export class BeadsBackend implements BackendPort {
       return ok({ prompt, claimed: false });
     }
 
+    const beatWorkflow = builtinProfileDescriptor(
+      beat.profileId ?? beat.workflowId,
+    );
     const shouldClaim =
-      resolveStep(beat.state)?.phase === StepPhase.Queued &&
+      resolveStep(beat.state, beatWorkflow)?.phase === StepPhase.Queued &&
       beat.isAgentClaimable;
     if (shouldClaim) {
       const claimResult = await this.claimBeat(beat, rp);
@@ -476,17 +485,17 @@ export class BeadsBackend implements BackendPort {
   private async claimBeat(
     beat: Beat,
     repoPath: string,
-  ): Promise<{ target: string; step: import("@/lib/workflows").WorkflowStep } | null> {
-    const resolved = resolveStep(beat.state);
+  ): Promise<{ target: string; step: string } | null> {
+    const profileId = beat.profileId ?? beat.workflowId;
+    const workflow = builtinProfileDescriptor(profileId);
+    const resolved = resolveStep(beat.state, workflow);
     if (!resolved || resolved.phase !== StepPhase.Queued) return null;
     if (!beat.isAgentClaimable) return null;
 
-    const profileId = beat.profileId ?? beat.workflowId;
-    const workflow = builtinProfileDescriptor(profileId);
     const target = forwardTransitionTarget(beat.state, workflow);
     if (!target) return null;
 
-    const activeResolved = resolveStep(target);
+    const activeResolved = resolveStep(target, workflow);
     if (!activeResolved) return null;
 
     applyUpdate(beat, { state: target });

@@ -101,10 +101,36 @@ vi.mock("@/lib/regroom", () => ({
   regroomAncestors: vi.fn(async () => undefined),
 }));
 
+// Two-agent pools so cross-agent review exclusion still finds a
+// candidate. Both agents share the same command so tests that don't
+// assert on the selected agent don't need to care which one runs.
+const { stubDispatchSettings } = vi.hoisted(() => {
+  const agent = {
+    command: "codex", agent_type: "cli",
+    vendor: "codex", label: "Codex",
+  };
+  const pool = [
+    { agentId: "codex", weight: 1 },
+    { agentId: "codex-alt", weight: 1 },
+  ];
+  const settings = {
+    dispatchMode: "advanced",
+    agents: { codex: agent, "codex-alt": agent },
+    actions: { take: "", scene: "", scopeRefinement: "" },
+    pools: {
+      orchestration: pool, planning: pool, plan_review: pool,
+      implementation: pool, implementation_review: pool,
+      shipment: pool, shipment_review: pool, scope_refinement: pool,
+    },
+  };
+  return {
+    stubDispatchSettings:
+      (): Record<string, unknown> => ({ ...settings }),
+  };
+});
+
 vi.mock("@/lib/settings", () => ({
-  getActionAgent: vi.fn(async () => ({ command: "codex", label: "Codex" })),
-  getStepAgent: vi.fn(async () => ({ command: "codex", label: "Codex" })),
-  loadSettings: vi.fn(async () => ({ dispatchMode: "single" })),
+  loadSettings: vi.fn(async () => stubDispatchSettings()),
 }));
 
 vi.mock("@/lib/memory-manager-commands", () => ({

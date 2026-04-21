@@ -93,11 +93,54 @@ vi.mock("@/lib/regroom", () => ({
   regroomAncestors: vi.fn(async () => undefined),
 }));
 
-const loadSettingsMock = vi.fn();
+const { loadSettingsMock, stubDispatchSettings } = vi.hoisted(() => {
+  // Two-agent pools so the cross-agent / cross-iteration exclusion
+  // logic in selectStepAgent (which removes the previous action
+  // agent and the last agent per queue) still finds a candidate.
+  // Both entries share the same command so tests that don't
+  // assert which agent ran don't need to care.
+  const pool = [
+    { agentId: "codex", weight: 1 },
+    { agentId: "codex-alt", weight: 1 },
+  ];
+  const baseSettings = {
+    dispatchMode: "advanced",
+    maxClaimsPerQueueType: 10,
+    agents: {
+      codex: {
+        command: "codex",
+        agent_type: "cli",
+        vendor: "codex",
+        label: "Codex",
+      },
+      "codex-alt": {
+        command: "codex",
+        agent_type: "cli",
+        vendor: "codex",
+        label: "Codex",
+      },
+    },
+    actions: { take: "", scene: "", scopeRefinement: "" },
+    pools: {
+      orchestration: pool,
+      planning: pool,
+      plan_review: pool,
+      implementation: pool,
+      implementation_review: pool,
+      shipment: pool,
+      shipment_review: pool,
+      scope_refinement: pool,
+    },
+  };
+  return {
+    loadSettingsMock: vi.fn(),
+    stubDispatchSettings: (
+      overrides: Record<string, unknown> = {},
+    ): Record<string, unknown> => ({ ...baseSettings, ...overrides }),
+  };
+});
 
 vi.mock("@/lib/settings", () => ({
-  getActionAgent: vi.fn(async () => ({ command: "codex", label: "Codex" })),
-  getStepAgent: vi.fn(async () => ({ command: "codex", label: "Codex" })),
   loadSettings: (...args: unknown[]) => loadSettingsMock(...args),
 }));
 
@@ -147,7 +190,7 @@ function resetStepFailureMocks(): void {
   resolveMemoryManagerTypeMock.mockReset();
   resolveMemoryManagerTypeMock.mockReturnValue("knots");
   loadSettingsMock.mockReset();
-  loadSettingsMock.mockResolvedValue({ dispatchMode: "single", maxClaimsPerQueueType: 10 });
+  loadSettingsMock.mockResolvedValue(stubDispatchSettings());
   createLeaseMock.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
   terminateLeaseMock.mockResolvedValue({ ok: true });
   spawnedChildren.length = 0;
@@ -281,9 +324,9 @@ describe("step-failure: per-queue-type claim limit rollback", () => {
   afterEach(() => { clearStepFailureSessions(); });
 
   it("claim limit triggers enforceQueueTerminalInvariant with rollback", async () => {
-    loadSettingsMock.mockResolvedValue({
-      dispatchMode: "single", maxClaimsPerQueueType: 3,
-    });
+    loadSettingsMock.mockResolvedValue(
+      stubDispatchSettings({ maxClaimsPerQueueType: 3 }),
+    );
     const beat = mockStepBeat(
       "foolery-r003", "Max claims rollback",
       "ready_for_implementation",

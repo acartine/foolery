@@ -91,17 +91,41 @@ vi.mock("@/lib/regroom", () => ({
   regroomAncestors: vi.fn(async () => undefined),
 }));
 
-const loadSettingsMock = vi.fn();
+const { loadSettingsMock, stubDispatchSettings } = vi.hoisted(() => {
+  const pool = [{ agentId: "agent-a", weight: 1 }];
+  const baseSettings = {
+    dispatchMode: "advanced",
+    agents: {
+      "agent-a": {
+        command: "claude",
+        agent_type: "cli",
+        vendor: "claude",
+        label: "Claude",
+        model: "opus",
+        version: "4.6",
+      },
+    },
+    actions: { take: "", scene: "", scopeRefinement: "" },
+    pools: {
+      orchestration: pool,
+      planning: pool,
+      plan_review: pool,
+      implementation: pool,
+      implementation_review: pool,
+      shipment: pool,
+      shipment_review: pool,
+      scope_refinement: pool,
+    },
+  };
+  return {
+    loadSettingsMock: vi.fn(),
+    stubDispatchSettings: (
+      overrides: Record<string, unknown> = {},
+    ): Record<string, unknown> => ({ ...baseSettings, ...overrides }),
+  };
+});
 
 vi.mock("@/lib/settings", () => ({
-  getActionAgent: vi.fn(async () => ({
-    command: "claude", label: "Claude",
-    agentId: "agent-a", model: "opus", version: "4.6",
-  })),
-  getStepAgent: vi.fn(async () => ({
-    command: "claude", label: "Claude",
-    agentId: "agent-a", model: "opus", version: "4.6",
-  })),
   loadSettings: (...args: unknown[]) => loadSettingsMock(...args),
 }));
 
@@ -209,7 +233,7 @@ describe("success classification: next queue state", () => {
   registerOutcomeLifecycle();
 
   it("records success=true when beat advances to next queue state", async () => {
-    loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
+    loadSettingsMock.mockResolvedValue(stubDispatchSettings());
 
     backend.get.mockResolvedValueOnce({
       ok: true,
@@ -265,7 +289,7 @@ describe("success classification: beat state event", () => {
   registerOutcomeLifecycle();
 
   it("emits a beat_state_observed event after post-exit state fetch", async () => {
-    loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
+    loadSettingsMock.mockResolvedValue(stubDispatchSettings());
 
     backend.get.mockResolvedValueOnce({
       ok: true,
@@ -322,7 +346,7 @@ describe("success classification: prior queue state", () => {
   registerOutcomeLifecycle();
 
   it("records success=true when beat moves to prior queue state (review rejection)", async () => {
-    loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
+    loadSettingsMock.mockResolvedValue(stubDispatchSettings());
 
     backend.get.mockResolvedValueOnce({
       ok: true,
@@ -385,7 +409,7 @@ function mockBeat(
 async function setupFailureSession(
   id: string, title: string, state: string,
 ): Promise<void> {
-  loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
+  loadSettingsMock.mockResolvedValue(stubDispatchSettings());
   backend.get.mockResolvedValueOnce(mockBeat(id, title, state));
   backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
   backend.list.mockResolvedValue({ ok: true, data: [] });
@@ -493,25 +517,35 @@ describe("failure: stuck in active state", () => {
 
 describe("agent-outcome-stats classification", () => {
   it("classifies next queue state as success", async () => {
-    const { nextQueueStateForStep } = await import("@/lib/workflows");
-    expect(nextQueueStateForStep("implementation")).toBe(
+    const { nextQueueStateForStep, builtinProfileDescriptor } = await import(
+      "@/lib/workflows"
+    );
+    const wf = builtinProfileDescriptor("autopilot");
+    expect(nextQueueStateForStep("implementation", wf)).toBe(
       "ready_for_implementation_review",
     );
-    expect(nextQueueStateForStep("planning")).toBe("ready_for_plan_review");
-    expect(nextQueueStateForStep("shipment_review")).toBeNull();
+    expect(nextQueueStateForStep("planning", wf)).toBe("ready_for_plan_review");
+    expect(nextQueueStateForStep("shipment_review", wf)).toBeNull();
   });
 
   it("classifies prior queue state correctly", async () => {
-    const { priorQueueStateForStep } = await import("@/lib/workflows");
-    expect(priorQueueStateForStep("planning")).toBeNull();
-    expect(priorQueueStateForStep("plan_review")).toBe("ready_for_planning");
-    expect(priorQueueStateForStep("implementation")).toBe("ready_for_plan_review");
-    expect(priorQueueStateForStep("implementation_review")).toBe(
+    const { priorQueueStateForStep, builtinProfileDescriptor } = await import(
+      "@/lib/workflows"
+    );
+    const wf = builtinProfileDescriptor("autopilot");
+    expect(priorQueueStateForStep("planning", wf)).toBeNull();
+    expect(priorQueueStateForStep("plan_review", wf)).toBe("ready_for_planning");
+    expect(priorQueueStateForStep("implementation", wf)).toBe(
+      "ready_for_plan_review",
+    );
+    expect(priorQueueStateForStep("implementation_review", wf)).toBe(
       "ready_for_implementation",
     );
-    expect(priorQueueStateForStep("shipment")).toBe(
+    expect(priorQueueStateForStep("shipment", wf)).toBe(
       "ready_for_implementation_review",
     );
-    expect(priorQueueStateForStep("shipment_review")).toBe("ready_for_shipment");
+    expect(priorQueueStateForStep("shipment_review", wf)).toBe(
+      "ready_for_shipment",
+    );
   });
 });

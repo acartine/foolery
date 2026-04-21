@@ -15,7 +15,7 @@ import {
   builtinProfileDescriptor,
   builtinWorkflowDescriptors,
   deriveWorkflowRuntimeState,
-  resolveStep,
+  workflowStatePhase,
 } from "./workflows";
 import {
   deriveBeadsProfileId,
@@ -122,12 +122,19 @@ function applyWorkflowFilters(
       return false;
     }
     if (filters.state) {
+      const beatWorkflow = builtinProfileDescriptor(
+        beat.profileId ?? beat.workflowId,
+      );
       if (filters.state === "queued") {
-        if (resolveStep(beat.state)?.phase !== "queued") {
+        if (
+          workflowStatePhase(beatWorkflow, beat.state) !== "queued"
+        ) {
           return false;
         }
       } else if (filters.state === "in_action") {
-        if (resolveStep(beat.state)?.phase !== "active") {
+        if (
+          workflowStatePhase(beatWorkflow, beat.state) !== "active"
+        ) {
           return false;
         }
       } else if (beat.state !== filters.state) {

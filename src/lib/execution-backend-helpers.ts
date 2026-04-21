@@ -216,7 +216,7 @@ export async function prepareTakeBeads(
   loadSnapshot: LoadSnapshotFn,
 ): Promise<BackendResult<ExecutionLease>> {
   const beat = snapshot.beat;
-  const resolved = resolveStep(beat.state);
+  const resolved = resolveStep(beat.state, snapshot.workflow);
   const notClaimable =
     !resolved
     || resolved.phase !== StepPhase.Queued
@@ -300,7 +300,7 @@ async function claimAndBuildBeadsLease(
     );
   }
 
-  const claimedStep = resolveStep(target)?.step;
+  const claimedStep = resolveStep(target, snap.data.workflow)?.step;
   const promptText = claimedStep
     ? getBeatsSkillPrompt(claimedStep, input.beatId, target)
     : `Beat ID: ${input.beatId}`;

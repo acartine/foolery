@@ -22,6 +22,7 @@ import {
   workflowDescriptorById,
 } from "@/lib/workflows";
 import {
+  resolveWorkflowForBeat,
   toWorkflowPromptTarget,
   isTerminalBeatState,
   rollbackAgentOwnedActionStateToQueue,
@@ -103,7 +104,12 @@ export async function prepareSessionTargets(
     primaryTarget,
     sceneTargets,
     healedTargets,
-    resolved: resolveStep(healed.beat.state),
+    resolved: resolveStep(
+      healed.beat.state,
+      resolveWorkflowForBeat(
+        healed.beat, workflowsById, fallbackWorkflow,
+      ),
+    ),
     repoPath,
   };
 }

@@ -127,6 +127,8 @@ export interface KnotProfileOwners {
   implementation_review?: { kind: "agent" | "human" };
   shipment?: { kind: "agent" | "human" };
   shipment_review?: { kind: "agent" | "human" };
+  /** Custom action-state owners, indexed by action-state name. */
+  [actionState: string]: { kind: "agent" | "human" } | Record<string, { kind: "agent" | "human" }> | undefined;
 }
 
 export interface KnotProfileDefinition {
