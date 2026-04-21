@@ -37,6 +37,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${manrope.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable}`}>
+      <head>
+        {/* Flash-free theme init: mirror the `theme` localStorage choice onto
+            `<html>` before first paint so dark-mode surfaces never flash light.
+            Default ("system") honors prefers-color-scheme. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => { try { var t = localStorage.getItem("theme"); var d = t === "dark" || ((t === null || t === "system") && window.matchMedia("(prefers-color-scheme: dark)").matches); if (d) document.documentElement.classList.add("dark"); } catch (_) {} })();`,
+          }}
+        />
+      </head>
       <body
         className="antialiased"
       >

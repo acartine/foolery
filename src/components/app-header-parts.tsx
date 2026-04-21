@@ -7,6 +7,7 @@ import {
   Zap, Inbox, BarChart3, ListMusic,
 } from "lucide-react";
 import { FooleryWordmark } from "@/components/foolery-wordmark";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { VersionBadge } from "@/components/version-badge";
 import { RepoSwitcher } from "@/components/repo-switcher";
 import { SearchBar } from "@/components/search-bar";
@@ -289,6 +290,7 @@ export function HeaderToolbar(props: {
         inputClassName="h-8"
         placeholder="Search beats..."
       />
+      <ThemeToggle />
       <NotificationBell />
       <Button
         size="icon"
