@@ -32,21 +32,28 @@ describe(
     const dark = getConversationLogTheme(false);
     const light = getConversationLogTheme(true);
 
-    it("dark theme contains terminal"
-      + " palette colors", () => {
+    it("dark theme uses walnut and paper"
+      + " tokens instead of hardcoded hex", () => {
       const vals = JSON.stringify(dark);
-      expect(vals).toContain("#1a1a2e");
-      expect(vals).toContain("#16162a");
-      expect(vals).toContain("#e0e0e0");
+      expect(vals).toContain("bg-walnut-300");
+      expect(vals).toContain("bg-walnut-400");
+      expect(vals).toContain("text-paper-200");
+      expect(vals).not.toMatch(/#1a1a2e|#16162a|#e0e0e0/);
     });
 
-    it("light theme contains light"
-      + " palette colors", () => {
+    it("light theme uses paper and ink tokens", () => {
       const vals = JSON.stringify(light);
       expect(vals).toContain("text-ink-900");
-      expect(vals).toContain("bg-[#f8f9fa]");
-      expect(vals).toContain("bg-[#f0f0f0]");
+      expect(vals).toContain("bg-paper-100");
+      expect(vals).toContain("bg-paper-200");
       expect(vals).toContain("text-ink-800");
+      expect(vals).not.toMatch(/#f8f9fa|#f0f0f0/);
+    });
+
+    it("assistant (response) entries carry"
+      + " the clay left rule", () => {
+      const vals = JSON.stringify(light);
+      expect(vals).toContain("border-l-clay-500");
     });
 
     it("themed components import"

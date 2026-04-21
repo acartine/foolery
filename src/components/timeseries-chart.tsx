@@ -2,12 +2,17 @@
 
 // ── Chart color palette ──
 
+// Per MIGRATION.md §3.3, extended beyond the shadcn 5-slot palette with
+// softer supporting tints so series 6-8 stay in the clay/moss/lake families.
 const CHART_COLORS = [
   "var(--chart-1)",
   "var(--chart-2)",
   "var(--chart-3)",
   "var(--chart-4)",
   "var(--chart-5)",
+  "var(--color-clay-300)",
+  "var(--color-moss-400)",
+  "var(--color-lake-400)",
 ];
 
 function colorForIndex(i: number): string {

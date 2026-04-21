@@ -394,11 +394,11 @@ export function DebugTerminalPanel({
   lightTheme: boolean;
 }) {
   const bgClass = lightTheme
-    ? "bg-[#fafafa]"
-    : "bg-[#0b1020]";
+    ? "bg-paper-100"
+    : "bg-walnut-400";
   const borderClass = lightTheme
     ? "border-b border-paper-200"
-    : "border-b border-white/10";
+    : "border-b border-walnut-100";
   const textClass = lightTheme
     ? "text-ink-600"
     : "text-paper-400";

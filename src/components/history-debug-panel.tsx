@@ -186,14 +186,14 @@ export function HistoryDebugPanel({
   );
 
   const sectionBg = themePref.lightTheme
-    ? "bg-[#f8f9fa] text-ink-900"
-    : "bg-[#101522] text-white";
+    ? "bg-paper-100 text-ink-900"
+    : "bg-walnut-400 text-paper-200";
   const sectionBorder = themePref.lightTheme
     ? "border-paper-200"
-    : "border-white/10";
+    : "border-walnut-100";
   const sectionShadow = themePref.lightTheme
-    ? "shadow-[0_20px_80px_rgba(100,100,120,0.15)]"
-    : "shadow-[0_20px_80px_rgba(4,10,24,0.45)]";
+    ? "shadow-lg"
+    : "shadow-xl";
 
   return (
     <HistoryDebugPanelContent

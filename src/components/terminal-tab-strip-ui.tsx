@@ -186,8 +186,8 @@ function FadeEdge(props: {
         "pointer-events-none absolute inset-y-0"
         + ` w-6 ${dirClass}`
         + (props.lightTheme
-          ? " from-[#f0f0f0] to-transparent"
-          : " from-[#16162a] to-transparent")
+          ? " from-paper-200 to-transparent"
+          : " from-walnut-400 to-transparent")
         + " transition-opacity"
         + ` ${props.canScroll
           ? "opacity-100"
@@ -231,20 +231,22 @@ function TerminalTab(props: {
     ? "max-w-[132px]"
     : "max-w-[270px]";
 
+  // Per MIGRATION.md §3.2: active tab = ink-900 fill w/ paper text;
+  // inactive = walnut with paper-400 text.
   const stateClass = isPending
-    ? "animate-pulse border-feature-400/40"
-      + " bg-feature-400/30 text-feature-100"
+    ? "animate-pulse border-ochre-400/40"
+      + " bg-ochre-400/30 text-ochre-100"
     : lightTheme
       ? isActive
-        ? "border-paper-300 bg-white text-ink-900"
+        ? "border-paper-300 bg-paper-50 text-ink-900"
         : "border-transparent bg-paper-100"
           + " text-ink-600 hover:border-paper-300"
           + " hover:bg-paper-200 hover:text-ink-900"
       : isActive
-        ? "border-white/25 bg-white/15 text-white"
-        : "border-transparent bg-white/5"
-          + " text-white/70 hover:border-white/20"
-          + " hover:bg-white/10";
+        ? "border-walnut-100 bg-ink-900 text-paper-100"
+        : "border-transparent bg-walnut-200"
+          + " text-paper-400 hover:border-walnut-100"
+          + " hover:bg-walnut-100 hover:text-paper-200";
 
   const title = isPending
     ? "Click to keep open"
@@ -288,7 +290,7 @@ function TerminalTab(props: {
       {isRunning ? (
         <span className={
           "inline-block size-1.5 shrink-0"
-          + " rounded-full bg-lake-400"
+          + " rounded-full bg-ochre-400"
           + " animate-pulse"
         } />
       ) : (

@@ -22,22 +22,22 @@ import {
 } from "@/hooks/use-terminal-panel-state";
 import { cn } from "@/lib/utils";
 
-const DARK_BG = "bg-[#1a1a2e]";
-const LIGHT_BG = "bg-[#fafafa]";
-const DARK_HEADER = "bg-[#16162a]";
-const LIGHT_HEADER = "bg-[#f0f0f0]";
+const DARK_BG = "bg-walnut-300";
+const LIGHT_BG = "bg-paper-100";
+const DARK_HEADER = "bg-walnut-400";
+const LIGHT_HEADER = "bg-paper-200";
 
 function getTerminalPanelThemeClasses(lightTheme: boolean) {
   return {
     panel: lightTheme ? LIGHT_BG : DARK_BG,
     panelBorder: lightTheme
       ? "border-t border-paper-300"
-      : "border-t border-border",
+      : "border-t border-walnut-100",
     header: lightTheme ? LIGHT_HEADER : DARK_HEADER,
     headerBorder: lightTheme
       ? "border-b border-paper-200"
-      : "border-b border-white/10",
-    text: lightTheme ? "text-ink-900" : "text-white",
+      : "border-b border-walnut-100",
+    text: lightTheme ? "text-ink-900" : "text-paper-200",
   };
 }
 
