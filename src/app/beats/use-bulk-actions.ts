@@ -5,7 +5,10 @@ import {
 import { toast } from "sonner";
 import type { Beat } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
-import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
+import {
+  markTerminalOrThrow,
+  updateBeatOrThrow,
+} from "@/lib/update-beat-mutation";
 import {
   invalidateBeatListQueries,
 } from "@/lib/beat-query-cache";
@@ -36,6 +39,33 @@ const TERMINAL_TARGETS = new Set([
   "abandoned",
   "closed",
 ]);
+
+/**
+ * @internal Exported for testing. Routes a bulk update to the
+ * descriptive `markTerminalOrThrow` path when the target state is
+ * a terminal, otherwise to the generic `updateBeatOrThrow` path.
+ */
+export async function dispatchBulkUpdate(
+  beats: Beat[],
+  ids: string[],
+  fields: UpdateBeatInput,
+): Promise<void> {
+  const targetState = fields.state?.trim().toLowerCase();
+  const isTerminal =
+    targetState !== undefined
+    && TERMINAL_TARGETS.has(targetState);
+  if (isTerminal && targetState) {
+    await Promise.all(
+      ids.map((id) =>
+        markTerminalOrThrow(beats, id, targetState)),
+    );
+    return;
+  }
+  await Promise.all(
+    ids.map((id) =>
+      updateBeatOrThrow(beats, id, fields)),
+  );
+}
 
 /** @internal Exported for testing. */
 export function partitionEligibleForTerminalTarget(
@@ -76,12 +106,7 @@ export function useBulkActions(
         ids: string[];
         fields: UpdateBeatInput;
       },
-    ) => {
-      await Promise.all(
-        ids.map((id) =>
-          updateBeatOrThrow(beats, id, fields)),
-      );
-    },
+    ) => dispatchBulkUpdate(beats, ids, fields),
     onSuccess: () => {
       void invalidateBeatListQueries(queryClient);
       setSelectionVersion((v) => v + 1);

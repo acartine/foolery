@@ -12,8 +12,17 @@ import {
   previewCascadeClose,
   cascadeCloseBeat,
 } from "@/lib/api";
-import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
+import {
+  markTerminalOrThrow,
+  updateBeatOrThrow,
+} from "@/lib/update-beat-mutation";
 import type { CascadeDescendant } from "@/lib/cascade-close";
+
+const ROW_TERMINAL_TARGETS = new Set([
+  "shipped",
+  "abandoned",
+  "closed",
+]);
 
 export function repoPathForBeat(
   beat: Beat | undefined,
@@ -40,8 +49,18 @@ export function useUpdateBeatMutation(data: Beat[]) {
   return useMutation({
     mutationFn: ({
       id, fields, repoPath,
-    }: UpdateArgs) =>
-      updateBeatOrThrow(data, id, fields, repoPath),
+    }: UpdateArgs) => {
+      const targetState = fields.state?.trim().toLowerCase();
+      if (
+        targetState !== undefined
+        && ROW_TERMINAL_TARGETS.has(targetState)
+      ) {
+        return markTerminalOrThrow(
+          data, id, targetState, undefined, repoPath,
+        );
+      }
+      return updateBeatOrThrow(data, id, fields, repoPath);
+    },
     onMutate: async ({ id, fields, repoPath }) => {
       await queryClient.cancelQueries({
         queryKey: ["beats"],

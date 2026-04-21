@@ -1,13 +1,14 @@
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Undo2 } from "lucide-react";
+import { AlertTriangle, Undo2 } from "lucide-react";
 import type {
   Beat,
   MemoryWorkflowDescriptor,
@@ -16,6 +17,39 @@ import { isRollbackTransition } from "@/lib/workflows";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import { BeatStateBadge } from "./beat-state-badge";
 import { validNextStates, formatStateName } from "./beat-detail";
+
+function CorrectionSubmenu({
+  workflow,
+  fireUpdate,
+}: {
+  workflow: MemoryWorkflowDescriptor;
+  fireUpdate: (fields: UpdateBeatInput) => void;
+}) {
+  const terminals = workflow.terminalStates ?? [];
+  if (terminals.length === 0) return null;
+  return (
+    <>
+      <DropdownMenuSeparator />
+      <DropdownMenuLabel
+        className={
+          "flex items-center gap-1 "
+          + "text-xs text-muted-foreground"
+        }
+      >
+        <AlertTriangle className="size-3" />
+        Correction
+      </DropdownMenuLabel>
+      {terminals.map((s) => (
+        <DropdownMenuItem
+          key={`correction-${s}`}
+          onSelect={() => fireUpdate({ state: s })}
+        >
+          {formatStateName(s)}
+        </DropdownMenuItem>
+      ))}
+    </>
+  );
+}
 
 function WorkflowStateDropdown({
   beat,
@@ -93,6 +127,10 @@ function WorkflowStateDropdown({
               </DropdownMenuRadioItem>
             ))}
         </DropdownMenuRadioGroup>
+        <CorrectionSubmenu
+          workflow={workflow}
+          fireUpdate={fireUpdate}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );
