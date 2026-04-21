@@ -415,11 +415,16 @@ read_pid() {
 }
 
 read_listen_pid() {
-  if ! command -v lsof >/dev/null 2>&1; then
-    return 1
+  local pid=""
+  if command -v lsof >/dev/null 2>&1; then
+    pid="\$(lsof -nP -iTCP:"\$PORT" -sTCP:LISTEN -t 2>/dev/null | head -n 1)"
   fi
-  local pid
-  pid="\$(lsof -nP -iTCP:"\$PORT" -sTCP:LISTEN -t 2>/dev/null | head -n 1)"
+  # lsof can return nothing on hosts where docker overlay/nsfs filesystems
+  # make it bail out of its /proc scan; ss reads /proc/net/tcp directly and
+  # is unaffected, so use it as a fallback.
+  if [[ ! "\$pid" =~ ^[0-9]+$ ]] && command -v ss >/dev/null 2>&1; then
+    pid="\$(ss -ltnp "sport = :\$PORT" 2>/dev/null | grep -oE 'pid=[0-9]+' | head -n 1 | cut -d= -f2)"
+  fi
   if [[ ! "\$pid" =~ ^[0-9]+$ ]]; then
     return 1
   fi
@@ -1594,9 +1599,14 @@ main() {
   fi
   if [[ "$existing_pid" =~ ^[0-9]+$ ]] && kill -0 "$existing_pid" >/dev/null 2>&1; then
     warn "Foolery is already running (pid $existing_pid). Run 'foolery restart' to pick up the new runtime."
-  elif command -v lsof >/dev/null 2>&1; then
+  else
     local existing_port_pid=""
-    existing_port_pid="$(lsof -nP -iTCP:3210 -sTCP:LISTEN -t 2>/dev/null | head -n 1 || true)"
+    if command -v lsof >/dev/null 2>&1; then
+      existing_port_pid="$(lsof -nP -iTCP:3210 -sTCP:LISTEN -t 2>/dev/null | head -n 1 || true)"
+    fi
+    if [[ ! "$existing_port_pid" =~ ^[0-9]+$ ]] && command -v ss >/dev/null 2>&1; then
+      existing_port_pid="$(ss -ltnp 'sport = :3210' 2>/dev/null | grep -oE 'pid=[0-9]+' | head -n 1 | cut -d= -f2)"
+    fi
     if [[ "$existing_port_pid" =~ ^[0-9]+$ ]]; then
       warn "Port 3210 is already in use (pid $existing_port_pid). Run 'foolery stop' or free the port before restart."
     fi
