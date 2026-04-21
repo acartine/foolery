@@ -45,7 +45,6 @@ function autopilotWorkflow(): MemoryWorkflowDescriptor {
       { from: "shipment_review", to: "shipped" },
       { from: "shipment_review", to: "ready_for_implementation" },
       { from: "shipment_review", to: "ready_for_shipment" },
-      { from: "*", to: "shipped" },
       { from: "*", to: "deferred" },
       { from: "*", to: "abandoned" },
     ],

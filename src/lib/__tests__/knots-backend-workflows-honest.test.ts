@@ -2,6 +2,13 @@ import { describe, expect, it } from "vitest";
 import { toDescriptor } from "@/lib/backends/knots-backend-workflows";
 import type { KnotProfileDefinition } from "@/lib/knots";
 
+/**
+ * kno workflows are the single source of truth. toDescriptor MUST NOT
+ * synthesize transitions (historical bug: `withWildcardTerminals`
+ * injected `* -> <terminal>` rows, which collided with the generic
+ * update path's force-flag heuristic). This test locks that in.
+ */
+
 function baseAutopilotProfile(): KnotProfileDefinition {
   return {
     id: "autopilot",
@@ -36,53 +43,47 @@ function baseAutopilotProfile(): KnotProfileDefinition {
       { from: "ready_for_planning", to: "planning" },
       { from: "planning", to: "ready_for_plan_review" },
       { from: "shipment_review", to: "shipped" },
+      { from: "*", to: "deferred" },
+      { from: "*", to: "abandoned" },
     ],
   };
 }
 
-describe("toDescriptor wildcard terminals", () => {
-  it("injects a * -> <terminal> transition for each terminal state missing one", () => {
-    const descriptor = toDescriptor(baseAutopilotProfile());
-    expect(descriptor.transitions).toContainEqual({ from: "*", to: "shipped" });
-    expect(descriptor.transitions).toContainEqual({ from: "*", to: "abandoned" });
-  });
-
-  it("preserves kno-supplied transitions alongside injected wildcards", () => {
-    const descriptor = toDescriptor(baseAutopilotProfile());
-    expect(descriptor.transitions).toContainEqual({
-      from: "shipment_review",
-      to: "shipped",
-    });
-    expect(descriptor.transitions).toContainEqual({
-      from: "planning",
-      to: "ready_for_plan_review",
-    });
-  });
-
-  it("does not duplicate an existing * -> shipped transition", () => {
+describe("toDescriptor: kno-authoritative transitions", () => {
+  it("returns transitions byte-equal to the supplied profile", () => {
     const profile = baseAutopilotProfile();
-    profile.transitions = [
-      ...(profile.transitions ?? []),
-      { from: "*", to: "shipped" },
-    ];
     const descriptor = toDescriptor(profile);
+    expect(descriptor.transitions).toEqual(profile.transitions);
+  });
+
+  it("does not inject a wildcard * -> shipped row", () => {
+    const descriptor = toDescriptor(baseAutopilotProfile());
     const wildcardShipped = (descriptor.transitions ?? []).filter(
       (t) => t.from === "*" && t.to === "shipped",
     );
-    expect(wildcardShipped).toHaveLength(1);
+    expect(wildcardShipped).toHaveLength(0);
   });
 
-  it("omits wildcards for profiles without terminal states", () => {
+  it("preserves real (profile-supplied) wildcards verbatim", () => {
+    const descriptor = toDescriptor(baseAutopilotProfile());
+    expect(descriptor.transitions).toContainEqual({
+      from: "*", to: "deferred",
+    });
+    expect(descriptor.transitions).toContainEqual({
+      from: "*", to: "abandoned",
+    });
+  });
+
+  it("emits no transitions when the profile has none", () => {
     const profile: KnotProfileDefinition = {
-      id: "loop",
+      id: "empty",
       owners: {},
       initial_state: "a",
       states: ["a", "b"],
-      terminal_states: [],
-      transitions: [{ from: "a", to: "b" }],
+      terminal_states: ["b"],
+      transitions: [],
     };
     const descriptor = toDescriptor(profile);
-    const wildcards = (descriptor.transitions ?? []).filter((t) => t.from === "*");
-    expect(wildcards).toEqual([]);
+    expect(descriptor.transitions).toEqual([]);
   });
 });

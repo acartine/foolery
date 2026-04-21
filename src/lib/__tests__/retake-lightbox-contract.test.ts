@@ -21,9 +21,13 @@ describe("retake lightbox contract", () => {
     expect(RETAKE_TARGET_STATE).toBe("ready_for_implementation");
   });
 
-  it("reopens beats into ready_for_implementation", () => {
-    expect(retakesViewSource).toContain("state: RETAKE_TARGET_STATE");
+  it("reopens beats through the descriptive correction path", () => {
+    // The retake mutation calls reopenBeat (backend uses kno's force
+    // flag) instead of threading state: "ready_for_implementation"
+    // through the generic update path, which no longer auto-forces.
+    expect(retakesViewSource).toContain("reopenBeat(");
     expect(retakesViewSource).not.toContain('state: "implementation"');
+    expect(retakesViewSource).not.toContain("state: RETAKE_TARGET_STATE");
   });
 
   it("shows ready_for_implementation in the retake dialog copy", () => {

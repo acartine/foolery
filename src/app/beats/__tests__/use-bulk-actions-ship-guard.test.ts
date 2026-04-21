@@ -1,6 +1,26 @@
-import { describe, expect, it } from "vitest";
-import { partitionEligibleForTerminalTarget } from "../use-bulk-actions";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const mockMarkTerminalOrThrow = vi.fn();
+const mockUpdateBeatOrThrow = vi.fn();
+
+vi.mock("@/lib/update-beat-mutation", () => ({
+  markTerminalOrThrow: (...args: unknown[]) =>
+    mockMarkTerminalOrThrow(...args),
+  updateBeatOrThrow: (...args: unknown[]) =>
+    mockUpdateBeatOrThrow(...args),
+}));
+
+import {
+  dispatchBulkUpdate,
+  partitionEligibleForTerminalTarget,
+} from "../use-bulk-actions";
 import type { Beat } from "@/lib/types";
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  mockMarkTerminalOrThrow.mockResolvedValue(undefined);
+  mockUpdateBeatOrThrow.mockResolvedValue(undefined);
+});
 
 function makeBeat(id: string, state: string): Beat {
   return {
@@ -93,5 +113,42 @@ describe("partitionEligibleForTerminalTarget", () => {
     );
     expect(result.eligibleIds).toEqual(["b"]);
     expect(result.skippedIds).toEqual(["a"]);
+  });
+});
+
+describe("dispatchBulkUpdate routing", () => {
+  const beats: Beat[] = [
+    makeBeat("a", "implementation"),
+    makeBeat("b", "ready_for_implementation"),
+  ];
+
+  it("routes terminal targets through markTerminalOrThrow", async () => {
+    await dispatchBulkUpdate(beats, ["a", "b"], { state: "shipped" });
+    expect(mockMarkTerminalOrThrow).toHaveBeenCalledTimes(2);
+    expect(mockUpdateBeatOrThrow).not.toHaveBeenCalled();
+    expect(mockMarkTerminalOrThrow).toHaveBeenCalledWith(
+      beats, "a", "shipped",
+    );
+    expect(mockMarkTerminalOrThrow).toHaveBeenCalledWith(
+      beats, "b", "shipped",
+    );
+  });
+
+  it("routes non-terminal state changes through updateBeatOrThrow", async () => {
+    await dispatchBulkUpdate(beats, ["a"], {
+      state: "ready_for_shipment",
+    });
+    expect(mockUpdateBeatOrThrow).toHaveBeenCalledWith(
+      beats, "a", { state: "ready_for_shipment" },
+    );
+    expect(mockMarkTerminalOrThrow).not.toHaveBeenCalled();
+  });
+
+  it("routes non-state fields through updateBeatOrThrow", async () => {
+    await dispatchBulkUpdate(beats, ["a", "b"], {
+      priority: 1,
+    });
+    expect(mockUpdateBeatOrThrow).toHaveBeenCalledTimes(2);
+    expect(mockMarkTerminalOrThrow).not.toHaveBeenCalled();
   });
 });

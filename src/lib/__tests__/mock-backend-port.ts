@@ -26,6 +26,9 @@ import {
   withWorkflowProfileLabel,
   withWorkflowStateLabel,
 } from "@/lib/workflows";
+import {
+  WorkflowCorrectionFailureError,
+} from "@/lib/workflow-correction-failure";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -216,15 +219,62 @@ export class MockBackendPort implements BackendPort {
     reason?: string,
     repoPath?: string,
   ): Promise<BackendResult<void>> {
+    const beat = this.beats.get(id);
+    if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
+    const workflow = builtinProfileDescriptor(
+      beat.profileId ?? beat.workflowId,
+    );
+    const target =
+      workflow.terminalStates.find((s) => s !== "deferred")
+      ?? workflow.terminalStates[0]
+      ?? "shipped";
+    return this.markTerminal(id, target, reason, repoPath);
+  }
+
+  async markTerminal(
+    id: string,
+    targetState: string,
+    reason?: string,
+    repoPath?: string,
+  ): Promise<BackendResult<void>> {
     ignoreUnused(reason, repoPath);
     const beat = this.beats.get(id);
     if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
-    const closedWorkflow = builtinProfileDescriptor(beat.profileId ?? beat.workflowId);
-    beat.state =
-      closedWorkflow.terminalStates.find((s) => s !== "deferred")
-      ?? closedWorkflow.terminalStates[0]
-      ?? "shipped";
+    const workflow = builtinProfileDescriptor(
+      beat.profileId ?? beat.workflowId,
+    );
+    const normalizedTarget = targetState.trim().toLowerCase();
+    const allowedTerminals = workflow.terminalStates.map(
+      (s) => s.trim().toLowerCase(),
+    );
+    if (!allowedTerminals.includes(normalizedTarget)) {
+      throw new WorkflowCorrectionFailureError({
+        beatId: id,
+        profileId: workflow.id,
+        targetState: normalizedTarget,
+        allowedTerminals,
+        reason: "non_terminal_target",
+      });
+    }
+    beat.state = normalizedTarget;
     beat.closed = isoNow();
+    beat.updated = isoNow();
+    return { ok: true };
+  }
+
+  async reopen(
+    id: string,
+    reason?: string,
+    repoPath?: string,
+  ): Promise<BackendResult<void>> {
+    ignoreUnused(reason, repoPath);
+    const beat = this.beats.get(id);
+    if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
+    const workflow = builtinProfileDescriptor(
+      beat.profileId ?? beat.workflowId,
+    );
+    beat.state = workflow.retakeState;
+    beat.closed = undefined;
     beat.updated = isoNow();
     return { ok: true };
   }
