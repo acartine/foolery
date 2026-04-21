@@ -1,0 +1,15 @@
+{
+  "event_id": "019db074-3d69-79b0-b59f-a5a41d6d30e8",
+  "occurred_at": "2026-04-21T14:31:41.161044Z",
+  "knot_id": "foolery-102e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment review: signed off. Change live on origin/main (merge 17cdd899). Every commit tagged (2b132a4c refactor, 40fc31d3 backend, 01f210a2 ui, 5b4014bc tests, 17cdd899 merge, 75e53b29 docs). Invariants verified: no synthetic transitions (greps clean), descriptive correction paths (markTerminal/reopen), fail-loud banner (FOOLERY WORKFLOW CORRECTION FAILURE verified emitting on invalid target). CI green (24728099654). Manual repro of the original bug (ready_for_shipment_review -> shipped on autopilot_no_planning) now succeeds via POST /api/beats/<id>/mark-terminal. Follow-up captured: src/lib/doctor-fixes.ts fixStaleParent writes legacy beads 'in_progress' and will now fail loudly on knots repos; create a separate knot to rework or drop that beads-compat path.",
+    "datetime": "2026-04-21T14:31:41.161044Z",
+    "entry_id": "019db074-3d69-79b0-b59f-a5977fe9666f",
+    "model": "opus-4-7-1m",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

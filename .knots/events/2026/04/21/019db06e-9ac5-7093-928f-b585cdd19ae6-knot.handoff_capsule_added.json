@@ -1,0 +1,15 @@
+{
+  "event_id": "019db06e-9ac5-7093-928f-b585cdd19ae6",
+  "occurred_at": "2026-04-21T14:25:31.845295Z",
+  "knot_id": "foolery-102e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Manual verification passed on worktree-agent-a4d38db5 dev server (port 3001). (1) Reproduced the bug: created foolery-c685 in ready_for_shipment_review on autopilot_no_planning. (2) POST /api/beats/foolery-c685/mark-terminal with targetState=shipped -> {\"ok\":true}; kno show confirms state=shipped with 'Correction: ...' note. (3) POST with non-terminal targetState=implementation -> HTTP 400 body carries FOOLERY WORKFLOW CORRECTION FAILURE marker; server stderr prints the red banner listing profile, bad target, allowed terminals, reason=non_terminal_target, and remediation. Lint/tsc/test all green per SWE agent report. Ready for implementation_review.",
+    "datetime": "2026-04-21T14:25:31.845295Z",
+    "entry_id": "019db06e-9ac5-7093-928f-b57c30863f83",
+    "model": "opus-4-7-1m",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

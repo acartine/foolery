@@ -1,0 +1,15 @@
+{
+  "event_id": "019db073-a9bc-76c1-9052-dfea3eb5146d",
+  "occurred_at": "2026-04-21T14:31:03.356662Z",
+  "knot_id": "foolery-102e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipped: feature branch merged via 17cdd899 and docs commit 75e53b29 pushed to origin/main. CI green on 24728099654 (CI, 1m53s) and 24728099644 (Coverage Badge, 56s). Local rebase preserved a94a4227 (docs commit prior to origin/main pull → now 75e53b29). Knot ready for shipment_review.",
+    "datetime": "2026-04-21T14:31:03.356662Z",
+    "entry_id": "019db073-a9bc-76c1-9052-dfd011c59a7c",
+    "model": "opus-4-7-1m",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

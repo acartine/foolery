@@ -1,0 +1,15 @@
+{
+  "event_id": "019db06d-d5e9-7532-a57d-3209f20c9cad",
+  "occurred_at": "2026-04-21T14:24:41.449247Z",
+  "knot_id": "foolery-c685",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "Correction: 102e verification via markTerminal correction path",
+    "datetime": "2026-04-21T14:24:41.449247Z",
+    "entry_id": "019db06d-d5e9-7532-a57d-31fc93668a6a",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

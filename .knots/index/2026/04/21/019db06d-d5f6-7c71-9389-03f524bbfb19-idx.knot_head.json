@@ -1,0 +1,21 @@
+{
+  "event_id": "019db06d-d5f6-7c71-9389-03f524bbfb19",
+  "occurred_at": "2026-04-21T14:24:41.449247Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c685",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Test: verify bulk-ship correction path (102e verification)",
+    "type": "work",
+    "updated_at": "2026-04-21T14:24:41.449247Z",
+    "workflow_id": "work_sdlc"
+  }
+}

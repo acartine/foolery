@@ -1,0 +1,21 @@
+{
+  "event_id": "019db074-4cbd-7521-ad8b-3ad1fd505262",
+  "occurred_at": "2026-04-21T14:31:45.084992Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-102e",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Remove TS workflow overrides; fix ship dispatch; enshrine kno-authoritative rule",
+    "type": "work",
+    "updated_at": "2026-04-21T14:31:45.084992Z",
+    "workflow_id": "work_sdlc"
+  }
+}

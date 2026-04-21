@@ -1,0 +1,15 @@
+{
+  "event_id": "019db06f-4a3f-7f41-ab92-a93101572054",
+  "occurred_at": "2026-04-21T14:26:16.767227Z",
+  "knot_id": "foolery-102e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review: APPROVED. Acceptance met — withWildcardTerminals and canonical * -> shipped are out (greps clean); bulk-ship from ready_for_shipment_review on autopilot_no_planning verified via curl returning {ok:true} and knot landing in shipped; docs carry the rule; lint/tsc/test all green. Invariants respected: kno-authoritative (no injection, verified by honest-design test), fail-loud (FOOLERY WORKFLOW CORRECTION FAILURE banner verified on invalid target), strict types, file/function/line limits via ESLint. Tests cover: honest descriptor, markTerminal success/failure, parity across backends, API route, bulk-actions routing. Follow-up noted by SWE agent for a separate knot: src/lib/doctor-fixes.ts fixStaleParent writes legacy beads compat status 'in_progress' which was only working on knots via the removed auto-force — it will now fail loudly on knots repos. This is intentional per 'never reintroduce auto-force' and should be fixed by either dropping the beads-compat path or reworking through a legitimate correction call.",
+    "datetime": "2026-04-21T14:26:16.767227Z",
+    "entry_id": "019db06f-4a3f-7f41-ab92-a92d7c1e0d55",
+    "model": "opus-4-7-1m",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}
