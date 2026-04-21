@@ -75,6 +75,11 @@ export const closeBeatSchema = z.object({
   reason: z.string().optional(),
 });
 
+export const markTerminalSchema = z.object({
+  targetState: z.string().trim().min(1, "targetState is required"),
+  reason: z.string().optional(),
+});
+
 export const cascadeCloseSchema = z.object({
   confirmed: z.boolean().default(false),
   reason: z.string().optional(),
@@ -101,6 +106,7 @@ export const removeRepoSchema = z.object({
 export type CreateBeatInput = z.infer<typeof createBeatSchema>;
 export type UpdateBeatInput = z.infer<typeof updateBeatSchema>;
 export type CloseBeatInput = z.infer<typeof closeBeatSchema>;
+export type MarkTerminalInput = z.infer<typeof markTerminalSchema>;
 export type CascadeCloseInput = z.infer<typeof cascadeCloseSchema>;
 export type QueryBeatInput = z.infer<typeof queryBeatSchema>;
 export type AddDepInput = z.infer<typeof addDepSchema>;

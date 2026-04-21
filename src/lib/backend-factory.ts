@@ -118,6 +118,18 @@ export class AutoRoutingBackend implements BackendPort {
     return this.backendFor(args[2]).close(...args);
   }
 
+  async markTerminal(
+    ...args: Parameters<BackendPort["markTerminal"]>
+  ): ReturnType<BackendPort["markTerminal"]> {
+    return this.backendFor(args[3]).markTerminal(...args);
+  }
+
+  async reopen(
+    ...args: Parameters<BackendPort["reopen"]>
+  ): ReturnType<BackendPort["reopen"]> {
+    return this.backendFor(args[2]).reopen(...args);
+  }
+
   async listDependencies(
     ...args: Parameters<BackendPort["listDependencies"]>
   ): ReturnType<BackendPort["listDependencies"]> {

@@ -167,22 +167,6 @@ function modeFromOwners(
   );
 }
 
-function withWildcardTerminals(
-  base: Array<{ from: string; to: string }>,
-  terminalStates: string[],
-): Array<{ from: string; to: string }> {
-  const result = [...base];
-  for (const terminal of terminalStates) {
-    const hasWildcard = result.some(
-      (t) => t.from === "*" && t.to === terminal,
-    );
-    if (!hasWildcard) {
-      result.push({ from: "*", to: terminal });
-    }
-  }
-  return result;
-}
-
 export function toDescriptor(
   profile: KnotProfileDefinition,
 ): MemoryWorkflowDescriptor {
@@ -243,15 +227,11 @@ export function toDescriptor(
   const terminalStates = profile.terminal_states.map(
     (state) => state.trim().toLowerCase(),
   );
-  const baseTransitions = (profile.transitions ?? []).map(
+  const transitions = (profile.transitions ?? []).map(
     (transition) => ({
       from: transition.from.trim().toLowerCase(),
       to: transition.to.trim().toLowerCase(),
     }),
-  );
-  const transitions = withWildcardTerminals(
-    baseTransitions,
-    terminalStates,
   );
 
   return {

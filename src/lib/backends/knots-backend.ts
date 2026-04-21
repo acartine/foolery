@@ -41,32 +41,21 @@ import {
   isBlockedByEdges,
   collectAliases,
 } from "@/lib/backends/knots-backend-helpers";
+import { mapForProfiles } from "@/lib/backends/knots-backend-workflows";
 import {
-  mapForProfiles,
-} from "@/lib/backends/knots-backend-workflows";
-
-import {
-  toBeat,
-  applyFilters,
-  matchExpression,
-  memoryManagerKey,
+  toBeat, applyFilters, matchExpression, memoryManagerKey,
 } from "@/lib/backends/knots-backend-mappers";
-
 import {
-  applyProfileChange,
-  buildUpdatePatch,
-  hasPatchFields,
-  updateParentEdges,
-  createKnotImpl,
+  applyProfileChange, buildUpdatePatch, hasPatchFields,
+  updateParentEdges, createKnotImpl,
 } from "@/lib/backends/knots-backend-update";
-
 import {
-  listDependenciesImpl,
-  addDependencyImpl,
-  removeDependencyImpl,
-  buildParentTakePrompt,
-  buildSingleTakePrompt,
-  buildPollPromptImpl,
+  markTerminalWithLoaders, reopenWithLoaders,
+  KNOTS_CLOSE_TARGET_STATE,
+} from "@/lib/backends/knots-backend-correction";
+import {
+  listDependenciesImpl, addDependencyImpl, removeDependencyImpl,
+  buildParentTakePrompt, buildSingleTakePrompt, buildPollPromptImpl,
 } from "@/lib/backends/knots-backend-prompts";
 
 // Re-export public constants so existing imports keep working.
@@ -487,29 +476,31 @@ export class KnotsBackend implements BackendPort {
     );
   }
 
-  async close(
-    id: string,
-    reason?: string,
-    repoPath?: string,
-  ): Promise<BackendResult<void>> {
-    const rp = this.resolvePath(repoPath);
-    const closeResult = fromKnots(
-      await knots.updateKnot(
-        id,
-        {
-          status: "shipped",
-          force: true,
-          addNote: reason
-            ? `Close reason: ${reason}`
-            : undefined,
-        },
-        rp,
-      ),
+  async close(id: string, reason?: string, repoPath?: string) {
+    return this.markTerminal(
+      id, KNOTS_CLOSE_TARGET_STATE, reason, repoPath,
     );
-    if (!closeResult.ok) {
-      return propagateError<void>(closeResult);
-    }
-    return { ok: true };
+  }
+
+  async markTerminal(
+    id: string, targetState: string,
+    reason?: string, repoPath?: string,
+  ): Promise<BackendResult<void>> {
+    return markTerminalWithLoaders(
+      id, targetState, reason, this.resolvePath(repoPath), {
+        fetchBeat: this.get.bind(this),
+        fetchWorkflows: this.getWorkflowDescriptorsForRepo.bind(this),
+      },
+    );
+  }
+
+  async reopen(id: string, reason?: string, repoPath?: string) {
+    return reopenWithLoaders(
+      id, reason, this.resolvePath(repoPath), {
+        fetchBeat: this.get.bind(this),
+        fetchWorkflows: this.getWorkflowDescriptorsForRepo.bind(this),
+      },
+    );
   }
 
   async listDependencies(

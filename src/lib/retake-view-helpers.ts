@@ -7,12 +7,11 @@ import { toast } from "sonner";
 import {
   buildBeatsQueryKey,
   fetchBeatsForScope,
+  reopenBeat,
   resolveBeatsScope,
 } from "@/lib/api";
 import { useRepoSwitchQueryState } from "@/hooks/use-repo-switch-query-state";
-import {
-  RETAKE_TARGET_STATE, isRetakeSourceState,
-} from "@/lib/retake";
+import { isRetakeSourceState } from "@/lib/retake";
 import { startSession } from "@/lib/terminal-api";
 import { hasRollingAncestor } from "@/lib/rolling-ancestor";
 import {
@@ -258,12 +257,24 @@ export function useRetakeMutation(opts: {
         ? `${prefix}ReTake: ${notes}`
         : prefix
           + "ReTake: reopened for regression investigation";
+      const repo = getBeatRepoPath(beat);
+      // Step 1: descriptive correction — force back into retakeState.
+      // Shipped -> ready_for_implementation is not an adjacent
+      // transition in any kno profile; reopen() uses kno's idiomatic
+      // force flag.
+      const reopenResult = await reopenBeat(beat.id, notes || undefined, repo);
+      if (!reopenResult.ok) {
+        throw new Error(
+          reopenResult.error ?? "Failed to reopen beat",
+        );
+      }
+      // Step 2: attach regression labels / persist notes via the
+      // generic update path (state already matches retakeState so
+      // no further workflow transition is requested).
       const fields: UpdateBeatInput = {
-        state: RETAKE_TARGET_STATE,
         labels: labels.length > 0 ? labels : undefined,
         notes: notesText,
       };
-      const repo = getBeatRepoPath(beat);
       await updateBeatOrThrow(
         opts.beats, beat.id, fields, repo,
       );

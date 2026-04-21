@@ -45,7 +45,6 @@ function autopilotWorkflow(): MemoryWorkflowDescriptor {
       { from: "shipment_review", to: "shipped" },
       { from: "shipment_review", to: "ready_for_implementation" },
       { from: "shipment_review", to: "ready_for_shipment" },
-      { from: "*", to: "shipped" },
       { from: "*", to: "deferred" },
       { from: "*", to: "abandoned" },
     ],
@@ -93,12 +92,14 @@ describe("validNextStates", () => {
       expect(result).toContain("deferred");
     });
 
-    it("allows terminal states reachable via wildcard transitions", () => {
+    it("lists only the wildcard terminals actually in the workflow", () => {
       const result = validNextStates("ready_for_planning", workflow, "planning");
-      // All three terminal/closeout targets reach via wildcard transitions from any state.
-      expect(result).toContain("shipped");
+      // Only `abandoned` and `deferred` are reachable via wildcard
+      // transitions in the kno-authoritative workflow. `shipped` is
+      // reachable only from `shipment_review` and is not a wildcard.
       expect(result).toContain("abandoned");
       expect(result).toContain("deferred");
+      expect(result).not.toContain("shipped");
     });
 
     it("includes ready_for_* states when rolled back (unlike normal flow)", () => {

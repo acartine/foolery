@@ -300,6 +300,46 @@ export function closeBeat(
 
 
 /**
+ * Descriptive correction: force a beat into a terminal state, bypassing
+ * workflow adjacency. The server validates `targetState` against the
+ * beat's profile terminals and returns HTTP 400 on misuse.
+ */
+export function markTerminal(
+  id: string,
+  targetState: string,
+  reason?: string,
+  repo?: string,
+): Promise<BdResult<void>> {
+  const body: Record<string, unknown> = { targetState };
+  if (reason !== undefined) body.reason = reason;
+  if (repo) body._repo = repo;
+  return request<void>(`${BASE}/${id}/mark-terminal`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+/**
+ * Descriptive correction: reopen a terminal beat into its profile's
+ * retakeState for regression investigation. Invokes kno's idiomatic
+ * force flag at the backend.
+ */
+export function reopenBeat(
+  id: string,
+  reason?: string,
+  repo?: string,
+): Promise<BdResult<void>> {
+  const body: Record<string, unknown> = {};
+  if (reason !== undefined) body.reason = reason;
+  if (repo) body._repo = repo;
+  return request<void>(`${BASE}/${id}/reopen`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+
+/**
  * Preview which descendants would be closed if a cascade close is performed.
  */
 export function previewCascadeClose(

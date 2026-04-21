@@ -110,13 +110,17 @@ describe("update() no-op when state matches", () => {
   });
 });
 
-describe("update() force flag and rollback behavior", () => {
-  it("sets force=true when jumping to a non-adjacent state", async () => {
+describe("update() passes status through without force", () => {
+  it("omits force when the caller jumps across the workflow", async () => {
+    // The generic update path is no longer allowed to auto-force —
+    // kno is the single source of truth for workflow adjacency.
+    // See knot 102e: skip-to-terminal corrections must use the
+    // descriptive `markTerminal` path instead.
     const backend = new KnotsBackend("/repo");
     const now = nowIso();
     store.knots.set("stuck-2", {
       id: "stuck-2",
-      title: "Force jump knot",
+      title: "Non-adjacent update",
       state: "planning",
       profile_id: "autopilot",
       workflow_id: "autopilot",
@@ -140,16 +144,16 @@ describe("update() force flag and rollback behavior", () => {
     const lastUpdateArgs = mockUpdateKnot.mock.calls.at(-1);
     expect(lastUpdateArgs?.[1]).toMatchObject({
       status: "ready_for_implementation",
-      force: true,
     });
+    expect(lastUpdateArgs?.[1]).not.toHaveProperty("force");
   });
 
-  it("sets force=true for rollback when raw kno metadata state is missing", async () => {
+  it("omits force even when raw kno metadata state is missing", async () => {
     const backend = new KnotsBackend("/repo");
     const now = nowIso();
     store.knots.set("stuck-2b", {
       id: "stuck-2b",
-      title: "Force rollback knot",
+      title: "No raw kno state",
       state: "implementation",
       profile_id: "autopilot",
       workflow_id: "autopilot",
@@ -196,8 +200,8 @@ describe("update() force flag and rollback behavior", () => {
     const lastUpdateArgs = mockUpdateKnot.mock.calls.at(-1);
     expect(lastUpdateArgs?.[1]).toMatchObject({
       status: "ready_for_implementation",
-      force: true,
     });
+    expect(lastUpdateArgs?.[1]).not.toHaveProperty("force");
   });
 });
 

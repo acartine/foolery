@@ -162,19 +162,11 @@ function applyStateToPatch(
     return;
   }
 
+  // Generic update passes `status` through to kno with NO force flag.
+  // kno validates the transition against the authoritative .loom profile.
+  // Skip-to-terminal corrections must use the descriptive `markTerminal`
+  // path on the backend rather than a generic state update.
   patch.status = normalizedState;
-  if (transitionSourceState) {
-    const isAdjacentTransition = (
-      workflow?.transitions ?? []
-    ).some(
-      (t) =>
-        (t.from === transitionSourceState || t.from === "*") &&
-        t.to === normalizedState,
-    );
-    if (!isAdjacentTransition) {
-      patch.force = true;
-    }
-  }
 }
 
 export function hasPatchFields(patch: KnotUpdateInput): boolean {

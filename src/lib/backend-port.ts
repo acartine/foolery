@@ -183,6 +183,37 @@ export interface BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<void>>;
 
+  /**
+   * Descriptive correction: force-transition a beat to a terminal state.
+   *
+   * Unlike the generic `update({ state })` path -- which submits the
+   * transition to the workflow engine for validation -- `markTerminal` is
+   * an explicit correction action that bypasses workflow arbitration by
+   * setting the force flag. The backend MUST validate that `targetState`
+   * is a terminal state of the beat's profile; misuse (unknown beat,
+   * non-terminal target) must throw and emit a `FOOLERY WORKFLOW
+   * CORRECTION FAILURE` banner (see `src/lib/dispatch-pool-resolver.ts`).
+   */
+  markTerminal(
+    id: string,
+    targetState: string,
+    reason?: string,
+    repoPath?: string,
+  ): Promise<BackendResult<void>>;
+
+  /**
+   * Descriptive correction: reopen a terminal (e.g. shipped) beat into
+   * its profile's `retakeState` for regression investigation. Forces
+   * the transition via kno's idiomatic `force: true`. Intended
+   * specifically for the ReTake flow; do not use as a generic
+   * non-terminal force path.
+   */
+  reopen(
+    id: string,
+    reason?: string,
+    repoPath?: string,
+  ): Promise<BackendResult<void>>;
+
   /** List dependencies for a given beat. */
   listDependencies(
     id: string,

@@ -425,8 +425,10 @@ describe("Knots close() -> shipped state mapping", () => {
     await backend.close(id, "no longer needed");
 
     const lastCall = mockUpdateKnot.mock.calls.at(-1);
+    // close() is now a descriptive correction: note prefix is
+    // "Correction:" to match markTerminal semantics.
     expect(lastCall![1]).toMatchObject({
-      addNote: "Close reason: no longer needed",
+      addNote: "Correction: no longer needed",
     });
   });
 
