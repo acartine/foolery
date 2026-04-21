@@ -1,0 +1,9 @@
+{
+  "event_id": "019db03c-2ba9-7620-a313-24320dae2be6",
+  "occurred_at": "2026-04-21T13:30:26.573703Z",
+  "knot_id": "foolery-102e",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "workflow-authority"
+  }
+}

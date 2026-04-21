@@ -1,0 +1,9 @@
+{
+  "event_id": "019db03c-2b95-7251-81d0-8a0ee6e08daf",
+  "occurred_at": "2026-04-21T13:30:26.573703Z",
+  "knot_id": "foolery-102e",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "withWildcardTerminals and the `* -> shipped` canonical entry are removed; bulk-ship from ready_for_shipment_review on autopilot_no_planning succeeds; AGENTS.md/CLAUDE.md/docs/DEVELOPING.md carry the kno-authoritative rule; lint/type/test all green."
+  }
+}

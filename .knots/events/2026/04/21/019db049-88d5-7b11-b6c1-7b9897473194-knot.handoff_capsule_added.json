@@ -1,0 +1,15 @@
+{
+  "event_id": "019db049-88d5-7b11-b6c1-7b9897473194",
+  "occurred_at": "2026-04-21T13:45:02.421827Z",
+  "knot_id": "foolery-102e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan drafted: rip out withWildcardTerminals + canonical * -> shipped; remove auto-force in applyStateToPatch; add named BackendPort.markTerminal(id, targetState, reason) correction path (force=true on kno); route bulk terminal UI through it; close() becomes wrapper; revert/delete the 29311507-era wildcard tests; add tests for the honest design; manual verify bulk-ship on autopilot_no_planning. Docs (AGENTS.md / CLAUDE.md / docs/DEVELOPING.md) already carry the rule. See full note on knot for file inventory, risks, and out-of-scope.",
+    "datetime": "2026-04-21T13:45:02.421827Z",
+    "entry_id": "019db049-88d5-7b11-b6c1-7b80a1acfb93",
+    "model": "opus-4-7-1m",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

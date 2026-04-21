@@ -1,0 +1,15 @@
+{
+  "event_id": "019db04a-f1fa-7e20-ace3-e0f6c5b3416b",
+  "occurred_at": "2026-04-21T13:46:34.874967Z",
+  "knot_id": "foolery-102e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "claude",
+    "content": "# Plan Review — 102e\n\n## Verdict\nApprove with two small refinements (folded into scope below).\n\n## Strengths\n- Pairs each anti-pattern removal with a concrete replacement: fabrication out, `markTerminal` in.\n- Honest generic `update({ state })`: no silent force; kno is the arbiter.\n- Invariant-respecting: no silent fallbacks, hard-fails with a greppable banner on misuse (`FOOLERY WORKFLOW CORRECTION FAILURE`).\n- Test strategy replaces bad-behaviour pins with honest-design tests.\n\n## Refinements\n1. **Per-beat detail correction menu.** The plan routes *bulk* terminal jumps through `markTerminal` but leaves the per-beat state dropdown alone. Post-fix, that dropdown correctly hides `shipped`/`abandoned` from mid-flow states — but users still need a single-beat correction path. Add a small \"Correction\" submenu in `beat-detail-state-dropdown.tsx` (and/or `beat-table-mutations.tsx` row menu) that offers \"Mark as shipped\", \"Abandon\", \"Close\" and calls `markTerminal`. Symmetric with bulk.\n2. **Integration test for the new `/api/beats/[id]/mark-terminal` route.** Parallel to `api/beats/[id]/close` coverage: valid terminal → ok; invalid target → 400 and the FOOLERY WORKFLOW CORRECTION FAILURE banner in server log.\n\n## Feasibility\n- Diff surface: ~15 files. Type system will catch unimplemented `markTerminal` on each BackendPort implementation; lint + tsc + test gate the end.\n- Manual verify requires dev server, one autopilot_no_planning knot, and a queues-screen round trip.\n\n## Risks recheck\n- `applyStateToPatch` auto-force removal: audited mentally for retake/terminal-manager. Expectation is both already use adjacent transitions. If a latent reliance surfaces during implementation, triage by adding an explicit `markTerminal` call or legitimizing the transition in the loom workflow — never reintroduce the auto-force.\n- API route plumbing: `_repo` / `repoPath` extraction mirrors `/close`; reuse the same pattern.\n- Beads backend: `markTerminal(id, \"abandoned\", ...)` may need a force-update path if beads has no native abandon verb; acceptable and scoped to beads.\n\n## Invariants covered\n- kno-authoritative: fabrications gone, descriptors verbatim.\n- Descriptive corrections: named method + named UI actions.\n- Fail-loud: invalid `markTerminal` target raises FOOLERY WORKFLOW CORRECTION FAILURE; no `?? default` to hide misuse.\n\n## Quality gates\n- `bun run lint`, `bunx tsc --noEmit`, `bun run test` — enforced as acceptance criteria.\n\n## Decision\nAdvance to implementation.",
+    "datetime": "2026-04-21T13:46:34.874967Z",
+    "entry_id": "019db04a-f1fa-7e20-ace3-e0ef585fdf4b",
+    "model": "opus-4-7-1m",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

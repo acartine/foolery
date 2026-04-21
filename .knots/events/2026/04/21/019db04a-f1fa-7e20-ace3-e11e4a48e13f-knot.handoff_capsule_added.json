@@ -1,0 +1,15 @@
+{
+  "event_id": "019db04a-f1fa-7e20-ace3-e11e4a48e13f",
+  "occurred_at": "2026-04-21T13:46:34.874967Z",
+  "knot_id": "foolery-102e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan approved with two refinements folded in: (1) per-beat detail 'Correction' submenu also routes through markTerminal, (2) integration test for new /api/beats/[id]/mark-terminal route. Advance to implementation.",
+    "datetime": "2026-04-21T13:46:34.874967Z",
+    "entry_id": "019db04a-f1fa-7e20-ace3-e103ecfbf92a",
+    "model": "opus-4-7-1m",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

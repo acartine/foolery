@@ -1,0 +1,9 @@
+{
+  "event_id": "019db03c-2bae-7711-a77a-c52be95b7436",
+  "occurred_at": "2026-04-21T13:30:26.573703Z",
+  "knot_id": "foolery-102e",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "ship-bug"
+  }
+}
