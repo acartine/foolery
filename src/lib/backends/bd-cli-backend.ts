@@ -24,9 +24,15 @@ import {
 } from "@/lib/backend-errors";
 import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
 import type { Beat, BeatDependency, MemoryWorkflowDescriptor } from "@/lib/types";
-import { builtinWorkflowDescriptors } from "@/lib/workflows";
+import {
+  builtinProfileDescriptor,
+  builtinWorkflowDescriptors,
+} from "@/lib/workflows";
 import { BeadsBackend } from "@/lib/backends/beads-backend";
 import * as bd from "@/lib/bd";
+import {
+  WorkflowCorrectionFailureError,
+} from "@/lib/workflow-correction-failure";
 
 // ── BdResult -> BackendResult converter ───────────────────────────
 
@@ -153,6 +159,57 @@ export class BdCliBackend implements BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<void>> {
     return toBR(await bd.closeBeat(id, reason, repoPath));
+  }
+
+  /**
+   * bd CLI has no native "skip to terminal" verb; `closeBeat` is the
+   * closest analogue. We enforce the descriptive-correction invariant
+   * (target must be a terminal of the beat's profile) in the same loud
+   * shape as KnotsBackend, then delegate to `closeBeat`. Non-"closed"
+   * terminals like `abandoned` are still routed through the same verb
+   * because bd has no richer terminal vocabulary.
+   */
+  async markTerminal(
+    id: string,
+    targetState: string,
+    reason?: string,
+    repoPath?: string,
+  ): Promise<BackendResult<void>> {
+    const workflow = builtinProfileDescriptor();
+    const normalizedTarget = targetState.trim().toLowerCase();
+    const allowedTerminals = workflow.terminalStates.map(
+      (state) => state.trim().toLowerCase(),
+    );
+    if (!allowedTerminals.includes(normalizedTarget)) {
+      throw new WorkflowCorrectionFailureError({
+        beatId: id,
+        profileId: workflow.id,
+        targetState: normalizedTarget,
+        allowedTerminals,
+        reason: "non_terminal_target",
+      });
+    }
+    return toBR(await bd.closeBeat(id, reason, repoPath));
+  }
+
+  /**
+   * bd CLI has no native reopen verb; emulate by updating state back
+   * to the profile's retakeState. bd validates the transition and may
+   * reject; no force flag is available through the CLI boundary.
+   */
+  async reopen(
+    id: string,
+    reason?: string,
+    repoPath?: string,
+  ): Promise<BackendResult<void>> {
+    const workflow = builtinProfileDescriptor();
+    const update: Record<string, string | string[] | number | undefined> = {
+      state: workflow.retakeState,
+    };
+    if (reason !== undefined) {
+      update.notes = `Retake: ${reason}`;
+    }
+    return toBR(await bd.updateBeat(id, update, repoPath));
   }
 
   async listDependencies(

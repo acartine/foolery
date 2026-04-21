@@ -98,6 +98,14 @@ export class StubBackend implements BackendPort {
     return unavailableError("close");
   }
 
+  async markTerminal(): Promise<BackendResult<void>> {
+    return unavailableError("markTerminal");
+  }
+
+  async reopen(): Promise<BackendResult<void>> {
+    return unavailableError("reopen");
+  }
+
   async listDependencies(): Promise<BackendResult<BeatDependency[]>> {
     return { ok: true, data: [] };
   }

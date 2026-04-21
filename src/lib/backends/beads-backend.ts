@@ -35,7 +35,11 @@ import {
   withWorkflowStateLabel,
   withWorkflowProfileLabel,
 } from "@/lib/workflows";
-import { mapStatusToDefaultWorkflowState } from "./beads-compat-status";
+import {
+  applyMarkTerminal,
+  applyReopen,
+  chooseCloseTarget,
+} from "@/lib/backends/beads-backend-correction";
 import { getBeatsSkillPrompt } from "@/lib/beats-skill-prompts";
 import {
   applyFilters,
@@ -315,27 +319,37 @@ export class BeadsBackend implements BackendPort {
     const entry = await this.ensureLoaded(rp);
     const beat = entry.beads.get(id);
     if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
-    const workflow = builtinProfileDescriptor(beat.profileId ?? beat.workflowId);
-    const closedState = mapStatusToDefaultWorkflowState("closed", workflow);
-    const runtime = deriveWorkflowRuntimeState(workflow, closedState);
-    beat.state = runtime.state;
-    beat.nextActionState = runtime.nextActionState;
-    beat.nextActionOwnerKind = runtime.nextActionOwnerKind;
-    beat.requiresHumanAction = runtime.requiresHumanAction;
-    beat.isAgentClaimable = runtime.isAgentClaimable;
-    beat.labels = withWorkflowProfileLabel(
-      withWorkflowStateLabel(beat.labels ?? [], runtime.state),
-      workflow.id,
-    );
-    beat.closed = isoNow();
-    beat.updated = isoNow();
-    if (reason) {
-      beat.metadata = { ...beat.metadata, close_reason: reason };
-    }
+    return this.markTerminal(id, chooseCloseTarget(beat), reason, repoPath);
+  }
+
+  async markTerminal(
+    id: string,
+    targetState: string,
+    reason?: string,
+    repoPath?: string,
+  ): Promise<BackendResult<void>> {
+    const rp = this.resolvePath(repoPath);
+    const entry = await this.ensureLoaded(rp);
+    const beat = entry.beads.get(id);
+    if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
+    applyMarkTerminal(beat, targetState, reason);
     await this.flush(rp);
     return { ok: true };
   }
 
+  async reopen(
+    id: string,
+    reason?: string,
+    repoPath?: string,
+  ): Promise<BackendResult<void>> {
+    const rp = this.resolvePath(repoPath);
+    const entry = await this.ensureLoaded(rp);
+    const beat = entry.beads.get(id);
+    if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
+    applyReopen(beat, reason);
+    await this.flush(rp);
+    return { ok: true };
+  }
 
   async listDependencies(
     id: string,
