@@ -6,7 +6,7 @@ import {
   X, History, PartyPopper,
   Zap, Inbox, BarChart3, ListMusic,
 } from "lucide-react";
-import Image from "next/image";
+import { FooleryWordmark } from "@/components/foolery-wordmark";
 import { VersionBadge } from "@/components/version-badge";
 import { RepoSwitcher } from "@/components/repo-switcher";
 import { SearchBar } from "@/components/search-bar";
@@ -127,14 +127,7 @@ export function HeaderBranding(props: {
           router.push(`/beats${qs ? `?${qs}` : ""}`);
         }}
       >
-        <Image
-          src="/foolery_wordmark.svg"
-          alt="Foolery"
-          width={170}
-          height={49}
-          unoptimized
-          className="h-[42px] w-auto dark:brightness-0 dark:invert"
-        />
+        <FooleryWordmark className="h-[42px] w-auto text-clay-600 dark:text-paper-100" />
       </button>
       <VersionBadge />
       <RepoSwitcher />

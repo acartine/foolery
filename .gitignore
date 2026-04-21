@@ -76,3 +76,4 @@ codex-release-wrapper/
 
 # settings files (may contain API keys)
 settings.toml
+qa-screenshots/
