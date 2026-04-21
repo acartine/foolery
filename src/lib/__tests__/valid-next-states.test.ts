@@ -45,6 +45,7 @@ function autopilotWorkflow(): MemoryWorkflowDescriptor {
       { from: "shipment_review", to: "shipped" },
       { from: "shipment_review", to: "ready_for_implementation" },
       { from: "shipment_review", to: "ready_for_shipment" },
+      { from: "*", to: "shipped" },
       { from: "*", to: "deferred" },
       { from: "*", to: "abandoned" },
     ],
@@ -92,11 +93,10 @@ describe("validNextStates", () => {
       expect(result).toContain("deferred");
     });
 
-    it("does not add terminal states via escape hatches but allows them from transitions", () => {
+    it("allows terminal states reachable via wildcard transitions", () => {
       const result = validNextStates("ready_for_planning", workflow, "planning");
-      // "shipped" is terminal and not reachable from "planning" via transitions — excluded
-      expect(result).not.toContain("shipped");
-      // "abandoned" and "deferred" are reachable via wildcard transitions from any state
+      // All three terminal/closeout targets reach via wildcard transitions from any state.
+      expect(result).toContain("shipped");
       expect(result).toContain("abandoned");
       expect(result).toContain("deferred");
     });

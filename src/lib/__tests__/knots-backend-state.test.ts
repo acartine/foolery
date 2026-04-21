@@ -235,6 +235,104 @@ describe("update() abandoned transitions", () => {
   });
 });
 
+describe("update() shipped transitions", () => {
+  it("accepts shipping from a non-terminal active state", async () => {
+    const backend = new KnotsBackend("/repo");
+    const now = nowIso();
+    store.knots.set("ship-1", {
+      id: "ship-1",
+      title: "Ship me from implementation",
+      state: "implementation",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: null,
+      priority: 2,
+      type: "task",
+      tags: [],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-ship1",
+      created_at: now,
+    });
+
+    const result = await backend.update(
+      "ship-1", { state: "shipped" },
+    );
+    expect(result.ok).toBe(true);
+
+    const lastUpdateArgs = mockUpdateKnot.mock.calls.at(-1);
+    expect(lastUpdateArgs?.[1]).toMatchObject({
+      status: "shipped",
+    });
+  });
+
+  it("accepts shipping from a queued state", async () => {
+    const backend = new KnotsBackend("/repo");
+    const now = nowIso();
+    store.knots.set("ship-2", {
+      id: "ship-2",
+      title: "Ship me from queue",
+      state: "ready_for_implementation",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: null,
+      priority: 2,
+      type: "task",
+      tags: [],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-ship2",
+      created_at: now,
+    });
+
+    const result = await backend.update(
+      "ship-2", { state: "shipped" },
+    );
+    expect(result.ok).toBe(true);
+
+    const lastUpdateArgs = mockUpdateKnot.mock.calls.at(-1);
+    expect(lastUpdateArgs?.[1]).toMatchObject({
+      status: "shipped",
+    });
+  });
+
+  it("is a no-op when the knot is already shipped", async () => {
+    const backend = new KnotsBackend("/repo");
+    const now = nowIso();
+    store.knots.set("ship-3", {
+      id: "ship-3",
+      title: "Already shipped knot",
+      state: "shipped",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: null,
+      priority: 2,
+      type: "task",
+      tags: [],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-ship3",
+      created_at: now,
+    });
+
+    const result = await backend.update(
+      "ship-3", { state: "shipped" },
+    );
+    expect(result.ok).toBe(true);
+
+    const updateCalls = mockUpdateKnot.mock.calls.filter(
+      (c) => c[0] === "ship-3",
+    );
+    expect(updateCalls.length).toBe(0);
+  });
+});
+
 describe("buildPollPrompt", () => {
   it("polls for the highest-priority claimable knot", async () => {
     const backend = new KnotsBackend("/repo");

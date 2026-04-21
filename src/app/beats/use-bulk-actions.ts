@@ -10,12 +10,55 @@ import {
   invalidateBeatListQueries,
 } from "@/lib/beat-query-cache";
 
+const TERMINAL_STATES = new Set([
+  "closed",
+  "shipped",
+  "abandoned",
+]);
+
+function isTerminalBeatState(
+  state: string | undefined,
+): boolean {
+  if (!state) return false;
+  return TERMINAL_STATES.has(state);
+}
+
 export interface UseBulkActionsResult {
   selectedIds: string[];
   selectionVersion: number;
   handleSelectionChange: (ids: string[]) => void;
   handleBulkUpdate: (fields: UpdateBeatInput) => void;
   handleClearSelection: () => void;
+}
+
+const TERMINAL_TARGETS = new Set([
+  "shipped",
+  "abandoned",
+  "closed",
+]);
+
+/** @internal Exported for testing. */
+export function partitionEligibleForTerminalTarget(
+  ids: string[],
+  beats: Beat[],
+  targetState: string,
+): { eligibleIds: string[]; skippedIds: string[] } {
+  const targetNormalized = targetState.trim().toLowerCase();
+  const eligibleIds: string[] = [];
+  const skippedIds: string[] = [];
+  for (const id of ids) {
+    const beat = beats.find((b) => b.id === id);
+    const currentState = beat?.state?.trim().toLowerCase();
+    if (
+      currentState === targetNormalized
+      || isTerminalBeatState(currentState)
+    ) {
+      skippedIds.push(id);
+    } else {
+      eligibleIds.push(id);
+    }
+  }
+  return { eligibleIds, skippedIds };
 }
 
 export function useBulkActions(
@@ -59,11 +102,29 @@ export function useBulkActions(
 
   const handleBulkUpdate = useCallback(
     (fields: UpdateBeatInput) => {
-      if (selectedIds.length > 0) {
-        bulkUpdate({ ids: selectedIds, fields });
+      if (selectedIds.length === 0) return;
+      const targetState = fields.state?.trim().toLowerCase();
+      if (
+        targetState
+        && TERMINAL_TARGETS.has(targetState)
+      ) {
+        const { eligibleIds, skippedIds } =
+          partitionEligibleForTerminalTarget(
+            selectedIds, beats, targetState,
+          );
+        if (skippedIds.length > 0) {
+          toast.info(
+            `Skipped ${skippedIds.length} already-terminal `
+            + `${skippedIds.length === 1 ? "beat" : "beats"}`,
+          );
+        }
+        if (eligibleIds.length === 0) return;
+        bulkUpdate({ ids: eligibleIds, fields });
+        return;
       }
+      bulkUpdate({ ids: selectedIds, fields });
     },
-    [selectedIds, bulkUpdate],
+    [selectedIds, beats, bulkUpdate],
   );
 
   const handleClearSelection = useCallback(() => {
