@@ -211,6 +211,7 @@ STDERR_LOG="\${FOOLERY_STDERR_LOG:-\$LOG_DIR/stderr.log}"
 NO_BROWSER="\${FOOLERY_NO_BROWSER:-0}"
 WAIT_FOR_READY="\${FOOLERY_WAIT_FOR_READY:-0}"
 URL="\${FOOLERY_URL:-http://\$HOST:\$PORT}"
+LOCAL_URL="\${FOOLERY_LOCAL_URL:-\$URL}"
 RELEASE_OWNER="\${FOOLERY_RELEASE_OWNER:-$RELEASE_OWNER}"
 RELEASE_REPO="\${FOOLERY_RELEASE_REPO:-$RELEASE_REPO}"
 RELEASE_TAG="\${FOOLERY_RELEASE_TAG:-latest}"
@@ -219,8 +220,10 @@ UPDATE_CHECK_ENABLED="\${FOOLERY_UPDATE_CHECK:-1}"
 UPDATE_CHECK_INTERVAL_SECONDS="\${FOOLERY_UPDATE_CHECK_INTERVAL_SECONDS:-21600}"
 UPDATE_CHECK_FILE="\${FOOLERY_UPDATE_CHECK_FILE:-\$STATE_DIR/update-check.cache}"
 
-if [[ "\$HOST" == "0.0.0.0" && -z "\${FOOLERY_URL:-}" ]]; then
-  URL="http://127.0.0.1:\$PORT"
+if [[ "\$HOST" == "0.0.0.0" ]] &&
+  [[ -z "\${FOOLERY_URL:-}" ]] &&
+  [[ -z "\${FOOLERY_LOCAL_URL:-}" ]]; then
+  LOCAL_URL="http://127.0.0.1:\$PORT"
 fi
 
 if [[ ! "\$UPDATE_CHECK_INTERVAL_SECONDS" =~ ^[0-9]+$ ]]; then
@@ -672,36 +675,36 @@ browser_has_url_open() {
 
 open_browser() {
   if [[ "\$NO_BROWSER" == "1" ]]; then
-    log "Skipping browser open (FOOLERY_NO_BROWSER=1). URL: \$URL"
+    log "Skipping browser open (FOOLERY_NO_BROWSER=1). URL: \$LOCAL_URL"
     return 0
   fi
 
   if browser_has_url_open; then
-    log "Foolery is already open in a browser at \$URL"
+    log "Foolery is already open in a browser at \$LOCAL_URL"
     return 0
   fi
 
   if [[ "\$(uname -s)" == "Darwin" ]] && [[ -x "/usr/bin/open" ]]; then
-    /usr/bin/open "\$URL" >/dev/null 2>&1 || true
+    /usr/bin/open "\$LOCAL_URL" >/dev/null 2>&1 || true
     return 0
   fi
 
   if command -v open >/dev/null 2>&1; then
-    command open "\$URL" >/dev/null 2>&1 || true
+    command open "\$LOCAL_URL" >/dev/null 2>&1 || true
     return 0
   fi
 
   if command -v xdg-open >/dev/null 2>&1; then
-    xdg-open "\$URL" >/dev/null 2>&1 || true
+    xdg-open "\$LOCAL_URL" >/dev/null 2>&1 || true
     return 0
   fi
 
   if command -v python3 >/dev/null 2>&1; then
-    python3 -m webbrowser "\$URL" >/dev/null 2>&1 || true
+    python3 -m webbrowser "\$LOCAL_URL" >/dev/null 2>&1 || true
     return 0
   fi
 
-  log "No browser opener found. Open this URL manually: \$URL"
+  log "No browser opener found. Open this URL manually: \$LOCAL_URL"
 }
 
 wait_for_startup() {
@@ -718,7 +721,7 @@ wait_for_startup() {
       return 1
     fi
 
-    if curl --silent --show-error --max-time 1 "\$URL" >/dev/null 2>&1; then
+    if curl --silent --show-error --max-time 1 "\$LOCAL_URL" >/dev/null 2>&1; then
       return 0
     fi
 
@@ -765,6 +768,7 @@ start_cmd() {
       FOOLERY_HOST="\$HOST" \
       FOOLERY_PORT="\$PORT" \
       FOOLERY_URL="\$URL" \
+      FOOLERY_LOCAL_URL="\$LOCAL_URL" \
       FOOLERY_NEXT_BIN="\$NEXT_BIN" \
       FOOLERY_LOG_DIR="\$LOG_DIR" \
       FOOLERY_PID_FILE="\$PID_FILE" \
@@ -1130,7 +1134,7 @@ render_doctor_stream() {
     return 1
   fi
 
-  curl --silent --show-error --no-buffer --max-time 60 "\$URL/api/doctor?stream=1" 2>/dev/null | node /dev/fd/3 3<<'STREAM_NODE'
+  curl --silent --show-error --no-buffer --max-time 60 "\$LOCAL_URL/api/doctor?stream=1" 2>/dev/null | node /dev/fd/3 3<<'STREAM_NODE'
 const readline = require('node:readline');
 
 const GREEN = '\x1b[0;32m';
@@ -1217,8 +1221,8 @@ doctor_cmd() {
       return
     fi
     local response
-    response="\$(curl --silent --show-error --max-time 60 -X GET "\$URL/api/doctor" 2>&1)" || {
-      fail "Failed to reach Foolery API at \$URL/api/doctor"
+    response="\$(curl --silent --show-error --max-time 60 -X GET "\$LOCAL_URL/api/doctor" 2>&1)" || {
+      fail "Failed to reach Foolery API at \$LOCAL_URL/api/doctor"
     }
     render_doctor_report "\$response" "0"
     return
@@ -1226,15 +1230,15 @@ doctor_cmd() {
 
   # --fix mode: GET diagnostics first, prompt per check, then POST with strategies
   local diag_response
-  diag_response="\$(curl --silent --show-error --max-time 60 -X GET "\$URL/api/doctor" 2>&1)" || {
-    fail "Failed to reach Foolery API at \$URL/api/doctor"
+  diag_response="\$(curl --silent --show-error --max-time 60 -X GET "\$LOCAL_URL/api/doctor" 2>&1)" || {
+    fail "Failed to reach Foolery API at \$LOCAL_URL/api/doctor"
   }
 
   if ! command -v node >/dev/null 2>&1; then
     # Fallback: no node, just POST with defaults
     local response
-    response="\$(curl --silent --show-error --max-time 60 -X POST "\$URL/api/doctor" 2>&1)" || {
-      fail "Failed to reach Foolery API at \$URL/api/doctor"
+    response="\$(curl --silent --show-error --max-time 60 -X POST "\$LOCAL_URL/api/doctor" 2>&1)" || {
+      fail "Failed to reach Foolery API at \$LOCAL_URL/api/doctor"
     }
     render_doctor_report "\$response" "1"
     return
@@ -1381,8 +1385,8 @@ NODE
   local post_body
   post_body="\$(printf '{"strategies":%s}' "\$strategies_json")"
   local response
-  response="\$(curl --silent --show-error --max-time 60 -X POST -H 'Content-Type: application/json' -d "\$post_body" "\$URL/api/doctor" 2>&1)" || {
-    fail "Failed to reach Foolery API at \$URL/api/doctor"
+  response="\$(curl --silent --show-error --max-time 60 -X POST -H 'Content-Type: application/json' -d "\$post_body" "\$LOCAL_URL/api/doctor" 2>&1)" || {
+    fail "Failed to reach Foolery API at \$LOCAL_URL/api/doctor"
   }
 
   render_doctor_report "\$response" "1"

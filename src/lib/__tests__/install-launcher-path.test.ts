@@ -34,6 +34,62 @@ async function statOrNull(path: string) {
   }
 }
 
+async function writeGeneratedLauncher(launcherPath: string) {
+  await execFileAsync(
+    "bash",
+    [
+      "-lc",
+      String.raw`
+        set -euo pipefail
+        script_path="$FOOLERY_TEST_INSTALL_SCRIPT"
+        stripped="$(mktemp "/tmp/foolery-install-test.XXXXXX")"
+        trap 'rm -f "$stripped"' EXIT
+        sed '$d' "$script_path" >"$stripped"
+        source "$stripped"
+        write_launcher
+      `,
+    ],
+    {
+      cwd: process.cwd(),
+      env: {
+        ...process.env,
+        FOOLERY_LAUNCHER_PATH: launcherPath,
+        FOOLERY_TEST_INSTALL_SCRIPT: installScriptPath,
+      },
+    },
+  );
+}
+
+async function evalLauncher(
+  launcherPath: string,
+  shellBody: string,
+  env: Record<string, string> = {},
+) {
+  return execFileAsync(
+    "bash",
+    [
+      "-lc",
+      `
+        set -euo pipefail
+        launcher="$FOOLERY_TEST_GENERATED_LAUNCHER"
+        stripped="$(mktemp "/tmp/foolery-launcher-test.XXXXXX")"
+        trap 'rm -f "$stripped"' EXIT
+        sed '$d' "$launcher" >"$stripped"
+        source "$stripped"
+        ${shellBody}
+      `,
+    ],
+    {
+      cwd: process.cwd(),
+      env: {
+        ...process.env,
+        FOOLERY_TEST_GENERATED_LAUNCHER: launcherPath,
+        ...env,
+      },
+    },
+  );
+}
+
 async function writeExecutable(path: string) {
   await writeFile(path, "#!/usr/bin/env bash\nexit 0\n", "utf8");
   await chmod(path, 0o755);
@@ -88,30 +144,7 @@ describe("install launcher path overrides", () => {
     const launcherPath = join(binDir, "foolery-release");
     await mkdir(binDir, { recursive: true });
 
-    await execFileAsync(
-      "bash",
-      [
-        "-lc",
-        String.raw`
-          set -euo pipefail
-          script_path="$FOOLERY_TEST_INSTALL_SCRIPT"
-          stripped="$(mktemp "/tmp/foolery-install-test.XXXXXX")"
-          trap 'rm -f "$stripped"' EXIT
-          sed '$d' "$script_path" >"$stripped"
-          source "$stripped"
-          write_launcher
-        `,
-      ],
-      {
-        cwd: process.cwd(),
-        env: {
-          ...process.env,
-          FOOLERY_BIN_DIR: binDir,
-          FOOLERY_LAUNCHER_PATH: launcherPath,
-          FOOLERY_TEST_INSTALL_SCRIPT: installScriptPath,
-        },
-      },
-    );
+    await writeGeneratedLauncher(launcherPath);
 
     expect(await statOrNull(launcherPath)).not.toBeNull();
     expect(await statOrNull(join(binDir, "foolery"))).toBeNull();
@@ -125,6 +158,9 @@ describe("install launcher path overrides", () => {
     );
     expect(launcher).toContain(
       'FOOLERY_STATE_DIR="$STATE_DIR"',
+    );
+    expect(launcher).toContain(
+      'LOCAL_URL="${FOOLERY_LOCAL_URL:-$URL}"',
     );
   });
 
@@ -147,4 +183,56 @@ describe("install launcher path overrides", () => {
       expect(stderr).not.toContain(warning);
     },
   );
+
+  it("reports a truthful status URL for 0.0.0.0 binds", async () => {
+    const tempRoot = await makeTempDir("foolery-install-launcher-");
+    const binDir = join(tempRoot, "bin");
+    const launcherPath = join(binDir, "foolery");
+    await mkdir(binDir, { recursive: true });
+    await writeGeneratedLauncher(launcherPath);
+
+    const { stdout } = await evalLauncher(
+      launcherPath,
+      `
+        clear_stale_pid() { :; }
+        is_running() { return 0; }
+        read_pid() { printf '42\\n'; }
+        log() { printf '%s\\n' "$*"; }
+        printf 'URL=%s\\n' "$URL"
+        printf 'LOCAL_URL=%s\\n' "$LOCAL_URL"
+        status_cmd
+      `,
+      {
+        FOOLERY_HOST: "0.0.0.0",
+        FOOLERY_PORT: "3210",
+      },
+    );
+
+    expect(stdout).toContain("URL=http://0.0.0.0:3210");
+    expect(stdout).toContain("LOCAL_URL=http://127.0.0.1:3210");
+    expect(stdout).toContain("Running (pid 42) at http://0.0.0.0:3210");
+  });
+
+  it("keeps localhost binds on a single local URL", async () => {
+    const tempRoot = await makeTempDir("foolery-install-launcher-");
+    const binDir = join(tempRoot, "bin");
+    const launcherPath = join(binDir, "foolery");
+    await mkdir(binDir, { recursive: true });
+    await writeGeneratedLauncher(launcherPath);
+
+    const { stdout } = await evalLauncher(
+      launcherPath,
+      `
+        printf 'URL=%s\\n' "$URL"
+        printf 'LOCAL_URL=%s\\n' "$LOCAL_URL"
+      `,
+      {
+        FOOLERY_HOST: "127.0.0.1",
+        FOOLERY_PORT: "3210",
+      },
+    );
+
+    expect(stdout).toContain("URL=http://127.0.0.1:3210");
+    expect(stdout).toContain("LOCAL_URL=http://127.0.0.1:3210");
+  });
 });
