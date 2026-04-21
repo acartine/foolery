@@ -1,7 +1,6 @@
 // Inlined so the wordmark's "foolery" text inherits `color` from the host
 // element (clay in light, paper in dark) while the two paper-cream "eye"
-// dots stay fixed at their brand value. Based on
-// `Foolery Design System.zip/assets/foolery_wordmark.svg`.
+// dots stay fixed at their brand value.
 
 interface FooleryWordmarkProps {
   className?: string;
