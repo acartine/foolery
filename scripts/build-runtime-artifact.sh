@@ -86,6 +86,16 @@ main() {
   cp -R "$ROOT_DIR/.next" "$RUNTIME_DIR/.next"
   cp -R "$ROOT_DIR/public" "$RUNTIME_DIR/public"
 
+  log "Bundling foolery-config CLI"
+  mkdir -p "$RUNTIME_DIR/cli"
+  (
+    cd "$ROOT_DIR"
+    bun build src/bin/foolery-config.ts \
+      --outfile "$RUNTIME_DIR/cli/foolery-config.mjs" \
+      --target=node \
+      --format=esm
+  )
+
   mkdir -p "$DIST_DIR"
   rm -f "$artifact_path" "$artifact_path.sha256"
   tar -C "$TMP_DIR" -czf "$artifact_path" foolery-runtime

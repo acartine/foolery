@@ -108,100 +108,212 @@ export type AddRepoInput = z.infer<typeof addRepoSchema>;
 export type RemoveRepoInput = z.infer<typeof removeRepoSchema>;
 
 // ── Settings schemas ────────────────────────────────────────
+//
+// These schemas define the on-disk shape of `~/.config/foolery/settings.toml`.
+// The `.describe(...)` metadata flows through to JSON Schema (via
+// `z.toJSONSchema(...)`) and to the user-facing `docs/SETTINGS.md`. Treat
+// this file as the authoritative spec: agents consuming
+// `foolery config schema` expect the descriptions below to be truthful,
+// current, and complete.
 
-// A single registered agent
+const AGENT_ID_CONVENTION
+  = "Keyed by agent id using the convention `<vendor>-<model-slug>` "
+  + "(e.g. `claude-claude-opus-4-7`, `codex-gpt-5-4`, "
+  + "`opencode-openrouter-z-ai-glm-5`). Non-alphanumerics in the model "
+  + "slug are lowercased and replaced with `-`.";
+
+const POOL_STEP_NAMES
+  = "Canonical workflow step keys: `orchestration`, `planning`, "
+  + "`plan_review`, `implementation`, `implementation_review`, `shipment`, "
+  + "`shipment_review`, `scope_refinement`. Additional step names are "
+  + "permitted for custom workflows (pool map accepts any string key).";
+
+const SCOPE_REFINEMENT_PLACEHOLDERS
+  = "Supports `{{title}}`, `{{description}}`, `{{acceptance}}` placeholders, "
+  + "substituted from the beat being refined.";
+
+// A single registered agent.
 export const registeredAgentSchema = z.object({
-  command: z.string().min(1),
-  agent_type: z.string().optional(),
-  vendor: z.string().optional(),
-  provider: z.string().optional(),
-  agent_name: z.string().optional(),
-  lease_model: z.string().optional(),
-  model: z.string().optional(),
-  flavor: z.string().optional(),
-  version: z.string().optional(),
-  label: z.string().optional(),
-});
+  command: z.string().min(1).describe(
+    "Absolute path or PATH-resolvable name of the CLI to invoke "
+    + "(e.g. `/Applications/cmux.app/Contents/Resources/bin/claude`, "
+    + "`codex`, `opencode`).",
+  ),
+  agent_type: z.string().optional().describe(
+    "Integration type. Typically `cli`.",
+  ),
+  vendor: z.string().optional().describe(
+    "Short vendor key used as the agent id prefix "
+    + "(e.g. `claude`, `codex`, `opencode`, `gemini`, `copilot`).",
+  ),
+  provider: z.string().optional().describe(
+    "Display name of the provider (e.g. `Claude`, `Codex`, `OpenCode`).",
+  ),
+  agent_name: z.string().optional().describe(
+    "Display name of the agent surfaced in the UI. Usually matches `provider`.",
+  ),
+  lease_model: z.string().optional().describe(
+    "Lease-mapping key used to select this agent when a workflow names a "
+    + "lease model (e.g. `opus/claude`, `gpt`). Optional; typical in "
+    + "Advanced dispatch.",
+  ),
+  model: z.string().optional().describe(
+    "Concrete model identifier handed to the CLI "
+    + "(e.g. `claude-opus-4-7`, `gpt-5.4`, `openrouter/z-ai/glm-5`).",
+  ),
+  flavor: z.string().optional().describe(
+    "Free-form variant tag (e.g. `mini`, `spark`). Surfaces in the "
+    + "model-picker UI.",
+  ),
+  version: z.string().optional().describe(
+    "Marketing version string (e.g. `4.7`, `5.4`). Informational.",
+  ),
+  label: z.string().optional().describe(
+    "Human-friendly override for the agent's display label. Falls back to "
+    + "`provider` or `agent_name`.",
+  ),
+}).describe(
+  "Configuration for a single registered agent. Keyed in the parent "
+  + "`agents` map by the convention `<vendor>-<model-slug>`.",
+);
 
-// Map of agent-id -> agent config
+// Map of agent-id -> agent config.
 export const agentsMapSchema = z
   .record(z.string(), registeredAgentSchema)
-  .default({});
+  .default({})
+  .describe(
+    `Registered agents. ${AGENT_ID_CONVENTION} Each entry is a `
+    + "`registeredAgent` config; at minimum `command` is required. "
+    + "Default: empty map.",
+  );
 
-// Which agent to use for each agentic action
+// Which agent to use for each action in Basic dispatch.
 export const actionAgentMappingsSchema = z
   .object({
-    take: z.string().default(""),
-    scene: z.string().default(""),
-    scopeRefinement: z.string().default(""),
+    take: z.string().default("").describe(
+      "Agent id for the \"Take!\" action (execute one beat). Empty "
+      + "string means unassigned. Used only when `dispatchMode = \"basic\"`.",
+    ),
+    scene: z.string().default("").describe(
+      "Agent id for the \"Scene!\" action (multi-beat orchestration). "
+      + "Empty string means unassigned. Used only when "
+      + "`dispatchMode = \"basic\"`.",
+    ),
+    scopeRefinement: z.string().default("").describe(
+      "Agent id for the Scope Refinement action. Empty string means "
+      + "unassigned. Used only when `dispatchMode = \"basic\"`.",
+    ),
   })
   .default({
     take: "",
     scene: "",
     scopeRefinement: "",
-  });
+  })
+  .describe(
+    "One-agent-per-action mapping used when `dispatchMode = \"basic\"`. "
+    + "Ignored in Advanced dispatch; see `pools`.",
+  );
 
-// Backend selection (internal, non-user-facing)
+// Backend selection (internal, non-user-facing).
 export const backendSettingsSchema = z
   .object({
-    /** Backend implementation to use: "auto" (default), "cli", "stub", "beads", or "knots". */
-    type: z.enum(["auto", "cli", "stub", "beads", "knots"]).default("auto"),
+    type: z.enum(["auto", "cli", "stub", "beads", "knots"])
+      .default("auto")
+      .describe(
+        "Backend implementation. `auto` detects Knots/Beads on PATH at "
+        + "startup; `cli` pins to whichever is on PATH; `stub` uses the "
+        + "in-memory test backend; `beads` and `knots` pin a specific "
+        + "store. Default: `auto`.",
+      ),
   })
-  .default({ type: "auto" });
+  .default({ type: "auto" })
+  .describe(
+    "Internal backend selection. Operators usually leave this at `auto`.",
+  );
 
-// User-facing defaults for beat creation
+// User-facing defaults for beat creation and interactive sessions.
 export const defaultsSettingsSchema = z
   .object({
-    /** Default workflow profile ID for new beats (empty = "autopilot" fallback). */
-    profileId: z.string().default(""),
-    /** Inactivity timeout for interactive agent sessions, in minutes. */
+    profileId: z.string().default("").describe(
+      "Default workflow profile id for newly created beats. Empty string "
+      + "falls back to the built-in `autopilot` profile.",
+    ),
     interactiveSessionTimeoutMinutes: z.number()
       .int()
       .min(MIN_INTERACTIVE_SESSION_TIMEOUT_MINUTES)
       .max(MAX_INTERACTIVE_SESSION_TIMEOUT_MINUTES)
-      .default(
-        DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
+      .default(DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES)
+      .describe(
+        "Inactivity timeout for interactive agent sessions, in minutes. "
+        + `Range ${String(MIN_INTERACTIVE_SESSION_TIMEOUT_MINUTES)}`
+        + `–${String(MAX_INTERACTIVE_SESSION_TIMEOUT_MINUTES)}. `
+        + `Default: ${String(DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES)}.`,
       ),
   })
   .default({
     profileId: "",
     interactiveSessionTimeoutMinutes:
       DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
-  });
+  })
+  .describe(
+    "User-facing defaults applied at beat creation and interactive-session "
+    + "management.",
+  );
 
 export const scopeRefinementSettingsSchema = z
   .object({
-    prompt: z.string().default(DEFAULT_SCOPE_REFINEMENT_PROMPT),
+    prompt: z.string().default(DEFAULT_SCOPE_REFINEMENT_PROMPT).describe(
+      `Template prompt for the Scope Refinement agent. ${SCOPE_REFINEMENT_PLACEHOLDERS} `
+      + "Defaults to the built-in prompt shipped with Foolery; override to "
+      + "taste.",
+    ),
   })
   .default({
     prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
-  });
+  })
+  .describe("Scope Refinement prompt configuration.");
 
-// Agent dispatch mode: "basic" uses simple per-action mappings,
-// "advanced" uses weighted per-step agent pools.
+// Agent dispatch mode.
 export const dispatchModeSchema = z
   .enum(["basic", "advanced"])
-  .default("basic");
+  .default("basic")
+  .describe(
+    "Dispatch mode. `basic`: one agent per action (see `actions`). "
+    + "`advanced`: weighted pools per workflow step (see `pools`). "
+    + "Default: `basic`.",
+  );
 
-// Agent pool entry: weighted agent selection
+// Agent pool entry: weighted agent selection.
 export const poolEntrySchema = z.object({
-  /** ID of a registered agent. */
-  agentId: z.string().min(1),
-  /** Relative weight for selection probability. */
-  weight: z.number().min(0).default(1),
-});
+  agentId: z.string().min(1).describe(
+    "Registered agent id (key from the `agents` map, e.g. "
+    + "`claude-claude-opus-4-7`).",
+  ),
+  weight: z.number().min(0).default(1).describe(
+    "Relative selection weight within the pool. Non-negative; entries "
+    + "compete proportionally. Default: 1.",
+  ),
+}).describe("One weighted member of a workflow-step dispatch pool.");
 
-// Pools keyed by workflow step
+// Pools keyed by workflow step.
 export const poolsSettingsSchema = z
   .object({
-    orchestration: z.array(poolEntrySchema).default([]),
-    planning: z.array(poolEntrySchema).default([]),
-    plan_review: z.array(poolEntrySchema).default([]),
-    implementation: z.array(poolEntrySchema).default([]),
-    implementation_review: z.array(poolEntrySchema).default([]),
-    shipment: z.array(poolEntrySchema).default([]),
-    shipment_review: z.array(poolEntrySchema).default([]),
-    scope_refinement: z.array(poolEntrySchema).default([]),
+    orchestration: z.array(poolEntrySchema).default([])
+      .describe("Pool for orchestration (top-level coordinator) steps."),
+    planning: z.array(poolEntrySchema).default([])
+      .describe("Pool for planning steps."),
+    plan_review: z.array(poolEntrySchema).default([])
+      .describe("Pool for plan-review gates."),
+    implementation: z.array(poolEntrySchema).default([])
+      .describe("Pool for implementation steps."),
+    implementation_review: z.array(poolEntrySchema).default([])
+      .describe("Pool for implementation-review gates."),
+    shipment: z.array(poolEntrySchema).default([])
+      .describe("Pool for shipment steps."),
+    shipment_review: z.array(poolEntrySchema).default([])
+      .describe("Pool for shipment-review gates."),
+    scope_refinement: z.array(poolEntrySchema).default([])
+      .describe("Pool for scope-refinement steps."),
   })
   .catchall(z.array(poolEntrySchema))
   .default({
@@ -213,7 +325,13 @@ export const poolsSettingsSchema = z
     shipment: [],
     shipment_review: [],
     scope_refinement: [],
-  });
+  })
+  .describe(
+    `Weighted dispatch pools keyed by workflow step. ${POOL_STEP_NAMES} `
+    + "Each value is an array of `{agentId, weight}` entries; empty arrays "
+    + "are valid and mean \"no agents eligible for this step\". Used when "
+    + "`dispatchMode = \"advanced\"`.",
+  );
 
 export const foolerySettingsSchema = z.object({
   agents: agentsMapSchema,
@@ -223,10 +341,22 @@ export const foolerySettingsSchema = z.object({
   scopeRefinement: scopeRefinementSettingsSchema,
   pools: poolsSettingsSchema,
   dispatchMode: dispatchModeSchema,
-  maxConcurrentSessions: z.number().int().min(1).max(20).default(5),
-  maxClaimsPerQueueType: z.number().int().min(1).max(50).default(10),
-  terminalLightTheme: z.boolean().default(false),
-});
+  maxConcurrentSessions: z.number().int().min(1).max(20).default(5).describe(
+    "Upper bound on concurrent interactive agent sessions. Range 1–20. "
+    + "Default: 5.",
+  ),
+  maxClaimsPerQueueType: z.number().int().min(1).max(50).default(10).describe(
+    "Upper bound on in-flight claims per queue type (prevents runaway "
+    + "dispatching). Range 1–50. Default: 10.",
+  ),
+  terminalLightTheme: z.boolean().default(false).describe(
+    "Render integrated terminals with a light theme. Default: false (dark).",
+  ),
+}).describe(
+  "Foolery user-level settings. Written to `~/.config/foolery/settings.toml`. "
+  + "Authoritative source: `src/lib/schemas.ts`. Live JSON Schema: "
+  + "`foolery config schema`.",
+);
 
 export type RegisteredAgentConfig = z.infer<typeof registeredAgentSchema>;
 export type ActionAgentMappings = z.infer<typeof actionAgentMappingsSchema>;

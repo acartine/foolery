@@ -276,7 +276,7 @@ help_command_color() {
   fi
   case "\$1" in
     start|open|restart) color_code green ;;
-    setup|update) color_code blue ;;
+    setup|update|config) color_code blue ;;
     status|doctor|help) color_code yellow ;;
     stop|uninstall) color_code red ;;
     *) color_code cyan ;;
@@ -982,6 +982,17 @@ setup_cmd() {
   foolery_setup "\$@"
 }
 
+config_cmd() {
+  require_cmd node
+
+  local cli_bundle="\$APP_DIR/cli/foolery-config.mjs"
+  if [[ ! -f "\$cli_bundle" ]]; then
+    fail "foolery config CLI is missing at \$cli_bundle. Run 'foolery update' to reinstall."
+  fi
+
+  exec node "\$cli_bundle" "\$@"
+}
+
 render_doctor_report() {
   local response="\$1" fix_mode="\$2"
 
@@ -1396,6 +1407,7 @@ usage() {
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color start)"     "start"     "\$r" "\$desc_style" "Start Foolery in the background" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color open)"      "open"      "\$r" "\$desc_style" "Open Foolery in your browser (skips if already open)" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color setup)"     "setup"     "\$r" "\$desc_style" "Configure repos and agents interactively" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color config)"    "config"    "\$r" "\$desc_style" "Print settings JSON Schema or validate a TOML file" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color update)"    "update"    "\$r" "\$desc_style" "Download and install the latest Foolery runtime" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color stop)"      "stop"      "\$r" "\$desc_style" "Stop the background Foolery process" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color restart)"   "restart"   "\$r" "\$desc_style" "Restart Foolery" "\$r"
@@ -1420,6 +1432,9 @@ main() {
       ;;
     setup)
       setup_cmd "\$@"
+      ;;
+    config)
+      config_cmd "\$@"
       ;;
     update)
       update_cmd "\$@"
@@ -1534,7 +1549,7 @@ main() {
   fi
 
   success "Install complete"
-  tip "Commands: foolery start | foolery setup | foolery update | foolery stop | foolery restart | foolery status | foolery uninstall"
+  tip "Commands: foolery start | foolery setup | foolery config | foolery update | foolery stop | foolery restart | foolery status | foolery uninstall"
 
   case ":$PATH:" in
     *":$BIN_DIR:"*)

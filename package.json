@@ -12,6 +12,7 @@
     "release": "bash scripts/release.sh",
     "release:ci": "bash scripts/release-from-package-version.sh",
     "start": "next start",
+    "config": "bun run src/bin/foolery-config.ts",
     "lint": "eslint",
     "test": "vitest run --project unit",
     "test:storybook": "vitest run --project storybook",
