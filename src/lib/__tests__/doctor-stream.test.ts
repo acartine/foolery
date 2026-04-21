@@ -71,7 +71,7 @@ async function collectDoctorStream(): Promise<
 }
 
 describe("streamDoctor: event structure", () => {
-  it("emits 12 check events plus 1 summary event", async () => {
+  it("emits 13 check events plus 1 summary event", async () => {
     mockGetRegisteredAgents.mockResolvedValue({
       claude: { command: "claude", label: "Claude" },
     });
@@ -86,9 +86,9 @@ describe("streamDoctor: event structure", () => {
     });
 
     const events = await collectDoctorStream();
-    expect(events).toHaveLength(13);
+    expect(events).toHaveLength(14);
 
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 13; i++) {
       const ev = events[i] as DoctorCheckResult;
       expect(ev.done).toBeUndefined();
       expect(ev.category).toBeTruthy();
@@ -100,7 +100,7 @@ describe("streamDoctor: event structure", () => {
       expect(Array.isArray(ev.diagnostics)).toBe(true);
     }
 
-    const summary = events[12] as DoctorStreamSummary;
+    const summary = events[13] as DoctorStreamSummary;
     expect(summary.done).toBe(true);
     expect(typeof summary.passed).toBe("number");
     expect(typeof summary.failed).toBe("number");
@@ -127,6 +127,7 @@ describe("streamDoctor: event structure", () => {
       "settings-defaults",
       "settings-stale-keys",
       "backend-type-migration",
+      "settings-config-validate",
       "repo-memory-managers",
       "memory-implementation",
       "stale-parents",

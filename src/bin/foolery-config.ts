@@ -19,14 +19,14 @@
  * interface to the settings spec — treat its behavior as contract.
  */
 
-import fs from "node:fs";
-import os from "node:os";
-import path from "node:path";
-
-import { parse as parseToml } from "smol-toml";
 import { z } from "zod/v4";
 
 import { foolerySettingsSchema } from "../lib/schemas";
+import {
+  defaultSettingsPath,
+  formatIssues,
+  validateSettingsToml,
+} from "../lib/settings-validate";
 
 const USAGE
   = "Usage: foolery config <schema|validate|help> [args]\n"
@@ -48,76 +48,37 @@ function runSchema(): number {
   return 0;
 }
 
-function defaultSettingsPath(): string {
-  return path.join(os.homedir(), ".config", "foolery", "settings.toml");
-}
-
 function errMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
 }
 
-function readTomlFile(filePath: string): { ok: true; data: unknown }
-  | { ok: false; exit: 2 } {
-  let contents: string;
-  try {
-    contents = fs.readFileSync(filePath, "utf8");
-  } catch (err) {
-    process.stderr.write(
-      `foolery config validate: cannot read ${filePath}: `
-      + `${errMessage(err)}\n`,
-    );
-    return { ok: false, exit: 2 };
-  }
-  try {
-    return { ok: true, data: parseToml(contents) };
-  } catch (err) {
-    process.stderr.write(
-      `foolery config validate: TOML parse error in ${filePath}: `
-      + `${errMessage(err)}\n`,
-    );
-    return { ok: false, exit: 2 };
-  }
-}
-
-function formatPath(issuePath: ReadonlyArray<PropertyKey>): string {
-  if (issuePath.length === 0) return "(root)";
-  return issuePath.map((p) => String(p)).join(".");
-}
-
-function formatReceived(issue: z.core.$ZodIssue): string {
-  if (!("input" in issue) || issue.input === undefined) return "";
-  try {
-    return ` (received: ${JSON.stringify(issue.input)})`;
-  } catch {
-    return ` (received: ${String(issue.input)})`;
-  }
-}
-
-function formatIssues(error: z.ZodError): string {
-  const lines: string[] = [];
-  for (const issue of error.issues) {
-    lines.push(
-      `  - ${formatPath(issue.path)}: ${issue.message}${formatReceived(issue)}`,
-    );
-  }
-  return lines.join("\n");
-}
-
 function runValidate(argPath: string | undefined): number {
   const filePath = argPath ?? defaultSettingsPath();
-  const read = readTomlFile(filePath);
-  if (!read.ok) return read.exit;
+  const result = validateSettingsToml(filePath);
 
-  const result = foolerySettingsSchema.safeParse(read.data);
-  if (result.success) {
-    process.stdout.write(`OK ${filePath}\n`);
-    return 0;
+  switch (result.kind) {
+    case "ok":
+      process.stdout.write(`OK ${filePath}\n`);
+      return 0;
+    case "file-error":
+      process.stderr.write(
+        `foolery config validate: cannot read ${filePath}: `
+        + `${result.message}\n`,
+      );
+      return 2;
+    case "parse-error":
+      process.stderr.write(
+        `foolery config validate: TOML parse error in ${filePath}: `
+        + `${result.message}\n`,
+      );
+      return 2;
+    case "schema-error":
+      process.stderr.write(
+        `foolery config validate: schema validation failed in ${filePath}:\n`
+        + `${formatIssues(result.error)}\n`,
+      );
+      return 1;
   }
-  process.stderr.write(
-    `foolery config validate: schema validation failed in ${filePath}:\n`
-    + `${formatIssues(result.error)}\n`,
-  );
-  return 1;
 }
 
 function dispatch(argv: ReadonlyArray<string>): number {

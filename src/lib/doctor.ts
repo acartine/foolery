@@ -16,6 +16,7 @@ import {
   listRepos,
   type RegisteredRepo,
 } from "./doctor-checks";
+import { checkSettingsValidate } from "./doctor-checks-settings-validate";
 import {
   checkConfigPermissions,
   checkRepoMemoryManagerTypes,
@@ -61,6 +62,7 @@ export {
   checkStaleSettingsKeys,
   checkBackendTypeMigration,
 } from "./doctor-checks";
+export { checkSettingsValidate } from "./doctor-checks-settings-validate";
 export {
   checkConfigPermissions,
   checkRepoMemoryManagerTypes,
@@ -83,6 +85,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     settingsDiags,
     staleSettingsDiags,
     backendTypeDiags,
+    settingsValidateDiags,
     repoMmDiags,
     memCompatDiags,
     staleDiags,
@@ -96,6 +99,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     checkSettingsDefaults(),
     checkStaleSettingsKeys(),
     checkBackendTypeMigration(),
+    checkSettingsValidate(),
     checkRepoMemoryManagerTypes(),
     checkMemoryImplementationCompatibility(repos),
     checkStaleParents(repos),
@@ -111,6 +115,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     ...settingsDiags,
     ...staleSettingsDiags,
     ...backendTypeDiags,
+    ...settingsValidateDiags,
     ...repoMmDiags,
     ...memCompatDiags,
     ...staleDiags,
@@ -236,6 +241,11 @@ function buildCheckList(
       category: "backend-type-migration",
       label: "Backend type",
       run: () => checkBackendTypeMigration(),
+    },
+    {
+      category: "settings-config-validate",
+      label: "Settings schema",
+      run: () => checkSettingsValidate(),
     },
     {
       category: "repo-memory-managers",
