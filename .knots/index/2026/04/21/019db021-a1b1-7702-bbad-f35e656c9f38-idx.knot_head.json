@@ -1,0 +1,37 @@
+{
+  "event_id": "019db021-a1b1-7702-bbad-f35e656c9f38",
+  "occurred_at": "2026-04-21T13:01:27.345707Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-260e",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Retire foolery setup wizard: delete scripts and route setup to the foolery-configure skill",
+    "type": "work",
+    "updated_at": "2026-04-21T13:01:27.345707Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019db021-9431-7572-808e-addaba2bc428"
+  }
+}
