@@ -64,7 +64,7 @@ describe("foolery help CLI", () => {
 
     expect(help.stdout).toContain("\u001b[1;36mUsage:");
     expect(help.stdout).toMatch(/\u001b\[1;32mstart\s+\u001b\[0m \u001b\[2mStart Foolery/);
-    expect(help.stdout).toMatch(/\u001b\[1;34msetup\s+\u001b\[0m \u001b\[2mConfigure repos/);
+    expect(help.stdout).toMatch(/\u001b\[1;34msetup\s+\u001b\[0m \u001b\[2mHand the foolery-configure/);
     expect(help.stdout).toMatch(/\u001b\[1;33mdoctor\s+\u001b\[0m \u001b\[2mRun diagnostics/);
     expect(help.stdout).toMatch(/\u001b\[1;31muninstall\s+\u001b\[0m \u001b\[2mRemove Foolery runtime/);
   });

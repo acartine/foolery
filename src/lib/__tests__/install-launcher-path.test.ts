@@ -152,7 +152,10 @@ describe("install launcher path overrides", () => {
     const launcher = await readFile(launcherPath, "utf8");
     expect(launcher).toContain("tip) printf '%s' '->' ;;");
     expect(launcher).not.toContain("tip) printf '->' ;;");
-    expect(launcher).toContain("FOOLERY_SETUP_URL");
+    expect(launcher).not.toContain("FOOLERY_SETUP_URL");
+    expect(launcher).not.toContain("SETUP_URL=");
+    expect(launcher).toContain("SETUP_AGENT_PREFERENCE=(claude codex opencode gemini copilot)");
+    expect(launcher).toContain('skills/foolery-configure/SKILL.md');
     expect(launcher).toContain(
       'FOOLERY_LAUNCHER_PATH="$LAUNCHER_PATH"',
     );

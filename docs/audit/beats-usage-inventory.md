@@ -335,9 +335,9 @@ Shell scripts that reference `bd` or beads.
 
 | Path | Purpose | bd Commands Used |
 |------|---------|-----------------|
-| `scripts/setup.sh` | Interactive repo discovery and agent configuration wizard | Scans for `.beads/` directories; no direct `bd` invocations |
+| `scripts/setup.sh` (retired 2026-04-21) | Legacy interactive repo/agent config wizard. Replaced by `.claude/skills/foolery-configure/SKILL.md` handed to an agent CLI by `install.sh`'s `setup_cmd`. | Scanned for `.beads/` directories; no direct `bd` invocations |
 | `scripts/install.sh` | Foolery installer | Checks `bd` is on PATH (line 1207) |
-| `scripts/agent-wizard.sh` | Agent discovery wizard | References bead actions in prompts ("execute single bead", "multi-bead orchestration") |
+| `scripts/agent-wizard.sh` (retired 2026-04-21) | Legacy agent discovery wizard. Replaced by the `foolery-configure` skill flow. | Referenced bead actions in prompts ("execute single bead", "multi-bead orchestration") |
 
 ---
 

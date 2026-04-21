@@ -96,6 +96,14 @@ main() {
       --format=esm
   )
 
+  local skill_src="$ROOT_DIR/.claude/skills/foolery-configure/SKILL.md"
+  if [[ ! -f "$skill_src" ]]; then
+    fail "Missing foolery-configure skill at $skill_src"
+  fi
+  log "Shipping foolery-configure skill"
+  mkdir -p "$RUNTIME_DIR/skills/foolery-configure"
+  cp "$skill_src" "$RUNTIME_DIR/skills/foolery-configure/SKILL.md"
+
   mkdir -p "$DIST_DIR"
   rm -f "$artifact_path" "$artifact_path.sha256"
   tar -C "$TMP_DIR" -czf "$artifact_path" foolery-runtime

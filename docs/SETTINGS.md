@@ -93,7 +93,7 @@ Non-alphanumerics in the model portion are lowercased and replaced with `-`.
 | `agent_name`   | string | no       | Display name surfaced in the UI. Usually matches `provider`. |
 | `lease_model`  | string | no       | Lease-mapping key used when a workflow names a lease model (e.g. `opus/claude`, `gpt`). Typical in Advanced dispatch. |
 | `model`        | string | no       | Concrete model identifier passed to the CLI (e.g. `claude-opus-4-7`, `gpt-5.4`, `openrouter/z-ai/glm-5`). |
-| `flavor`       | string | no       | Free-form variant tag (e.g. `mini`, `spark`). Surfaces in the model-picker UI. |
+| `flavor`       | string | no       | Free-form variant tag (e.g. `mini`, `spark`). Surfaces in the agent picker UI. |
 | `version`      | string | no       | Marketing version string (e.g. `4.7`, `5.4`). Informational. |
 | `label`        | string | no       | Human-friendly override for the agent's display label; otherwise falls back to `provider`/`agent_name`. |
 

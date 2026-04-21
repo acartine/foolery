@@ -4,11 +4,11 @@ Build, release, and setup scripts for Foolery.
 
 ## Setup & Install
 
-- **`setup.sh`** — First-time project setup (dependencies, interactive config)
-- **`install.sh`** — Install the `foolery` CLI launcher onto the system PATH
-- **`agent-wizard.sh`** — Legacy interactive wizard for configuring agent settings
-- **`model-picker.sh`** — Searchable model-picker helper used by setup
-- **`toml-reader.sh`** — TOML reader used by setup and agent-wizard
+- **`install.sh`** — Install the `foolery` CLI launcher onto the system PATH.
+  Its `setup_cmd` hands the `.claude/skills/foolery-configure/SKILL.md` body
+  to the first agent CLI on PATH (`claude`, `codex`, `opencode`, `gemini`,
+  `copilot`; override with `FOOLERY_SETUP_AGENT`). Bails out loudly with a
+  UI fallback hint if none is installed.
 - **`setup-git-hooks.sh`** — Point `core.hooksPath` at the committed `.githooks/` directory
 
 ## Build & Release
@@ -31,8 +31,6 @@ Shell drivers with matching `.mjs` implementations for interactive/browser paths
 - **`test-doctor-stream.sh`** — Doctor streaming endpoint
 - **`test-start-restart-settings.sh`** — Settings load on startup
 - **`test-copilot-settings-ui.{sh,mjs}`** — Copilot scan/import in Settings
-- **`test-install-copilot-setup.sh`** — Isolated installer smoke test for Copilot setup
-- **`test-setup-scan-unmounted.sh`** — Setup scan handling of unmounted repos
 - **`test-beat-refresh-latency.{sh,mjs}`** — Beat list refresh latency check
 - **`test-plans-live.{sh,mjs}`** — Live execution-plan API check
   (POST/GET `/api/plans`) against a disposable Stitch worktree. Categorizes
@@ -45,7 +43,6 @@ Shell drivers with matching `.mjs` implementations for interactive/browser paths
   endpoint contract.
 - **`test-queue-pulldown-stability.{sh,mjs}`** — Queue pulldown stability under load
 - **`test-terminal-rehydration-multicontext.{sh,mjs}`** — Terminal rehydration across contexts
-- **`test-model-picker.sh`**, **`test-model-picker-integration.sh`** — Model picker unit and integration coverage
 
 ## Subdirectories
 

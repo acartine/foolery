@@ -12,7 +12,6 @@ RELEASE_REPO="${FOOLERY_RELEASE_REPO:-foolery}"
 RELEASE_TAG="${FOOLERY_RELEASE_TAG:-latest}"
 ASSET_BASENAME="${FOOLERY_ASSET_BASENAME:-foolery-runtime}"
 ARTIFACT_URL="${FOOLERY_ARTIFACT_URL:-}"
-SETUP_URL="${FOOLERY_SETUP_URL:-}"
 
 _supports_color() {
   local fd="${1:-1}"
@@ -215,7 +214,6 @@ LOCAL_URL="\${FOOLERY_LOCAL_URL:-\$URL}"
 RELEASE_OWNER="\${FOOLERY_RELEASE_OWNER:-$RELEASE_OWNER}"
 RELEASE_REPO="\${FOOLERY_RELEASE_REPO:-$RELEASE_REPO}"
 RELEASE_TAG="\${FOOLERY_RELEASE_TAG:-latest}"
-SETUP_URL="\${FOOLERY_SETUP_URL:-$SETUP_URL}"
 UPDATE_CHECK_ENABLED="\${FOOLERY_UPDATE_CHECK:-1}"
 UPDATE_CHECK_INTERVAL_SECONDS="\${FOOLERY_UPDATE_CHECK_INTERVAL_SECONDS:-21600}"
 UPDATE_CHECK_FILE="\${FOOLERY_UPDATE_CHECK_FILE:-\$STATE_DIR/update-check.cache}"
@@ -352,6 +350,10 @@ success() {
 
 tip() {
   emit_message 1 tip "\$*"
+}
+
+warn() {
+  emit_message 2 warn "\$*"
 }
 
 fail() {
@@ -778,7 +780,6 @@ start_cmd() {
       FOOLERY_RELEASE_OWNER="\$RELEASE_OWNER" \
       FOOLERY_RELEASE_REPO="\$RELEASE_REPO" \
       FOOLERY_RELEASE_TAG="\$RELEASE_TAG" \
-      FOOLERY_SETUP_URL="\$SETUP_URL" \
       FOOLERY_UPDATE_CHECK="\$UPDATE_CHECK_ENABLED" \
       FOOLERY_UPDATE_CHECK_INTERVAL_SECONDS="\$UPDATE_CHECK_INTERVAL_SECONDS" \
       FOOLERY_UPDATE_CHECK_FILE="\$UPDATE_CHECK_FILE" \
@@ -963,27 +964,76 @@ UNINSTALL
   rm -f "\$tmp_script"
 }
 
+SETUP_AGENT_PREFERENCE=(claude codex opencode gemini copilot)
+
+setup_skill_path() {
+  printf '%s/skills/foolery-configure/SKILL.md\n' "\$APP_DIR"
+}
+
+setup_resolve_agent() {
+  local override="\${FOOLERY_SETUP_AGENT:-}"
+  if [[ -n "\$override" ]]; then
+    if ! command -v "\$override" >/dev/null 2>&1; then
+      setup_fail_no_agent "override '\$override' (FOOLERY_SETUP_AGENT) not on PATH"
+    fi
+    printf '%s\n' "\$override"
+    return 0
+  fi
+
+  local candidate
+  for candidate in "\${SETUP_AGENT_PREFERENCE[@]}"; do
+    if command -v "\$candidate" >/dev/null 2>&1; then
+      printf '%s\n' "\$candidate"
+      return 0
+    fi
+  done
+
+  setup_fail_no_agent "no agent CLI found on PATH"
+}
+
+setup_fail_no_agent() {
+  local reason="\$1"
+  local joined=""
+  local candidate
+  for candidate in "\${SETUP_AGENT_PREFERENCE[@]}"; do
+    if [[ -z "\$joined" ]]; then
+      joined="\$candidate"
+    else
+      joined="\$joined, \$candidate"
+    fi
+  done
+  warn "foolery setup: \$reason"
+  warn "Expected one of: \$joined (override with FOOLERY_SETUP_AGENT=<name>)."
+  warn "UI fallback: run 'foolery start && foolery open' and configure via Settings."
+  fail "No agent CLI available for foolery setup."
+}
+
+setup_invoke_agent() {
+  local agent="\$1" skill="\$2"
+  case "\$agent" in
+    claude)   exec claude < "\$skill" ;;
+    codex)    exec codex exec "\$(cat "\$skill")" ;;
+    opencode) exec opencode run "\$(cat "\$skill")" ;;
+    gemini)   exec gemini -p "\$(cat "\$skill")" ;;
+    copilot)  exec copilot -p "\$(cat "\$skill")" ;;
+    *)
+      warn "foolery setup: no known invocation for agent '\$agent'."
+      warn "Manually pipe the skill: \$agent < '\$skill' (or consult '\$agent --help')."
+      fail "Cannot hand the foolery-configure skill to '\$agent'."
+      ;;
+  esac
+}
+
 setup_cmd() {
-  require_cmd bash
-  require_cmd curl
-
-  local setup_url
-  setup_url="\$SETUP_URL"
-  if [[ -z "\$setup_url" ]]; then
-    setup_url="https://raw.githubusercontent.com/\$RELEASE_OWNER/\$RELEASE_REPO/main/scripts/setup.sh"
+  local skill agent
+  skill="\$(setup_skill_path)"
+  if [[ ! -f "\$skill" ]]; then
+    fail "foolery-configure skill missing at \$skill. Run 'foolery update' to reinstall."
   fi
 
-  local tmp_setup
-  tmp_setup="\$(mktemp "\${TMPDIR:-/tmp}/foolery-setup.XXXXXX")"
-  if ! curl --fail --location --silent --show-error "\$setup_url" -o "\$tmp_setup"; then
-    rm -f "\$tmp_setup"
-    fail "Failed to download setup script."
-  fi
-
-  # shellcheck disable=SC1090
-  source "\$tmp_setup"
-  rm -f "\$tmp_setup"
-  foolery_setup "\$@"
+  agent="\$(setup_resolve_agent)"
+  step "Handing foolery-configure skill to \$agent"
+  setup_invoke_agent "\$agent" "\$skill"
 }
 
 config_cmd() {
@@ -1410,7 +1460,7 @@ usage() {
   fi
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color start)"     "start"     "\$r" "\$desc_style" "Start Foolery in the background" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color open)"      "open"      "\$r" "\$desc_style" "Open Foolery in your browser (skips if already open)" "\$r"
-  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color setup)"     "setup"     "\$r" "\$desc_style" "Configure repos and agents interactively" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color setup)"     "setup"     "\$r" "\$desc_style" "Hand the foolery-configure skill to an agent CLI" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color config)"    "config"    "\$r" "\$desc_style" "Print settings JSON Schema or validate a TOML file" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color update)"    "update"    "\$r" "\$desc_style" "Download and install the latest Foolery runtime" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color stop)"      "stop"      "\$r" "\$desc_style" "Stop the background Foolery process" "\$r"
@@ -1568,7 +1618,7 @@ main() {
   tip "Get started: foolery"
   log "Log files default to: $STATE_DIR/logs"
   printf '\n'
-  tip "Configure repos and agents: foolery setup"
+  tip "Configure via the foolery-configure skill: foolery setup"
 }
 
 main "$@"

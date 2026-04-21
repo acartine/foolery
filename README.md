@@ -89,11 +89,14 @@ export PATH="$HOME/.local/bin:$PATH"
 foolery setup
 ```
 
-`foolery setup` helps you:
-- discover repos
-- detect available memory-manager backends
-- scan for installed agent CLIs
-- configure the app for first use
+`foolery setup` hands the [`foolery-configure` skill](.claude/skills/foolery-configure/SKILL.md) to the first agent CLI it finds on your PATH (`claude`, `codex`, `opencode`, `gemini`, `copilot`; override with `FOOLERY_SETUP_AGENT=<name>`). The agent walks you through:
+
+- discovering repos
+- detecting available memory-manager backends
+- scanning for installed agent CLIs
+- writing a validated `~/.config/foolery/settings.toml` and `registry.json`
+
+If no supported agent CLI is installed, `foolery setup` exits with a clear error listing the expected CLIs and points you at the UI fallback: run `foolery start && foolery open`, then configure via **Settings**.
 
 ### 4. Start Foolery
 
