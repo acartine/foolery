@@ -38,12 +38,12 @@ export function BeatRow({
   ) => void;
 }) {
   const rowCls = loaded
-    ? "border-l-4 border-l-cyan-500"
+    ? "border-l-4 border-l-molecule-400"
       + " bg-molecule-100/95 text-molecule-700"
       + " shadow-inner dark:bg-molecule-700/60"
       + " dark:text-molecule-100"
     : focused
-      ? "border-l-4 border-l-sky-500"
+      ? "border-l-4 border-l-lake-400"
         + " bg-lake-100/75 text-lake-700"
         + " dark:bg-lake-700/35"
         + " dark:text-lake-100"

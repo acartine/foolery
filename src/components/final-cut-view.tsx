@@ -77,7 +77,7 @@ export function FinalCutView() {
 
   return (
     <div className="space-y-4 pb-4">
-      <section className="rounded-2xl border bg-gradient-to-br from-slate-50 via-amber-50 to-orange-50 p-4">
+      <section className="rounded-2xl border bg-gradient-to-br from-paper-100 via-feature-100 to-ochre-100 p-4 dark:from-walnut-300 dark:via-walnut-200 dark:to-walnut-300">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="flex items-center gap-2 text-base font-semibold tracking-tight">
@@ -89,7 +89,7 @@ export function FinalCutView() {
               This queue is explicit from profile ownership and state.
             </p>
           </div>
-          <Badge variant="outline" className="border-feature-400 bg-feature-100 text-feature-700">
+          <Badge variant="outline" className="border-feature-400 bg-feature-100 text-feature-700 dark:border-feature-700 dark:bg-feature-700/30 dark:text-feature-100">
             {beats.length} {beats.length === 1 ? "beat" : "beats"}
           </Badge>
         </div>

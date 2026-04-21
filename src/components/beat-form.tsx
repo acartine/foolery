@@ -191,7 +191,7 @@ function BeatFormActions({
       <Button
         type="submit"
         title="Submit"
-        variant="success"
+        variant="default"
         className="flex-1"
         disabled={isSubmitting}
       >

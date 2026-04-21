@@ -133,6 +133,8 @@ function RetakeRow({
           + " bg-feature-100 px-3 py-1.5 text-xs font-semibold"
           + " text-feature-700 hover:bg-feature-100"
           + " hover:border-feature-400 transition-colors"
+          + " dark:border-feature-700 dark:bg-feature-700/30"
+          + " dark:text-feature-100 dark:hover:bg-feature-700/40"
         }
         title="Flag regression and reopen this beat"
         onClick={() => onRetake(beat)}

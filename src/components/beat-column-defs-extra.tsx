@@ -281,7 +281,7 @@ export function actionColumn(
           <span
             className={
               "text-xs font-semibold"
-              + " text-moss-700 animate-pulse"
+              + " text-moss-700 animate-pulse dark:text-moss-200"
             }
           >
             Rolling...
@@ -309,7 +309,7 @@ function renderRollingActive(
     <div className="inline-flex items-center gap-1.5">
       <span
         className={
-          "text-xs font-semibold text-moss-700"
+          "text-xs font-semibold text-moss-700 dark:text-moss-200"
         }
       >
         Rolling...
@@ -340,8 +340,8 @@ function renderShipButton(
   onShipBeat: (beat: Beat) => void,
 ) {
   const color = isParent
-    ? "text-clay-700 hover:bg-clay-100"
-    : "text-lake-700 hover:bg-lake-100";
+    ? "text-clay-700 hover:bg-clay-100 dark:text-clay-200 dark:hover:bg-clay-700/30"
+    : "text-lake-700 hover:bg-lake-100 dark:text-lake-100 dark:hover:bg-lake-700/30";
   return (
     <button
       type="button"

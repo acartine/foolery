@@ -354,6 +354,7 @@ export function profileColumn(
             + " px-1.5 text-[10px]"
             + " font-medium"
             + " bg-moss-100 text-moss-700"
+            + " dark:bg-moss-700/30 dark:text-moss-100"
           }
         >
           {formatLabel(profileId)}
@@ -452,6 +453,7 @@ export function ownerTypeColumn(): ColumnDef<Beat> {
               + " px-1.5 text-[10px]"
               + " font-semibold"
               + " bg-feature-100 text-feature-700"
+              + " dark:bg-feature-700/30 dark:text-feature-100"
             }
           >
             Human
@@ -465,6 +467,7 @@ export function ownerTypeColumn(): ColumnDef<Beat> {
             + " px-1.5 text-[10px]"
             + " font-semibold"
             + " bg-lake-100 text-lake-700"
+            + " dark:bg-lake-700/30 dark:text-lake-100"
           }
         >
           Agent

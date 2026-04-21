@@ -113,7 +113,7 @@ export function WavePlanner({
         </DialogHeader>
         <div className="space-y-5 px-6 py-5">
           {!canPlan && (
-            <div className="rounded-xl border border-feature-400 bg-feature-100 p-4 text-sm text-feature-700">
+            <div className="rounded-xl border border-feature-400 bg-feature-100 p-4 text-sm text-feature-700 dark:border-feature-700 dark:bg-feature-700/25 dark:text-feature-100">
               Select a single repository first.
               Pipeline needs a concrete dependency graph.
             </div>

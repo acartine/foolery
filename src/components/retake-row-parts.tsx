@@ -4,16 +4,16 @@ import { Clapperboard } from "lucide-react";
 import type { Beat } from "@/lib/types";
 
 const LABEL_COLORS = [
-  "bg-rust-100 text-rust-700",
-  "bg-lake-100 text-lake-700",
-  "bg-moss-100 text-moss-700",
-  "bg-ochre-100 text-ochre-700",
-  "bg-clay-100 text-clay-800",
-  "bg-rust-100 text-rust-700",
-  "bg-gate-100 text-gate-700",
-  "bg-ochre-100 text-ochre-700",
-  "bg-mr-100 text-mr-700",
-  "bg-molecule-100 text-molecule-700",
+  "bg-rust-100 text-rust-700 dark:bg-rust-700/30 dark:text-rust-100",
+  "bg-lake-100 text-lake-700 dark:bg-lake-700/30 dark:text-lake-100",
+  "bg-moss-100 text-moss-700 dark:bg-moss-700/30 dark:text-moss-100",
+  "bg-ochre-100 text-ochre-700 dark:bg-ochre-700/30 dark:text-ochre-100",
+  "bg-clay-100 text-clay-800 dark:bg-clay-700/35 dark:text-clay-100",
+  "bg-rust-100 text-rust-700 dark:bg-rust-700/30 dark:text-rust-100",
+  "bg-gate-100 text-gate-700 dark:bg-gate-700/30 dark:text-gate-100",
+  "bg-ochre-100 text-ochre-700 dark:bg-ochre-700/30 dark:text-ochre-100",
+  "bg-mr-100 text-mr-700 dark:bg-mr-700/30 dark:text-mr-100",
+  "bg-molecule-100 text-molecule-700 dark:bg-molecule-700/30 dark:text-molecule-100",
 ];
 
 export function labelColor(label: string): string {

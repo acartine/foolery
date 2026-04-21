@@ -89,7 +89,7 @@ export function RetakeDialog(
           </Button>
           <Button
             variant="outline"
-            className="border-feature-400 text-feature-700 hover:bg-feature-100"
+            className="border-feature-400 text-feature-700 hover:bg-feature-100 dark:border-feature-700 dark:text-feature-100 dark:hover:bg-feature-700/30"
             title="Stage retake — apply state change and reject reason only"
             onClick={() => onConfirm(notes, "stage")}
             disabled={isPending}

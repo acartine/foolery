@@ -341,7 +341,7 @@ function BeatDetailMetadata({ beat }: { beat: Beat }) {
     <>
       <div className="flex flex-wrap gap-1.5">
         {beat.profileId && (
-          <Badge variant="secondary" className="bg-moss-100 text-moss-700">
+          <Badge variant="secondary" className="bg-moss-100 text-moss-700 dark:bg-moss-700/30 dark:text-moss-100">
             Profile: {beat.profileId}
           </Badge>
         )}
@@ -350,15 +350,15 @@ function BeatDetailMetadata({ beat }: { beat: Beat }) {
             variant="secondary"
             className={
               beat.nextActionOwnerKind === "human"
-                ? "bg-feature-100 text-feature-700"
-                : "bg-lake-100 text-lake-700"
+                ? "bg-feature-100 text-feature-700 dark:bg-feature-700/30 dark:text-feature-100"
+                : "bg-lake-100 text-lake-700 dark:bg-lake-700/30 dark:text-lake-100"
             }
           >
             Owner type: {beat.nextActionOwnerKind === "human" ? "Human" : "Agent"}
           </Badge>
         )}
         {beat.requiresHumanAction && (
-          <Badge variant="secondary" className="bg-rust-100 text-rust-700">
+          <Badge variant="secondary" className="bg-rust-100 text-rust-700 dark:bg-rust-700/30 dark:text-rust-100">
             Human action required
           </Badge>
         )}
@@ -387,7 +387,7 @@ function BeatDetailLabels({ beat, onUpdate, removeLabel }: BeatDetailLabelsProps
   return (
     <div className="flex flex-wrap items-center gap-1">
       {isOrchestrated && (
-        <Badge variant="secondary" className="gap-1 bg-paper-100 text-ink-600">
+        <Badge variant="secondary" className="gap-1 bg-paper-100 text-ink-600 dark:bg-walnut-200 dark:text-paper-300">
           <Clapperboard className="size-2.5" />
           Orchestrated
         </Badge>

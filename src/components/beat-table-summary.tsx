@@ -8,17 +8,25 @@ import {
 } from "@/components/beat-table-metadata";
 import { PerfProfiler } from "@/components/perf-profiler";
 
+type ColumnTone = "moss" | "ochre" | "none";
+
+const TONE_BG: Record<ColumnTone, string> = {
+  moss: "bg-moss-100 text-ink-800 dark:bg-moss-700/30 dark:text-paper-200",
+  ochre: "bg-ochre-100 text-ink-800 dark:bg-ochre-700/30 dark:text-paper-200",
+  none: "",
+};
+
 function SummaryColumn({
   label,
   text,
-  bg,
+  tone,
   rounded,
   expanded,
   onExpand,
 }: {
   label: string;
   text: string;
-  bg: string;
+  tone: ColumnTone;
   rounded: string;
   expanded: boolean;
   onExpand: () => void;
@@ -46,7 +54,7 @@ function SummaryColumn({
   }, [text]);
 
   return (
-    <div className={`min-w-0 ${rounded} px-2 py-1 ${bg}`}>
+    <div className={`min-w-0 ${rounded} px-2 py-1 ${TONE_BG[tone]}`}>
       <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </div>
@@ -62,7 +70,7 @@ function SummaryColumn({
         <button
           type="button"
           title="Expand full text"
-          className="text-moss-700 font-bold cursor-pointer mt-0.5"
+          className="mt-0.5 cursor-pointer font-bold text-moss-700 dark:text-moss-200"
           onMouseEnter={onExpand}
         >
           ...show more...
@@ -89,8 +97,8 @@ function HandoffCapsulesColumn({
     : capsules.slice(0, 2);
 
   return (
-    <div className="min-w-0 rounded-b bg-lake-100 px-2 py-1 md:rounded-b-none xl:rounded-r">
-      <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-lake-700">
+    <div className="min-w-0 rounded-b bg-lake-100 px-2 py-1 text-ink-800 dark:bg-lake-700/30 dark:text-paper-200 md:rounded-b-none xl:rounded-r">
+      <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-lake-700 dark:text-lake-100">
         Handoff Capsules
       </div>
       {visible.length > 0 ? (
@@ -100,7 +108,7 @@ function HandoffCapsulesColumn({
             return (
               <div
                 key={capsule.key}
-                className="rounded bg-white/70 px-1.5 py-1"
+                className="rounded bg-paper-50/90 px-1.5 py-1 dark:bg-walnut-300/80"
               >
                 {meta && (
                   <div className="mb-0.5 text-[10px] text-muted-foreground">
@@ -125,7 +133,7 @@ function HandoffCapsulesColumn({
         <button
           type="button"
           title="Expand handoff capsules"
-          className="mt-0.5 cursor-pointer font-bold text-moss-700"
+          className="mt-0.5 cursor-pointer font-bold text-moss-700 dark:text-moss-200"
           onMouseEnter={onExpand}
         >
           ...show more...
@@ -168,7 +176,7 @@ export function InlineSummary({
         <SummaryColumn
           label="Description"
           text={beat.description || ""}
-          bg="bg-moss-100"
+          tone="moss"
           rounded="rounded-t md:rounded-t-none xl:rounded-l"
           expanded={expanded}
           onExpand={() => {
@@ -179,7 +187,7 @@ export function InlineSummary({
         <SummaryColumn
           label="Acceptance criteria"
           text={beat.acceptance || ""}
-          bg={beat.acceptance ? "bg-moss-100" : ""}
+          tone={beat.acceptance ? "moss" : "none"}
           rounded="rounded-none"
           expanded={expanded}
           onExpand={() => {
@@ -190,7 +198,7 @@ export function InlineSummary({
         <SummaryColumn
           label="Notes"
           text={beat.notes || ""}
-          bg={beat.notes ? "bg-ochre-100" : ""}
+          tone={beat.notes ? "ochre" : "none"}
           rounded="rounded-none"
           expanded={expanded}
           onExpand={() => {
