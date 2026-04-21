@@ -128,12 +128,12 @@ export function HeaderBranding(props: {
         }}
       >
         <Image
-          src="/foolery_icon.png"
+          src="/foolery_wordmark.svg"
           alt="Foolery"
-          width={152}
+          width={170}
           height={49}
           unoptimized
-          className="rounded-md"
+          className="h-[42px] w-auto dark:brightness-0 dark:invert"
         />
       </button>
       <VersionBadge />

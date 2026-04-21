@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80" width="160" height="80">
+  
+  <defs>
+    
+  </defs>
+  <text x="4" y="66" class="mk" font-size="82" fill="#a54a2a">oo</text>
+  <circle cx="32" cy="40" r="5.5" fill="#f4efe6"></circle>
+  <circle cx="79" cy="40" r="5.5" fill="#f4efe6"></circle>
+</svg>
