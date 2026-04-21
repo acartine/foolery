@@ -39,20 +39,20 @@ export function BeatRow({
 }) {
   const rowCls = loaded
     ? "border-l-4 border-l-cyan-500"
-      + " bg-cyan-100/95 text-cyan-950"
-      + " shadow-inner dark:bg-cyan-900/60"
-      + " dark:text-cyan-100"
+      + " bg-molecule-100/95 text-molecule-700"
+      + " shadow-inner dark:bg-molecule-700/60"
+      + " dark:text-molecule-100"
     : focused
       ? "border-l-4 border-l-sky-500"
-        + " bg-sky-100/75 text-sky-950"
-        + " dark:bg-sky-900/35"
-        + " dark:text-sky-100"
+        + " bg-lake-100/75 text-lake-700"
+        + " dark:bg-lake-700/35"
+        + " dark:text-lake-100"
       : "hover:bg-muted/40";
 
   const metaCls = loaded
-    ? "text-cyan-800 dark:text-cyan-200"
+    ? "text-molecule-700 dark:text-molecule-100"
     : focused
-      ? "text-sky-800 dark:text-sky-200"
+      ? "text-lake-700 dark:text-lake-100"
       : "text-muted-foreground";
 
   return (
@@ -174,7 +174,7 @@ function BeatRowMeta({
         <Badge
           variant="outline"
           className={
-            "border-cyan-400/60"
+            "border-molecule-400/60"
             + " text-[10px] font-normal"
           }
         >

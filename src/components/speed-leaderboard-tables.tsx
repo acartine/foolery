@@ -36,7 +36,7 @@ const TD_BASE = "px-3 py-1.5";
 const TD_NUM = `${TD_BASE} text-right tabular-nums`;
 const TD_LEAD = `${TD_BASE} font-medium text-foreground`;
 const TD_GREEN = (
-  `${TD_NUM} text-green-600 dark:text-green-400`
+  `${TD_NUM} text-moss-600 dark:text-moss-400`
 );
 const TD_MUTED = `${TD_NUM} text-muted-foreground`;
 

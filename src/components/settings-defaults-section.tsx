@@ -261,8 +261,8 @@ function TerminalThemeSection({
         </div>
         <div className="flex items-center gap-2">
           {lightTheme
-            ? <Sun className="size-4 text-amber-500" />
-            : <Moon className="size-4 text-slate-500" />}
+            ? <Sun className="size-4 text-feature-400" />
+            : <Moon className="size-4 text-ink-500" />}
           <Switch
             id="terminal-light-theme"
             checked={lightTheme}

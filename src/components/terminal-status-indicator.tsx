@@ -1,12 +1,12 @@
 "use client";
 
 const STATUS_COLORS: Record<string, string> = {
-  running: "bg-blue-400",
-  completed: "bg-green-500",
-  error: "bg-red-500",
-  aborted: "bg-yellow-500",
-  idle: "bg-gray-500",
-  disconnected: "bg-orange-500",
+  running: "bg-lake-400",
+  completed: "bg-moss-500",
+  error: "bg-rust-500",
+  aborted: "bg-ochre-500",
+  idle: "bg-paper-500",
+  disconnected: "bg-ochre-500",
 };
 
 interface TerminalStatusIndicatorProps {
@@ -23,7 +23,7 @@ export function TerminalStatusIndicator(
       <span
         className={
           "inline-block size-2 shrink-0"
-          + " rounded-full bg-blue-400"
+          + " rounded-full bg-lake-400"
           + " shadow-[0_0_8px_#60a5fa]"
           + " animate-pulse"
         }
@@ -36,7 +36,7 @@ export function TerminalStatusIndicator(
     return (
       <span className={
         "shrink-0 text-[11px] font-semibold"
-        + " uppercase tracking-wide text-red-400"
+        + " uppercase tracking-wide text-rust-400"
       }>
         [terminated]
       </span>
@@ -48,7 +48,7 @@ export function TerminalStatusIndicator(
       <span
         className={
           "inline-block size-2 shrink-0"
-          + " rounded-full bg-green-500"
+          + " rounded-full bg-moss-500"
         }
         title="completed"
       />
@@ -60,7 +60,7 @@ export function TerminalStatusIndicator(
       <span className={
         "shrink-0 text-[11px] font-semibold"
         + " uppercase tracking-wide"
-        + " text-orange-400"
+        + " text-ochre-400"
       }>
         [disconnected]
       </span>

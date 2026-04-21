@@ -87,15 +87,15 @@ export function statusTone(
   status: DebugSessionStatus,
 ): string {
   if (status === "running")
-    return "border-sky-500/30 bg-sky-500/10 text-sky-200";
+    return "border-lake-500/30 bg-lake-500/10 text-lake-100";
   if (status === "completed")
-    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-200";
+    return "border-moss-500/30 bg-moss-500/10 text-moss-200";
   if (status === "aborted")
-    return "border-amber-500/30 bg-amber-500/10 text-amber-200";
+    return "border-feature-400/30 bg-feature-400/10 text-feature-100";
   if (status === "disconnected")
-    return "border-orange-500/30 bg-orange-500/10 text-orange-200";
+    return "border-ochre-500/30 bg-ochre-500/10 text-ochre-100";
   if (status === "error")
-    return "border-red-500/30 bg-red-500/10 text-red-200";
+    return "border-rust-500/30 bg-rust-500/10 text-rust-100";
   return "border-white/10 bg-white/5 text-white/70";
 }
 
@@ -320,23 +320,23 @@ export function DebugPanelHeader({
     ? "bg-[linear-gradient(135deg,rgba(245,245,250,0.95),rgba(235,235,240,0.98))]"
     : "bg-[linear-gradient(135deg,rgba(36,52,89,0.95),rgba(13,20,35,0.98))]";
   const borderClass = lightTheme
-    ? "border-b border-slate-200"
+    ? "border-b border-paper-200"
     : "border-b border-white/10";
   const titleClass = lightTheme
-    ? "text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500"
-    : "text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-200/80";
+    ? "text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-500"
+    : "text-[11px] font-semibold uppercase tracking-[0.22em] text-molecule-100/80";
   const headingClass = lightTheme
-    ? "mt-2 truncate text-lg font-semibold text-slate-900"
+    ? "mt-2 truncate text-lg font-semibold text-ink-900"
     : "mt-2 truncate text-lg font-semibold text-white";
   const subtitleClass = lightTheme
-    ? "mt-1 text-sm text-slate-600"
-    : "mt-1 text-sm text-slate-300";
+    ? "mt-1 text-sm text-ink-600"
+    : "mt-1 text-sm text-paper-300";
   const toggleTextClass = lightTheme
-    ? "text-[11px] text-slate-500"
-    : "text-[11px] text-slate-300";
+    ? "text-[11px] text-ink-500"
+    : "text-[11px] text-paper-300";
   const switchClass = lightTheme
-    ? "data-[state=checked]:bg-amber-500 data-[state=unchecked]:bg-slate-300"
-    : "data-[state=checked]:bg-cyan-600 data-[state=unchecked]:bg-white/20";
+    ? "data-[state=checked]:bg-feature-400 data-[state=unchecked]:bg-paper-300"
+    : "data-[state=checked]:bg-molecule-700 data-[state=unchecked]:bg-white/20";
 
   return (
     <header className={cn(headerBg, borderClass, "px-5 py-4")}>
@@ -356,8 +356,8 @@ export function DebugPanelHeader({
         <div className="flex items-center gap-2">
           <label className="inline-flex items-center gap-1.5 rounded px-1 py-0.5">
             {lightTheme
-              ? <Sun className="size-3.5 text-amber-500" />
-              : <Moon className="size-3.5 text-slate-400" />}
+              ? <Sun className="size-3.5 text-feature-400" />
+              : <Moon className="size-3.5 text-paper-400" />}
             <span className={toggleTextClass}>
               Light Theme
             </span>
@@ -397,14 +397,14 @@ export function DebugTerminalPanel({
     ? "bg-[#fafafa]"
     : "bg-[#0b1020]";
   const borderClass = lightTheme
-    ? "border-b border-slate-200"
+    ? "border-b border-paper-200"
     : "border-b border-white/10";
   const textClass = lightTheme
-    ? "text-slate-600"
-    : "text-slate-400";
+    ? "text-ink-600"
+    : "text-paper-400";
   const placeholderClass = lightTheme
-    ? "text-slate-500"
-    : "text-slate-400";
+    ? "text-ink-500"
+    : "text-paper-400";
 
   return (
     <div className={cn("flex min-h-[20rem] flex-col", bgClass)}>

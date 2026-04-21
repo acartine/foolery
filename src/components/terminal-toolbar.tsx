@@ -14,8 +14,8 @@ const BTN =
   + " hover:bg-white/10 hover:text-white";
 
 const BTN_DARK =
-  "rounded p-1 text-slate-700"
-  + " hover:bg-slate-200 hover:text-slate-900";
+  "rounded p-1 text-ink-700"
+  + " hover:bg-paper-200 hover:text-ink-900";
 
 interface TerminalToolbarProps {
   termRef: React.RefObject<
@@ -44,11 +44,11 @@ export function TerminalToolbar(
   } = props;
   const btnClass = lightTheme ? BTN_DARK : BTN;
   const textClass = lightTheme
-    ? "text-[11px] text-slate-700"
+    ? "text-[11px] text-ink-700"
     : "text-[11px] text-white/50";
   const switchClass = lightTheme
-    ? "data-[state=checked]:bg-amber-500 data-[state=unchecked]:bg-slate-300"
-    : "data-[state=checked]:bg-cyan-600 data-[state=unchecked]:bg-white/20";
+    ? "data-[state=checked]:bg-feature-400 data-[state=unchecked]:bg-paper-300"
+    : "data-[state=checked]:bg-molecule-700 data-[state=unchecked]:bg-white/20";
 
   return (
     <div className="flex items-center gap-1">
@@ -66,8 +66,8 @@ export function TerminalToolbar(
       </label>
       <label className="inline-flex items-center gap-1.5 px-1">
         {lightTheme
-          ? <Sun className="size-3.5 text-amber-500" />
-          : <Moon className="size-3.5 text-slate-500" />}
+          ? <Sun className="size-3.5 text-feature-400" />
+          : <Moon className="size-3.5 text-ink-500" />}
         <span className={textClass}>
           Light Theme
         </span>
@@ -90,8 +90,8 @@ export function TerminalToolbar(
         <button
           type="button"
           className={
-            "rounded bg-red-600 p-1 text-white"
-            + " hover:bg-red-500"
+            "rounded bg-rust-500 p-1 text-white"
+            + " hover:bg-rust-500"
           }
           title="Terminate"
           onClick={onAbort}

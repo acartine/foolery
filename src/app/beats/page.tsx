@@ -423,10 +423,10 @@ function DegradedBanner(
   return (
     <div className={
       "mb-2 flex items-center gap-2 rounded-md"
-      + " border border-amber-300 bg-amber-50"
-      + " px-3 py-2 text-sm text-amber-900"
-      + " dark:border-amber-700"
-      + " dark:bg-amber-950 dark:text-amber-200"
+      + " border border-feature-400 bg-feature-100"
+      + " px-3 py-2 text-sm text-feature-700"
+      + " dark:border-feature-700"
+      + " dark:bg-feature-700 dark:text-feature-100"
     }>
       <AlertTriangle
         className="size-4 shrink-0"

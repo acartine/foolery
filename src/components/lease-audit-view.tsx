@@ -406,7 +406,7 @@ function LeaderboardRow({ entry, even }: { entry: LeaderboardEntry; even: boolea
         {capitalize(entry.step)}
       </td>
       <td className="px-3 py-1.5 text-foreground">{entry.bestAgent}</td>
-      <td className="px-3 py-1.5 text-right tabular-nums text-green-600 dark:text-green-400">
+      <td className="px-3 py-1.5 text-right tabular-nums text-moss-600 dark:text-moss-400">
         {entry.bestRate}
       </td>
       <td className="px-3 py-1.5 text-right tabular-nums">{entry.margin}</td>

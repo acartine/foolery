@@ -34,11 +34,11 @@ export function DebugFormPanel({
   lightTheme: boolean;
 }) {
   const panelClass = lightTheme
-    ? "border-slate-200 bg-white/80 text-slate-900"
+    ? "border-paper-200 bg-white/80 text-ink-900"
     : "border-white/10 bg-white/[0.03] text-white";
   const errorClass = lightTheme
-    ? "border-red-300 bg-red-50 text-red-700"
-    : "border-red-500/30 bg-red-500/10 text-red-200";
+    ? "border-rust-400 bg-rust-100 text-rust-700"
+    : "border-rust-500/30 bg-rust-500/10 text-rust-100";
 
   return (
     <div className={cn(
@@ -119,8 +119,8 @@ function OutcomeField({
         className={cn(
           "min-h-24",
           lightTheme
-            ? "border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
-            : "border-white/10 bg-black/10 text-white placeholder:text-slate-500",
+            ? "border-paper-300 bg-white text-ink-900 placeholder:text-paper-400"
+            : "border-white/10 bg-black/10 text-white placeholder:text-ink-500",
         )}
       />
     </div>
@@ -142,8 +142,8 @@ function SessionInfoDl({
     <dl className={cn(
       "space-y-2 rounded-xl border px-3 py-3 text-sm",
       lightTheme
-        ? "border-slate-300 bg-slate-50 text-slate-600"
-        : "border-white/10 bg-black/10 text-slate-300",
+        ? "border-paper-300 bg-paper-50 text-ink-600"
+        : "border-white/10 bg-black/10 text-paper-300",
     )}>
       <InfoRow
         label="Conversation"
@@ -198,7 +198,7 @@ function InfoRow({
       <dd
         className={cn(
           "text-right",
-          lightTheme ? "text-slate-900" : "text-white",
+          lightTheme ? "text-ink-900" : "text-white",
           truncate && "truncate",
         )}
       >

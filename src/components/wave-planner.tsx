@@ -101,7 +101,7 @@ export function WavePlanner({
       >
         <DialogHeader className="border-b px-6 py-4">
           <DialogTitle className="flex items-center gap-2">
-            <Layers className="size-5 text-blue-600" />
+            <Layers className="size-5 text-lake-500" />
             Pipeline
           </DialogTitle>
           <p className="text-sm text-muted-foreground">
@@ -113,7 +113,7 @@ export function WavePlanner({
         </DialogHeader>
         <div className="space-y-5 px-6 py-5">
           {!canPlan && (
-            <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+            <div className="rounded-xl border border-feature-400 bg-feature-100 p-4 text-sm text-feature-700">
               Select a single repository first.
               Pipeline needs a concrete dependency graph.
             </div>
@@ -124,7 +124,7 @@ export function WavePlanner({
             </div>
           )}
           {error && canPlan && (
-            <div className="flex items-center justify-center py-10 text-red-600">
+            <div className="flex items-center justify-center py-10 text-rust-500">
               Failed to compute scene plan
             </div>
           )}

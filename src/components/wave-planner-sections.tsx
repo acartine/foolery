@@ -27,12 +27,12 @@ export type AliasMap = ReadonlyMap<
 >;
 
 const READINESS_STYLES: Record<WaveReadiness, string> = {
-  runnable: "border-emerald-300 bg-emerald-50/70",
-  in_progress: "border-sky-300 bg-sky-50/70",
-  blocked: "border-amber-300 bg-amber-50/70",
-  humanAction: "border-orange-300 bg-orange-50/70",
+  runnable: "border-moss-200 bg-moss-100/70",
+  in_progress: "border-lake-400 bg-lake-100/70",
+  blocked: "border-feature-400 bg-feature-100/70",
+  humanAction: "border-ochre-400 bg-ochre-100/70",
   gate: "border-zinc-300 bg-zinc-100/70",
-  unschedulable: "border-red-300 bg-red-50/70",
+  unschedulable: "border-rust-400 bg-rust-100/70",
 };
 
 const READINESS_LABELS: Record<WaveReadiness, string> = {
@@ -153,13 +153,13 @@ function BeatCardActions({
         <div className="flex items-center gap-1">
           {isActiveShipping ? (
             <>
-              <span className="text-xs font-semibold text-green-700">
+              <span className="text-xs font-semibold text-moss-700">
                 Rolling...
               </span>
               <button
                 type="button"
                 title="Terminating"
-                className="inline-flex h-6 w-6 items-center justify-center rounded bg-red-600 text-white hover:bg-red-500"
+                className="inline-flex h-6 w-6 items-center justify-center rounded bg-rust-500 text-white hover:bg-rust-500"
                 onClick={() => onAbortShip?.(beat.id)}
               >
                 <Square className="size-3" />
@@ -208,8 +208,8 @@ export function SummaryGrid({
 }) {
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-      <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-3">
-        <div className="flex items-center gap-2 text-emerald-700">
+      <div className="rounded-xl border border-moss-200 bg-moss-100 p-3">
+        <div className="flex items-center gap-2 text-moss-700">
           <PlayCircle className="size-4" />
           <span className="text-xs font-semibold uppercase tracking-wide">
             Runnable
@@ -219,8 +219,8 @@ export function SummaryGrid({
           {summary.runnable}
         </p>
       </div>
-      <div className="rounded-xl border border-sky-300 bg-sky-50 p-3">
-        <div className="flex items-center gap-2 text-sky-700">
+      <div className="rounded-xl border border-lake-400 bg-lake-100 p-3">
+        <div className="flex items-center gap-2 text-lake-700">
           <Gauge className="size-4" />
           <span className="text-xs font-semibold uppercase tracking-wide">
             In Progress
@@ -230,8 +230,8 @@ export function SummaryGrid({
           {summary.inProgress}
         </p>
       </div>
-      <div className="rounded-xl border border-amber-300 bg-amber-50 p-3">
-        <div className="flex items-center gap-2 text-amber-700">
+      <div className="rounded-xl border border-feature-400 bg-feature-100 p-3">
+        <div className="flex items-center gap-2 text-feature-700">
           <PauseCircle className="size-4" />
           <span className="text-xs font-semibold uppercase tracking-wide">
             Blocked
@@ -241,8 +241,8 @@ export function SummaryGrid({
           {summary.blocked}
         </p>
       </div>
-      <div className="rounded-xl border border-red-300 bg-red-50 p-3">
-        <div className="flex items-center gap-2 text-red-700">
+      <div className="rounded-xl border border-rust-400 bg-rust-100 p-3">
+        <div className="flex items-center gap-2 text-rust-700">
           <AlertTriangle className="size-4" />
           <span className="text-xs font-semibold uppercase tracking-wide">
             Cycles
@@ -278,7 +278,7 @@ export function RecommendationPanel({
     <div className="rounded-xl border bg-gradient-to-r from-blue-50 via-cyan-50 to-white p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">
+          <p className="text-xs font-semibold uppercase tracking-wide text-lake-700">
             Recommended Next
           </p>
           {recommendation ? (
@@ -401,8 +401,8 @@ export function UnschedulableSection({
   if (beats.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-red-300 bg-red-50 p-4">
-      <div className="mb-2 flex items-center gap-2 text-red-700">
+    <div className="rounded-xl border border-rust-400 bg-rust-100 p-4">
+      <div className="mb-2 flex items-center gap-2 text-rust-700">
         <AlertTriangle className="size-4" />
         <span className="text-sm font-semibold">
           Dependency cycles detected ({beats.length})

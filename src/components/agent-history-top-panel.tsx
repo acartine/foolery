@@ -120,10 +120,10 @@ function BeatListPanel({
     <aside
       className={
         "rounded-lg border"
-        + " border-slate-300/80"
-        + " bg-slate-50/80 shadow-sm"
-        + " dark:border-slate-700"
-        + " dark:bg-slate-900/30"
+        + " border-paper-300/80"
+        + " bg-paper-50/80 shadow-sm"
+        + " dark:border-walnut-200"
+        + " dark:bg-walnut-400/30"
       }
       style={{
         height: `${TOP_PANEL_HEIGHT_PX}px`,

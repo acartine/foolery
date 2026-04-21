@@ -116,7 +116,7 @@ export function VersionBadge() {
           <span className="relative z-10 inline-flex items-center gap-1 rounded-[5px] bg-muted/60 px-1.5 py-0.5 ring-1 ring-border/50 transition-all duration-300 group-hover:bg-muted/80 group-hover:ring-transparent">
             <span
               aria-hidden="true"
-              className="inline-block size-1.5 rounded-full bg-emerald-500 shadow-[0_0_4px_oklch(0.7_0.2_160)] transition-shadow duration-300 group-hover:shadow-[0_0_8px_oklch(0.7_0.2_160)]"
+              className="inline-block size-1.5 rounded-full bg-moss-500 shadow-[0_0_4px_oklch(0.7_0.2_160)] transition-shadow duration-300 group-hover:shadow-[0_0_8px_oklch(0.7_0.2_160)]"
             />
             <span className="font-mono text-[10px] font-medium leading-none tracking-wider text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
               {DISPLAY_APP_VERSION}
@@ -184,7 +184,7 @@ export function VersionPopoverBody(props: {
 
   if (state.status === "up-to-date") {
     return (
-      <div className="flex items-center justify-center gap-2 text-sm text-emerald-600">
+      <div className="flex items-center justify-center gap-2 text-sm text-moss-600">
         <Check className="size-4" />
         Latest version installed
       </div>

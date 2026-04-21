@@ -43,10 +43,10 @@ describe(
     it("light theme contains light"
       + " palette colors", () => {
       const vals = JSON.stringify(light);
-      expect(vals).toContain("text-slate-900");
+      expect(vals).toContain("text-ink-900");
       expect(vals).toContain("bg-[#f8f9fa]");
       expect(vals).toContain("bg-[#f0f0f0]");
-      expect(vals).toContain("text-slate-800");
+      expect(vals).toContain("text-ink-800");
     });
 
     it("themed components import"

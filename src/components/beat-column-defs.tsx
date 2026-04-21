@@ -353,7 +353,7 @@ export function profileColumn(
             "inline-flex h-5 items-center rounded"
             + " px-1.5 text-[10px]"
             + " font-medium"
-            + " bg-emerald-100 text-emerald-700"
+            + " bg-moss-100 text-moss-700"
           }
         >
           {formatLabel(profileId)}
@@ -451,7 +451,7 @@ export function ownerTypeColumn(): ColumnDef<Beat> {
               "inline-flex h-5 items-center rounded"
               + " px-1.5 text-[10px]"
               + " font-semibold"
-              + " bg-amber-100 text-amber-700"
+              + " bg-feature-100 text-feature-700"
             }
           >
             Human
@@ -464,7 +464,7 @@ export function ownerTypeColumn(): ColumnDef<Beat> {
             "inline-flex h-5 items-center rounded"
             + " px-1.5 text-[10px]"
             + " font-semibold"
-            + " bg-blue-100 text-blue-700"
+            + " bg-lake-100 text-lake-700"
           }
         >
           Agent

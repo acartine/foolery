@@ -335,38 +335,38 @@ export function statusTone(
   status?: string,
 ): string {
   if (status === "completed") {
-    return "border-emerald-400/50"
-      + " bg-emerald-500/20 text-emerald-100";
+    return "border-moss-400/50"
+      + " bg-moss-500/20 text-moss-100";
   }
   if (status === "error") {
-    return "border-red-400/50"
-      + " bg-red-500/20 text-red-100";
+    return "border-rust-400/50"
+      + " bg-rust-500/20 text-rust-100";
   }
   if (status === "aborted") {
-    return "border-amber-400/50"
-      + " bg-amber-500/20 text-amber-100";
+    return "border-feature-400/50"
+      + " bg-feature-400/20 text-feature-100";
   }
   if (status === "running") {
-    return "border-sky-400/50"
-      + " bg-sky-500/20 text-sky-100";
+    return "border-lake-400/50"
+      + " bg-lake-500/20 text-lake-100";
   }
-  return "border-slate-500"
-    + " bg-slate-800/90 text-slate-100";
+  return "border-paper-500"
+    + " bg-walnut-300/90 text-paper-100";
 }
 
 export function interactionTypeTone(
   iType: string,
 ): string {
   if (iType === "scene") {
-    return "border-violet-500/40"
-      + " bg-violet-500/20 text-violet-100";
+    return "border-clay-500/40"
+      + " bg-clay-500/20 text-clay-100";
   }
   if (iType === "direct") {
-    return "border-emerald-500/40"
-      + " bg-emerald-500/20 text-emerald-100";
+    return "border-moss-500/40"
+      + " bg-moss-500/20 text-moss-100";
   }
-  return "border-cyan-500/40"
-    + " bg-cyan-500/20 text-cyan-100";
+  return "border-molecule-400/40"
+    + " bg-molecule-400/20 text-molecule-100";
 }
 
 export function interactionTypeLabel(

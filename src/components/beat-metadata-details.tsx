@@ -48,7 +48,7 @@ function ExpandableText({
         {text}
       </div>
       {!expanded && overflows ? (
-        <div className="mt-0.5 text-[10px] font-semibold text-green-700">Hover to expand</div>
+        <div className="mt-0.5 text-[10px] font-semibold text-moss-700">Hover to expand</div>
       ) : null}
     </div>
   );
@@ -246,8 +246,8 @@ export function BeatMetadataDetails({
   return (
     <div className="mt-2 space-y-2">
       {description ? (
-        <div className="rounded bg-green-50 px-2 py-1.5">
-          <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-green-800">
+        <div className="rounded bg-moss-100 px-2 py-1.5">
+          <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-moss-700">
             Description
           </div>
           <ExpandableText text={description} />
@@ -256,11 +256,11 @@ export function BeatMetadataDetails({
 
       {showExpandedDetails && renderedSteps.length > 0 ? (
         <div className="space-y-1.5">
-          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-700">
+          <div className="text-[10px] font-semibold uppercase tracking-wide text-ink-700">
             Steps
           </div>
           {renderedSteps.map((step) => (
-            <div key={step.key} className="rounded bg-slate-100 px-2 py-1.5">
+            <div key={step.key} className="rounded bg-paper-100 px-2 py-1.5">
               <AgentBadge entry={step.entry} formatRelativeTime={formatRelativeTime} />
               <ExpandableText text={step.content} />
             </div>
@@ -270,11 +270,11 @@ export function BeatMetadataDetails({
 
       {showExpandedDetails && renderedNotes.length > 0 ? (
         <div className="space-y-1.5">
-          <div className="text-[10px] font-semibold uppercase tracking-wide text-yellow-800">
+          <div className="text-[10px] font-semibold uppercase tracking-wide text-ochre-700">
             Notes
           </div>
           {renderedNotes.map((note) => (
-            <div key={note.key} className="rounded bg-yellow-50 px-2 py-1.5">
+            <div key={note.key} className="rounded bg-ochre-100 px-2 py-1.5">
               <AgentBadge entry={note.entry} formatRelativeTime={formatRelativeTime} />
               <ExpandableText text={note.content} />
             </div>
@@ -284,11 +284,11 @@ export function BeatMetadataDetails({
 
       {showExpandedDetails && renderedCapsules.length > 0 ? (
         <div className="space-y-1.5">
-          <div className="text-[10px] font-semibold uppercase tracking-wide text-blue-800">
+          <div className="text-[10px] font-semibold uppercase tracking-wide text-lake-700">
             Handoff Capsules
           </div>
           {renderedCapsules.map((capsule) => (
-            <div key={capsule.key} className="rounded bg-blue-50 px-2 py-1.5">
+            <div key={capsule.key} className="rounded bg-lake-100 px-2 py-1.5">
               <AgentBadge entry={capsule.entry} formatRelativeTime={formatRelativeTime} />
               <ExpandableText text={capsule.content} />
             </div>

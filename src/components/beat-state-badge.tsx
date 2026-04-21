@@ -16,27 +16,27 @@ function stateColor(state: string): string {
   const s = state.trim().toLowerCase();
 
   // Terminal states
-  if (s === "shipped") return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-  if (s === "abandoned" || s === "closed") return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
+  if (s === "shipped") return "bg-moss-100 text-moss-700 dark:bg-moss-700 dark:text-moss-100";
+  if (s === "abandoned" || s === "closed") return "bg-paper-200 text-ink-700 dark:bg-walnut-100 dark:text-paper-300";
 
   // Hold states
-  if (s === "deferred") return "bg-gray-100 text-gray-600 dark:bg-gray-900 dark:text-gray-400";
-  if (s === "blocked") return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
+  if (s === "deferred") return "bg-paper-200 text-ink-600 dark:bg-walnut-100 dark:text-paper-400";
+  if (s === "blocked") return "bg-rust-100 text-rust-700 dark:bg-rust-700 dark:text-rust-100";
 
   // Workflow step states
   const resolved = resolveStep(s, DEFAULT_WF);
   if (resolved) {
-    if (resolved.phase === StepPhase.Queued) return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-    if (resolved.step.endsWith("_review")) return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
-    return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+    if (resolved.phase === StepPhase.Queued) return "bg-lake-100 text-lake-700 dark:bg-lake-700 dark:text-lake-100";
+    if (resolved.step.endsWith("_review")) return "bg-clay-100 text-clay-700 dark:bg-clay-700 dark:text-clay-100";
+    return "bg-ochre-100 text-ochre-700 dark:bg-ochre-700 dark:text-ochre-100";
   }
 
   // Legacy compat
-  if (s === "open") return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-  if (s === "in_progress") return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+  if (s === "open") return "bg-lake-100 text-lake-700 dark:bg-lake-700 dark:text-lake-100";
+  if (s === "in_progress") return "bg-ochre-100 text-ochre-700 dark:bg-ochre-700 dark:text-ochre-100";
 
   // Unknown state fallback
-  return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
+  return "bg-paper-200 text-ink-700 dark:bg-walnut-100 dark:text-paper-300";
 }
 
 const STATE_ABBREVIATIONS: Record<string, string> = {

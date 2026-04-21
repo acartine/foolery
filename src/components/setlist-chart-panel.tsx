@@ -373,7 +373,7 @@ function buildChartCellClass(
     + " transition-[border-color,box-shadow,opacity]"
     + " duration-200"
     + (isActiveLease
-      ? " border-slate-500/85 shadow-[0_0_0_1px_rgba(51,65,85,0.18),0_4px_14px_rgba(51,65,85,0.14)]"
+      ? " border-paper-500/85 shadow-[0_0_0_1px_rgba(51,65,85,0.18),0_4px_14px_rgba(51,65,85,0.14)]"
       : isTerminal
       ? " border-zinc-300/90 opacity-85"
       : " border-zinc-400")
@@ -406,14 +406,14 @@ function ChartCellStatusIndicator({
       <span
         className={
           "inline-flex size-[14px] shrink-0 items-center justify-center"
-          + " rounded-full border border-slate-500/50"
-          + " bg-slate-950/8"
+          + " rounded-full border border-paper-500/50"
+          + " bg-walnut-400/8"
         }
         title="Active knot lease"
       >
         <span
           className={
-            "size-[5px] rounded-full bg-sky-500"
+            "size-[5px] rounded-full bg-lake-500"
             + " shadow-[0_0_10px_rgba(14,165,233,0.6)]"
             + " motion-safe:animate-pulse"
           }
@@ -428,7 +428,7 @@ function ChartCellStatusIndicator({
 
   return (
     <span
-      className="inline-flex size-[14px] shrink-0 items-center justify-center rounded-full bg-emerald-100/80 text-emerald-700"
+      className="inline-flex size-[14px] shrink-0 items-center justify-center rounded-full bg-moss-100/80 text-moss-700"
       title="Completed knot"
     >
       <CheckCircle2 className="size-[10px]" />

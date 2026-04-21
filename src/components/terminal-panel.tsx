@@ -31,13 +31,13 @@ function getTerminalPanelThemeClasses(lightTheme: boolean) {
   return {
     panel: lightTheme ? LIGHT_BG : DARK_BG,
     panelBorder: lightTheme
-      ? "border-t border-slate-300"
+      ? "border-t border-paper-300"
       : "border-t border-border",
     header: lightTheme ? LIGHT_HEADER : DARK_HEADER,
     headerBorder: lightTheme
-      ? "border-b border-slate-200"
+      ? "border-b border-paper-200"
       : "border-b border-white/10",
-    text: lightTheme ? "text-slate-900" : "text-white",
+    text: lightTheme ? "text-ink-900" : "text-white",
   };
 }
 

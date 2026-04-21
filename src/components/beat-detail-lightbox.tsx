@@ -429,7 +429,7 @@ function HeaderActions({
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       {isInheritedRolling ? (
-        <span className="text-xs font-semibold text-green-700 animate-pulse">
+        <span className="text-xs font-semibold text-moss-700 animate-pulse">
           Rolling...
         </span>
       ) : (

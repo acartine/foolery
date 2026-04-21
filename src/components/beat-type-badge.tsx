@@ -18,45 +18,45 @@ const typeConfig: Record<
 > = {
   bug: {
     icon: Bug,
-    color: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
+    color: "bg-rust-100 text-rust-700 dark:bg-rust-700 dark:text-rust-100",
   },
   feature: {
     icon: Lightbulb,
-    color: "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400",
+    color: "bg-feature-100 text-feature-700 dark:bg-feature-700 dark:text-feature-100",
   },
   task: {
     icon: CheckSquare,
-    color: "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400",
+    color: "bg-lake-100 text-lake-700 dark:bg-lake-700 dark:text-lake-100",
   },
   epic: {
     icon: Layers,
-    color: "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-400",
+    color: "bg-epic-100 text-epic-700 dark:bg-epic-700 dark:text-epic-100",
   },
   work: {
     icon: Wrench,
-    color: "bg-slate-50 text-slate-700 dark:bg-slate-950 dark:text-slate-400",
+    color: "bg-paper-200 text-ink-700 dark:bg-walnut-100 dark:text-paper-300",
   },
   chore: {
     icon: Wrench,
-    color: "bg-slate-50 text-slate-700 dark:bg-slate-950 dark:text-slate-400",
+    color: "bg-paper-200 text-ink-700 dark:bg-walnut-100 dark:text-paper-300",
   },
   "merge-request": {
     icon: GitMerge,
-    color: "bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-400",
+    color: "bg-mr-100 text-mr-700 dark:bg-mr-700 dark:text-mr-100",
   },
   molecule: {
     icon: Atom,
-    color: "bg-cyan-50 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-400",
+    color: "bg-molecule-100 text-molecule-700 dark:bg-molecule-700 dark:text-molecule-100",
   },
   gate: {
     icon: Shield,
-    color: "bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-400",
+    color: "bg-gate-100 text-gate-700 dark:bg-gate-700 dark:text-gate-100",
   },
 };
 
 const defaultConfig = {
   icon: CircleDot,
-  color: "bg-slate-50 text-slate-700 dark:bg-slate-950 dark:text-slate-400",
+  color: "bg-paper-200 text-ink-700 dark:bg-walnut-100 dark:text-paper-300",
 };
 
 function formatType(type: string): string {

@@ -11,9 +11,9 @@ import type { ResolvedAgentInfo } from "@/hooks/use-agent-info";
 import { formatAgentDisplayLabel } from "@/lib/agent-identity";
 
 const VENDOR_ICONS: Record<string, { icon: typeof Bot; color: string }> = {
-  claude: { icon: Sparkles, color: "text-purple-500" },
-  codex: { icon: Code2, color: "text-green-600" },
-  gemini: { icon: Diamond, color: "text-blue-500" },
+  claude: { icon: Sparkles, color: "text-clay-500" },
+  codex: { icon: Code2, color: "text-moss-600" },
+  gemini: { icon: Diamond, color: "text-lake-500" },
 };
 
 const DEFAULT_VENDOR_ICON = { icon: Bot, color: "text-muted-foreground" };
@@ -41,7 +41,7 @@ export function AgentInfoLine({ agent }: AgentInfoLineProps) {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Lightbulb className="ml-1 size-3.5 cursor-help text-amber-400" />
+            <Lightbulb className="ml-1 size-3.5 cursor-help text-feature-400" />
           </TooltipTrigger>
           <TooltipContent side="right">
             Configure in Settings

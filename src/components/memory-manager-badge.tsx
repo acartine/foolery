@@ -10,7 +10,7 @@ export function MemoryManagerBadge({ type }: { type?: string }) {
     <span
       className={
         isKnown
-          ? "inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 dark:bg-green-950 dark:text-green-400 px-2 py-0.5 rounded-full shrink-0"
+          ? "inline-flex items-center gap-1 text-xs text-moss-600 bg-moss-100 dark:bg-moss-700 dark:text-moss-400 px-2 py-0.5 rounded-full shrink-0"
           : "inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0"
       }
     >

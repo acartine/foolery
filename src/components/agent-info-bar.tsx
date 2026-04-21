@@ -35,43 +35,43 @@ function vendorTheme(
     return {
       icon: Sparkles,
       color: light
-        ? "text-purple-800"
-        : "text-purple-300",
+        ? "text-clay-800"
+        : "text-clay-300",
       bg: light
-        ? "bg-purple-50"
-        : "bg-purple-500/10",
+        ? "bg-clay-50"
+        : "bg-clay-500/10",
     };
   }
   if (vendor === "codex") {
     return {
       icon: Code2,
       color: light
-        ? "text-green-800"
-        : "text-green-300",
+        ? "text-moss-700"
+        : "text-moss-200",
       bg: light
-        ? "bg-green-50"
-        : "bg-green-500/10",
+        ? "bg-moss-100"
+        : "bg-moss-500/10",
     };
   }
   if (vendor === "gemini") {
     return {
       icon: Diamond,
       color: light
-        ? "text-blue-800"
-        : "text-blue-300",
+        ? "text-lake-700"
+        : "text-lake-400",
       bg: light
-        ? "bg-blue-50"
-        : "bg-blue-500/10",
+        ? "bg-lake-100"
+        : "bg-lake-500/10",
     };
   }
   return {
     icon: Bot,
     color: light
-      ? "text-slate-700"
-      : "text-slate-300",
+      ? "text-ink-700"
+      : "text-paper-300",
     bg: light
-      ? "bg-slate-50"
-      : "bg-slate-500/10",
+      ? "bg-paper-50"
+      : "bg-paper-500/10",
   };
 }
 
@@ -82,8 +82,8 @@ function stateBarColor(
   const s = state.trim().toLowerCase();
   if (s === "shipped") {
     return light
-      ? "bg-green-100 text-green-900"
-      : "bg-green-500/20 text-green-300";
+      ? "bg-moss-100 text-moss-700"
+      : "bg-moss-500/20 text-moss-200";
   }
   if (
     s === "abandoned"
@@ -91,27 +91,27 @@ function stateBarColor(
     || s === "deferred"
   ) {
     return light
-      ? "bg-gray-100 text-gray-800"
-      : "bg-gray-500/20 text-gray-400";
+      ? "bg-paper-100 text-ink-800"
+      : "bg-paper-500/20 text-paper-400";
   }
   if (s === "blocked") {
     return light
-      ? "bg-red-100 text-red-900"
-      : "bg-red-500/20 text-red-300";
+      ? "bg-rust-100 text-rust-700"
+      : "bg-rust-500/20 text-rust-400";
   }
   if (s.endsWith("_review")) {
     return light
-      ? "bg-purple-100 text-purple-900"
-      : "bg-purple-500/20 text-purple-300";
+      ? "bg-clay-100 text-clay-800"
+      : "bg-clay-500/20 text-clay-300";
   }
   if (s.startsWith("ready_for_")) {
     return light
-      ? "bg-blue-100 text-blue-900"
-      : "bg-blue-500/20 text-blue-300";
+      ? "bg-lake-100 text-lake-700"
+      : "bg-lake-500/20 text-lake-400";
   }
   return light
-    ? "bg-yellow-100 text-yellow-900"
-    : "bg-yellow-500/20 text-yellow-300";
+    ? "bg-ochre-100 text-ochre-700"
+    : "bg-ochre-500/20 text-ochre-400";
 }
 
 function formatState(state: string): string {
@@ -163,22 +163,22 @@ export function AgentInfoBar({
   );
 
   const borderCls = lightTheme
-    ? "border-b border-slate-200"
+    ? "border-b border-paper-200"
     : "border-b border-white/5";
   const timerPrimary = lightTheme
-    ? "text-sky-800"
-    : "text-cyan-300/80";
+    ? "text-lake-700"
+    : "text-molecule-400/80";
   const timerIcon = lightTheme
-    ? "text-sky-700"
-    : "text-cyan-400/60";
+    ? "text-lake-700"
+    : "text-molecule-400/60";
   const timerSecondary = lightTheme
-    ? "text-slate-600"
+    ? "text-ink-600"
     : "text-white/50";
   const timerSecondaryIcon = lightTheme
-    ? "text-slate-500"
+    ? "text-ink-500"
     : "text-white/30";
   const separator = lightTheme
-    ? "text-slate-400"
+    ? "text-paper-400"
     : "text-white/20";
 
   return (

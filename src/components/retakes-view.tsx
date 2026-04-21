@@ -129,10 +129,10 @@ function RetakeRow({
       <button
         type="button"
         className={
-          "shrink-0 rounded-md border border-amber-300"
-          + " bg-amber-50 px-3 py-1.5 text-xs font-semibold"
-          + " text-amber-800 hover:bg-amber-100"
-          + " hover:border-amber-400 transition-colors"
+          "shrink-0 rounded-md border border-feature-400"
+          + " bg-feature-100 px-3 py-1.5 text-xs font-semibold"
+          + " text-feature-700 hover:bg-feature-100"
+          + " hover:border-feature-400 transition-colors"
         }
         title="Flag regression and reopen this beat"
         onClick={() => onRetake(beat)}

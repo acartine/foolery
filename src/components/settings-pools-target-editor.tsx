@@ -19,14 +19,14 @@ import type { RegisteredAgent } from "@/lib/types";
 import type { PoolEntry } from "@/lib/schemas";
 
 const POOL_COLORS = [
-  "bg-blue-500",
-  "bg-emerald-500",
-  "bg-amber-500",
-  "bg-violet-500",
-  "bg-rose-500",
-  "bg-cyan-500",
-  "bg-orange-500",
-  "bg-teal-500",
+  "bg-lake-500",
+  "bg-moss-500",
+  "bg-feature-400",
+  "bg-clay-500",
+  "bg-rust-500",
+  "bg-molecule-400",
+  "bg-ochre-500",
+  "bg-mr-400",
 ];
 
 function formatPoolAgentLabel(

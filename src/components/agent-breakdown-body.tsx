@@ -122,8 +122,8 @@ function AgentBreakdownRow({
       <td
         className={`px-3 py-1.5 text-right tabular-nums ${
           row.rate >= row.meanRate
-            ? "text-green-600 dark:text-green-400"
-            : "text-red-600 dark:text-red-400"
+            ? "text-moss-600 dark:text-moss-400"
+            : "text-rust-500 dark:text-rust-400"
         }`}
       >
         {row.offset}

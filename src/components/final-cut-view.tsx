@@ -89,7 +89,7 @@ export function FinalCutView() {
               This queue is explicit from profile ownership and state.
             </p>
           </div>
-          <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700">
+          <Badge variant="outline" className="border-feature-400 bg-feature-100 text-feature-700">
             {beats.length} {beats.length === 1 ? "beat" : "beats"}
           </Badge>
         </div>

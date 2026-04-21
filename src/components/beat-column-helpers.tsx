@@ -39,16 +39,16 @@ export function formatLabel(val: string): string {
 }
 
 const LABEL_COLORS = [
-  "bg-red-100 text-red-800",
-  "bg-blue-100 text-blue-800",
-  "bg-green-100 text-green-800",
-  "bg-yellow-100 text-yellow-800",
-  "bg-purple-100 text-purple-800",
-  "bg-pink-100 text-pink-800",
-  "bg-indigo-100 text-indigo-800",
-  "bg-orange-100 text-orange-800",
-  "bg-teal-100 text-teal-800",
-  "bg-cyan-100 text-cyan-800",
+  "bg-rust-100 text-rust-700",
+  "bg-lake-100 text-lake-700",
+  "bg-moss-100 text-moss-700",
+  "bg-ochre-100 text-ochre-700",
+  "bg-clay-100 text-clay-800",
+  "bg-rust-100 text-rust-700",
+  "bg-gate-100 text-gate-700",
+  "bg-ochre-100 text-ochre-700",
+  "bg-mr-100 text-mr-700",
+  "bg-molecule-100 text-molecule-700",
 ];
 
 function labelColor(label: string): string {
@@ -111,11 +111,11 @@ function AddLabelDropdown({
           className={
             "inline-flex items-center rounded px-1.5 py-0"
             + " text-[10px] font-semibold leading-none"
-            + " bg-purple-100 text-purple-700"
-            + " hover:bg-purple-200"
-            + " dark:bg-purple-900/40"
-            + " dark:text-purple-300"
-            + " dark:hover:bg-purple-900/60"
+            + " bg-clay-100 text-clay-700"
+            + " hover:bg-clay-200"
+            + " dark:bg-clay-800/40"
+            + " dark:text-clay-300"
+            + " dark:hover:bg-clay-800/60"
           }
           onClick={(e) => e.stopPropagation()}
         >
@@ -191,7 +191,7 @@ function TitleMetaBadges({
             "inline-flex items-center rounded"
             + " px-1 py-0 text-[10px]"
             + " font-semibold leading-none"
-            + " bg-rose-100 text-rose-700"
+            + " bg-rust-100 text-rust-700"
           }
         >
           Human action
@@ -203,7 +203,7 @@ function TitleMetaBadges({
             "inline-flex items-center gap-0.5"
             + " rounded px-1 py-0 text-[10px]"
             + " font-medium leading-none"
-            + " bg-slate-100 text-slate-600"
+            + " bg-paper-100 text-ink-600"
           }
         >
           <Clapperboard className="size-2.5" />

@@ -62,7 +62,7 @@ function SummaryColumn({
         <button
           type="button"
           title="Expand full text"
-          className="text-green-700 font-bold cursor-pointer mt-0.5"
+          className="text-moss-700 font-bold cursor-pointer mt-0.5"
           onMouseEnter={onExpand}
         >
           ...show more...
@@ -89,8 +89,8 @@ function HandoffCapsulesColumn({
     : capsules.slice(0, 2);
 
   return (
-    <div className="min-w-0 rounded-b bg-blue-50 px-2 py-1 md:rounded-b-none xl:rounded-r">
-      <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-800">
+    <div className="min-w-0 rounded-b bg-lake-100 px-2 py-1 md:rounded-b-none xl:rounded-r">
+      <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-lake-700">
         Handoff Capsules
       </div>
       {visible.length > 0 ? (
@@ -125,7 +125,7 @@ function HandoffCapsulesColumn({
         <button
           type="button"
           title="Expand handoff capsules"
-          className="mt-0.5 cursor-pointer font-bold text-green-700"
+          className="mt-0.5 cursor-pointer font-bold text-moss-700"
           onMouseEnter={onExpand}
         >
           ...show more...
@@ -168,7 +168,7 @@ export function InlineSummary({
         <SummaryColumn
           label="Description"
           text={beat.description || ""}
-          bg="bg-green-50"
+          bg="bg-moss-100"
           rounded="rounded-t md:rounded-t-none xl:rounded-l"
           expanded={expanded}
           onExpand={() => {
@@ -179,7 +179,7 @@ export function InlineSummary({
         <SummaryColumn
           label="Acceptance criteria"
           text={beat.acceptance || ""}
-          bg={beat.acceptance ? "bg-emerald-50" : ""}
+          bg={beat.acceptance ? "bg-moss-100" : ""}
           rounded="rounded-none"
           expanded={expanded}
           onExpand={() => {
@@ -190,7 +190,7 @@ export function InlineSummary({
         <SummaryColumn
           label="Notes"
           text={beat.notes || ""}
-          bg={beat.notes ? "bg-yellow-50" : ""}
+          bg={beat.notes ? "bg-ochre-100" : ""}
           rounded="rounded-none"
           expanded={expanded}
           onExpand={() => {

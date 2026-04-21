@@ -21,9 +21,9 @@ const buttonVariants = cva(
           "border-transparent bg-transparent text-foreground/85 shadow-none hover:border-border/80 hover:bg-accent/60 hover:text-foreground enabled:hover:shadow-sm enabled:active:bg-accent/80 dark:text-foreground/80 dark:hover:border-border/60 dark:hover:bg-accent/40",
         link: "border-transparent bg-transparent p-0 text-primary underline-offset-4 shadow-none hover:underline",
         success:
-          "border-emerald-300 bg-emerald-600 text-white hover:bg-emerald-700 enabled:hover:shadow-md enabled:active:bg-emerald-800 dark:border-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600",
+          "border-moss-200 bg-moss-600 text-white hover:bg-moss-700 enabled:hover:shadow-md enabled:active:bg-moss-700 dark:border-moss-700 dark:bg-moss-700 dark:hover:bg-moss-600",
         "success-light":
-          "border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 enabled:hover:shadow-sm dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/45",
+          "border-moss-200 bg-moss-100 text-moss-700 hover:bg-moss-100 enabled:hover:shadow-sm dark:border-moss-700 dark:bg-moss-700/30 dark:text-moss-200 dark:hover:bg-moss-700/45",
       },
       size: {
         default: "h-8 px-3 has-[>svg]:px-2",

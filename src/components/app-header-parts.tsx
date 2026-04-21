@@ -42,7 +42,7 @@ export function VersionBannerBar(props: {
     banner, updateStatus, onUpdateNow, onDismiss,
   } = props;
   return (
-    <div className="mb-2 flex items-start justify-between gap-3 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+    <div className="mb-2 flex items-start justify-between gap-3 rounded-md border border-clay-200 bg-clay-100 px-3 py-2 text-sm text-clay-800">
       <p className="leading-6">
         New Foolery version{" "}
         <span className="font-semibold">
@@ -54,7 +54,7 @@ export function VersionBannerBar(props: {
           type="button"
           variant="link"
           size="xs"
-          className="h-auto px-0 font-semibold text-amber-950"
+          className="h-auto px-0 font-semibold text-clay-700"
           disabled={
             updateStatus.phase === "starting" ||
             updateStatus.phase === "updating" ||
@@ -65,7 +65,7 @@ export function VersionBannerBar(props: {
           {renderBannerUpdateLabel(updateStatus)}
         </Button>{" "}
         if automation fails, run{" "}
-        <code className="rounded bg-amber-100 px-1 py-0.5 font-mono text-xs">
+        <code className="rounded bg-clay-50 px-1 py-0.5 font-mono text-xs">
           {VERSION_UPDATE_COMMAND}
         </code>
         .
@@ -73,7 +73,7 @@ export function VersionBannerBar(props: {
       <Button
         size="icon"
         variant="ghost"
-        className="size-7 shrink-0 text-amber-900 hover:bg-amber-100 hover:text-amber-950"
+        className="size-7 shrink-0 text-clay-700 hover:bg-clay-200 hover:text-clay-800"
         title="Dismiss update banner"
         onClick={onDismiss}
       >
@@ -253,7 +253,7 @@ function ViewTab(props: {
       {icon}
       {label}
       {badge != null && badge > 0 && (
-        <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
+        <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
           {badge > 9 ? "9+" : badge}
         </span>
       )}

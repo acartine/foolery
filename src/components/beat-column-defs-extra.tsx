@@ -281,7 +281,7 @@ export function actionColumn(
           <span
             className={
               "text-xs font-semibold"
-              + " text-green-700 animate-pulse"
+              + " text-moss-700 animate-pulse"
             }
           >
             Rolling...
@@ -309,7 +309,7 @@ function renderRollingActive(
     <div className="inline-flex items-center gap-1.5">
       <span
         className={
-          "text-xs font-semibold text-green-700"
+          "text-xs font-semibold text-moss-700"
         }
       >
         Rolling...
@@ -319,8 +319,8 @@ function renderRollingActive(
         title="Terminating"
         className={
           "inline-flex h-5 w-5 items-center"
-          + " justify-center rounded bg-red-600"
-          + " text-white hover:bg-red-500"
+          + " justify-center rounded bg-rust-500"
+          + " text-white hover:bg-rust-500"
         }
         onClick={(e) => {
           e.stopPropagation();
@@ -340,8 +340,8 @@ function renderShipButton(
   onShipBeat: (beat: Beat) => void,
 ) {
   const color = isParent
-    ? "text-purple-700 hover:bg-purple-100"
-    : "text-blue-700 hover:bg-blue-100";
+    ? "text-clay-700 hover:bg-clay-100"
+    : "text-lake-700 hover:bg-lake-100";
   return (
     <button
       type="button"

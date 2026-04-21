@@ -26,7 +26,7 @@ export function MinimizedTerminalBar() {
       title="Click to restore terminal panel (Shift+T)"
     >
       {runningCount > 0 && (
-        <span className="inline-block size-2 rounded-full bg-blue-400 shadow-[0_0_8px_#60a5fa] animate-pulse" />
+        <span className="inline-block size-2 rounded-full bg-lake-400 shadow-[0_0_8px_#60a5fa] animate-pulse" />
       )}
       <span className="text-[11px] text-white/70">
         {runningCount > 0

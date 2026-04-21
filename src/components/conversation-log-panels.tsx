@@ -317,7 +317,7 @@ export function ConsolePanelContent({
       <DashedMessage
         tone={
           lightTheme
-            ? "text-slate-700"
+            ? "text-ink-700"
             : "text-white/75"
         }
         theme={theme}
@@ -346,7 +346,7 @@ export function ConsolePanelContent({
       <DashedMessage
         tone={
           lightTheme
-            ? "text-slate-600"
+            ? "text-ink-600"
             : "text-white/70"
         }
         theme={theme}

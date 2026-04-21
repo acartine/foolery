@@ -331,10 +331,10 @@ function ThemeToggle({
     }>
       {lightTheme
         ? <Sun className={
-            "size-3.5 text-amber-500"
+            "size-3.5 text-feature-400"
           } />
         : <Moon className={
-            "size-3.5 text-slate-400"
+            "size-3.5 text-paper-400"
           } />}
       <span className={cn(
         "text-[11px]", theme.muted,
@@ -347,10 +347,10 @@ function ThemeToggle({
         aria-label="Light Theme"
         className={
           lightTheme
-            ? "data-[state=checked]:bg-amber-500"
+            ? "data-[state=checked]:bg-feature-400"
               + " data-[state=unchecked]:"
-              + "bg-slate-300"
-            : "data-[state=checked]:bg-cyan-600"
+              + "bg-paper-300"
+            : "data-[state=checked]:bg-molecule-700"
               + " data-[state=unchecked]:"
               + "bg-white/20"
         }

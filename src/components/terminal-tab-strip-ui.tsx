@@ -149,10 +149,10 @@ function ScrollButton(props: {
       className={
         "shrink-0 rounded border p-1 transition-colors"
         + (props.lightTheme
-          ? " border-slate-300 text-slate-500"
-            + " enabled:hover:border-slate-400"
-            + " enabled:hover:bg-slate-100"
-            + " enabled:hover:text-slate-900"
+          ? " border-paper-300 text-ink-500"
+            + " enabled:hover:border-paper-400"
+            + " enabled:hover:bg-paper-100"
+            + " enabled:hover:text-ink-900"
           : " border-white/10 text-white/55"
             + " enabled:hover:border-white/30"
             + " enabled:hover:bg-white/10"
@@ -232,14 +232,14 @@ function TerminalTab(props: {
     : "max-w-[270px]";
 
   const stateClass = isPending
-    ? "animate-pulse border-amber-400/40"
-      + " bg-amber-500/30 text-amber-200"
+    ? "animate-pulse border-feature-400/40"
+      + " bg-feature-400/30 text-feature-100"
     : lightTheme
       ? isActive
-        ? "border-slate-300 bg-white text-slate-900"
-        : "border-transparent bg-slate-100"
-          + " text-slate-600 hover:border-slate-300"
-          + " hover:bg-slate-200 hover:text-slate-900"
+        ? "border-paper-300 bg-white text-ink-900"
+        : "border-transparent bg-paper-100"
+          + " text-ink-600 hover:border-paper-300"
+          + " hover:bg-paper-200 hover:text-ink-900"
       : isActive
         ? "border-white/25 bg-white/15 text-white"
         : "border-transparent bg-white/5"
@@ -288,7 +288,7 @@ function TerminalTab(props: {
       {isRunning ? (
         <span className={
           "inline-block size-1.5 shrink-0"
-          + " rounded-full bg-blue-400"
+          + " rounded-full bg-lake-400"
           + " animate-pulse"
         } />
       ) : (
@@ -312,10 +312,10 @@ function TabLabel(props: {
   lightTheme: boolean;
 }) {
   const prefixCls = props.lightTheme
-    ? "min-w-0 truncate text-slate-500"
+    ? "min-w-0 truncate text-ink-500"
     : "min-w-0 truncate text-white/45";
   const titleCls = props.lightTheme
-    ? "max-w-[160px] truncate text-slate-600"
+    ? "max-w-[160px] truncate text-ink-600"
     : "max-w-[160px] truncate text-white/50";
   return (
     <>
@@ -354,11 +354,11 @@ function TabCloseIcon(props: {
 }) {
   const colorClass =
     props.status === "completed"
-      ? "text-green-400 hover:bg-white/10"
-        + " hover:text-green-300"
+      ? "text-moss-400 hover:bg-white/10"
+        + " hover:text-moss-200"
       : props.status === "disconnected"
-        ? "text-orange-400 hover:bg-white/10"
-          + " hover:text-orange-300"
+        ? "text-ochre-400 hover:bg-white/10"
+          + " hover:text-ochre-400"
         : "text-white/55 hover:bg-white/10"
           + " hover:text-white";
 
