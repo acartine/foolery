@@ -1,0 +1,15 @@
+{
+  "event_id": "019db006-f004-7a71-bf6b-883421b6f113",
+  "occurred_at": "2026-04-21T12:32:17.924215Z",
+  "knot_id": "foolery-a9c0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented a launcher URL fix for 0.0.0.0 binds. The generated launcher now keeps the advertised URL truthful for status/start output while using a separate local control URL for health checks, doctor calls, and browser-open behavior.\n\nBranch: worktree-foolery-a9c0-launcher-url-log\nCommit: 95e7fb5be857bca1576182d6795bd75a2e149fd4\n\nVerification:\n- bun test src/lib/__tests__/install-launcher-path.test.ts\n- bun run lint\n- bunx tsc --noEmit\n- bun run test\n- bun run build",
+    "datetime": "2026-04-21T12:32:17.924215Z",
+    "entry_id": "019db006-f004-7a71-bf6b-88252cc77f02",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "gpt-5.4"
+  }
+}

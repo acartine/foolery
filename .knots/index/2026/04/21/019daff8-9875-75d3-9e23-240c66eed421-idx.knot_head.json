@@ -1,0 +1,37 @@
+{
+  "event_id": "019daff8-9875-75d3-9e23-240c66eed421",
+  "occurred_at": "2026-04-21T12:16:38.005282Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3cea",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "foolery-configure: show piped diff and confirm before writing over an existing config",
+    "type": "work",
+    "updated_at": "2026-04-21T12:16:38.005282Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019daff8-9858-7141-a5ad-5c750f8002e7"
+  }
+}

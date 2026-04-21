@@ -1,0 +1,15 @@
+{
+  "event_id": "019db01e-d108-73b2-9cdd-391dad73e440",
+  "occurred_at": "2026-04-21T12:58:22.855984Z",
+  "knot_id": "foolery-260e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation complete on branch 260e/retire-wizard at commit ed2f442311b168b8eed3feb84c81439647e0f23b.\n\nDeleted: scripts/setup.sh, agent-wizard.sh, dispatch-pools.sh, model-picker.sh, toml-reader.sh,\ntest-setup-scan-unmounted.sh, test-install-copilot-setup.sh, test-model-picker.sh,\ntest-model-picker-integration.sh, and 5 vitest specs that sourced those shells.\n\nRewrote setup_cmd in scripts/install.sh (see new SETUP_AGENT_PREFERENCE\narray and setup_resolve_agent/setup_invoke_agent/setup_fail_no_agent).\nPreference: claude, codex, opencode, gemini, copilot; FOOLERY_SETUP_AGENT\noverride honored; loud-fail path with UI fallback banner.\n\nbuild-runtime-artifact.sh now copies .claude/skills/foolery-configure/SKILL.md\ninto the runtime tarball at foolery-runtime/skills/foolery-configure/SKILL.md.\n\nNew test coverage in src/lib/__tests__/install-setup-cmd.test.ts (6 tests)\nexercises: stdin-to-claude, codex-fallback, FOOLERY_SETUP_AGENT override,\nno-CLI loud fail, bad-override loud fail, missing skill fail.\n\nLocal verification:\n- bash -n scripts/install.sh OK\n- bun run lint OK\n- bunx tsc --noEmit OK\n- bun run test OK (264 files, 2708 passed, 11 skip, 42 todo)\n- bun run build OK\n- bash scripts/build-runtime-artifact.sh OK; SKILL.md in tarball byte-identical to source.\n- grep for setup.sh|agent-wizard|dispatch-pools|model-picker|toml-reader\n  across .ts/.tsx/.sh/.md/.json: no live refs (only CHANGELOG, audit doc,\n  schemas.ts description - the latter outside the do-not-touch list).\n\nReview artifact: origin/260e/retire-wizard.",
+    "datetime": "2026-04-21T12:58:22.855984Z",
+    "entry_id": "019db01e-d108-73b2-9cdd-390e81eedffa",
+    "model": "claude-opus-4.7",
+    "username": "unknown",
+    "version": "1m"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019db003-3933-7673-b5af-7e2816c4f8eb",
+  "occurred_at": "2026-04-21T12:28:14.51537Z",
+  "knot_id": "foolery-ea54",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:ea54/doctor-config-validate"
+  }
+}

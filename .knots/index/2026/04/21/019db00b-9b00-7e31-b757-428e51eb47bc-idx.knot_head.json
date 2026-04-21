@@ -1,0 +1,21 @@
+{
+  "event_id": "019db00b-9b00-7e31-b757-428e51eb47bc",
+  "occurred_at": "2026-04-21T12:37:23.840812Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ea54",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add foolery config validate as a doctor check",
+    "type": "work",
+    "updated_at": "2026-04-21T12:37:23.840812Z",
+    "workflow_id": "work_sdlc"
+  }
+}

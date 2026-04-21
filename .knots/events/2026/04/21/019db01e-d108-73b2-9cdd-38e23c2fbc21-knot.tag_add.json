@@ -1,0 +1,9 @@
+{
+  "event_id": "019db01e-d108-73b2-9cdd-38e23c2fbc21",
+  "occurred_at": "2026-04-21T12:58:22.855984Z",
+  "knot_id": "foolery-260e",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:260e/retire-wizard"
+  }
+}

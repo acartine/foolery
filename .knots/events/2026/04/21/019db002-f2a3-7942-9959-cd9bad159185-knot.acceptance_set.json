@@ -1,0 +1,9 @@
+{
+  "event_id": "019db002-f2a3-7942-9959-cd9bad159185",
+  "occurred_at": "2026-04-21T12:27:56.440864Z",
+  "knot_id": "foolery-bd86",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. With `FOOLERY_HOST=0.0.0.0`, the installed launcher prints a truthful startup/status URL derived from the configured bind/advertised settings rather than forcing `127.0.0.1`.\n2. The launcher preserves a sane default for localhost binds and remains able to start the production Next server normally.\n3. Automated coverage exists for the launcher URL behavior so regressions are caught."
+  }
+}

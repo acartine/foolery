@@ -1,0 +1,17 @@
+{
+  "event_id": "019db003-55e5-7611-976a-bc9cb444eb09",
+  "occurred_at": "2026-04-21T12:28:21.861257Z",
+  "knot_id": "foolery-a9c0",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nWhen the installed `foolery` launcher is started with `FOOLERY_HOST=0.0.0.0`, its startup/status output must report the actual configured external URL instead of silently rewriting the display URL to `127.0.0.1`. The launcher should keep bind host and advertised URL semantics coherent so operators are not misled about how the server is listening.\n\nVerification:\n1. Start the installed launcher with `FOOLERY_HOST=0.0.0.0` and verify the printed startup URL is not rewritten to `127.0.0.1`.\n2. Confirm the generated launcher still starts Next with `--hostname \"$HOST\" --port \"$PORT\"`.\n3. Run targeted tests covering launcher URL derivation for `FOOLERY_HOST=0.0.0.0` and a normal localhost bind.\n\nConstraints:\n- Fix the installed runtime launcher path, not only `bun dev`.\n- Do not require callers to set both `FOOLERY_HOST` and `FOOLERY_URL` just to get truthful output.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Fix launcher URL logging for 0.0.0.0 bind",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

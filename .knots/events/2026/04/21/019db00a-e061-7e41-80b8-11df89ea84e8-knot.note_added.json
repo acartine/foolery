@@ -1,0 +1,15 @@
+{
+  "event_id": "019db00a-e061-7e41-80b8-11df89ea84e8",
+  "occurred_at": "2026-04-21T12:36:36.065027Z",
+  "knot_id": "foolery-a9c0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped to origin/main.\n\nMain commit: 1173f1b18cb1dfee8f212d2fbae59b5cbbededfc\nFeature branch: worktree-foolery-a9c0-launcher-url-log\nCI: https://github.com/acartine/foolery/actions/runs/24722597223\nCoverage Badge: https://github.com/acartine/foolery/actions/runs/24722597228",
+    "datetime": "2026-04-21T12:36:36.065027Z",
+    "entry_id": "019db00a-e061-7e41-80b8-11c2188b7395",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "gpt-5.4"
+  }
+}

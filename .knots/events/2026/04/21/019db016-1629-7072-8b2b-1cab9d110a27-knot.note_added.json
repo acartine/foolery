@@ -1,0 +1,15 @@
+{
+  "event_id": "019db016-1629-7072-8b2b-1cab9d110a27",
+  "occurred_at": "2026-04-21T12:48:50.729576Z",
+  "knot_id": "foolery-260e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "# Implementation Plan — Retire foolery setup wizard\n\n## Files to delete (repo)\n- scripts/setup.sh (1516 LOC)\n- scripts/agent-wizard.sh (676 LOC)\n- scripts/dispatch-pools.sh (241 LOC)\n- scripts/model-picker.sh (275 LOC)\n- scripts/toml-reader.sh (300 LOC)\n- scripts/test-setup-scan-unmounted.sh (wizard-only)\n- scripts/test-install-copilot-setup.sh (wizard-only PTY smoke test)\n- scripts/test-model-picker.sh (wizard-only)\n- scripts/test-model-picker-integration.sh (wizard-only)\n- src/lib/__tests__/setup-settings-writer.test.ts (sources setup.sh/agent-wizard.sh)\n- src/lib/__tests__/setup-model-discovery.test.ts\n- src/lib/__tests__/setup-interactive.test.ts\n- src/lib/__tests__/setup-additive.test.ts\n- src/lib/__tests__/model-picker-filter.test.ts\nKeep scripts/test-copilot-settings-ui.{sh,mjs} — they exercise the UI fallback.\n\n## package.json\n- Delete test:smoke:copilot:install.\n- Keep test:smoke:copilot:ui.\n\n## scripts/install.sh\n- Remove top-level SETUP_URL var (line 15).\n- Remove launcher-template SETUP_URL (line 218) and the env-wiring on line 781.\n- Rewrite setup_cmd:\n  1. Resolve $APP_DIR/skills/foolery-configure/SKILL.md; fail loudly if missing.\n  2. Detect first CLI in order: claude, codex, opencode, gemini, copilot; honor FOOLERY_SETUP_AGENT.\n  3. Invoke per CLI:\n     - claude: exec claude < \"$skill\"\n     - codex: exec codex exec \"$(cat \"$skill\")\"\n     - opencode: exec opencode run \"$(cat \"$skill\")\"\n     - gemini: exec gemini -p \"$(cat \"$skill\")\"\n     - copilot: exec copilot -p \"$(cat \"$skill\")\"\n  4. If no CLI / override missing, fail loudly with expected list + UI fallback.\n\n## scripts/build-runtime-artifact.sh\n- After bundling the config CLI, copy .claude/skills/foolery-configure/SKILL.md into $RUNTIME_DIR/skills/foolery-configure/SKILL.md.\n\n## Docs\n- scripts/README.md: remove dead bullets; point at foolery-configure skill.\n- README.md lines 86-96: reflect new flow (hands skill to agent CLI; UI fallback).\n- docs/audit/beats-usage-inventory.md: note wizard retirement; historical mentions OK.\n\n## Tests\n- Update src/lib/__tests__/install-launcher-path.test.ts: drop the FOOLERY_SETUP_URL expectation; add tests that stub claude/codex on PATH and assert the generated launcher invokes them with SKILL.md content; add a no-CLI test asserting loud failure.\n\n## Verification\n- bash -n scripts/install.sh\n- bun run lint && bunx tsc --noEmit && bun run test && bun run build\n- bash scripts/build-runtime-artifact.sh; tar -tzf dist/foolery-runtime-*.tar.gz | grep foolery-configure\n- grep -rn \"setup.sh|agent-wizard|dispatch-pools|model-picker|toml-reader\" (no live refs)",
+    "datetime": "2026-04-21T12:48:50.729576Z",
+    "entry_id": "019db016-1629-7072-8b2b-1c9fab8f11c2",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

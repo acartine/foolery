@@ -1,0 +1,17 @@
+{
+  "event_id": "019daffb-6719-7142-aa14-f342b392a5d8",
+  "occurred_at": "2026-04-21T12:19:41.977917Z",
+  "knot_id": "foolery-ea54",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nTeach `foolery doctor` (backed by `src/lib/doctor-checks.ts` and surfaced via `GET /api/doctor` + launcher `doctor_cmd`) to run `foolery config validate ~/.config/foolery/settings.toml` as an additional check. A validate-failure ≠ 0 surfaces as a diagnostic the user can see, with the Zod error field path in the message. Validate exit 0 is a silent pass.\n\nVerification:\n1. `bun run lint`, `bunx tsc --noEmit`, `bun run test`, `bun run build` all exit 0.\n2. In a dev server, hitting `GET /api/doctor` returns a response that includes a new check keyed by `settings-config-validate` (or similar). On a valid settings.toml the check has severity \"info\"/\"ok\"; on a broken one it has severity \"error\" with the Zod field path in `.message`.\n3. Adding a new Zod-rejected row to a scratch `settings.toml` (e.g. `maxConcurrentSessions = 999`) and running `foolery doctor` surfaces the error in the launcher output.\n4. A unit test covers both the OK path and the schema-violation path (using a tempdir + fake TOML fixture, no global mutation of `~/.config`).\n\nConstraints:\n- The check must fail loudly: never hide schema violations under a generic \"config problem\" message — pass the Zod field path and received value straight through.\n- The check must NOT require the bundled CLI `cli/foolery-config.mjs` to be present (that file ships with the runtime tarball but in dev we run from source). Call the Zod schema directly from `src/lib/schemas.ts` and `smol-toml` — do not shell out.\n- Max 500 LOC/file, 100 LOC/function, 100 cols/line. `doctor-checks.ts` is already substantial; if you push it over 500 LOC, extract the new check to its own module and import it.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add foolery config validate as a doctor check",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

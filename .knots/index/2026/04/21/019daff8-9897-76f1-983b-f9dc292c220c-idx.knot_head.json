@@ -1,0 +1,21 @@
+{
+  "event_id": "019daff8-9897-76f1-983b-f9dc292c220c",
+  "occurred_at": "2026-04-21T12:16:38.03961Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3cea",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "foolery-configure: show piped diff and confirm before writing over an existing config",
+    "type": "work",
+    "updated_at": "2026-04-21T12:16:38.03961Z",
+    "workflow_id": "work_sdlc"
+  }
+}
