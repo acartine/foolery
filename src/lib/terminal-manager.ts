@@ -62,6 +62,10 @@ export type {
   WorkflowPromptTarget,
 } from "@/lib/terminal-manager-workflow";
 export {
+  killSession,
+  terminateSession,
+} from "@/lib/terminal-manager-signal";
+export {
   type SessionEntry,
   INPUT_CLOSE_GRACE_MS,
   resolveAgentCommand,
