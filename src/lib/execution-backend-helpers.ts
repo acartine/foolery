@@ -89,9 +89,6 @@ export async function prepareTakeKnots(
   }
   const claimResult = await claimKnot(
     input.beatId, input.repoPath, {
-      agentName: input.agentInfo?.agentName,
-      agentModel: input.agentInfo?.agentModel,
-      agentVersion: input.agentInfo?.agentVersion,
       leaseId: knotsLeaseId,
     },
   );
@@ -346,7 +343,6 @@ export async function preparePollKnots(
   }
   const pollResult = await pollKnot(
     input.repoPath, {
-      ...input.agentInfo,
       leaseId: knotsLeaseId,
     },
   );

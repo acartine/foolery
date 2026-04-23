@@ -82,9 +82,6 @@ export async function newKnot(
 // ── Claim ────────────────────────────────────────────────────
 
 export interface ClaimKnotOptions {
-  agentName?: string;
-  agentModel?: string;
-  agentVersion?: string;
   leaseId?: string;
 }
 
@@ -94,15 +91,6 @@ export async function claimKnot(
   options?: ClaimKnotOptions,
 ): Promise<BdResult<KnotClaimPrompt>> {
   const args = ["claim", id, "--json"];
-  if (options?.agentName) {
-    args.push("--agent-name", options.agentName);
-  }
-  if (options?.agentModel) {
-    args.push("--agent-model", options.agentModel);
-  }
-  if (options?.agentVersion) {
-    args.push("--agent-version", options.agentVersion);
-  }
   if (options?.leaseId) args.push("--lease", options.leaseId);
   const { stdout, stderr, exitCode } = await execWrite(args, { repoPath });
   if (exitCode !== 0) return fail(stderr, "claim");
@@ -175,9 +163,6 @@ export async function setKnotProfile(
 
 export interface PollKnotOptions {
   stage?: string;
-  agentName?: string;
-  agentModel?: string;
-  agentVersion?: string;
   leaseId?: string;
 }
 
@@ -187,13 +172,6 @@ export async function pollKnot(
 ): Promise<BdResult<KnotClaimPrompt>> {
   const args = ["poll", "--claim", "--json"];
   if (options?.stage) args.push(options.stage);
-  if (options?.agentName) {
-    args.push("--agent-name", options.agentName);
-  }
-  if (options?.agentModel) {
-    args.push("--agent-model", options.agentModel);
-  }
-  if (options?.agentVersion) args.push("--agent-version", options.agentVersion);
   if (options?.leaseId) args.push("--lease", options.leaseId);
   const { stdout, stderr, exitCode } = await execWrite(args, { repoPath });
   if (exitCode !== 0) return fail(stderr, "poll --claim");
@@ -262,16 +240,6 @@ function appendNoteArgs(
   if (input.noteDatetime) {
     args.push("--note-datetime", input.noteDatetime);
   }
-  args.push(
-    "--note-agentname",
-    input.noteAgentname || "foolery",
-  );
-  if (input.noteModel) {
-    args.push("--note-model", input.noteModel);
-  }
-  if (input.noteVersion) {
-    args.push("--note-version", input.noteVersion);
-  }
 }
 
 function appendHandoffArgs(
@@ -288,16 +256,6 @@ function appendHandoffArgs(
   );
   if (input.handoffDatetime) {
     args.push("--handoff-datetime", input.handoffDatetime);
-  }
-  args.push(
-    "--handoff-agentname",
-    input.handoffAgentname || "foolery",
-  );
-  if (input.handoffModel) {
-    args.push("--handoff-model", input.handoffModel);
-  }
-  if (input.handoffVersion) {
-    args.push("--handoff-version", input.handoffVersion);
   }
 }
 

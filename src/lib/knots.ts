@@ -180,15 +180,9 @@ export interface KnotUpdateInput {
   addNote?: string;
   noteUsername?: string;
   noteDatetime?: string;
-  noteAgentname?: string;
-  noteModel?: string;
-  noteVersion?: string;
   addHandoffCapsule?: string;
   handoffUsername?: string;
   handoffDatetime?: string;
-  handoffAgentname?: string;
-  handoffModel?: string;
-  handoffVersion?: string;
   addInvariants?: string[];
   removeInvariants?: string[];
   clearInvariants?: boolean;

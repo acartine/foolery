@@ -255,9 +255,6 @@ export class StructuredExecutionBackend implements ExecutionBackendPort {
         const note = `${lease.rollback.note} Reason: ${input.reason}`;
         const result = await updateKnot(lease.beatId, {
           addNote: note,
-          noteAgentname: lease.agentInfo?.agentName,
-          noteModel: lease.agentInfo?.agentModel,
-          noteVersion: lease.agentInfo?.agentVersion,
         }, lease.repoPath);
         if (!result.ok) {
           return fail(result.error ?? `Failed to record rollback note for ${lease.beatId}`);

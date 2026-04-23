@@ -358,14 +358,13 @@ export async function buildSingleTakePrompt(
 
 export async function buildPollPromptImpl(
   rp: string,
+  // options reserved for future poll filters; agent identity comes from the
+  // bound lease per the knots-agent-identity-contract.
   options?: PollPromptOptions,
 ): Promise<BackendResult<PollPromptResult>> {
+  void options;
   const pollResult = fromKnots(
-    await knots.pollKnot(rp, {
-      agentName: options?.agentName,
-      agentModel: options?.agentModel,
-      agentVersion: options?.agentVersion,
-    }),
+    await knots.pollKnot(rp, {}),
   );
   if (!pollResult.ok) {
     return propagateError<PollPromptResult>(pollResult);
