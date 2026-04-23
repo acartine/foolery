@@ -29,6 +29,7 @@ Knots passes workflow-native states through directly; Foolery no longer translat
 | Hierarchy | parent-child uses `parent_of` edges |
 | Labels | Foolery labels map 1:1 to Knots tags |
 | Raw state preservation | backend writes raw Knots state to `bead.metadata.knotsState` |
+| Agent identity | lease is the declared source; `--agent-*` / `--note-*` / `--handoff-*` flags on non-`lease create` subcommands are deprecated, ignored at runtime, and emit a stderr warning (see [knots-agent-identity-contract.md](knots-agent-identity-contract.md)) |
 
 ## Canonical Source of Truth
 
