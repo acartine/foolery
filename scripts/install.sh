@@ -482,19 +482,19 @@ clear_stale_pid() {
 
 read_installed_version() {
   local version
-  if [[ -f "\$APP_DIR/RELEASE_VERSION" ]]; then
-    version="\$(tr -d '[:space:]' <"\$APP_DIR/RELEASE_VERSION")"
+  if [[ -f "\$APP_DIR/package.json" ]]; then
+    version="\$(sed -nE 's/^[[:space:]]*"version":[[:space:]]*"([^"]+)".*$/\1/p' "\$APP_DIR/package.json" | head -n 1)"
     if [[ -n "\$version" ]]; then
       printf '%s\n' "\$version"
       return 0
     fi
   fi
 
-  if [[ ! -f "\$APP_DIR/package.json" ]]; then
+  if [[ ! -f "\$APP_DIR/RELEASE_VERSION" ]]; then
     return 1
   fi
 
-  version="\$(sed -nE 's/^[[:space:]]*"version":[[:space:]]*"([^"]+)".*$/\1/p' "\$APP_DIR/package.json" | head -n 1)"
+  version="\$(tr -d '[:space:]' <"\$APP_DIR/RELEASE_VERSION")"
   if [[ -z "\$version" ]]; then
     return 1
   fi
@@ -624,6 +624,15 @@ maybe_print_update_banner() {
     tip "New Foolery version available: \${latest_tag} (installed \${installed_version})"
     tip "Upgrade: curl -fsSL https://raw.githubusercontent.com/\$RELEASE_OWNER/\$RELEASE_REPO/main/scripts/install.sh | bash"
   fi
+}
+
+print_version() {
+  local version
+  if ! version="\$(read_installed_version)"; then
+    fail "Unable to determine installed version from \$APP_DIR/package.json."
+  fi
+
+  printf '%s\n' "\$version"
 }
 
 macos_browser_has_url_open() {
@@ -1468,6 +1477,7 @@ usage() {
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color setup)"     "setup"     "\$r" "\$desc_style" "Hand the foolery-configure skill to an agent CLI" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color config)"    "config"    "\$r" "\$desc_style" "Print settings JSON Schema or validate a TOML file" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color update)"    "update"    "\$r" "\$desc_style" "Download and install the latest Foolery runtime" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color version)"   "version"   "\$r" "\$desc_style" "Print the installed Foolery version" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color stop)"      "stop"      "\$r" "\$desc_style" "Stop the background Foolery process" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color restart)"   "restart"   "\$r" "\$desc_style" "Restart Foolery" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color status)"    "status"    "\$r" "\$desc_style" "Show process/log status" "\$r"
@@ -1479,6 +1489,13 @@ usage() {
 main() {
   local cmd="\${1:-open}"
   shift || true
+
+  case "\$cmd" in
+    version|-V|--version)
+      print_version
+      return 0
+      ;;
+  esac
 
   maybe_print_update_banner
 
@@ -1497,6 +1514,9 @@ main() {
       ;;
     update)
       update_cmd "\$@"
+      ;;
+    version)
+      print_version
       ;;
     stop)
       stop_cmd "\$@"
