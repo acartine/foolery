@@ -1625,7 +1625,7 @@ main() {
       existing_port_pid="$(lsof -nP -iTCP:3210 -sTCP:LISTEN -t 2>/dev/null | head -n 1 || true)"
     fi
     if [[ ! "$existing_port_pid" =~ ^[0-9]+$ ]] && command -v ss >/dev/null 2>&1; then
-      existing_port_pid="$(ss -ltnp 'sport = :3210' 2>/dev/null | grep -oE 'pid=[0-9]+' | head -n 1 | cut -d= -f2)"
+      existing_port_pid="$(ss -ltnp 'sport = :3210' 2>/dev/null | grep -oE 'pid=[0-9]+' | head -n 1 | cut -d= -f2 || true)"
     fi
     if [[ "$existing_port_pid" =~ ^[0-9]+$ ]]; then
       warn "Port 3210 is already in use (pid $existing_port_pid). Run 'foolery stop' or free the port before restart."
