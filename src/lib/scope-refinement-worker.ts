@@ -401,11 +401,17 @@ export async function enqueueBeatScopeRefinement(
   beatId: string,
   repoPath?: string,
 ): Promise<ScopeRefinementJob | null> {
+  console.log(
+    `[scope-refinement] evaluating ${beatId}`
+      + ` (repo=${repoPath ?? "<none>"})`,
+  );
   const agent = await getScopeRefinementAgent();
   if (!agent) {
     console.log(
       `[scope-refinement] skipped ${beatId}:`
-        + " no agent configured",
+        + " no agent configured"
+        + " (check dispatchMode, pools.scope_refinement,"
+        + " and actions.scopeRefinement)",
     );
     return null;
   }
@@ -415,8 +421,13 @@ export async function enqueueBeatScopeRefinement(
     beatId,
     repoPath,
   });
+  const agentLabel = agent.agentId
+    ?? agent.label
+    ?? agent.vendor
+    ?? "unknown";
   console.log(
-    `[scope-refinement] enqueued ${beatId}`,
+    `[scope-refinement] enqueued ${beatId}`
+      + ` with agent=${agentLabel}`,
   );
   return job;
 }
