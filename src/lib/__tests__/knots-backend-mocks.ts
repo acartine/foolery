@@ -244,9 +244,9 @@ export const mockUpdateKnot = vi.fn(
         content: input.addNote,
         username: input.noteUsername ?? "unknown",
         datetime: input.noteDatetime ?? nowIso(),
-        agentname: input.noteAgentname ?? "unknown",
-        model: input.noteModel ?? "unknown",
-        version: input.noteVersion ?? "unknown",
+        agentname: "unknown",
+        model: "unknown",
+        version: "unknown",
       });
     }
 
@@ -255,9 +255,9 @@ export const mockUpdateKnot = vi.fn(
         content: input.addHandoffCapsule,
         username: input.handoffUsername ?? "unknown",
         datetime: input.handoffDatetime ?? nowIso(),
-        agentname: input.handoffAgentname ?? "unknown",
-        model: input.handoffModel ?? "unknown",
-        version: input.handoffVersion ?? "unknown",
+        agentname: "unknown",
+        model: "unknown",
+        version: "unknown",
       });
     }
 

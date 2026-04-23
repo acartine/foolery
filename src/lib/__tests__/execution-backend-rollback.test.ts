@@ -272,7 +272,7 @@ describe("rollbackIteration: metadata and edge cases", () => {
   let seb: StructuredExecutionBackend;
   beforeEach(() => { seb = setupRollbackTest(); });
 
-    it("passes agent metadata as fallback on rollback note", async () => {
+    it("omits agent identity fields on rollback note (lease is source)", async () => {
     mockResolveMemoryManagerType.mockReturnValue("knots");
     mockClaimKnot.mockResolvedValue({
       ok: true,
@@ -295,9 +295,10 @@ describe("rollbackIteration: metadata and edge cases", () => {
     expect(result.ok).toBe(true);
     expect(mockUpdateKnot).toHaveBeenCalledOnce();
     const [, updateInput] = mockUpdateKnot.mock.calls[0];
-    expect(updateInput.noteAgentname).toBe("Claude");
-    expect(updateInput.noteModel).toBe("opus/claude");
-    expect(updateInput.noteVersion).toBe("4.6");
+    expect(updateInput.addNote).toContain("test failure");
+    expect(updateInput.noteAgentname).toBeUndefined();
+    expect(updateInput.noteModel).toBeUndefined();
+    expect(updateInput.noteVersion).toBeUndefined();
   });
 
   it("terminates the knots lease on completeIteration", async () => {

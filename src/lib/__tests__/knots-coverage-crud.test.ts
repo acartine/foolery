@@ -290,23 +290,20 @@ describe("claimKnot", () => {
     expect(result.data?.id).toBe("42");
   });
 
-  it("passes agent options", async () => {
+  it("passes leaseId and omits deprecated agent flags", async () => {
     responseQueue.push({
       stdout: JSON.stringify({
         id: "42", title: "T", state: "open",
         profile_id: "a", prompt: "p",
       }),
     });
-    await claimKnot("42", "/repo", {
-      agentName: "claude", agentModel: "opus", agentVersion: "1.0",
-    });
+    await claimKnot("42", "/repo", { leaseId: "lease-xyz" });
     const callArgs = execFileCallArgs[0]!;
-    expect(callArgs).toContain("--agent-name");
-    expect(callArgs).toContain("claude");
-    expect(callArgs).toContain("--agent-model");
-    expect(callArgs).toContain("opus");
-    expect(callArgs).toContain("--agent-version");
-    expect(callArgs).toContain("1.0");
+    expect(callArgs).toContain("--lease");
+    expect(callArgs).toContain("lease-xyz");
+    expect(callArgs).not.toContain("--agent-name");
+    expect(callArgs).not.toContain("--agent-model");
+    expect(callArgs).not.toContain("--agent-version");
   });
 
   it("returns error on non-zero exit", async () => {
@@ -341,7 +338,7 @@ describe("pollKnot", () => {
     expect(result.data?.id).toBe("99");
   });
 
-  it("passes stage and agent options", async () => {
+  it("passes stage and leaseId, omits deprecated agent flags", async () => {
     responseQueue.push({
       stdout: JSON.stringify({
         id: "99", title: "T", state: "open",
@@ -350,13 +347,15 @@ describe("pollKnot", () => {
     });
     await pollKnot("/repo", {
       stage: "implementation",
-      agentName: "claude", agentModel: "opus", agentVersion: "2.0",
+      leaseId: "lease-abc",
     });
     const callArgs = execFileCallArgs[0]!;
     expect(callArgs).toContain("implementation");
-    expect(callArgs).toContain("--agent-name");
-    expect(callArgs).toContain("--agent-model");
-    expect(callArgs).toContain("--agent-version");
+    expect(callArgs).toContain("--lease");
+    expect(callArgs).toContain("lease-abc");
+    expect(callArgs).not.toContain("--agent-name");
+    expect(callArgs).not.toContain("--agent-model");
+    expect(callArgs).not.toContain("--agent-version");
   });
 
   it("returns error on non-zero exit", async () => {
@@ -380,18 +379,16 @@ describe("pollKnot", () => {
 });
 
 describe("updateKnot", () => {
-  it("succeeds with all options", async () => {
+  it("succeeds with all options and omits deprecated agent flags", async () => {
     responseQueue.push({});
     const result = await updateKnot("42", {
       title: "New Title", description: "New desc",
       priority: 1, status: "closed", type: "bug",
       addTags: ["tag1", "tag2"], removeTags: ["old-tag"],
       addNote: "A note", noteUsername: "user1",
-      noteDatetime: "2026-01-01", noteAgentname: "claude",
-      noteModel: "opus", noteVersion: "1.0",
+      noteDatetime: "2026-01-01",
       addHandoffCapsule: "Capsule text", handoffUsername: "user2",
-      handoffDatetime: "2026-01-02", handoffAgentname: "agent2",
-      handoffModel: "model2", handoffVersion: "2.0",
+      handoffDatetime: "2026-01-02",
       executionPlanFile: "/tmp/plan.json",
       force: true,
     }, "/repo");
@@ -401,6 +398,37 @@ describe("updateKnot", () => {
     expect(callArgs).toContain("--execution-plan-file");
     expect(callArgs).toContain("/tmp/plan.json");
     expect(callArgs).toContain("--force");
+    expect(callArgs).not.toContain("--note-agentname");
+    expect(callArgs).not.toContain("--note-model");
+    expect(callArgs).not.toContain("--note-version");
+    expect(callArgs).not.toContain("--handoff-agentname");
+    expect(callArgs).not.toContain("--handoff-model");
+    expect(callArgs).not.toContain("--handoff-version");
+  });
+
+  it("omits deprecated agent flags from note args", async () => {
+    responseQueue.push({});
+    await updateKnot("42", { addNote: "a note" }, "/repo");
+    const callArgs = execFileCallArgs[0]!;
+    expect(callArgs).toContain("--add-note=a note");
+    expect(callArgs).toContain("--note-username");
+    expect(callArgs).toContain("foolery");
+    expect(callArgs).not.toContain("--note-agentname");
+    expect(callArgs).not.toContain("--note-model");
+    expect(callArgs).not.toContain("--note-version");
+  });
+
+  it("omits deprecated agent flags from handoff args", async () => {
+    responseQueue.push({});
+    await updateKnot("42", {
+      addHandoffCapsule: "capsule",
+    }, "/repo");
+    const callArgs = execFileCallArgs[0]!;
+    expect(callArgs).toContain("--add-handoff-capsule=capsule");
+    expect(callArgs).toContain("--handoff-username");
+    expect(callArgs).not.toContain("--handoff-agentname");
+    expect(callArgs).not.toContain("--handoff-model");
+    expect(callArgs).not.toContain("--handoff-version");
   });
 
   it("skips empty tag strings", async () => {

@@ -355,11 +355,9 @@ describe("buildPollPrompt", () => {
     expect(result.ok).toBe(true);
     expect(result.data?.claimedId).toBe(created.data!.id);
     expect(result.data?.prompt).toContain("Poll target");
-    expect(mockPollKnot).toHaveBeenCalledWith("/repo", {
-      agentName: "test-agent",
-      agentModel: "test-model",
-      agentVersion: undefined,
-    });
+    // Agent identity flags no longer forwarded to kno poll --claim;
+    // identity comes from the bound lease per the agent-identity contract.
+    expect(mockPollKnot).toHaveBeenCalledWith("/repo", {});
   });
 
   it("returns error when no claimable work exists", async () => {

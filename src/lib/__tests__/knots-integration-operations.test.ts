@@ -134,17 +134,14 @@ describe("claimKnot", () => {
       id: "K-1", title: "Claimed", state: "impl",
       profile_id: "auto", prompt: "# Claimed",
     };
-    const promise = claimKnot("K-1", "/repo", {
-      agentName: "test-agent",
-      agentModel: "test-model",
-      agentVersion: "v1",
-    });
+    const promise = claimKnot("K-1", "/repo", { leaseId: "L-1" });
     await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));
     const args = execFileCallbacks[0].args;
     expect(args).toEqual(expect.arrayContaining(["claim", "K-1", "--json"]));
-    expect(args).toEqual(expect.arrayContaining(["--agent-name", "test-agent"]));
-    expect(args).toEqual(expect.arrayContaining(["--agent-model", "test-model"]));
-    expect(args).toEqual(expect.arrayContaining(["--agent-version", "v1"]));
+    expect(args).toEqual(expect.arrayContaining(["--lease", "L-1"]));
+    expect(args).not.toContain("--agent-name");
+    expect(args).not.toContain("--agent-model");
+    expect(args).not.toContain("--agent-version");
     resolveNext(JSON.stringify(prompt));
     const result = await promise;
     expect(result.ok).toBe(true);
@@ -205,17 +202,16 @@ describe("pollKnot", () => {
     };
     const promise = pollKnot("/repo", {
       stage: "implementation",
-      agentName: "agent1",
-      agentModel: "model1",
-      agentVersion: "v2",
+      leaseId: "L-2",
     });
     await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));
     const args = execFileCallbacks[0].args;
     expect(args).toEqual(expect.arrayContaining(["poll", "--claim", "--json"]));
     expect(args).toEqual(expect.arrayContaining(["implementation"]));
-    expect(args).toEqual(expect.arrayContaining(["--agent-name", "agent1"]));
-    expect(args).toEqual(expect.arrayContaining(["--agent-model", "model1"]));
-    expect(args).toEqual(expect.arrayContaining(["--agent-version", "v2"]));
+    expect(args).toEqual(expect.arrayContaining(["--lease", "L-2"]));
+    expect(args).not.toContain("--agent-name");
+    expect(args).not.toContain("--agent-model");
+    expect(args).not.toContain("--agent-version");
     resolveNext(JSON.stringify(prompt));
     const result = await promise;
     expect(result.ok).toBe(true);
@@ -241,17 +237,15 @@ describe("pollKnot", () => {
 });
 
 describe("updateKnot", () => {
-  it("builds args for all update fields", async () => {
+  it("builds args for all update fields and omits agent identity flags", async () => {
     const promise = updateKnot("K-1", {
       title: "New Title", description: "New Desc",
       priority: 2, status: "implementing", type: "task",
       addTags: ["bug", "urgent"], removeTags: ["stale"],
       addNote: "Work started", noteUsername: "user1",
-      noteDatetime: "2025-01-01T00:00:00Z", noteAgentname: "agent1",
-      noteModel: "model1", noteVersion: "v1",
+      noteDatetime: "2025-01-01T00:00:00Z",
       addHandoffCapsule: "Handoff data", handoffUsername: "user2",
-      handoffDatetime: "2025-01-02T00:00:00Z", handoffAgentname: "agent2",
-      handoffModel: "model2", handoffVersion: "v2",
+      handoffDatetime: "2025-01-02T00:00:00Z",
       force: true,
     }, "/repo");
     await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));
@@ -261,9 +255,45 @@ describe("updateKnot", () => {
     expect(args).toEqual(expect.arrayContaining(["--description=New Desc"]));
     expect(args).toEqual(expect.arrayContaining(["--priority", "2"]));
     expect(args).toEqual(expect.arrayContaining(["--force"]));
+    expect(args).not.toContain("--note-agentname");
+    expect(args).not.toContain("--note-model");
+    expect(args).not.toContain("--note-version");
+    expect(args).not.toContain("--handoff-agentname");
+    expect(args).not.toContain("--handoff-model");
+    expect(args).not.toContain("--handoff-version");
     resolveNext("");
     const result = await promise;
     expect(result.ok).toBe(true);
+  });
+
+  it("addNote omits agent identity flags", async () => {
+    const promise = updateKnot("K-1", {
+      addNote: "just a note",
+    }, "/repo");
+    await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));
+    const args = execFileCallbacks[0].args;
+    expect(args).toEqual(expect.arrayContaining(["--add-note=just a note"]));
+    expect(args).not.toContain("--note-agentname");
+    expect(args).not.toContain("--note-model");
+    expect(args).not.toContain("--note-version");
+    resolveNext("");
+    await promise;
+  });
+
+  it("addHandoffCapsule omits agent identity flags", async () => {
+    const promise = updateKnot("K-1", {
+      addHandoffCapsule: "capsule",
+    }, "/repo");
+    await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));
+    const args = execFileCallbacks[0].args;
+    expect(args).toEqual(
+      expect.arrayContaining(["--add-handoff-capsule=capsule"]),
+    );
+    expect(args).not.toContain("--handoff-agentname");
+    expect(args).not.toContain("--handoff-model");
+    expect(args).not.toContain("--handoff-version");
+    resolveNext("");
+    await promise;
   });
 
   it("skips empty tags", async () => {
