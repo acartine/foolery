@@ -1,0 +1,17 @@
+{
+  "event_id": "019dc39d-ab5f-7433-a4fd-bb74b17a6d45",
+  "occurred_at": "2026-04-25T07:49:43.39129Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nDesign and implement an interactive human approval system for CLI adapter approval requests. When any supported adapter requests approval, Foolery should create a visible approval item on the Escalations screen. Escalations must have two tabs: the existing human-owned beats view and a new Approvals view.\n\nVerification:\n1. Identify the existing Escalations/human-owned beats route, components, data source, and tests before editing.\n2. Define an approval request data model that can represent Codex, OpenCode, Claude, Copilot, and Gemini approval/user-input events without losing server/tool/message/parameters/session/beat context.\n3. Implement Escalations tabs: one tab preserves the current human-owned beats view exactly, and the new Approvals tab lists pending approval requests.\n4. Add UI actions for the supported approval lifecycle discovered by implementation research: approve, deny, dismiss, or mark unsupported as appropriate. Unsupported adapter actions must fail loudly and explain the missing wiring.\n5. Add automated tests for tab rendering, approval item creation from adapter events, state transitions, and regression coverage that the existing human-owned beats view still works.\n6. Run targeted UI/unit tests, then bun run lint, bunx tsc --noEmit, bun run test, and bun run build.\n\nConstraints:\n- This depends on approval visibility/adapter event plumbing; do not invent a parallel hidden approval store if an existing session/event store can be extended safely.\n- The current human-owned beats view remains available as the first or clearly default tab unless product context says otherwise.\n- Approval requests must link back to the relevant beat/session/history console so users can inspect context before acting.\n- If a CLI cannot be programmatically approved yet, the UI must still show the request and explain the manual action required.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add interactive approvals tab",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

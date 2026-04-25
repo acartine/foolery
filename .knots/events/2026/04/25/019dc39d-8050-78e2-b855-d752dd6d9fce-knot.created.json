@@ -1,0 +1,17 @@
+{
+  "event_id": "019dc39d-8050-78e2-b855-d752dd6d9fce",
+  "occurred_at": "2026-04-25T07:49:32.368317Z",
+  "knot_id": "foolery-b7c0",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nAuthoritatively determine how to configure Codex and OpenCode so all Playwright requests are automatically approved, with no hallucination or assumptions. The output must include primary-source evidence and an automated verification harness that proves whether Playwright requests are auto-approved for both CLIs.\n\nVerification:\n1. Research Codex approval behavior using primary sources only: official OpenAI/Codex documentation, Codex CLI help output, installed Codex package/source, or reproducible local protocol traces. Record exact versions and commands used.\n2. Research OpenCode approval behavior using primary sources only: official OpenCode documentation, OpenCode CLI help output, installed OpenCode package/source, or reproducible local protocol traces. Record exact versions and commands used.\n3. Build or document an automated verification harness that triggers at least one Playwright request for Codex and one for OpenCode and proves whether it runs without manual approval.\n4. The harness must fail loudly if approval is requested, skipped, silently denied, or hidden.\n5. Save a concise proof artifact or note on the knot with commands, output excerpts, versions, and the final recommended configuration.\n\nConstraints:\n- No assumptions from memory. No undocumented flags unless verified by local CLI help/source or successful automated execution.\n- The claim must be 100% scoped: exactly which Playwright transport/MCP server, which CLI, which version, which flags/config, and which request classes are auto-approved.\n- If full auto-approval cannot be proven, say so and document the exact missing proof or limitation.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "explore",
+    "state": "ready_for_exploration",
+    "title": "Prove Playwright auto-approval",
+    "type": "explore",
+    "workflow_id": "explore_sdlc"
+  }
+}

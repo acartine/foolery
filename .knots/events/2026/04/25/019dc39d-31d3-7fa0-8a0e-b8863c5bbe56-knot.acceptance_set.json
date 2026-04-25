@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc39d-31d3-7fa0-8a0e-b8863c5bbe56",
+  "occurred_at": "2026-04-25T07:49:12.258269Z",
+  "knot_id": "foolery-a89b",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Codex item/agentMessage/delta events with params.delta render visible assistant text in the terminal Detail stream and history console.\n2. Codex item/agentMessage/delta events with params.text render the same visible assistant text as params.delta.\n3. Codex item/commandExecution/outputDelta events with params.delta render visible command output in the terminal Detail stream and history console.\n4. Codex item/commandExecution/outputDelta events with params.text render the same visible command output as params.delta.\n5. Empty Codex reasoning completions do not produce user-visible (no text) content_block_delta spam.\n6. The fix includes automated regression tests and passes lint, typecheck, tests, and build."
+  }
+}

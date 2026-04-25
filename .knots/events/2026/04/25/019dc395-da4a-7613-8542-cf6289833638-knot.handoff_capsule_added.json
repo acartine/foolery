@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc395-da4a-7613-8542-cf6289833638",
+  "occurred_at": "2026-04-25T07:41:11.114811Z",
+  "knot_id": "foolery-babd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete for Codex detail output visibility. Root cause: live Codex JSON-RPC uses params.delta, but Foolery reads params.text and drops real assistant text; commandExecution/outputDelta is listed but untranslated; empty reasoning completions produce '(no text)'. Live evidence is in /home/cartine/.config/foolery/logs/foolery/2026-04-25/term-1777101921516-37ganw.jsonl for foolery-f354. Also observed separate hang: foreground dev server launched under Codex and playwright approval request left thread waitingOnApproval. Next step should implement in a dedicated worktree, mainly src/lib/codex-jsonrpc-session.ts, terminal-manager formatting, and focused tests.",
+    "datetime": "2026-04-25T07:41:11.114811Z",
+    "entry_id": "019dc395-da4a-7613-8542-cf58cafff5f4",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

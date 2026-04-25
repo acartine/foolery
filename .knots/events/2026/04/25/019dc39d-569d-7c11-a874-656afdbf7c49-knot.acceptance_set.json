@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc39d-569d-7c11-a874-656afdbf7c49",
+  "occurred_at": "2026-04-25T07:49:21.678669Z",
+  "knot_id": "foolery-c30f",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Codex Playwright mcpServer/elicitation/request events show up in the live terminal console with server, tool, message, and parameter summary.\n2. The same Codex approval request shows up in the history screen console for the session after reload.\n3. Approval/request events from all supported Foolery CLI adapters are either surfaced in both consoles or explicitly covered by tests proving that adapter has no such approval event shape.\n4. The implementation includes automated regression tests for live terminal emission and history rendering/persistence.\n5. A hung approval wait can be diagnosed from the UI without opening raw JSONL logs.\n6. Lint, typecheck, tests, and build pass."
+  }
+}

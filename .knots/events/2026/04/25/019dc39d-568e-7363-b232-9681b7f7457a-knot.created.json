@@ -1,0 +1,17 @@
+{
+  "event_id": "019dc39d-568e-7363-b232-9681b7f7457a",
+  "occurred_at": "2026-04-25T07:49:21.678669Z",
+  "knot_id": "foolery-c30f",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nMake every CLI approval request visible immediately in the live terminal console and in the history screen console, with enough detail to explain exactly why an agent is waiting or hung. The f354 live session showed a Codex mcpServer/elicitation/request for Playwright browser_evaluate at 2026-04-25T07:29:50Z, but the UI did not make that critical clue obvious.\n\nVerification:\n1. Add automated fixtures for each supported CLI adapter/dialect that can request approval or user input: Claude, Codex, OpenCode, Copilot, and Gemini. Unsupported approval shapes must be documented explicitly in the test or implementation notes.\n2. For Codex, feed mcpServer/elicitation/request with tool name, server name, message, and tool_params_display; assert the live terminal receives a visible stderr or high-visibility event.\n3. Assert the same approval request is persisted in the session/history data and appears in the history screen console rendering.\n4. Verify Playwright approval requests include serverName=playwright, requested tool name, message, and enough parameter detail to identify the attempted action.\n5. Run targeted terminal/history tests, then bun run lint, bunx tsc --noEmit, bun run test, and bun run build.\n\nConstraints:\n- This is a visibility requirement, not an auto-approval feature.\n- Approval requests must never be swallowed as debug-only or Detail-only noise.\n- The console text must be greppable and visually obvious; include a stable phrase such as FOOLERY APPROVAL REQUIRED unless an existing project convention is found.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Show CLI approval requests",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

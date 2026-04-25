@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc39d-ab66-71c3-8471-60ea3ff4d803",
+  "occurred_at": "2026-04-25T07:49:43.39129Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The Escalations screen has two tabs: the existing human-owned beats view and a new Approvals view.\n2. The existing human-owned beats view remains functionally equivalent and covered by regression tests.\n3. Approval requests from supported CLI adapter event shapes create visible entries in the Approvals tab with beat ID, session ID, adapter/provider, tool/server, message, and parameter summary.\n4. Users can take the implemented approval lifecycle action from the Approvals tab, or see a loud unsupported/manual-action explanation when programmatic approval is not available.\n5. Approval entries link to or identify the related live/history console context.\n6. The implementation includes automated tests and passes lint, typecheck, tests, and build."
+  }
+}

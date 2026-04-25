@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc39d-8059-7100-9ffd-1da399d50fdc",
+  "occurred_at": "2026-04-25T07:49:32.368317Z",
+  "knot_id": "foolery-b7c0",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The knot contains primary-source citations or local source/help references for Codex Playwright approval behavior.\n2. The knot contains primary-source citations or local source/help references for OpenCode Playwright approval behavior.\n3. An automated verification harness or script proves Codex Playwright requests are auto-approved under the documented configuration, or proves they are not.\n4. An automated verification harness or script proves OpenCode Playwright requests are auto-approved under the documented configuration, or proves they are not.\n5. The final note includes exact CLI versions, exact config/flags, exact commands, and proof output.\n6. No recommendation is made unless the proof demonstrates that all intended Playwright requests are automatically approved."
+  }
+}

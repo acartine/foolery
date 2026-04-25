@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc39d-ab73-75f0-a259-28784c350c9c",
+  "occurred_at": "2026-04-25T07:49:43.39129Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "escalations"
+  }
+}

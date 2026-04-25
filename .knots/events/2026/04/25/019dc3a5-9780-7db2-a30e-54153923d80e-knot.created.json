@@ -1,0 +1,17 @@
+{
+  "event_id": "019dc3a5-9780-7db2-a30e-54153923d80e",
+  "occurred_at": "2026-04-25T07:58:22.59227Z",
+  "knot_id": "foolery-7420",
+  "type": "knot.created",
+  "data": {
+    "body": "Follow-up from foolery-b7c0. Add a checked-in or documented harness that starts a local HTTP page with an unprompted random title, runs Codex and OpenCode non-interactively, and fails loudly unless the output contains a completed Playwright MCP navigation tool call, the observed title, and no approval-request/rejection/skipped-tool signal. Include a decision on OpenCode scope: current proof shows Codex per-server MCP approval works, OpenCode scoped permission.playwright does not approve generated tool permission playwright_browser_navigate, and OpenCode --dangerously-skip-permissions works but is broad.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Codify Playwright auto-approval harness",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

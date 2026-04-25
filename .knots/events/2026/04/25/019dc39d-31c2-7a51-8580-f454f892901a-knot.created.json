@@ -1,0 +1,17 @@
+{
+  "event_id": "019dc39d-31c2-7a51-8580-f454f892901a",
+  "occurred_at": "2026-04-25T07:49:12.258269Z",
+  "knot_id": "foolery-a89b",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nFix Foolery's Codex adapter so live Codex JSON-RPC text and command output are visible instead of collapsing into empty Detail lines. Use the live adrian evidence from /home/cartine/.config/foolery/logs/foolery/2026-04-25/term-1777101921516-37ganw.jsonl, where item/agentMessage/delta and item/commandExecution/outputDelta carry content in params.delta.\n\nVerification:\n1. Add focused automated tests that feed Codex JSON-RPC item/agentMessage/delta with params.delta and params.text; both must normalize to equivalent non-empty stream_event text.\n2. Add focused automated tests that feed item/commandExecution/outputDelta with params.delta and params.text; both must surface equivalent non-empty command output events.\n3. Add a regression test for empty reasoning item/completed events so they do not render content_block_delta lines with (no text).\n4. Run the targeted adapter/terminal-format tests, then bun run lint, bunx tsc --noEmit, bun run test, and bun run build.\n\nConstraints:\n- Keep the blast radius isolated to Codex-specific adapter paths whenever possible.\n- If any shared parsing/formatting path is touched, it must support both delta and text keys equally and preserve existing behavior for Claude, OpenCode, Copilot, and Gemini.\n- Treat outputDelta the same way: Codex-specific code may normalize Codex fields directly; any shared helper must accept both delta and text without privileging one.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Fix Codex adapter deltas",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

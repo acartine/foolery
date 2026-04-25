@@ -1,0 +1,17 @@
+{
+  "event_id": "019dc391-d23c-71e2-bc2e-1f9e3e3ba9b1",
+  "occurred_at": "2026-04-25T07:36:46.908735Z",
+  "knot_id": "foolery-babd",
+  "type": "knot.created",
+  "data": {
+    "body": "Investigate why Codex detail terminal output renders repeated '(no text)' lines and hides useful failure/assistant content. Use f354 session logs as evidence, then update Foolery's Codex event parsing/rendering so unsupported or non-text Codex events are surfaced intelligibly instead of silently collapsing into '(no text)'. Validate with focused tests and quality gates as feasible.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Fix Codex detail output visibility",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

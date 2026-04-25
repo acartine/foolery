@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc39d-ab7e-7773-82d2-a5e1f1f8aea1",
+  "occurred_at": "2026-04-25T07:49:43.39129Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "adapter"
+  }
+}

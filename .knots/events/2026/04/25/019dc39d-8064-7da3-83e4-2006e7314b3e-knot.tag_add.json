@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc39d-8064-7da3-83e4-2006e7314b3e",
+  "occurred_at": "2026-04-25T07:49:32.368317Z",
+  "knot_id": "foolery-b7c0",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "playwright"
+  }
+}

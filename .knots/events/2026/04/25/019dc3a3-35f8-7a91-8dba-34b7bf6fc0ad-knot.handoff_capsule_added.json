@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc3a3-35f8-7a91-8dba-34b7bf6fc0ad",
+  "occurred_at": "2026-04-25T07:55:46.552778Z",
+  "knot_id": "foolery-c30f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff for c30f after planning:\nClaimed state was `planning`; no source edits were made. The likely bug is that Codex JSON-RPC filters out `mcpServer/elicitation/request` in `src/lib/codex-jsonrpc-session.ts`, while history rendering summarizes raw persisted response lines separately in `src/components/agent-history-utils.tsx`. Implement a shared approval visibility helper, wire Codex `mcpServer/elicitation/request` and Gemini `session/request_permission`, make Claude/Copilot `AskUserQuestion` loud, explicitly cover/document OpenCode, and test both live terminal `pushEvent` output and persisted history console rendering. Use `FOOLERY APPROVAL REQUIRED` and include the Playwright fixture details: `serverName=playwright`, tool `browser_evaluate`, message `Allow the playwright MCP server to run tool \"browser_evaluate\"?`, plus params/tool_params_display. Next implementation should happen in a dedicated worktree with `bun install --frozen-lockfile`, then targeted tests and full gates.",
+    "datetime": "2026-04-25T07:55:46.552778Z",
+    "entry_id": "019dc3a3-35f8-7a91-8dba-34a7e4e1328e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

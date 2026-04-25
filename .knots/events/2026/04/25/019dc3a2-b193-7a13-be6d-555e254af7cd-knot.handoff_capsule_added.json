@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc3a2-b193-7a13-be6d-555e254af7cd",
+  "occurred_at": "2026-04-25T07:55:12.659256Z",
+  "knot_id": "foolery-a89b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff capsule for a89b planning: implement in a dedicated git worktree on a short-lived local branch, run `bun install --frozen-lockfile`, then keep the fix Codex-specific. Main targets are `src/lib/codex-jsonrpc-session.ts`, `src/lib/agent-adapter-normalizers.ts`, and focused tests under `src/lib/__tests__`. Use the adrian evidence that both `item/agentMessage/delta` and `item/commandExecution/outputDelta` carry text in `params.delta`; preserve `params.text` support too. Add pipeline tests for JSON-RPC delta/text variants, command outputDelta delta/text variants, and an empty reasoning regression that returns null rather than rendering `(no text)`. Run targeted tests, then lint, typecheck, unit tests, and build before integrating to remote main. No PR workflow.",
+    "datetime": "2026-04-25T07:55:12.659256Z",
+    "entry_id": "019dc3a2-b193-7a13-be6d-55469c18bbc9",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

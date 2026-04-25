@@ -1,0 +1,37 @@
+{
+  "event_id": "019dc3a0-df3f-7b40-a55d-a76e9ff0a989",
+  "occurred_at": "2026-04-25T07:53:13.279481Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b7c0",
+    "profile_id": "explore",
+    "state": "exploration",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "exploration",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Prove Playwright auto-approval",
+    "type": "explore",
+    "updated_at": "2026-04-25T07:53:13.279481Z",
+    "workflow_id": "explore_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019dc39d-8050-78e2-b855-d76b93d8bf54"
+  }
+}
