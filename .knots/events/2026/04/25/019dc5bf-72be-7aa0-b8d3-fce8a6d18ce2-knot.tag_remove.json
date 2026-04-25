@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc5bf-72be-7aa0-b8d3-fce8a6d18ce2",
+  "occurred_at": "2026-04-25T17:45:51.5505Z",
+  "knot_id": "foolery-f354",
+  "type": "knot.tag_remove",
+  "data": {
+    "tag": "branch:worktree-foolery-f354-ship-action"
+  }
+}

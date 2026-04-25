@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc5d2-db61-71c0-b9c4-92635135b75d",
+  "occurred_at": "2026-04-25T18:07:03.521662Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-f354",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Queues: Add 'Shipped' state transition from queue screen, beat detail, and multi-select",
+    "type": "work",
+    "updated_at": "2026-04-25T18:07:03.521662Z",
+    "workflow_id": "work_sdlc"
+  }
+}

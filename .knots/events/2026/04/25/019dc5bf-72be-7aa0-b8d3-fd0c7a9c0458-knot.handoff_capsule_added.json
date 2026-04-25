@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc5bf-72be-7aa0-b8d3-fd0c7a9c0458",
+  "occurred_at": "2026-04-25T17:45:51.5505Z",
+  "knot_id": "foolery-f354",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "# Handoff — implementation complete\n\nArtifact:\n- Branch: worktree-foolery-f354-bulk-ship-action\n- Commit: 54fea985\n\nDelivered:\n- Queue row state dropdown now includes a Correction section that surfaces terminal targets like Shipped and routes them through the same markTerminal correction path.\n- Queue multi-select action bar now shows a dedicated Ship action that ships selected beats directly and still skips already-terminal beats via the existing guard/toast flow.\n- Beat detail terminal state changes now route through markTerminalOrThrow instead of the generic PATCH update path, so Shipped succeeds there too.\n\nValidation:\n- bun run lint\n- bunx tsc --noEmit\n- bun run test\n- bun run build\n- Playwright (mocked /api/beats on http://127.0.0.1:3100): per-row ship, bulk ship, and beat-detail ship all transitioned to Shipped with loadCount=1 (no full page reload during the state changes).",
+    "datetime": "2026-04-25T17:45:51.5505Z",
+    "entry_id": "019dc5bf-72be-7aa0-b8d3-fcfdfe5a0991",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
