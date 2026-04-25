@@ -11,7 +11,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/stores/app-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
-import { X, Clapperboard, Merge, Check, RefreshCw } from "lucide-react";
+import {
+  X,
+  Clapperboard,
+  Merge,
+  Check,
+  RefreshCw,
+} from "lucide-react";
 import type { BeatPriority } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import { builtinWorkflowDescriptors, compareWorkflowStatePriority } from "@/lib/workflows";
@@ -204,6 +210,7 @@ function BulkStateSelect(
 }
 
 export function BulkEditControls({
+  viewPhase,
   selectedIds,
   onBulkUpdate,
   onClearSelection,
@@ -212,10 +219,15 @@ export function BulkEditControls({
   onRefineScope,
 }: Required<
   Pick<FilterBarProps,
-    "selectedIds" | "onBulkUpdate" | "onClearSelection">
+    | "selectedIds"
+    | "onBulkUpdate"
+    | "onClearSelection">
 > & Pick<
   FilterBarProps,
-  "onSceneBeats" | "onMergeBeats" | "onRefineScope"
+  | "viewPhase"
+  | "onSceneBeats"
+  | "onMergeBeats"
+  | "onRefineScope"
 >) {
   const [pending, setPending] = useState<PendingBulkFields>({});
   const [resetKey, setResetKey] = useState(0);
@@ -237,13 +249,21 @@ export function BulkEditControls({
     setResetKey((k) => k + 1);
   }, [hasPending, pending, onBulkUpdate]);
 
+  const handleShip = useCallback(() => {
+    onBulkUpdate({ state: "shipped" });
+    setPending({});
+    setResetKey((k) => k + 1);
+  }, [onBulkUpdate]);
+
   return (
     <div className="flex items-center gap-1 overflow-x-auto">
       <span className="text-sm font-medium whitespace-nowrap">
         {selectedIds.length} selected
       </span>
       <BulkActionButtons
+        viewPhase={viewPhase}
         selectedIds={selectedIds}
+        onShip={handleShip}
         onSceneBeats={onSceneBeats}
         onMergeBeats={onMergeBeats}
         onRefineScope={onRefineScope}
@@ -277,17 +297,37 @@ export function BulkEditControls({
 }
 
 interface BulkActionButtonsProps {
+  viewPhase?: ViewPhase;
   selectedIds: string[];
+  onShip: () => void;
   onSceneBeats?: (ids: string[]) => void;
   onMergeBeats?: (ids: string[]) => void;
   onRefineScope?: (ids: string[]) => void;
 }
 
 function BulkActionButtons(
-  { selectedIds, onSceneBeats, onMergeBeats, onRefineScope }: BulkActionButtonsProps,
+  {
+    viewPhase,
+    selectedIds,
+    onShip,
+    onSceneBeats,
+    onMergeBeats,
+    onRefineScope,
+  }: BulkActionButtonsProps,
 ) {
   return (
     <>
+      {viewPhase === "queues" && (
+        <Button
+          variant="success-light"
+          size="lg"
+          className={MULTISELECT_SUCCESS_CLASS}
+          title="Ship selected beats"
+          onClick={onShip}
+        >
+          <Check className="size-4" />Ship
+        </Button>
+      )}
       {onSceneBeats && selectedIds.length >= 2 && (
         <Button
           variant="success-light"
@@ -438,6 +478,7 @@ export function FilterBar({
   if (selectedIds && selectedIds.length > 0 && onBulkUpdate && onClearSelection) {
     return (
       <BulkEditControls
+        viewPhase={viewPhase}
         selectedIds={selectedIds}
         onBulkUpdate={onBulkUpdate}
         onClearSelection={onClearSelection}

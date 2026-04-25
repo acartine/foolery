@@ -6,6 +6,7 @@ import { BeatStateBadge } from "@/components/beat-state-badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -92,6 +93,7 @@ function renderStateDropdown(
   const workflow = builtinProfileDescriptor(
     beat.profileId,
   );
+  const terminals = workflow.terminalStates ?? [];
   const rawKnoState =
     typeof beat.metadata?.knotsState === "string"
       ? beat.metadata.knotsState
@@ -160,17 +162,58 @@ function renderStateDropdown(
               </DropdownMenuLabel>
             </>
           )}
-          {rollback.map((s) => (
-            <DropdownMenuRadioItem
-              key={s}
-              value={s}
-            >
-              {formatStateName(s)}
-            </DropdownMenuRadioItem>
-          ))}
+        {rollback.map((s) => (
+          <DropdownMenuRadioItem
+            key={s}
+            value={s}
+          >
+            {formatStateName(s)}
+          </DropdownMenuRadioItem>
+        ))}
         </DropdownMenuRadioGroup>
+        {renderTerminalCorrections(
+          terminals,
+          beat,
+          r,
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+function renderTerminalCorrections(
+  terminals: string[],
+  beat: Beat,
+  r: ResolvedOpts,
+) {
+  if (terminals.length === 0) return null;
+  return (
+    <>
+      <DropdownMenuSeparator />
+      <DropdownMenuLabel
+        className={
+          "flex items-center gap-1"
+          + " text-xs text-muted-foreground"
+        }
+      >
+        <Undo2 className="size-3" />
+        Correction
+      </DropdownMenuLabel>
+      {terminals.map((terminal) => (
+        <DropdownMenuItem
+          key={`correction-${terminal}`}
+          onSelect={() =>
+            r.onUpdateBeat!(
+              beat.id,
+              { state: terminal },
+              repoPathForBeat(beat),
+            )
+          }
+        >
+          {formatStateName(terminal)}
+        </DropdownMenuItem>
+      ))}
+    </>
   );
 }
 

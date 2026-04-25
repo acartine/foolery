@@ -17,7 +17,10 @@ import {
   fetchWorkflows,
   addDep,
 } from "@/lib/api";
-import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
+import {
+  markTerminalOrThrow,
+  updateBeatOrThrow,
+} from "@/lib/update-beat-mutation";
 import {
   invalidateBeatListQueries,
 } from "@/lib/beat-query-cache";
@@ -35,6 +38,12 @@ export interface BeatDetailData {
     target: string;
   }) => void;
 }
+
+const DETAIL_TERMINAL_TARGETS = new Set([
+  "shipped",
+  "abandoned",
+  "closed",
+]);
 
 export function useBeatDetailData(
   open: boolean,
@@ -210,7 +219,7 @@ function useUpdateBeatMutation(
     mutationFn: async (
       fields: UpdateBeatInput,
     ) =>
-      updateBeatOrThrow(
+      dispatchBeatDetailUpdate(
         beat ? [beat] : [],
         detailId,
         fields,
@@ -242,6 +251,34 @@ function useUpdateBeatMutation(
         repo,
       ),
   });
+}
+
+export async function dispatchBeatDetailUpdate(
+  beats: Beat[],
+  detailId: string,
+  fields: UpdateBeatInput,
+  repo: string | undefined,
+): Promise<void> {
+  const targetState = fields.state?.trim().toLowerCase();
+  if (
+    targetState !== undefined
+    && DETAIL_TERMINAL_TARGETS.has(targetState)
+  ) {
+    await markTerminalOrThrow(
+      beats,
+      detailId,
+      targetState,
+      undefined,
+      repo,
+    );
+    return;
+  }
+  await updateBeatOrThrow(
+    beats,
+    detailId,
+    fields,
+    repo,
+  );
 }
 
 async function optimisticUpdate(
