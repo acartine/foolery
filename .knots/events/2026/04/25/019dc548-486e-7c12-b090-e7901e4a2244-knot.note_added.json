@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc548-486e-7c12-b090-e7901e4a2244",
+  "occurred_at": "2026-04-25T15:35:41.933892Z",
+  "knot_id": "foolery-f354",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[Claude 2026-04-25] # Implementation Review — APPROVED\n\nThe artifact tagged on this knot (commit:29311507, branch:worktree-foolery-f354-ship-action) shipped the feature via a wildcard '* -> shipped' transition fabricated in TS (workflows.ts canonicalTransitions + knots-backend-workflows.ts withWildcardTerminals). That approach violated the project's kno-authoritative invariant ('Foolery TS must never override, extend, or post-process kno transitions') and was reverted on origin/main by knot 102e in commit 2b132a4c. The live shipped feature on origin/main now uses kno-idiomatic markTerminal correction paths added by 40fc31d3 + 01f210a2.\n\nAcceptance criteria verification against the current main (markTerminal path):\n1. PASS — Per-row state control: src/components/beat-detail-state-dropdown.tsx WorkflowStateDropdown surfaces a Correction submenu enumerating workflow.terminalStates (including Shipped); src/components/beat-table-mutations.tsx useUpdateBeatMutation routes terminal targets through markTerminalOrThrow.\n2. PASS — Beat detail: same WorkflowStateDropdown component wired in beat detail with the same Correction submenu.\n3. PASS — Multi-select bar: src/app/beats/use-bulk-actions.ts dispatchBulkUpdate routes terminal targets through markTerminalOrThrow.\n4. PASS — Already-terminal handling: partitionEligibleForTerminalTarget partitions terminal selections; toast.info('Skipped N already-terminal beats') is emitted; no silent failure.\n5. PASS — Test coverage: valid-next-states.test.ts (17/17 pass), use-bulk-actions-ship-guard.test.ts + beat-columns-valid-next-states.test.ts (26/26 pass), plus dedicated mark-terminal coverage (knots-backend-mark-terminal.test.ts, backends-mark-terminal-parity.test.ts, mark-terminal-route.test.ts).\n\nNet assessment: feature is live on main, all acceptance criteria are met by the better (kno-authoritative) implementation. The wildcard artifact tags are stale, but that bookkeeping is outside this review's scope. Approving the implementation_review gate.",
+    "datetime": "2026-04-25T15:35:41.933892Z",
+    "entry_id": "019dc548-486e-7c12-b090-e78e4498db43",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
