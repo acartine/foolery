@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc474-e1e3-7cf1-a06b-fad1aed899c6",
+  "occurred_at": "2026-04-25T11:44:47.587314Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approval, 2026-04-25\n\nReviewed the interactive approvals UI plan. The plan is feasible and correctly preserves the existing human-owned Escalations view while adding an Approvals tab backed by c30f primitives. Test strategy covers tab regression, approval rows, lifecycle actions, and unsupported/manual states. Approved for implementation, with the existing blocker still meaningful: implementation should wait for or consume c30f approval-event plumbing rather than inventing a separate store.",
+    "datetime": "2026-04-25T11:44:47.587314Z",
+    "entry_id": "019dc474-e1e3-7cf1-a06b-fac96740ef4d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

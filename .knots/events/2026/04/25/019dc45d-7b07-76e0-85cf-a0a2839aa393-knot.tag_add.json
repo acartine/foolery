@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc45d-7b07-76e0-85cf-a0a2839aa393",
+  "occurred_at": "2026-04-25T11:19:13.927913Z",
+  "knot_id": "foolery-a89b",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "approval-fixes"
+  }
+}

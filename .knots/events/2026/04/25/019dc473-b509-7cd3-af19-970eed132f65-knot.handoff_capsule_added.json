@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc473-b509-7cd3-af19-970eed132f65",
+  "occurred_at": "2026-04-25T11:43:30.569802Z",
+  "knot_id": "foolery-7420",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "7420 planning complete. Implement a checked-in explicit harness based on the b7c0 expanded proof: local random proof page, Codex with default_tools_approval_mode=\"approve\", OpenCode with permission wildcard \"playwright_*\":\"allow\", closed child stdin, fail-loud analyzer, and representative tool coverage across navigate/snapshot/click/type/press_key/evaluate/console/network. Keep live model calls out of default tests unless explicitly gated. Document that this proves a representative safe matrix, not literal every-tool execution unless the implementation adds a safe all-tool matrix.",
+    "datetime": "2026-04-25T11:43:30.569802Z",
+    "entry_id": "019dc473-b509-7cd3-af19-96ff81691beb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

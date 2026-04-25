@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc474-7448-7072-a99f-29c43800cd98",
+  "occurred_at": "2026-04-25T11:44:19.528371Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b7c0",
+    "profile_id": "explore",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Prove Playwright auto-approval",
+    "type": "explore",
+    "updated_at": "2026-04-25T11:44:19.528371Z",
+    "workflow_id": "explore_sdlc"
+  }
+}

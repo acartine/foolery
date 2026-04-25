@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc474-2a16-7020-a99c-5350a4ebd4b2",
+  "occurred_at": "2026-04-25T11:44:00.534719Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "7f74 planning complete. The existing Escalations screen is `src/components/final-cut-view.tsx`; it renders human-owned beats from the `requiresHumanAction=true` query. Implementation should add tabs there: existing beats view plus an Approvals tab backed by c30f approval-event plumbing. Do not create a parallel hidden store. Preserve old BeatTable behavior, add approval rows with beat/session/adapter/server/tool/message/params context and console links, and implement approve/deny/dismiss/manual-unsupported only where adapter response support is proven. Keep this blocked on c30f implementation for correctness.",
+    "datetime": "2026-04-25T11:44:00.534719Z",
+    "entry_id": "019dc474-2a16-7020-a99c-534e7aabb3d3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

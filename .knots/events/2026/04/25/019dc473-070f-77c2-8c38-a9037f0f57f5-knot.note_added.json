@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc473-070f-77c2-8c38-a9037f0f57f5",
+  "occurred_at": "2026-04-25T11:42:46.031914Z",
+  "knot_id": "foolery-a89b",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approval, 2026-04-25\n\nReviewed the planning note against the knot acceptance criteria and repo invariants. The plan is complete and feasible: it keeps the primary blast radius in Codex-specific JSON-RPC translation/normalization paths, explicitly preserves both params.delta and params.text, includes commandExecution/outputDelta, and suppresses empty reasoning before shared terminal formatting. The test strategy covers both live and history-relevant event shapes through the Codex JSON-RPC session plus normalizer path, with shared formatter tests only if the implementation must touch shared formatting. Approved for implementation.",
+    "datetime": "2026-04-25T11:42:46.031914Z",
+    "entry_id": "019dc473-070f-77c2-8c38-a8fd65b6a534",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

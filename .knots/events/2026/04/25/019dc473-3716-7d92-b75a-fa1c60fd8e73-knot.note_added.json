@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc473-3716-7d92-b75a-fa1c60fd8e73",
+  "occurred_at": "2026-04-25T11:42:58.326455Z",
+  "knot_id": "foolery-c30f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approval, 2026-04-25\n\nReviewed the approval visibility plan against acceptance criteria and invariants. The plan correctly treats this as visibility, not auto-approval; covers live terminal and persisted history rendering; includes the Codex Playwright mcpServer/elicitation/request fixture from f354; and requires adapter coverage or explicit unsupported-shape documentation for Claude, Codex, OpenCode, Copilot, and Gemini. The proposed shared helper is acceptable because it preserves equal treatment across adapters and keeps the high-visibility marker consistent. Approved for implementation.",
+    "datetime": "2026-04-25T11:42:58.326455Z",
+    "entry_id": "019dc473-3716-7d92-b75a-fa0d5f63fc58",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
