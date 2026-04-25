@@ -5,6 +5,12 @@ export interface HierarchicalBeat extends Beat {
   _hasChildren: boolean;
 }
 
+type SiblingComparator = (
+  a: Beat,
+  b: Beat,
+  parentId: string | undefined,
+) => number;
+
 /**
  * Takes a flat list of beats and returns them sorted in parent-first DFS order,
  * with a `_depth` field indicating nesting level.
@@ -16,7 +22,7 @@ export interface HierarchicalBeat extends Beat {
  */
 export function buildHierarchy(
   beats: Beat[],
-  sortChildren?: (a: Beat, b: Beat) => number,
+  sortChildren?: SiblingComparator,
 ): HierarchicalBeat[] {
   const byId = new Map(beats.map((b) => [b.id, b]));
   const children = new Map<string | undefined, Beat[]>();
@@ -32,7 +38,9 @@ export function buildHierarchy(
 
   function walk(parentId: string | undefined, depth: number) {
     const kids = children.get(parentId) ?? [];
-    if (sortChildren) kids.sort(sortChildren);
+    if (sortChildren) {
+      kids.sort((a, b) => sortChildren(a, b, parentId));
+    }
     for (const b of kids) {
       if (visited.has(b.id)) continue;
       visited.add(b.id);

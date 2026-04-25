@@ -42,6 +42,7 @@ type BeatTableProps = {
   onShipBeat?: (beat: Beat) => void;
   shippingByBeatId?: Record<string, string>;
   onAbortShipping?: (beatId: string) => void;
+  sortTopLevelByPriorityUpdated?: boolean;
   /** When true, suppress page-0 reset on data growth. */
   isStreaming?: boolean;
 };
@@ -59,6 +60,7 @@ export function BeatTable({
   onShipBeat,
   shippingByBeatId = {},
   onAbortShipping,
+  sortTopLevelByPriorityUpdated = false,
   isStreaming = false,
 }: BeatTableProps) {
   const s = useBeatTableState({
@@ -66,6 +68,7 @@ export function BeatTable({
     agentInfoByBeatId, onSelectionChange,
     selectionVersion, onOpenBeat, onShipBeat,
     shippingByBeatId, onAbortShipping,
+    sortTopLevelByPriorityUpdated,
   });
 
   const [sorting, setSorting] =

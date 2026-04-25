@@ -56,6 +56,7 @@ type BeatTableInput = {
   onShipBeat?: (beat: Beat) => void;
   shippingByBeatId: Record<string, string>;
   onAbortShipping?: (beatId: string) => void;
+  sortTopLevelByPriorityUpdated: boolean;
 };
 
 // eslint-disable-next-line max-lines-per-function
@@ -72,6 +73,7 @@ export function useBeatTableState(
     onShipBeat,
     shippingByBeatId,
     onAbortShipping,
+    sortTopLevelByPriorityUpdated,
   } = input;
 
   const router = useRouter();
@@ -129,7 +131,9 @@ export function useBeatTableState(
   );
 
   const hierarchy = useHierarchyData(
-    data, userSorted,
+    data,
+    userSorted,
+    sortTopLevelByPriorityUpdated,
   );
   const sorted = useSortedData(
     hierarchy, expandedIds,

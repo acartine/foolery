@@ -268,6 +268,7 @@ function BeatsViewBody({
           isDegradedError={s.isDegradedError}
           beats={s.beats}
           showRepoColumn={s.showRepoColumn}
+          isQueuedView={s.beatsView === "queues"}
           isActiveView={s.isActiveView}
           agentInfoByBeatId={s.agentInfoByBeatId}
           onSelectionChange={
@@ -294,6 +295,7 @@ interface BeatsListContentProps {
   isDegradedError: boolean;
   beats: Beat[];
   showRepoColumn: boolean;
+  isQueuedView: boolean;
   isActiveView: boolean;
   agentInfoByBeatId: Record<string, AgentInfo>;
   onSelectionChange: (ids: string[]) => void;
@@ -313,7 +315,7 @@ function BeatsListContent(
 ) {
   const {
     isLoading, loadError, isDegradedError,
-    beats, showRepoColumn, isActiveView,
+    beats, showRepoColumn, isQueuedView, isActiveView,
     agentInfoByBeatId, onSelectionChange,
     selectionVersion, searchQuery,
     onOpenBeat, onShipBeat,
@@ -372,6 +374,9 @@ function BeatsListContent(
           data={beats}
           showRepoColumn={showRepoColumn}
           showAgentColumns={isActiveView}
+          sortTopLevelByPriorityUpdated={
+            isQueuedView && !searchQuery
+          }
           agentInfoByBeatId={agentInfoByBeatId}
           onSelectionChange={onSelectionChange}
           selectionVersion={selectionVersion}

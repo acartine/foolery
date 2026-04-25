@@ -77,6 +77,11 @@ export function compareBeatsByPriorityThenState(a: Beat, b: Beat): number {
   return a.id.localeCompare(b.id);
 }
 
+export function compareBeatsByPriorityThenUpdated(a: Beat, b: Beat): number {
+  if (a.priority !== b.priority) return a.priority - b.priority;
+  return compareBeatsByMostRecentlyUpdated(a, b);
+}
+
 /**
  * Sort beats by natural ID order — the proper sort for hierarchical siblings.
  * Children of a parent appear in their natural sequential order (1, 2, 3, ...)

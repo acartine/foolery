@@ -6,19 +6,34 @@ import {
 } from "@/lib/beat-hierarchy";
 import {
   compareBeatsByHierarchicalOrder,
+  compareBeatsByPriorityThenUpdated,
 } from "@/lib/beat-sort";
 import { isInternalLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
+
+function compareQueuedHierarchySiblings(
+  a: Beat,
+  b: Beat,
+  parentId: string | undefined,
+): number {
+  if (parentId === undefined) {
+    return compareBeatsByPriorityThenUpdated(a, b);
+  }
+  return compareBeatsByHierarchicalOrder(a, b);
+}
 
 export function useHierarchyData(
   data: Beat[],
   userSorted: boolean,
+  sortTopLevelByPriorityUpdated = false,
 ) {
   return useMemo(() => {
     const sortFn = userSorted
       ? undefined
-      : compareBeatsByHierarchicalOrder;
+      : sortTopLevelByPriorityUpdated
+        ? compareQueuedHierarchySiblings
+        : compareBeatsByHierarchicalOrder;
     return buildHierarchy(data, sortFn);
-  }, [data, userSorted]);
+  }, [data, userSorted, sortTopLevelByPriorityUpdated]);
 }
 
 export function useSortedData(

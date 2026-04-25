@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { buildHierarchy } from "@/lib/beat-hierarchy";
-import { compareBeatsByPriorityThenState } from "@/lib/beat-sort";
+import {
+  compareBeatsByHierarchicalOrder,
+  compareBeatsByPriorityThenState,
+  compareBeatsByPriorityThenUpdated,
+} from "@/lib/beat-sort";
 import type { Beat } from "@/lib/types";
 
 function makeBeat(overrides: Partial<Beat> & { id: string }): Beat {
@@ -133,4 +137,54 @@ describe("buildHierarchy: sortChildren", () => {
       const result = buildHierarchy(beats, compareBeatsByPriorityThenState);
       expect(result.map((b) => b.id)).toEqual(["high", "low"]);
     });
+
+});
+
+describe("buildHierarchy: queue ordering", () => {
+  it("can sort only top-level beats by priority then updated", () => {
+    const beats = [
+      makeBeat({
+        id: "root-low",
+        priority: 2,
+        updated: "2025-01-04T00:00:00Z",
+      }),
+      makeBeat({
+        id: "root-high-old",
+        priority: 1,
+        updated: "2025-01-02T00:00:00Z",
+      }),
+      makeBeat({
+        id: "root-high-new",
+        priority: 1,
+        updated: "2025-01-03T00:00:00Z",
+      }),
+      makeBeat({
+        id: "root-high-new.10",
+        parent: "root-high-new",
+        priority: 0,
+        updated: "2025-01-05T00:00:00Z",
+      }),
+      makeBeat({
+        id: "root-high-new.2",
+        parent: "root-high-new",
+        priority: 4,
+        updated: "2025-01-01T00:00:00Z",
+      }),
+    ];
+
+    const result = buildHierarchy(
+      beats,
+      (a, b, parentId) => parentId === undefined
+        ? compareBeatsByPriorityThenUpdated(a, b)
+        : compareBeatsByHierarchicalOrder(a, b),
+    );
+
+    expect(result.map((b) => [b.id, b._depth])).toEqual([
+      ["root-high-new", 0],
+      ["root-high-new.2", 1],
+      ["root-high-new.10", 1],
+      ["root-high-old", 0],
+      ["root-low", 0],
+    ]);
+  });
 });

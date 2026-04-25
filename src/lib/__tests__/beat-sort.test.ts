@@ -3,6 +3,7 @@ import type { Beat } from "@/lib/types";
 import { buildHierarchy } from "@/lib/beat-hierarchy";
 import {
   compareBeatsByPriorityThenState,
+  compareBeatsByPriorityThenUpdated,
   compareBeatsByMostRecentlyUpdated,
   compareBeatsByHierarchicalOrder,
   naturalCompare,
@@ -64,6 +65,35 @@ describe("compareBeatsByPriorityThenState", () => {
       ["p0-root", 0],
       ["p1-parent", 0],
       ["p0-child", 1],
+    ]);
+  });
+});
+
+describe("compareBeatsByPriorityThenUpdated", () => {
+  it("sorts by priority, then most recently updated", () => {
+    const beats = [
+      makeBeat({
+        id: "p1-old",
+        priority: 1,
+        updated: "2025-01-02T00:00:00Z",
+      }),
+      makeBeat({
+        id: "p2-new",
+        priority: 2,
+        updated: "2025-01-04T00:00:00Z",
+      }),
+      makeBeat({
+        id: "p1-new",
+        priority: 1,
+        updated: "2025-01-03T00:00:00Z",
+      }),
+    ];
+
+    const sorted = beats.slice().sort(compareBeatsByPriorityThenUpdated);
+    expect(sorted.map((b) => b.id)).toEqual([
+      "p1-new",
+      "p1-old",
+      "p2-new",
     ]);
   });
 });
