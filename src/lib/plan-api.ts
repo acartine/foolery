@@ -1,9 +1,16 @@
 import type { PlanRecord, PlanSummary } from "@/lib/orchestration-plan-types";
 import type { BdResult, Beat } from "@/lib/types";
 
-async function request<T>(url: string): Promise<BdResult<T>> {
+async function request<T>(
+  url: string,
+  init?: RequestInit,
+): Promise<BdResult<T>> {
   const res = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...(init?.headers ?? {}),
+    },
   });
   const json = await res.json();
   if (!res.ok) {
@@ -34,4 +41,17 @@ export function fetchRepoBeats(
 ): Promise<BdResult<Beat[]>> {
   const query = new URLSearchParams({ _repo: repoPath });
   return request<Beat[]>(`/api/beats?${query.toString()}`);
+}
+
+export function completePlan(
+  planId: string,
+  repoPath: string,
+): Promise<BdResult<PlanRecord>> {
+  return request<PlanRecord>(
+    `/api/plans/${encodeURIComponent(planId)}/complete`,
+    {
+      method: "POST",
+      body: JSON.stringify({ repoPath }),
+    },
+  );
 }

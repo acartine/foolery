@@ -77,6 +77,11 @@ const TERMINAL_SETLIST_STATES = new Set([
   "closed",
 ]);
 
+const TERMINAL_PLAN_ARTIFACT_STATES = new Set([
+  "shipped",
+  "abandoned",
+]);
+
 interface SlotAssignment {
   slotIndex: number;
   order: number;
@@ -160,6 +165,29 @@ export function countWorkableSetlistRows(
   return chart.rows.filter(
     (row) => !isTerminalSetlistState(row.state),
   ).length;
+}
+
+export function isTerminalPlanArtifactState(
+  state: string | undefined,
+): boolean {
+  if (!state) return false;
+  return TERMINAL_PLAN_ARTIFACT_STATES.has(state);
+}
+
+export function countWorkableBeatIds(
+  beatIds: readonly string[],
+  beatMap: ReadonlyMap<string, Beat>,
+): number {
+  const seen = new Set<string>();
+  let count = 0;
+  for (const beatId of beatIds) {
+    if (!beatId || seen.has(beatId)) continue;
+    seen.add(beatId);
+    const beat = beatMap.get(beatId);
+    if (isTerminalSetlistState(beat?.state)) continue;
+    count += 1;
+  }
+  return count;
 }
 
 export function buildSetlistChartViewport(

@@ -8,6 +8,7 @@ import { componentSchemas } from "@/lib/openapi/schemas";
 import { beatsPaths } from "@/lib/openapi/paths-beats";
 import { depsPaths } from "@/lib/openapi/paths-deps";
 import { plansPaths } from "@/lib/openapi/paths-plans";
+import { plansCompletePaths } from "@/lib/openapi/paths-plans-complete";
 import { wavesPaths } from "@/lib/openapi/paths-waves";
 import {
   terminalPaths,
@@ -43,6 +44,7 @@ export const openApiSpec = {
     ...beatsPaths,
     ...depsPaths,
     ...plansPaths,
+    ...plansCompletePaths,
     ...wavesPaths,
     ...terminalPaths,
     ...orchestrationPaths,
