@@ -31,6 +31,18 @@ export type UpdateBeatFn = (
   repoPath?: string,
 ) => void;
 
+/**
+ * Hackish fat-finger correction callback for the table-cell state
+ * dropdown. Routes the chosen target state through the dedicated
+ * `/api/beats/{id}/rewind` endpoint (kno's `force: true`). Not a
+ * primary workflow action.
+ */
+export type RewindBeatFn = (
+  id: string,
+  targetState: string,
+  repoPath?: string,
+) => void;
+
 export function formatLabel(val: string): string {
   return val
     .split(/[_-]/)

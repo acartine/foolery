@@ -19,7 +19,16 @@ import { StateDropdown } from "./beat-detail-state-dropdown";
 
 const PRIORITIES: BeatPriority[] = [0, 1, 2, 3, 4];
 
-/** @internal Exported for testing only. */
+/**
+ * @internal Exported for testing only.
+ *
+ * State classification (queue/action/terminal) MUST be sourced from
+ * the loom-derived `MemoryWorkflowDescriptor` fields — `queueStates`,
+ * `actionStates`, `terminalStates` — populated by `toDescriptor` from
+ * `kno profile list --json`. Never test for queue/action membership
+ * by prefix or hardcoded name. See CLAUDE.md §"State Classification
+ * Is Loom-Derived".
+ */
 export function validNextStates(
   currentState: string | undefined,
   workflow: MemoryWorkflowDescriptor,
@@ -37,18 +46,19 @@ export function validNextStates(
 
   const normalized = normalizeForTransitions(currentState);
   if (!normalized) return [];
-  const isQueuedDisplayState = normalized.startsWith("ready_for_");
   const normalizedRawKnoState = normalizeForTransitions(rawKnoState);
 
-  // If the raw kno state differs from the display state, the knot is stuck in an
-  // active phase that was rolled back for display. Compute transitions from the
-  // actual kno state and include all workflow states as escape hatches.
-  const isRolledBack = Boolean(
-    normalizedRawKnoState && normalizedRawKnoState !== normalized,
-  );
-  const effectiveState = isRolledBack && normalizedRawKnoState
-    ? normalizedRawKnoState
-    : normalized;
+  // If the raw kno state differs from the display state, the knot is stuck
+  // in an active phase that was rolled back for display. Compute transitions
+  // from the actual kno state. Force-required jumps (earlier queue states
+  // not in the loom, alternate action states) are NOT surfaced here —
+  // those are exception flow and live behind the Rewind submenu (and the
+  // Correction submenu for terminals). The dropdown only offers
+  // transitions kno will accept without `--force`.
+  const effectiveState =
+    normalizedRawKnoState && normalizedRawKnoState !== normalized
+      ? normalizedRawKnoState
+      : normalized;
 
   const next = new Set<string>();
   for (const t of workflow.transitions ?? []) {
@@ -57,37 +67,10 @@ export function validNextStates(
     }
   }
 
-  // Allow rollback from active/review states to any earlier queue state.
-  const statesList = workflow.states ?? [];
-  const effectiveIndex = statesList.indexOf(effectiveState);
-  if (effectiveIndex > 0) {
-    for (let i = 0; i < effectiveIndex; i++) {
-      const earlier = statesList[i];
-      if (earlier && earlier.startsWith("ready_for_")) {
-        next.add(earlier);
-      }
-    }
-  }
-
-  // When stuck (rolled back), also add all non-terminal workflow states as force targets
-  if (isRolledBack) {
-    for (const state of workflow.states ?? []) {
-      if (!workflow.terminalStates?.includes(state)) {
-        next.add(state);
-      }
-    }
-  }
-
-  // Remove current display state and raw state from options
   next.delete(normalized);
   if (normalizedRawKnoState) next.delete(normalizedRawKnoState);
 
-  // Keep queue-to-queue transitions hidden for queued rows, but allow queue
-  // targets from active rows so users can advance/rollback action states.
-  if (isRolledBack || !isQueuedDisplayState) {
-    return Array.from(next);
-  }
-  return Array.from(next).filter((s) => !s.startsWith("ready_for_"));
+  return Array.from(next);
 }
 
 /** @internal Exported for sub-component use. */
@@ -108,6 +91,13 @@ interface BeatDetailProps {
   beat: Beat;
   onUpdate?: (fields: UpdateBeatInput) => Promise<void>;
   workflow?: MemoryWorkflowDescriptor | null;
+  /**
+   * Hackish fat-finger correction. When provided, the state dropdown
+   * surfaces a "Rewind" submenu listing earlier `ready_for_*` queue
+   * states. Selecting one routes through `/api/beats/{id}/rewind`
+   * (kno's `force: true`). Not a primary workflow action.
+   */
+  onRewind?: (targetState: string) => Promise<void>;
 }
 
 interface EditableSectionProps {
@@ -169,7 +159,9 @@ function EditableSection({
   );
 }
 
-export function BeatDetail({ beat, onUpdate, workflow }: BeatDetailProps) {
+export function BeatDetail({
+  beat, onUpdate, workflow, onRewind,
+}: BeatDetailProps) {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const savingRef = useRef(false);
@@ -213,6 +205,13 @@ export function BeatDetail({ beat, onUpdate, workflow }: BeatDetailProps) {
     });
   }, [onUpdate]);
 
+  const fireRewind = useCallback((targetState: string) => {
+    if (!onRewind) return;
+    onRewind(targetState).catch(() => {
+      // Error toast shown by mutation onError handler
+    });
+  }, [onRewind]);
+
   const removeLabel = useCallback((label: string) => {
     if (!onUpdate) return;
     onUpdate({ removeLabels: [label] }).catch(() => {});
@@ -225,6 +224,7 @@ export function BeatDetail({ beat, onUpdate, workflow }: BeatDetailProps) {
         onUpdate={onUpdate}
         workflow={workflow}
         fireUpdate={fireUpdate}
+        fireRewind={onRewind ? fireRewind : undefined}
         removeLabel={removeLabel}
       />
 
@@ -280,6 +280,7 @@ interface BeatDetailHeaderProps {
   onUpdate?: (fields: UpdateBeatInput) => Promise<void>;
   workflow?: MemoryWorkflowDescriptor | null;
   fireUpdate: (fields: UpdateBeatInput) => void;
+  fireRewind?: (targetState: string) => void;
   removeLabel: (label: string) => void;
 }
 
@@ -288,6 +289,7 @@ function BeatDetailHeader({
   onUpdate,
   workflow,
   fireUpdate,
+  fireRewind,
   removeLabel,
 }: BeatDetailHeaderProps) {
   return (
@@ -298,6 +300,7 @@ function BeatDetailHeader({
           onUpdate={onUpdate}
           workflow={workflow}
           fireUpdate={fireUpdate}
+          fireRewind={fireRewind}
         />
 
         {onUpdate ? (

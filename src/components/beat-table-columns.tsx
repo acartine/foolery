@@ -17,6 +17,12 @@ type ColumnsParams = {
     fields: UpdateBeatInput;
     repoPath?: string;
   }) => void;
+  /** Hackish fat-finger Rewind correction; see `BeatColumnOpts.onRewindBeat`. */
+  handleRewindBeat: (args: {
+    id: string;
+    targetState: string;
+    repoPath?: string;
+  }) => void;
   onOpenBeat?: (beat: Beat) => void;
   searchParams: ReturnType<typeof useSearchParams>;
   router: ReturnType<typeof useRouter>;
@@ -61,6 +67,7 @@ export function useBeatTableColumns(
     showAgentColumns,
     agentInfoByBeatId,
     handleUpdateBeat,
+    handleRewindBeat,
     onOpenBeat,
     searchParams,
     router,
@@ -85,6 +92,10 @@ export function useBeatTableColumns(
           handleUpdateBeat({
             id, fields, repoPath,
           }),
+        onRewindBeat: (id, targetState, repoPath) =>
+          handleRewindBeat({
+            id, targetState, repoPath,
+          }),
         onTitleClick: buildTitleClick(
           onOpenBeat, searchParams, router,
         ),
@@ -103,6 +114,7 @@ export function useBeatTableColumns(
       showAgentColumns,
       agentInfoByBeatId,
       handleUpdateBeat,
+      handleRewindBeat,
       onOpenBeat,
       searchParams,
       router,

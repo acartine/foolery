@@ -140,6 +140,7 @@ export function BeatDetailLightbox({
           beatWorkflow={data.beatWorkflow}
           isLoadingBeat={data.isLoadingBeat}
           handleUpdate={data.handleUpdate}
+          handleRewind={data.handleRewind}
           deps={data.deps}
           detailId={detailId}
           repo={repo}

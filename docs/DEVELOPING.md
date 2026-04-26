@@ -364,6 +364,80 @@ If the UI needs to offer a jump that the workflow does not allow as a normal tra
 
 **Historical incident this rule protects against:** commit `29311507` (2026-04-21) added `withWildcardTerminals` in `src/lib/backends/knots-backend-workflows.ts`, which fabricated `* -> shipped` transitions that did not exist in `work_sdlc.loom`. The dispatch-adjacency check then saw the fake wildcard, omitted `force`, and every bulk "Move to Shipped" on `autopilot_no_planning` was rejected by kno. Knot `102e` tracks the removal and the establishment of this rule.
 
+## State Classification Is Loom-Derived
+
+Companion rule to "kno Workflows Are Authoritative". The classification of a state — queue / action / terminal / initial / retake — is a property of the loom profile, not of its name. Foolery TypeScript MUST source classification from the loom-derived `MemoryWorkflowDescriptor`, never from a hardcoded name list, prefix check, or suffix check.
+
+### Where the classification actually comes from
+
+For the knots backend, the chain is:
+
+```
+.loom file
+  → kno profile list --json   (fields: states, queue_states, action_states, terminal_states, initial_state, retake_state, ...)
+    → toDescriptor()           (src/lib/backends/knots-backend-workflows.ts)
+      → MemoryWorkflowDescriptor  (src/lib/types.ts)
+        → consumed by every UI / dispatch / correction code path
+```
+
+For the legacy beads / bd-cli backends the chain starts at `BUILTIN_PROFILE_CATALOG` in `src/lib/workflows.ts` and feeds `descriptorFromProfileConfig`. Either way, callers consume `MemoryWorkflowDescriptor` and never touch the upstream tables.
+
+### Use the descriptor directly
+
+| Question | Use |
+| --- | --- |
+| Is this a queue state? | `descriptor.queueStates.includes(state)` |
+| Is this an action state? | `descriptor.actionStates.includes(state)` |
+| Is this a terminal state? | `descriptor.terminalStates.includes(state)` |
+| Where does a beat start? | `descriptor.initialState` |
+| Where does Retake send it? | `descriptor.retakeState` |
+| What does state X transition to? | filter `descriptor.transitions` |
+| What action runs from queue state Q? | `descriptor.queueActions[Q]` |
+
+### Anti-patterns
+
+```ts
+// ❌ Prefix check — assumes the autopilot/semiauto naming convention
+if (state.startsWith("ready_for_")) { ... }
+
+// ❌ Suffix check — same problem
+if (state.endsWith("_review")) { ... }
+
+// ❌ Hardcoded name in caller logic
+if (state === "ready_for_implementation") { ... }
+
+// ❌ Parallel constant table
+const QUEUE_STATES = ["ready_for_planning", "ready_for_implementation", ...];
+
+// ❌ Fallback that masks a missing descriptor field
+const queues = workflow.queueStates ?? ["ready_for_implementation"];
+```
+
+```ts
+// ✅ Loom-derived
+const queueStateSet = new Set(workflow.queueStates ?? []);
+if (queueStateSet.has(state)) { ... }
+```
+
+### The exceptions
+
+Only two places legitimately spell state names:
+
+1. **Builtin profile catalogs** that mirror canonical loom shape (e.g. `BUILTIN_PROFILE_CATALOG` in `src/lib/workflows.ts`). These tables ARE the descriptor source for legacy backends — they're the loom equivalent for backends without a real loom. Treat them like loom files: only feed them into `descriptorFromProfileConfig`, never read from them in caller logic.
+2. **Pure presentation theming** where the renderer has no descriptor in scope (e.g. mapping a state string to a CSS color in a one-off badge). Acceptable as a last resort, but prefer plumbing the descriptor through.
+
+Picker / filter UIs that list "all interesting states" do **not** count as exception 2 — those should source their list from the descriptor.
+
+### How to fix a hardcoded site
+
+If you find yourself reaching for `startsWith("ready_for_")` or a literal state name, the descriptor is the answer. If the descriptor isn't in scope, the fix is to plumb it through the call site, not to add a prefix check. See `src/components/beat-detail.tsx`'s `validNextStates`, `src/components/beat-column-states.ts`'s `validNextStates`, and `src/components/beat-detail-state-dropdown.tsx`'s `RewindSubmenu` for the canonical pattern (descriptor is already plumbed via `MemoryWorkflowDescriptor`).
+
+### Why this rule exists
+
+A custom `.loom` profile may use any state names kno accepts. The `ready_for_*` / `*_review` / `shipped` / `abandoned` names live only in Foolery's two builtin profiles (`autopilot`, `semiauto`); the moment someone authors a custom workflow with `awaiting_design` or `qa_handoff`, every prefix-checking call site silently misclassifies. The bug is invisible because the prefix check returns `false` instead of throwing — there's no loud failure, just a quietly broken UI for the custom profile.
+
+This rule pairs with "Fail Loudly, Never Silently" — when a descriptor field is missing or empty, halt and surface it; do NOT coalesce with a hardcoded fallback.
+
 ## Contribution Guidelines
 
 Foolery builds on top of memory managers like [Knots](https://github.com/acartine/knots) and [Beads](https://github.com/steveyegge/beads). Key contribution values:

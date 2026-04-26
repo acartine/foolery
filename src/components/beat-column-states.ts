@@ -2,7 +2,16 @@ import type {
   MemoryWorkflowDescriptor,
 } from "@/lib/types";
 
-/** @internal Exported for testing only. */
+/**
+ * @internal Exported for testing only.
+ *
+ * State classification (queue/action/terminal) MUST be sourced from
+ * the loom-derived `MemoryWorkflowDescriptor` fields — `queueStates`,
+ * `actionStates`, `terminalStates` — populated by `toDescriptor` from
+ * `kno profile list --json`. Never test for queue/action membership
+ * by prefix or hardcoded name. See CLAUDE.md §"State Classification
+ * Is Loom-Derived".
+ */
 export function validNextStates(
   currentState: string | undefined,
   workflow: MemoryWorkflowDescriptor,
@@ -26,16 +35,18 @@ export function validNextStates(
 
   const normalized = normalize(currentState);
   if (!normalized) return [];
-  const isQueued =
-    normalized.startsWith("ready_for_");
   const normalizedRaw = normalize(rawKnoState);
 
-  const isRolledBack = Boolean(
-    normalizedRaw
-      && normalizedRaw !== normalized,
-  );
+  // If the raw kno state differs from the display state, the knot is
+  // stuck in an active phase that was rolled back for display. Compute
+  // transitions from the actual kno state. Force-required jumps
+  // (earlier queue states not in the loom, alternate action states)
+  // are NOT surfaced here — those are exception flow and live behind
+  // the Rewind submenu in the detail view (and the Correction submenu
+  // for terminals). The dropdown only offers transitions kno will
+  // accept without `--force`.
   const effective =
-    isRolledBack && normalizedRaw
+    normalizedRaw && normalizedRaw !== normalized
       ? normalizedRaw
       : normalized;
 
@@ -49,34 +60,8 @@ export function validNextStates(
     }
   }
 
-  const statesList = workflow.states ?? [];
-  const idx = statesList.indexOf(effective);
-  if (idx > 0) {
-    for (let i = 0; i < idx; i++) {
-      const earlier = statesList[i];
-      if (earlier?.startsWith("ready_for_")) {
-        next.add(earlier);
-      }
-    }
-  }
-
-  if (isRolledBack) {
-    for (const s of workflow.states ?? []) {
-      if (
-        !workflow.terminalStates?.includes(s)
-      ) {
-        next.add(s);
-      }
-    }
-  }
-
   next.delete(normalized);
   if (normalizedRaw) next.delete(normalizedRaw);
 
-  if (isRolledBack || !isQueued) {
-    return Array.from(next);
-  }
-  return Array.from(next).filter(
-    (s) => !s.startsWith("ready_for_"),
-  );
+  return Array.from(next);
 }

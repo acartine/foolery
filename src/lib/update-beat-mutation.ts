@@ -1,4 +1,4 @@
-import { markTerminal, updateBeat } from "@/lib/api";
+import { markTerminal, rewindBeat, updateBeat } from "@/lib/api";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import type { Beat } from "@/lib/types";
 
@@ -50,5 +50,26 @@ export async function markTerminalOrThrow(
   const result = await markTerminal(id, targetState, reason, resolvedRepoPath);
   if (!result.ok) {
     throw new Error(result.error ?? "Failed to mark beat terminal");
+  }
+}
+
+/**
+ * Hackish fat-finger correction: rewind a beat to an earlier queue
+ * state. Not a primary workflow action. Server rejects forward jumps,
+ * terminals, and non-queue targets with a `FOOLERY WORKFLOW CORRECTION
+ * FAILURE` banner and a 400 response.
+ */
+export async function rewindOrThrow(
+  beats: Beat[],
+  id: string,
+  targetState: string,
+  reason?: string,
+  repoPath?: string,
+): Promise<void> {
+  const beat = beats.find((entry) => entry.id === id);
+  const resolvedRepoPath = normalizeRepoPath(repoPath) ?? repoPathForBeat(beat);
+  const result = await rewindBeat(id, targetState, reason, resolvedRepoPath);
+  if (!result.ok) {
+    throw new Error(result.error ?? "Failed to rewind beat");
   }
 }

@@ -279,6 +279,27 @@ export class MockBackendPort implements BackendPort {
     return { ok: true };
   }
 
+  /**
+   * Mock for the hackish fat-finger Rewind correction. Forces the beat
+   * state to the requested target without workflow validation — tests
+   * that exercise rewind invariants should hit `KnotsBackend` directly,
+   * which carries the loud-failure plumbing.
+   */
+  async rewind(
+    id: string,
+    targetState: string,
+    reason?: string,
+    repoPath?: string,
+  ): Promise<BackendResult<void>> {
+    ignoreUnused(reason, repoPath);
+    const beat = this.beats.get(id);
+    if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
+    beat.state = targetState.trim().toLowerCase();
+    beat.closed = undefined;
+    beat.updated = isoNow();
+    return { ok: true };
+  }
+
   // -- Dependency operations ------------------------------------------------
 
   async listDependencies(

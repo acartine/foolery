@@ -14,6 +14,7 @@ import {
 } from "@/lib/api";
 import {
   markTerminalOrThrow,
+  rewindOrThrow,
   updateBeatOrThrow,
 } from "@/lib/update-beat-mutation";
 import type { CascadeDescendant } from "@/lib/cascade-close";
@@ -109,6 +110,35 @@ export function useUpdateBeatMutation(data: Beat[]) {
           queryClient.setQueryData(key, snapData);
         }
       }
+    },
+    onSettled: (_data, _err, { id }) => {
+      void invalidateBeatListQueries(queryClient);
+      void queryClient.invalidateQueries({
+        queryKey: ["beat", id],
+      });
+    },
+  });
+}
+
+/**
+ * Mutation for the hackish fat-finger Rewind correction (kno's
+ * `force: true`) from the table cell dropdown. Surfaces server
+ * failure as a toast and refetches; no optimistic update because
+ * rewind is a manual recovery action used rarely.
+ */
+export function useRewindBeatMutation(data: Beat[]) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id, targetState, repoPath,
+    }: { id: string; targetState: string; repoPath?: string }) =>
+      rewindOrThrow(data, id, targetState, undefined, repoPath),
+    onError: (error: Error) => {
+      toast.error(`Rewind failed: ${error.message}`);
+    },
+    onSuccess: () => {
+      toast.success("Beat rewound");
     },
     onSettled: (_data, _err, { id }) => {
       void invalidateBeatListQueries(queryClient);

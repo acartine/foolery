@@ -39,12 +39,15 @@ import {
   TitleCell,
 } from "./beat-column-helpers";
 import type {
+  RewindBeatFn,
   UpdateBeatFn,
 } from "./beat-column-helpers";
 
 /** Resolved options for column builders. */
 export interface ResolvedOpts {
   onUpdateBeat?: UpdateBeatFn;
+  /** Hackish fat-finger correction; see `BeatColumnOpts.onRewindBeat`. */
+  onRewindBeat?: RewindBeatFn;
   onTitleClick?: (beat: Beat) => void;
   onShipBeat?: (beat: Beat) => void;
   shippingByBeatId: Record<string, string>;
@@ -71,6 +74,7 @@ export function resolveOpts(
   }
   return {
     onUpdateBeat: opts.onUpdateBeat,
+    onRewindBeat: opts.onRewindBeat,
     onTitleClick: opts.onTitleClick,
     onShipBeat: opts.onShipBeat,
     shippingByBeatId: opts.shippingByBeatId ?? {},

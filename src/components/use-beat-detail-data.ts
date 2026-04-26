@@ -19,6 +19,7 @@ import {
 } from "@/lib/api";
 import {
   markTerminalOrThrow,
+  rewindOrThrow,
   updateBeatOrThrow,
 } from "@/lib/update-beat-mutation";
 import {
@@ -33,6 +34,12 @@ export interface BeatDetailData {
   handleUpdate: (
     fields: UpdateBeatInput,
   ) => Promise<void>;
+  /**
+   * Hackish fat-finger correction. Routes through the dedicated
+   * `/api/beats/{id}/rewind` endpoint (kno's `force: true`). Not a
+   * primary workflow action.
+   */
+  handleRewind: (targetState: string) => Promise<void>;
   handleAddDep: (args: {
     source: string;
     target: string;
@@ -77,6 +84,14 @@ export function useBeatDetailData(
       queryClient,
     );
 
+  const { mutateAsync: handleRewind } =
+    useRewindBeatMutation(
+      beat,
+      detailId,
+      repo,
+      queryClient,
+    );
+
   const { mutate: handleAddDep } =
     useAddDepMutation(detailId, repo, queryClient);
 
@@ -95,6 +110,7 @@ export function useBeatDetailData(
     beatWorkflow,
     deps,
     handleUpdate,
+    handleRewind,
     handleAddDep,
   };
 }
@@ -244,6 +260,44 @@ function useUpdateBeatMutation(
         error,
         context,
       ),
+    onSettled: () =>
+      invalidateBeatQueries(
+        queryClient,
+        detailId,
+        repo,
+      ),
+  });
+}
+
+/**
+ * Mutation for the hackish fat-finger Rewind correction (kno's
+ * `force: true`). No optimistic update — rewind is a manual recovery
+ * action used rarely; we surface server failure verbatim and refetch
+ * to show the corrected state.
+ */
+function useRewindBeatMutation(
+  beat: Beat | null,
+  detailId: string,
+  repo: string | undefined,
+  queryClient: ReturnType<typeof useQueryClient>,
+) {
+  return useMutation({
+    mutationFn: async (targetState: string) =>
+      rewindOrThrow(
+        beat ? [beat] : [],
+        detailId,
+        targetState,
+        undefined,
+        repo,
+      ),
+    onError: (error: Error) => {
+      toast.error(
+        `Rewind failed: ${error.message}`,
+      );
+    },
+    onSuccess: () => {
+      toast.success("Beat rewound");
+    },
     onSettled: () =>
       invalidateBeatQueries(
         queryClient,

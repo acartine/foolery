@@ -320,6 +320,29 @@ export function markTerminal(
 }
 
 /**
+ * Hackish fat-finger correction: walk a beat backward to an earlier
+ * queue state via kno's `force: true`. Not a primary workflow action —
+ * intended for recovering beats that were over-shot forward (e.g.
+ * accidentally Shipped) or orphaned in an action state. The server
+ * rejects forward jumps, terminals, and non-queue targets with HTTP
+ * 400 + a `FOOLERY WORKFLOW CORRECTION FAILURE` banner.
+ */
+export function rewindBeat(
+  id: string,
+  targetState: string,
+  reason?: string,
+  repo?: string,
+): Promise<BdResult<void>> {
+  const body: Record<string, unknown> = { targetState };
+  if (reason !== undefined) body.reason = reason;
+  if (repo) body._repo = repo;
+  return request<void>(`${BASE}/${id}/rewind`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+/**
  * Descriptive correction: reopen a terminal beat into its profile's
  * retakeState for regression investigation. Invokes kno's idiomatic
  * force flag at the backend.

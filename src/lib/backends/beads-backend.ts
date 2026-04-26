@@ -351,6 +351,18 @@ export class BeadsBackend implements BackendPort {
     return { ok: true };
   }
 
+  /**
+   * Rewind (fat-finger correction) is a knots-backend feature and is
+   * not implemented for the legacy beads backend. See
+   * `BackendPort.rewind`.
+   */
+  async rewind(): Promise<BackendResult<void>> {
+    return backendError(
+      "UNSUPPORTED",
+      "Rewind correction is not supported by the Beads backend",
+    );
+  }
+
   async listDependencies(
     id: string,
     repoPath?: string,

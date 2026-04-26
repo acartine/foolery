@@ -50,7 +50,7 @@ import {
   updateParentEdges, createKnotImpl,
 } from "@/lib/backends/knots-backend-update";
 import {
-  markTerminalWithLoaders, reopenWithLoaders,
+  markTerminalWithLoaders, reopenWithLoaders, rewindWithLoaders,
   KNOTS_CLOSE_TARGET_STATE,
 } from "@/lib/backends/knots-backend-correction";
 import {
@@ -497,6 +497,24 @@ export class KnotsBackend implements BackendPort {
   async reopen(id: string, reason?: string, repoPath?: string) {
     return reopenWithLoaders(
       id, reason, this.resolvePath(repoPath), {
+        fetchBeat: this.get.bind(this),
+        fetchWorkflows: this.getWorkflowDescriptorsForRepo.bind(this),
+      },
+    );
+  }
+
+  /**
+   * Hackish fat-finger correction — see `BackendPort.rewind` for full
+   * scope. Only invoked when a beat is stranded (over-shot forward or
+   * orphaned in an action state) and no legal kno transition can walk
+   * it home.
+   */
+  async rewind(
+    id: string, targetState: string,
+    reason?: string, repoPath?: string,
+  ): Promise<BackendResult<void>> {
+    return rewindWithLoaders(
+      id, targetState, reason, this.resolvePath(repoPath), {
         fetchBeat: this.get.bind(this),
         fetchWorkflows: this.getWorkflowDescriptorsForRepo.bind(this),
       },

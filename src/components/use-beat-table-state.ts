@@ -21,6 +21,7 @@ import {
 } from "@/components/beat-table-expand";
 import {
   useUpdateBeatMutation,
+  useRewindBeatMutation,
   useCloseBeatMutation,
   useCascadeCloseMutation,
   useInitiateClose,
@@ -106,6 +107,8 @@ export function useBeatTableState(
 
   const { mutate: doUpdate } =
     useUpdateBeatMutation(data);
+  const { mutate: doRewind } =
+    useRewindBeatMutation(data);
   const { mutate: doClose } =
     useCloseBeatMutation(data);
   const { mutate: doCascade } =
@@ -156,6 +159,7 @@ export function useBeatTableState(
     showRepoColumn, showAgentColumns,
     agentInfoByBeatId,
     handleUpdateBeat: doUpdate,
+    handleRewindBeat: doRewind,
     onOpenBeat, searchParams, router,
     onShipBeat, shippingByBeatId,
     onAbortShipping, allLabels,
@@ -190,7 +194,7 @@ export function useBeatTableState(
     pageSize, updateUrl,
     notesBeat, setNotesBeat,
     notesOpen, setNotesOpen,
-    doUpdate, initiateClose,
+    doUpdate, doRewind, initiateClose,
     onShipBeat, shippingByBeatId,
     parentRolling, setExpandedIds,
     cascadeOpen, setCascadeOpen,

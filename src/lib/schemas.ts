@@ -80,6 +80,17 @@ export const markTerminalSchema = z.object({
   reason: z.string().optional(),
 });
 
+/**
+ * Hackish fat-finger correction: walk a beat back to an earlier queue
+ * state. Server enforces queue-only + earlier-than-current invariants;
+ * any misuse returns 400 with a `FOOLERY WORKFLOW CORRECTION FAILURE`
+ * banner. Not a primary workflow action.
+ */
+export const rewindSchema = z.object({
+  targetState: z.string().trim().min(1, "targetState is required"),
+  reason: z.string().optional(),
+});
+
 export const cascadeCloseSchema = z.object({
   confirmed: z.boolean().default(false),
   reason: z.string().optional(),
@@ -107,6 +118,7 @@ export type CreateBeatInput = z.infer<typeof createBeatSchema>;
 export type UpdateBeatInput = z.infer<typeof updateBeatSchema>;
 export type CloseBeatInput = z.infer<typeof closeBeatSchema>;
 export type MarkTerminalInput = z.infer<typeof markTerminalSchema>;
+export type RewindInput = z.infer<typeof rewindSchema>;
 export type CascadeCloseInput = z.infer<typeof cascadeCloseSchema>;
 export type QueryBeatInput = z.infer<typeof queryBeatSchema>;
 export type AddDepInput = z.infer<typeof addDepSchema>;

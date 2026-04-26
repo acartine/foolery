@@ -1,10 +1,22 @@
-export type WorkflowStepFilterId =
-  | "planning"
-  | "plan_review"
-  | "implementation"
-  | "implementation_review"
-  | "shipment"
-  | "shipment_review";
+/**
+ * Workflow-step filter options for the interaction picker.
+ *
+ * Derived from the loom-sourced `MemoryWorkflowDescriptor.queueActions`
+ * map across all builtin workflow descriptors — never hardcoded. Each
+ * step filter pairs a queue state with the action state it transitions
+ * into (e.g. `ready_for_planning` → `planning`). Adding or renaming
+ * states in a `.loom` profile flows through automatically; nothing in
+ * this module needs to know specific state names.
+ *
+ * See CLAUDE.md §"State Classification Is Loom-Derived".
+ */
+
+import {
+  builtinWorkflowDescriptors,
+  compareWorkflowStatePriority,
+} from "@/lib/workflows";
+
+export type WorkflowStepFilterId = string;
 
 export interface WorkflowStepFilterOption {
   id: WorkflowStepFilterId;
@@ -12,38 +24,39 @@ export interface WorkflowStepFilterOption {
   states: readonly [string, string];
 }
 
-export const WORKFLOW_STEP_FILTERS: readonly WorkflowStepFilterOption[] = [
-  {
-    id: "planning",
-    label: "Planning",
-    states: ["ready_for_planning", "planning"],
-  },
-  {
-    id: "plan_review",
-    label: "Plan Review",
-    states: ["ready_for_plan_review", "plan_review"],
-  },
-  {
-    id: "implementation",
-    label: "Implementation",
-    states: ["ready_for_implementation", "implementation"],
-  },
-  {
-    id: "implementation_review",
-    label: "Implementation Review",
-    states: ["ready_for_implementation_review", "implementation_review"],
-  },
-  {
-    id: "shipment",
-    label: "Shipment",
-    states: ["ready_for_shipment", "shipment"],
-  },
-  {
-    id: "shipment_review",
-    label: "Shipment Review",
-    states: ["ready_for_shipment_review", "shipment_review"],
-  },
-];
+function formatStepLabel(actionState: string): string {
+  return actionState
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function buildStepFilters(): WorkflowStepFilterOption[] {
+  const seen = new Set<string>();
+  const out: WorkflowStepFilterOption[] = [];
+  for (const workflow of builtinWorkflowDescriptors()) {
+    const queueActions = workflow.queueActions ?? {};
+    const queueOrder = workflow.queueStates ?? Object.keys(queueActions);
+    for (const queueState of queueOrder) {
+      const actionState = queueActions[queueState];
+      if (!actionState) continue;
+      if (seen.has(actionState)) continue;
+      seen.add(actionState);
+      out.push({
+        id: actionState,
+        label: formatStepLabel(actionState),
+        states: [queueState, actionState],
+      });
+    }
+  }
+  out.sort((a, b) =>
+    compareWorkflowStatePriority(a.states[0], b.states[0]),
+  );
+  return out;
+}
+
+export const WORKFLOW_STEP_FILTERS: readonly WorkflowStepFilterOption[] =
+  buildStepFilters();
 
 export const WORKFLOW_FILTER_BY_ID = new Map<
   WorkflowStepFilterId,

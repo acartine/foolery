@@ -212,6 +212,23 @@ export class BdCliBackend implements BackendPort {
     return toBR(await bd.updateBeat(id, update, repoPath));
   }
 
+  /**
+   * Rewind (fat-finger correction) requires kno's `force: true` flag
+   * which the bd CLI does not expose. See `BackendPort.rewind`.
+   */
+  async rewind(): Promise<BackendResult<void>> {
+    return {
+      ok: false,
+      error: {
+        code: "UNSUPPORTED",
+        message:
+          "Rewind correction is not supported by the bd CLI backend "
+          + "(no force flag at the CLI boundary)",
+        retryable: false,
+      },
+    };
+  }
+
   async listDependencies(
     id: string,
     repoPath?: string,

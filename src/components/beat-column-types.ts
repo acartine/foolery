@@ -18,6 +18,18 @@ export interface BeatColumnOpts {
     fields: UpdateBeatInput,
     repoPath?: string,
   ) => void;
+  /**
+   * Hackish fat-finger correction. When provided, the table-cell
+   * state dropdown surfaces a Rewind submenu listing earlier queue
+   * states; selecting one routes through `/api/beats/{id}/rewind`
+   * (kno's `force: true`). Not a primary workflow action — see
+   * `BackendPort.rewind`.
+   */
+  onRewindBeat?: (
+    id: string,
+    targetState: string,
+    repoPath?: string,
+  ) => void;
   onTitleClick?: (beat: Beat) => void;
   onShipBeat?: (beat: Beat) => void;
   shippingByBeatId?: Record<string, string>;

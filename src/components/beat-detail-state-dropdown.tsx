@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AlertTriangle, Undo2 } from "lucide-react";
+import { AlertTriangle, Undo2, Wrench } from "lucide-react";
 import type {
   Beat,
   MemoryWorkflowDescriptor,
@@ -51,14 +51,83 @@ function CorrectionSubmenu({
   );
 }
 
+/**
+ * Rewind submenu — HACKISH FAT-FINGER CORRECTION, not a primary
+ * workflow action. Lists every queue state strictly earlier than the
+ * beat's current state and routes selection through the dedicated
+ * `/rewind` API (kno's `force: true`). Only rendered when at least one
+ * earlier queue state exists. Use cases: a beat was over-shot forward
+ * (e.g. accidentally Shipped) or orphaned in an action state with no
+ * legal kno transition home. For normal forward moves, the radio
+ * group above is the right tool.
+ *
+ * State sources are loom-derived: `workflow.states` and
+ * `workflow.queueStates` come from kno's `profile list --json` output
+ * via `toDescriptor` in `knots-backend-workflows.ts`. Nothing here
+ * hardcodes state names or naming conventions.
+ */
+function RewindSubmenu({
+  beat,
+  workflow,
+  fireRewind,
+}: {
+  beat: Beat;
+  workflow: MemoryWorkflowDescriptor;
+  fireRewind?: (targetState: string) => void;
+}) {
+  if (!fireRewind) return null;
+  const states = workflow.states ?? [];
+  const queueStateSet = new Set(workflow.queueStates ?? []);
+  if (queueStateSet.size === 0) return null;
+  const rawKnoState =
+    typeof beat.metadata?.knotsState === "string"
+      ? beat.metadata.knotsState.trim().toLowerCase()
+      : beat.state.trim().toLowerCase();
+  const currentIndex = states.indexOf(rawKnoState);
+  if (currentIndex <= 0) return null;
+  const earlier = states
+    .slice(0, currentIndex)
+    .filter((s) => queueStateSet.has(s));
+  if (earlier.length === 0) return null;
+  return (
+    <>
+      <DropdownMenuSeparator />
+      <DropdownMenuLabel
+        className={
+          "flex items-center gap-1 "
+          + "text-xs text-muted-foreground"
+        }
+        title={
+          "Fat-finger recovery: force a beat backward to an earlier "
+          + "queue state when no kno-sanctioned transition can walk "
+          + "it home. Not a primary workflow action."
+        }
+      >
+        <Wrench className="size-3" />
+        Rewind (correction)
+      </DropdownMenuLabel>
+      {earlier.map((s) => (
+        <DropdownMenuItem
+          key={`rewind-${s}`}
+          onSelect={() => fireRewind(s)}
+        >
+          {formatStateName(s)}
+        </DropdownMenuItem>
+      ))}
+    </>
+  );
+}
+
 function WorkflowStateDropdown({
   beat,
   workflow,
   fireUpdate,
+  fireRewind,
 }: {
   beat: Beat;
   workflow: MemoryWorkflowDescriptor;
   fireUpdate: (fields: UpdateBeatInput) => void;
+  fireRewind?: (targetState: string) => void;
 }) {
   const rawKnoState =
     typeof beat.metadata?.knotsState === "string"
@@ -131,6 +200,11 @@ function WorkflowStateDropdown({
           workflow={workflow}
           fireUpdate={fireUpdate}
         />
+        <RewindSubmenu
+          beat={beat}
+          workflow={workflow}
+          fireRewind={fireRewind}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -185,11 +259,13 @@ export function StateDropdown({
   onUpdate,
   workflow,
   fireUpdate,
+  fireRewind,
 }: {
   beat: Beat;
   onUpdate?: (f: UpdateBeatInput) => Promise<void>;
   workflow?: MemoryWorkflowDescriptor | null;
   fireUpdate: (f: UpdateBeatInput) => void;
+  fireRewind?: (targetState: string) => void;
 }) {
   if (onUpdate && workflow && beat.state) {
     return (
@@ -197,6 +273,7 @@ export function StateDropdown({
         beat={beat}
         workflow={workflow}
         fireUpdate={fireUpdate}
+        fireRewind={fireRewind}
       />
     );
   }

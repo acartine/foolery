@@ -2,7 +2,15 @@ import { describe, expect, it } from "vitest";
 import { validNextStates } from "@/components/beat-detail";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
 
-/** Minimal workflow descriptor with transitions matching the canonical autopilot profile. */
+/**
+ * `validNextStates` MUST only offer transitions that exist in the
+ * loom-derived `workflow.transitions` list. Earlier queue states
+ * that lack an explicit transition (e.g. `implementation_review →
+ * ready_for_implementation_review` — "un-claim a review") are
+ * exception flow and live behind the Rewind submenu (`force: true`),
+ * not in the normal dropdown. See CLAUDE.md §"State Classification
+ * Is Loom-Derived" and §"kno Workflows Are Authoritative".
+ */
 function autopilotWorkflow(): MemoryWorkflowDescriptor {
   return {
     id: "autopilot",
@@ -28,6 +36,14 @@ function autopilotWorkflow(): MemoryWorkflowDescriptor {
       "abandoned",
     ],
     terminalStates: ["shipped", "abandoned"],
+    queueStates: [
+      "ready_for_planning",
+      "ready_for_plan_review",
+      "ready_for_implementation",
+      "ready_for_implementation_review",
+      "ready_for_shipment",
+      "ready_for_shipment_review",
+    ],
     transitions: [
       { from: "ready_for_planning", to: "planning" },
       { from: "planning", to: "ready_for_plan_review" },
@@ -54,26 +70,26 @@ function autopilotWorkflow(): MemoryWorkflowDescriptor {
   };
 }
 
-describe("validNextStates", () => {
-  const workflow = autopilotWorkflow();
+const workflow = autopilotWorkflow();
 
+describe("validNextStates - basics", () => {
   it("returns empty for undefined currentState", () => {
     expect(validNextStates(undefined, workflow)).toEqual([]);
   });
 
-  it("returns queued-row transitions without ready_for_* states", () => {
+  it("returns only loom-defined transitions from a queue state", () => {
     const result = validNextStates("ready_for_planning", workflow);
     expect(result).toContain("planning");
     expect(result).toContain("deferred");
     expect(result).toContain("abandoned");
-    // Queued rows should not list queue-to-queue targets in normal flow
-    expect(result.some((s) => s.startsWith("ready_for_"))).toBe(false);
+    expect(result).not.toContain("ready_for_planning");
   });
+});
 
-  describe("rolled-back active state (stuck knot)", () => {
+describe("validNextStates - rolled-back active state (stuck knot)", () => {
     it("computes transitions from the raw kno state, not the display state", () => {
       // Display: ready_for_planning, Raw: planning
-      // Transitions from "planning" include ready_for_plan_review
+      // Loom transition: planning → ready_for_plan_review
       const result = validNextStates("ready_for_planning", workflow, "planning");
       expect(result).toContain("ready_for_plan_review");
     });
@@ -84,76 +100,83 @@ describe("validNextStates", () => {
       expect(result).not.toContain("planning");
     });
 
-    it("includes non-terminal workflow states as escape hatches", () => {
+    it("does NOT inject non-loom escape hatches when rolled back", () => {
+      // Old buggy behavior added every non-terminal state. New
+      // behavior: only loom-defined transitions from the raw state.
       const result = validNextStates("ready_for_planning", workflow, "planning");
-      // Should include states from workflow that are not terminal
-      expect(result).toContain("ready_for_implementation");
-      expect(result).toContain("implementation");
-      expect(result).toContain("deferred");
+      // From "planning" the loom only allows → ready_for_plan_review
+      // plus wildcards (deferred, abandoned). It does NOT allow
+      // jumping forward to ready_for_implementation or implementation.
+      expect(result).not.toContain("ready_for_implementation");
+      expect(result).not.toContain("implementation");
     });
 
     it("lists only the wildcard terminals actually in the workflow", () => {
       const result = validNextStates("ready_for_planning", workflow, "planning");
       // Only `abandoned` and `deferred` are reachable via wildcard
-      // transitions in the kno-authoritative workflow. `shipped` is
-      // reachable only from `shipment_review` and is not a wildcard.
+      // transitions in the loom. `shipped` is reachable only from
+      // `shipment_review` and is not a wildcard target.
       expect(result).toContain("abandoned");
       expect(result).toContain("deferred");
       expect(result).not.toContain("shipped");
     });
 
-    it("includes ready_for_* states when rolled back (unlike normal flow)", () => {
-      const result = validNextStates("ready_for_planning", workflow, "planning");
-      // In rolled-back mode, ready_for_* states should be included as escape hatches
-      expect(result).toContain("ready_for_implementation");
-      expect(result).toContain("ready_for_plan_review");
-    });
-
-    it("handles implementation stuck state", () => {
+    it("handles implementation stuck state with only loom-legal options", () => {
       // Display: ready_for_implementation, Raw: implementation
-      const result = validNextStates("ready_for_implementation", workflow, "implementation");
-      // Transitions from "implementation" include ready_for_implementation_review
+      // Loom transitions FROM implementation:
+      //   → ready_for_implementation_review (the only forward edge)
+      //   * → deferred / abandoned (wildcards)
+      const result = validNextStates(
+        "ready_for_implementation", workflow, "implementation",
+      );
       expect(result).toContain("ready_for_implementation_review");
-      // Should not include self
+      expect(result).toContain("deferred");
+      expect(result).toContain("abandoned");
+      // No "back to my own queue" — that's force-only via Rewind.
       expect(result).not.toContain("ready_for_implementation");
+      // No display/raw self-references.
       expect(result).not.toContain("implementation");
     });
-  });
+});
 
-  describe("normal flow (no rollback)", () => {
-    it("includes ready_for_* targets for active rows", () => {
+describe("validNextStates - normal flow (no rollback)", () => {
+    it("includes loom-defined ready_for_* targets for active rows", () => {
       const result = validNextStates("planning", workflow);
       expect(result).toContain("ready_for_plan_review");
     });
 
-    it("includes same-step queued rollback target for active rows", () => {
+    it("does NOT offer same-step queue rollback from active rows", () => {
+      // The user's principle: rolling back to your own ready queue is
+      // exception flow (un-claim) and requires --force via Rewind.
       const result = validNextStates("implementation", workflow);
-      expect(result).toContain("ready_for_implementation");
+      expect(result).not.toContain("ready_for_implementation");
     });
 
-    it("includes all earlier queue states as rollback targets for active rows", () => {
+    it("does NOT offer earlier queue states as rollback targets", () => {
+      // Old buggy behavior added every earlier ready_for_* state. New
+      // behavior: only loom-defined transitions appear.
       const result = validNextStates("implementation", workflow);
-      expect(result).toContain("ready_for_planning");
-      expect(result).toContain("ready_for_plan_review");
-      expect(result).toContain("ready_for_implementation");
+      expect(result).not.toContain("ready_for_planning");
+      expect(result).not.toContain("ready_for_plan_review");
+      expect(result).not.toContain("ready_for_implementation");
     });
 
-    it("includes all earlier queue states for shipment_review", () => {
+    it("offers exactly the loom-defined transitions from shipment_review", () => {
       const result = validNextStates("shipment_review", workflow);
-      expect(result).toContain("ready_for_planning");
-      expect(result).toContain("ready_for_plan_review");
+      // Loom transitions FROM shipment_review:
+      //   → shipped, ready_for_implementation, ready_for_shipment
+      //   * → deferred, abandoned (wildcards)
+      expect(result).toContain("shipped");
       expect(result).toContain("ready_for_implementation");
-      expect(result).toContain("ready_for_implementation_review");
       expect(result).toContain("ready_for_shipment");
-      expect(result).toContain("ready_for_shipment_review");
-    });
-
-    it("does not add later queue states as rollback targets", () => {
-      const result = validNextStates("planning", workflow);
-      // planning is index 1; ready_for_planning is index 0 (earlier, included)
-      expect(result).toContain("ready_for_planning");
-      // ready_for_implementation is index 4 (later, not a rollback addition)
-      // but it may appear from transitions — just verify no spurious additions
+      expect(result).toContain("deferred");
+      expect(result).toContain("abandoned");
+      // Earlier queue states without explicit transitions are NOT
+      // offered (force-only via Rewind).
+      expect(result).not.toContain("ready_for_planning");
+      expect(result).not.toContain("ready_for_plan_review");
+      expect(result).not.toContain("ready_for_implementation_review");
+      expect(result).not.toContain("ready_for_shipment_review");
     });
 
     it("normalizes short impl state to implementation for transitions", () => {
@@ -169,22 +192,35 @@ describe("validNextStates", () => {
     });
 
     it("treats matching rawKnoState and display state as normal flow", () => {
-      // When rawKnoState matches currentState, it's not rolled back
-      const result = validNextStates("ready_for_planning", workflow, "ready_for_planning");
+      const result = validNextStates(
+        "ready_for_planning", workflow, "ready_for_planning",
+      );
       expect(result).toContain("planning");
-      // Should filter out ready_for_* (normal flow)
-      expect(result.some((s) => s.startsWith("ready_for_"))).toBe(false);
     });
 
     it("normalizes rawKnoState before rollback detection", () => {
-      // Same state with casing/whitespace should still be treated as non-rollback
       const result = validNextStates(
         "ready_for_planning",
         workflow,
         " Ready_For_Planning ",
       );
       expect(result).toContain("planning");
-      expect(result.some((s) => s.startsWith("ready_for_"))).toBe(false);
     });
-  });
+});
+
+describe("validNextStates - gate states do not offer self-queue rollback", () => {
+    // The motivating bug: from implementation_review the UI offered
+    // ready_for_implementation_review (un-claim). That transition is
+    // not in the loom — it's exception flow and must go through
+    // Rewind (force: true), not the normal dropdown.
+    for (const gate of [
+      "plan_review",
+      "implementation_review",
+      "shipment_review",
+    ]) {
+      it(`from ${gate} does not offer ready_for_${gate}`, () => {
+        const result = validNextStates(gate, workflow);
+        expect(result).not.toContain(`ready_for_${gate}`);
+      });
+    }
 });

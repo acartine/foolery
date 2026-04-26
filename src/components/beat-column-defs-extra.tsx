@@ -17,6 +17,7 @@ import {
   Clapperboard,
   Square,
   Undo2,
+  Wrench,
 } from "lucide-react";
 import {
   builtinProfileDescriptor,
@@ -176,8 +177,74 @@ function renderStateDropdown(
           beat,
           r,
         )}
+        {renderRewindCorrections(beat, workflow, r)}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+/**
+ * Rewind submenu — HACKISH FAT-FINGER CORRECTION, not a primary
+ * workflow action. Lists every queue state strictly earlier than the
+ * beat's current state and routes selection through the dedicated
+ * `/rewind` API (kno's `force: true`). Mirrors the detail-view
+ * RewindSubmenu so users can recover stuck/over-shot beats from
+ * either the table dropdown or the detail dropdown.
+ *
+ * State sources are loom-derived: `workflow.states` and
+ * `workflow.queueStates` come from kno's `profile list --json` via
+ * `toDescriptor`. Nothing here hardcodes state names. See CLAUDE.md
+ * §"State Classification Is Loom-Derived".
+ */
+function renderRewindCorrections(
+  beat: Beat,
+  workflow: ReturnType<typeof builtinProfileDescriptor>,
+  r: ResolvedOpts,
+) {
+  if (!r.onRewindBeat) return null;
+  const states = workflow.states ?? [];
+  const queueStateSet = new Set(workflow.queueStates ?? []);
+  if (queueStateSet.size === 0) return null;
+  const rawKnoState =
+    typeof beat.metadata?.knotsState === "string"
+      ? beat.metadata.knotsState.trim().toLowerCase()
+      : beat.state.trim().toLowerCase();
+  const currentIndex = states.indexOf(rawKnoState);
+  if (currentIndex <= 0) return null;
+  const earlier = states
+    .slice(0, currentIndex)
+    .filter((s) => queueStateSet.has(s));
+  if (earlier.length === 0) return null;
+  return (
+    <>
+      <DropdownMenuSeparator />
+      <DropdownMenuLabel
+        className={
+          "flex items-center gap-1"
+          + " text-xs text-muted-foreground"
+        }
+        title={
+          "Fat-finger recovery: force a beat backward to an earlier "
+          + "queue state when no kno-sanctioned transition can walk "
+          + "it home. Not a primary workflow action."
+        }
+      >
+        <Wrench className="size-3" />
+        Rewind (correction)
+      </DropdownMenuLabel>
+      {earlier.map((s) => (
+        <DropdownMenuItem
+          key={`rewind-${s}`}
+          onSelect={() =>
+            r.onRewindBeat!(
+              beat.id, s, repoPathForBeat(beat),
+            )
+          }
+        >
+          {formatStateName(s)}
+        </DropdownMenuItem>
+      ))}
+    </>
   );
 }
 

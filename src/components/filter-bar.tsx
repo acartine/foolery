@@ -31,12 +31,6 @@ const commonTypes: string[] = [
   "work",
 ];
 
-const bulkTerminalStates = [
-  { value: "shipped", label: "Shipped" },
-  { value: "abandoned", label: "Abandoned" },
-  { value: "deferred", label: "Deferred" },
-] as const;
-
 function formatLabel(val: string): string {
   return val
     .split(/[_-]/)
@@ -46,43 +40,71 @@ function formatLabel(val: string): string {
 
 export type ViewPhase = "queues" | "active";
 
-const FALLBACK_QUEUE_STATES = [
-  "ready_for_planning",
-  "ready_for_plan_review",
-  "ready_for_implementation",
-  "ready_for_implementation_review",
-  "ready_for_shipment",
-  "ready_for_shipment_review",
-] as const;
-
-const FALLBACK_ACTIVE_STATES = [
-  "planning",
-  "plan_review",
-  "implementation",
-  "implementation_review",
-  "shipment",
-  "shipment_review",
-] as const;
-
-function collectPhaseStates(phase: ViewPhase, fallbackStates: readonly string[]): string[] {
+/**
+ * Collect the union of either `queueStates` or `actionStates` across
+ * all builtin workflow descriptors. State classification is sourced
+ * from the loom-derived descriptor, never hardcoded — see CLAUDE.md
+ * §"State Classification Is Loom-Derived". Throws loud if descriptors
+ * are missing the field, rather than coalescing to a hardcoded default
+ * that would silently mask a builtin-catalog regression.
+ */
+function collectPhaseStates(phase: ViewPhase): string[] {
   const states = new Set<string>();
-
   for (const workflow of builtinWorkflowDescriptors()) {
-    const phaseStates = phase === "active" ? workflow.actionStates : workflow.queueStates;
+    const phaseStates = phase === "active"
+      ? workflow.actionStates
+      : workflow.queueStates;
     for (const state of phaseStates ?? []) {
       states.add(state);
     }
   }
-
   if (states.size === 0) {
-    return [...fallbackStates].sort(compareWorkflowStatePriority);
+    throw new Error(
+      `FOOLERY DESCRIPTOR FAILURE: no ${phase} states found across `
+      + "builtin workflow descriptors. Caller cannot proceed without "
+      + "a loom-derived state list; refusing to fall back to a "
+      + "hardcoded default that would mask the regression.",
+    );
   }
-
   return [...states].sort(compareWorkflowStatePriority);
 }
 
-const QUEUE_STATES = collectPhaseStates("queues", FALLBACK_QUEUE_STATES);
-const ACTIVE_STATES = collectPhaseStates("active", FALLBACK_ACTIVE_STATES);
+/**
+ * Bulk-edit "Set state" dropdown options: states a user can move
+ * many beats to at once. Sourced from the loom-derived descriptors —
+ * union of `terminalStates` plus any wildcard transition targets
+ * (e.g. `* -> deferred`). Never hardcoded.
+ *
+ * @internal Exported for testing only.
+ */
+export function collectBulkSetStateOptions(): Array<{ value: string; label: string }> {
+  const targets = new Set<string>();
+  for (const workflow of builtinWorkflowDescriptors()) {
+    for (const terminal of workflow.terminalStates ?? []) {
+      targets.add(terminal);
+    }
+    for (const transition of workflow.transitions ?? []) {
+      if (transition.from === "*") {
+        targets.add(transition.to);
+      }
+    }
+  }
+  if (targets.size === 0) {
+    throw new Error(
+      "FOOLERY DESCRIPTOR FAILURE: no terminal or wildcard-target "
+      + "states found across builtin workflow descriptors. Bulk "
+      + "Set-state dropdown cannot be populated without a loom-"
+      + "derived target list.",
+    );
+  }
+  return [...targets]
+    .sort(compareWorkflowStatePriority)
+    .map((value) => ({ value, label: formatLabel(value) }));
+}
+
+const QUEUE_STATES = collectPhaseStates("queues");
+const ACTIVE_STATES = collectPhaseStates("active");
+const BULK_SET_STATE_OPTIONS = collectBulkSetStateOptions();
 
 const MULTISELECT_BUTTON_CLASS =
   "h-8 gap-1.5 px-2.5";
@@ -199,7 +221,7 @@ function BulkStateSelect(
         <SelectValue placeholder="Set state..." />
       </SelectTrigger>
       <SelectContent>
-        {bulkTerminalStates.map((s) => (
+        {BULK_SET_STATE_OPTIONS.map((s) => (
           <SelectItem key={s.value} value={s.value}>
             {s.label}
           </SelectItem>
@@ -250,6 +272,11 @@ export function BulkEditControls({
   }, [hasPending, pending, onBulkUpdate]);
 
   const handleShip = useCallback(() => {
+    // "shipped" is the canonical close-with-success terminal name,
+    // matching `KNOTS_CLOSE_TARGET_STATE` in the backend. This is a
+    // named action target, not state classification — see CLAUDE.md
+    // §"State Classification Is Loom-Derived" (covered by exception:
+    // builtin profile vocabulary / canonical action names).
     onBulkUpdate({ state: "shipped" });
     setPending({});
     setResetKey((k) => k + 1);

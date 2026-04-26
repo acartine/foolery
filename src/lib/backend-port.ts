@@ -214,6 +214,33 @@ export interface BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<void>>;
 
+  /**
+   * HACKISH FAT-FINGER CORRECTION — not a primary workflow action.
+   *
+   * Force a beat backward to an earlier `ready_for_*` queue state via
+   * kno's `force: true`. The backend MUST validate that `targetState`:
+   *   - is a queue state of the beat's profile (starts with
+   *     `ready_for_`),
+   *   - is NOT terminal,
+   *   - is strictly earlier than the beat's current state.
+   * Misuse must throw `WorkflowRewindFailureError` and emit a
+   * `FOOLERY WORKFLOW CORRECTION FAILURE` red banner. Backends that
+   * cannot honor force-rewind semantics (e.g. CLI wrappers without a
+   * force flag) should return UNSUPPORTED.
+   *
+   * Use cases: a beat was over-shot forward (e.g. accidentally marked
+   * Shipped) or orphaned in an action state with no legal kno
+   * transition home. For normal forward moves, use `update({ state })`
+   * — that path defers to the workflow engine. For terminal corrections
+   * use `markTerminal`. For curated regression reopens use `reopen`.
+   */
+  rewind(
+    id: string,
+    targetState: string,
+    reason?: string,
+    repoPath?: string,
+  ): Promise<BackendResult<void>>;
+
   /** List dependencies for a given beat. */
   listDependencies(
     id: string,

@@ -48,6 +48,34 @@ These are enforced by ESLint (`max-lines`, `max-lines-per-function`, `max-len`).
 
 kno `.loom` workflows are the single source of truth; Foolery TS must never override, extend, or post-process them (no synthetic transitions, no parallel canonical graph). Correction actions that skip gates must be named as such and invoke kno idiomatically with `force: true` (see `KnotsBackend.close()`); details in `docs/DEVELOPING.md`.
 
+## State Classification Is Loom-Derived
+
+Corollary to "kno Workflows Are Authoritative". Foolery TS must NEVER hardcode state names or test for state classification by string pattern. State classification (queue / action / terminal / initial / retake) lives on the loom-derived `MemoryWorkflowDescriptor` produced by `toDescriptor` in `src/lib/backends/knots-backend-workflows.ts`, which reads `kno profile list --json` (`profile.states`, `profile.queue_states`, `profile.action_states`, `profile.terminal_states`, etc.).
+
+Use the descriptor fields directly:
+
+- "Is this a queue state?" → `descriptor.queueStates.includes(state)`
+- "Is this an action state?" → `descriptor.actionStates.includes(state)`
+- "Is this terminal?" → `descriptor.terminalStates.includes(state)`
+- "Where does this beat start?" → `descriptor.initialState`
+- "Where does Retake send it?" → `descriptor.retakeState`
+
+Do NOT:
+
+- Test classification by prefix (`state.startsWith("ready_for_")`, `state.endsWith("_review")`).
+- Hardcode state names in caller logic (`state === "ready_for_implementation"`, `["shipped", "abandoned"].includes(state)`, `state === "implementation"`).
+- Maintain a parallel constant table of "queue states we know about" — that table will silently drift the moment a custom `.loom` profile adds, renames, or removes a state.
+- Coalesce a missing descriptor field with a hardcoded default (`?? "ready_for_implementation"`, `?? ["shipped"]`).
+
+The `ready_for_*` prefix is a kno-side naming convention used by the builtin `autopilot` / `semiauto` profiles. It is NOT a contract — a custom loom profile may use any name kno accepts. Treating the prefix as load-bearing logic silently breaks every non-builtin profile and quietly drifts when names change in `kno`.
+
+Two narrow exceptions:
+
+1. **Builtin profile catalogs** that mirror the canonical loom shape (e.g. `src/lib/workflows.ts`'s `BUILTIN_PROFILE_CATALOG`) may list state names because the file IS the descriptor source for legacy / non-knots backends. Treat these tables like loom files themselves — never read from them in caller logic, only feed them into `toDescriptor` / `descriptorFromProfileConfig`.
+2. **Pure presentation theming** (e.g. mapping a state string to a CSS color in a row badge) where the renderer has no descriptor in scope. Acceptable, but prefer plumbing the descriptor through when feasible.
+
+If a code site needs to ask "is this state a queue state?", and the descriptor is not in scope, the fix is to plumb the descriptor through — not to add a prefix check. See `src/components/beat-detail.tsx`'s `validNextStates` and `src/components/beat-detail-state-dropdown.tsx`'s `RewindSubmenu` for the canonical pattern.
+
 ## Fail Loudly, Never Silently
 
 Silent fallbacks on configured resources are banned.

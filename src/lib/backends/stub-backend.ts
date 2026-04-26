@@ -106,6 +106,10 @@ export class StubBackend implements BackendPort {
     return unavailableError("reopen");
   }
 
+  async rewind(): Promise<BackendResult<void>> {
+    return unavailableError("rewind");
+  }
+
   async listDependencies(): Promise<BackendResult<BeatDependency[]>> {
     return { ok: true, data: [] };
   }
