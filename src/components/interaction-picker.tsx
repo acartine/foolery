@@ -448,6 +448,7 @@ function useFilterEntry(
           !shouldShowHistoryResponseType(
             type,
             thinkingDetailVisible,
+            parsed,
           )
         ) {
           return false;
