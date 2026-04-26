@@ -328,9 +328,36 @@ function translateReasoning(
     })
     .filter(Boolean)
     .join("\n");
+  if (!text) return null;
   return {
     type: "item.completed",
     item: { type: "reasoning", text },
+  };
+}
+
+// Codex delta events use `params.delta` or
+// `params.text` interchangeably depending on version.
+function extractDeltaText(
+  params: Record<string, unknown>,
+): string {
+  if (
+    typeof params.delta === "string" &&
+    params.delta.length > 0
+  ) return params.delta;
+  if (typeof params.text === "string") return params.text;
+  return "";
+}
+
+function buildStreamEventDelta(
+  text: string,
+): Record<string, unknown> | null {
+  if (!text) return null;
+  return {
+    type: "stream_event",
+    event: {
+      type: "content_block_delta",
+      delta: { type: "text_delta", text },
+    },
   };
 }
 
@@ -357,25 +384,19 @@ function translateNotification(
       method, params,
     );
   }
-  if (method === "item/agentMessage/delta") {
-    const text =
-      typeof params.text === "string"
-        ? params.text : "";
-    return text
-      ? {
-          type: "item.delta",
-          item: { type: "agent_message" },
-          text,
-        }
-      : null;
+  if (
+    method === "item/agentMessage/delta" ||
+    method === "item/commandExecution/outputDelta"
+  ) {
+    return buildStreamEventDelta(
+      extractDeltaText(params),
+    );
   }
   if (
     method === "item/reasoning/summaryTextDelta" ||
     method === "item/reasoning/textDelta"
   ) {
-    const text =
-      typeof params.text === "string"
-        ? params.text : "";
+    const text = extractDeltaText(params);
     return text
       ? {
           type: "item.completed",
