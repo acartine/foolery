@@ -1,0 +1,20 @@
+{
+  "event_id": "019db46b-9bec-7bb2-a63c-4dd6f932acd2",
+  "occurred_at": "2026-04-22T09:00:44.396489356Z",
+  "knot_id": "foolery-82f9",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "Claude",
+        "agent_type": "cli",
+        "model": "sonnet/claude",
+        "model_version": "4.6",
+        "provider": "Claude"
+      },
+      "lease_type": "agent",
+      "nickname": "foolery:terminal_manager_take:term-1776847481758-ik9mda",
+      "timeout_seconds": 600
+    }
+  }
+}

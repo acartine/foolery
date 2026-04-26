@@ -1,0 +1,9 @@
+{
+  "event_id": "019db8d8-9432-7193-8fc9-e7ea61c4b23b",
+  "occurred_at": "2026-04-23T05:38:14.706590948Z",
+  "knot_id": "foolery-b40e",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Running `foolery --version` prints a version string (e.g. `0.12.0`) and exits with code 0.\n2. The printed version matches the `version` field in `package.json`.\n3. Running `foolery -V` (if aliased) behaves identically, or is explicitly not supported — either is acceptable, but must be consistent.\n4. No other output (banners, prompts, config warnings) is printed alongside the version string.\n5. `foolery --version` works even when no `settings.toml` or `registry.json` is present — it must not fail due to missing config."
+  }
+}

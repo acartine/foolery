@@ -1,0 +1,15 @@
+{
+  "event_id": "019db8dc-9f46-7853-b4c8-0f27981a9b39",
+  "occurred_at": "2026-04-23T05:42:39.686185683Z",
+  "knot_id": "foolery-18b6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Notification beat-ID clicks currently preserve non-list views, so the detail lightbox never opens off `queues`/`active`. Planned implementation is to fetch the beat on click, classify its workflow phase with `builtinProfileDescriptor` + `workflowStatePhase`, force the route to `queues` or `active`, and keep `beat=` in the same navigation. Coverage should include route-building unit tests plus one browser validation from a non-list screen.",
+    "datetime": "2026-04-23T05:42:15Z",
+    "entry_id": "019db8dc-9f46-7853-b4c8-0f11d19aa393",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

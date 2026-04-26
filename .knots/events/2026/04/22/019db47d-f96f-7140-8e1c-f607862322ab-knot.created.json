@@ -1,0 +1,17 @@
+{
+  "event_id": "019db47d-f96f-7140-8e1c-f607862322ab",
+  "occurred_at": "2026-04-22T09:20:47.983717324Z",
+  "knot_id": "foolery-9a33",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Rename dispatch modes to more specific names",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019db447-1f0a-73f1-8319-f798c6357442",
+  "occurred_at": "2026-04-22T08:20:53.130112326Z",
+  "knot_id": "foolery-33ce",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Load the queues screen with a workflow that has at least one human-gated step (requiresHumanAction=true or ownerKind='human') sitting in a queued phase — confirm it no longer appears in the default queues list.\n2. A beat whose `isAgentClaimable` is true still appears in the queues screen as before.\n3. The poll/claim path (`buildPollPrompt` → `listReady`) is unaffected and returns the same set it did before the change.\n4. Validate via playwright mcp: navigate to the queues screen, snapshot the beat list, confirm no beats are rendered that have `requiresHumanAction=true` or `isAgentClaimable=false`.\n5. `bun run lint && bunx tsc --noEmit && bun run test` all pass green."
+  }
+}

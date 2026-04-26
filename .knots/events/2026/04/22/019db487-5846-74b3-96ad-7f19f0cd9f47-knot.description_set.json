@@ -1,0 +1,9 @@
+{
+  "event_id": "019db487-5846-74b3-96ad-7f19f0cd9f47",
+  "occurred_at": "2026-04-22T09:31:02.086122032Z",
+  "knot_id": "foolery-9a33",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The dispatch pool resolver uses generic mode names that make it hard to understand routing behavior at a glance. Rename each mode constant/type to a name that reflects what it actually does (e.g., the routing strategy, fallback behavior, or selection algorithm), updating all call sites and any related documentation or type definitions."
+  }
+}

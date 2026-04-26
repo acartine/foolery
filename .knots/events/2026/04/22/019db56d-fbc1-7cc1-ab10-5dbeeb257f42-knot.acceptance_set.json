@@ -1,0 +1,9 @@
+{
+  "event_id": "019db56d-fbc1-7cc1-ab10-5dbeeb257f42",
+  "occurred_at": "2026-04-22T13:42:57.217562224Z",
+  "knot_id": "foolery-c751",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. No backend factory, auto-routing path, or API handler defaults to the BD/cli backend when `repoPath` is missing, unknown, or unsupported — verified by grepping for any `?? \"bd\"`, `?? \"cli\"`, or `Object.values(...)[0]` fallback patterns in dispatch and backend-resolution code.\n2. `GET /api/beats/[id]` and all beat-detail lookup paths throw a `DispatchFailureError` (with `FOOLERY DISPATCH FAILURE` in the message) when repo context is required but unresolvable, rather than querying BD and surfacing storage errors like `table not found: issues`.\n3. Repos detected as `knots` type continue to resolve through the Knots backend; repos detected as `beads` type continue to resolve through BD — both confirmed by existing routing tests remaining green.\n4. New unit or integration tests cover the no-fallback path: given an unknown or missing `repoPath`, the resolver throws rather than returning a default backend. These tests must fail if BD is re-introduced as a fallback."
+  }
+}

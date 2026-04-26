@@ -1,0 +1,9 @@
+{
+  "event_id": "019db481-54db-7b43-bef1-9f5d781247ab",
+  "occurred_at": "2026-04-22T09:24:27.995558852Z",
+  "knot_id": "foolery-d7b7",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. `foolery doctor` runs to completion on Linux without throwing an ENOENT error.\n2. If the missing path is optional or platform-specific, the command prints a warning (not a crash) and continues.\n3. If the path is required and legitimately absent, the command emits a human-readable error message naming the missing path and how to resolve it — no raw Node stack trace.\n4. `foolery doctor` exits 0 when all checks pass, non-zero only when a genuine misconfiguration is detected.\n5. No regression on macOS: `foolery doctor` still completes successfully there."
+  }
+}

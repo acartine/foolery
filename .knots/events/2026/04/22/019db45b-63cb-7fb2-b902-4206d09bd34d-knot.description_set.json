@@ -1,0 +1,9 @@
+{
+  "event_id": "019db45b-63cb-7fb2-b902-4206d09bd34d",
+  "occurred_at": "2026-04-22T08:43:01.45153856Z",
+  "knot_id": "foolery-97fb",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Expose an HTTP endpoint under /api/terminal that allows callers to terminate or kill a running terminal process. The endpoint should accept a terminal/session identifier and send the appropriate signal (SIGTERM for graceful terminate, SIGKILL for force kill) to the underlying process."
+  }
+}

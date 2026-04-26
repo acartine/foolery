@@ -1,0 +1,10 @@
+{
+  "event_id": "019db481-54db-7b43-bef1-9f3873b0a2ff",
+  "occurred_at": "2026-04-22T09:24:27.995558852Z",
+  "knot_id": "foolery-d7b7",
+  "type": "knot.title_set",
+  "data": {
+    "from": "foolery doctor fails ENOENT on linux",
+    "to": "fix: `foolery doctor` crashes with ENOENT on Linux"
+  }
+}

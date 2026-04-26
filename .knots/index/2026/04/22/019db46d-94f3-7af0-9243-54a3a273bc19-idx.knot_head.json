@@ -1,0 +1,21 @@
+{
+  "event_id": "019db46d-94f3-7af0-9243-54a3a273bc19",
+  "occurred_at": "2026-04-22T09:02:53.683285424Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-97fb",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add terminate/kill endpoint to /api/terminal",
+    "type": "work",
+    "updated_at": "2026-04-22T09:02:53.683285424Z",
+    "workflow_id": "work_sdlc"
+  }
+}

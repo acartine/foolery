@@ -1,0 +1,9 @@
+{
+  "event_id": "019db8da-e337-7192-8c9d-071939929ac8",
+  "occurred_at": "2026-04-23T05:40:46.007741527Z",
+  "knot_id": "foolery-18b6",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When a user clicks a beat ID in a notification while on a screen other than queues or active, the click is a no-op because the action does not navigate first. The fix should detect the current screen, navigate to the appropriate screen (queues or active depending on beat state), and then open the beat detail lightbox — all as a single user action."
+  }
+}

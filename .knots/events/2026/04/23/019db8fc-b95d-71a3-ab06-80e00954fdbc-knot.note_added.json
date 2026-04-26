@@ -1,0 +1,15 @@
+{
+  "event_id": "019db8fc-b95d-71a3-ab06-80e00954fdbc",
+  "occurred_at": "2026-04-23T06:17:43.517452153Z",
+  "knot_id": "foolery-18b6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation handoff: focusNotificationBeat + buildNotificationBeatFocusHref lift focus logic into a tested helper, classify workflow phase via workflowStatePhase + builtinProfileDescriptor, and force view=queues or view=active before navigating (single navigation, no extra click needed). Terminal phase fails loudly via FOOLERY NOTIFICATION BEAT FOCUS FAILURE. Branch foolery-18b6-notification-focus (commit 8a87993) pushed to origin. Playwright-validated on dev server: history->active (implementation beat foolery-18b6), finalcut->queues (ready_for_implementation beat foolery-f354), and already-on-active regression. Beat detail dialog visible in DOM in all three cases. bun run lint and bunx tsc --noEmit clean. Pre-existing install-launcher-path test failures are unrelated (environmental: port 3210 held by running installed runtime).",
+    "datetime": "2026-04-23T06:17:43.517452153Z",
+    "entry_id": "019db8fc-b95d-71a3-ab06-80d5d6dfcda9",
+    "model": "claude-opus-4-7",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

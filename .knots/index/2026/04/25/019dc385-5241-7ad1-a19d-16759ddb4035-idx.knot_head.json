@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc385-5241-7ad1-a19d-16759ddb4035",
+  "occurred_at": "2026-04-25T07:23:07.712202836Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-fb52",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Tighten setlist header spacing and nav label weight",
+    "type": "work",
+    "updated_at": "2026-04-25T07:23:07.712202836Z",
+    "workflow_id": "work_sdlc"
+  }
+}

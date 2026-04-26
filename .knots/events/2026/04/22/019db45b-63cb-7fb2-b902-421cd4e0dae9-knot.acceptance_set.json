@@ -1,0 +1,9 @@
+{
+  "event_id": "019db45b-63cb-7fb2-b902-421cd4e0dae9",
+  "occurred_at": "2026-04-22T08:43:01.45153856Z",
+  "knot_id": "foolery-97fb",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. POST /api/terminal/:id/terminate sends SIGTERM to the target process and returns 200 with the process state.\n2. POST /api/terminal/:id/kill sends SIGKILL to the target process and returns 200 with the process state.\n3. Requesting terminate/kill on a non-existent or already-dead session returns 404 or 410 with a descriptive error body.\n4. After a successful terminate/kill call, subsequent reads on that session reflect the process as exited.\n5. Unit tests cover the happy path for both terminate and kill, and the not-found error case.\n6. bun run lint, bunx tsc --noEmit, and bun run test all pass with no new failures."
+  }
+}

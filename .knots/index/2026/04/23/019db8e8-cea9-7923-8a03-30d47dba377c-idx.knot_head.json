@@ -1,0 +1,21 @@
+{
+  "event_id": "019db8e8-cea9-7923-8a03-30d47dba377c",
+  "occurred_at": "2026-04-23T05:55:58.249390232Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b40e",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add `--version` flag to the foolery CLI",
+    "type": "work",
+    "updated_at": "2026-04-23T05:55:58.249390232Z",
+    "workflow_id": "work_sdlc"
+  }
+}

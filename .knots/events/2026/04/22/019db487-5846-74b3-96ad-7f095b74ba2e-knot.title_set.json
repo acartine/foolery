@@ -1,0 +1,10 @@
+{
+  "event_id": "019db487-5846-74b3-96ad-7f095b74ba2e",
+  "occurred_at": "2026-04-22T09:31:02.086122032Z",
+  "knot_id": "foolery-9a33",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Rename dispatch modes to more specific names",
+    "to": "Rename dispatch pool resolver modes to descriptive names"
+  }
+}

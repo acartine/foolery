@@ -1,0 +1,9 @@
+{
+  "event_id": "019db8d8-9432-7193-8fc9-e7d0f28dfd2a",
+  "occurred_at": "2026-04-23T05:38:14.706590948Z",
+  "knot_id": "foolery-b40e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The foolery CLI should print its current version and exit when invoked with `--version`. The version string should match the value defined in package.json."
+  }
+}

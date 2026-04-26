@@ -1,0 +1,9 @@
+{
+  "event_id": "019db487-5846-74b3-96ad-7f21c109d178",
+  "occurred_at": "2026-04-22T09:31:02.086122032Z",
+  "knot_id": "foolery-9a33",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. All renamed mode identifiers compile cleanly: `bunx tsc --noEmit` exits 0.\n2. Linting passes: `bun run lint` exits 0.\n3. Tests pass: `bun run test` exits 0.\n4. No string literal or symbol referencing the old mode names remains in the codebase (`grep` for each old name returns zero matches in source files).\n5. Any user-facing log output or error messages that previously printed old mode names now print the new names.\n6. `CLAUDE.md` dispatch-pool resolver documentation (if it references mode names) is updated to match."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "event_id": "019db447-1f0a-73f1-8319-f77ff48b3781",
+  "occurred_at": "2026-04-22T08:20:53.130112326Z",
+  "knot_id": "foolery-33ce",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Fix queues screen claimable knot filtering",
+    "to": "Fix queues screen to filter out non-claimable knots"
+  }
+}

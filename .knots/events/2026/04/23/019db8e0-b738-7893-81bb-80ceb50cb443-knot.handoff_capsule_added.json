@@ -1,0 +1,15 @@
+{
+  "event_id": "019db8e0-b738-7893-81bb-80ceb50cb443",
+  "occurred_at": "2026-04-23T05:47:07.960507316Z",
+  "knot_id": "foolery-b40e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Branch: foolery-b40e-version\nCommit: b0c1e03fd119f453113d294093f86822a491bbad\nVerification: built the launcher and confirmed \\ and \\ print the package.json version with no update banner output when FOOLERY_APP_DIR points at the repo checkout.\nCaveat: full Vitest execution is blocked in this environment because the local npm install produced empty dev-package directories and \\ is not installed for the repo hooks/toolchain.",
+    "datetime": "2026-04-23T05:47:07.960507316Z",
+    "entry_id": "019db8e0-b738-7893-81bb-80be1c9fa902",
+    "model": "gpt-5",
+    "username": "Codex",
+    "version": "5"
+  }
+}

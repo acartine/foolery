@@ -1,0 +1,21 @@
+{
+  "event_id": "019db45e-7cdb-7073-8acf-ddb8fa679c7d",
+  "occurred_at": "2026-04-22T08:46:24.473639678Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ad76",
+    "profile_id": "autopilot_no_planning",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Implement setlist screen",
+    "type": "work",
+    "updated_at": "2026-04-22T08:46:24.473639678Z",
+    "workflow_id": "work_sdlc"
+  }
+}

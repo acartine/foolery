@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc385-519f-7ce1-b510-6e85c69602e2",
+  "occurred_at": "2026-04-25T07:23:07.549786154Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7e78",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Paginate Setlist beats in 12-step windows",
+    "type": "work",
+    "updated_at": "2026-04-25T07:23:07.549786154Z",
+    "workflow_id": "work_sdlc"
+  }
+}

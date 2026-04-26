@@ -1,0 +1,10 @@
+{
+  "event_id": "019db8d8-9432-7193-8fc9-e7c018c5bc8e",
+  "occurred_at": "2026-04-23T05:38:14.706590948Z",
+  "knot_id": "foolery-b40e",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Add `foolery --version` to cli",
+    "to": "Add `--version` flag to the foolery CLI"
+  }
+}

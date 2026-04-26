@@ -1,0 +1,9 @@
+{
+  "event_id": "019db481-54db-7b43-bef1-9f41b1c5e626",
+  "occurred_at": "2026-04-22T09:24:27.995558852Z",
+  "knot_id": "foolery-d7b7",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Running `foolery doctor` on Linux throws an ENOENT (file not found) error and exits non-zero before completing its diagnostic output. The command likely references a path that either does not exist on Linux (e.g. a macOS-specific default path) or is not created during installation. The fix should ensure `doctor` handles the missing path gracefully — either by creating it, skipping the check with a clear warning, or correcting the path lookup to use the right platform default."
+  }
+}

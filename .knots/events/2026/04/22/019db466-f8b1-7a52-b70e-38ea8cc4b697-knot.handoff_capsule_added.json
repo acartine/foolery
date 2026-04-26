@@ -1,0 +1,15 @@
+{
+  "event_id": "019db466-f8b1-7a52-b70e-38ea8cc4b697",
+  "occurred_at": "2026-04-22T08:55:40.465510907Z",
+  "knot_id": "foolery-97fb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: foolery-97fb-terminate-kill. Commit: ee4fe2e6. Added POST /api/terminal/:id/terminate and POST /api/terminal/:id/kill backed by terminal-manager-signal helpers plus unit coverage for SIGTERM, SIGKILL, not_found, and already_exited. Validation: bun run lint passed, bunx tsc --noEmit passed, targeted vitest for terminal-manager-signal passed. Full bun run test still hits unrelated sandbox-sensitive failures in foolery-config CLI and install-launcher-path tests.",
+    "datetime": "2026-04-22T08:55:40.465510907Z",
+    "entry_id": "019db466-f8b1-7a52-b70e-38dc97d5d4d7",
+    "model": "gpt-5",
+    "username": "Codex",
+    "version": "codex"
+  }
+}

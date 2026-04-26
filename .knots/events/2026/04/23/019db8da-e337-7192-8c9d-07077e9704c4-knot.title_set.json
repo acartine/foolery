@@ -1,0 +1,10 @@
+{
+  "event_id": "019db8da-e337-7192-8c9d-07077e9704c4",
+  "occurred_at": "2026-04-23T05:40:46.007741527Z",
+  "knot_id": "foolery-18b6",
+  "type": "knot.title_set",
+  "data": {
+    "from": "clicking on notification beat/knot should open the queues or active screen and launch the beat detail lightbox",
+    "to": "Navigate to correct screen and open beat detail when clicking notification beat ID"
+  }
+}

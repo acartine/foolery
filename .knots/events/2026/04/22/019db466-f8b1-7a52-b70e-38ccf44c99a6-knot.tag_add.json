@@ -1,0 +1,9 @@
+{
+  "event_id": "019db466-f8b1-7a52-b70e-38ccf44c99a6",
+  "occurred_at": "2026-04-22T08:55:40.465510907Z",
+  "knot_id": "foolery-97fb",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:foolery-97fb-terminate-kill"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019db8da-b0f1-75c0-80ac-a7cec4552e90",
+  "occurred_at": "2026-04-23T05:40:33.137491911Z",
+  "knot_id": "foolery-18b6",
+  "type": "knot.created",
+  "data": {
+    "body": "if you're not on the queues screen and you click on the notification beat id, you get a no-op because the action isn't smart enough to navigate to the right screen.\n\nwhen a user clicks on that beat id, the proper screen (queues or active) should be navigated to automatically and the detail lightbox opened automatically",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "clicking on notification beat/knot should open the queues or active screen and launch the beat detail lightbox",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

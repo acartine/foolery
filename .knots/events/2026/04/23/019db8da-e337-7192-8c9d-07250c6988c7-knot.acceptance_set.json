@@ -1,0 +1,9 @@
+{
+  "event_id": "019db8da-e337-7192-8c9d-07250c6988c7",
+  "occurred_at": "2026-04-23T05:40:46.007741527Z",
+  "knot_id": "foolery-18b6",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. From any screen that is NOT queues or active, click a beat ID in a notification.\n2. The app navigates to the queues screen if the beat is queued, or the active screen if the beat is active.\n3. The beat detail lightbox opens automatically after navigation without any additional user interaction.\n4. Clicking a beat ID notification while already on the correct screen still opens the lightbox (no regression).\n5. Validate with playwright or chrome-devtools: navigate to a non-queues/non-active route, trigger a notification click, assert the route changed and the detail lightbox is visible in the DOM."
+  }
+}

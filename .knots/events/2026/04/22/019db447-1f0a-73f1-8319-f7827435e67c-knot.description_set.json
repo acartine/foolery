@@ -1,0 +1,9 @@
+{
+  "event_id": "019db447-1f0a-73f1-8319-f7827435e67c",
+  "occurred_at": "2026-04-22T08:20:53.130112326Z",
+  "knot_id": "foolery-33ce",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The queues screen currently shows all beats in a queued phase, including those where `isAgentClaimable` is false (e.g., human-gated steps, beats with `requiresHumanAction` set). This is inconsistent with the poll/claim path in `buildPollPrompt()`, which already filters to `isAgentClaimable === true` before claiming. The fix should propagate claimability filtering into the `applyFilters()` call that backs the queues list view so agents only see work they can actually claim."
+  }
+}
