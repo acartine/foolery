@@ -1,0 +1,17 @@
+{
+  "event_id": "019dc857-ddfd-7d50-8371-6065fce2564b",
+  "occurred_at": "2026-04-26T05:51:34.90939Z",
+  "knot_id": "foolery-7192",
+  "type": "knot.created",
+  "data": {
+    "body": "When setlist is unselected, it will show the total number of beats/knots as if they are all unshipped/non-terminal.\n\nThen when click on it, it switches to 0\n\n",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Setlist:  Unselected setlists calculate knots remaining incorrectly",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

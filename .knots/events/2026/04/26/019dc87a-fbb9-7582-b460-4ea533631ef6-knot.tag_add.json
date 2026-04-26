@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc87a-fbb9-7582-b460-4ea533631ef6",
+  "occurred_at": "2026-04-26T06:29:56.281447Z",
+  "knot_id": "foolery-7192",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-7192-setlist-counts"
+  }
+}

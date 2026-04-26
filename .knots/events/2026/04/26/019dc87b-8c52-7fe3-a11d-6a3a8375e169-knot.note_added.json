@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc87b-8c52-7fe3-a11d-6a3a8375e169",
+  "occurred_at": "2026-04-26T06:30:33.298396Z",
+  "knot_id": "foolery-7192",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation handoff capsule\n\nBranch: worktree-foolery-7192-setlist-counts (origin)\nCommit: 0ab5829d\n\nFixes the unselected setlist row knot count by enriching the shared beat map with all plan beats (including shipped beats not present in the repo's default beats listing). Adds a 'Done' badge and 'Complete plan' button that surface when workableBeatCount === 0, wiring through a new POST /api/plans/[planId]/complete route backed by KnotsBackend.close + markTerminal (the canonical force: true correction path).\n\nPre-extracted setlist-view.tsx into:\n- src/components/plan-summary-card.tsx\n- src/components/setlist-empty-state.tsx\n- src/components/setlist-view-data.ts\n\nNew helpers in src/lib/setlist-chart.ts: countWorkableBeatIds, isTerminalPlanArtifactState. New module src/lib/orchestration-plan-correction.ts: completePlan (delegates to getBackend().close).\n\nVerified via Playwright at http://localhost:3287/beats?repo=/Users/cartine/foolery&view=setlist: both real plans (foolery-9bf4 ready_for_design, foolery-79a3 ready_for_review) correctly show '0 remaining' + Done badge + Complete button on both selected and unselected cards. Toggling selection keeps the count stable at 0. Did NOT click Complete in production per the project's no-terminal-without-explicit-instruction rule; click path is covered by unit tests.\n\nQuality gates: bun run lint clean, bunx tsc --noEmit clean, bun run test 2785/2785 passing, bun run build clean.\n\nTERMINAL_PLAN_ARTIFACT_STATES = ['shipped', 'abandoned'] confirmed against ~/knots/loom/execution_plan_sdlc/workflow.loom (blocked + deferred are escapes, not terminals).",
+    "datetime": "2026-04-26T06:30:33.298396Z",
+    "entry_id": "019dc87b-8c52-7fe3-a11d-6a27e16feada",
+    "model": "unknown",
+    "username": "Claude",
+    "version": "unknown"
+  }
+}

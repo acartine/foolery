@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc858-3997-72e1-8519-45bfed41bed5",
+  "occurred_at": "2026-04-26T05:51:58.359761Z",
+  "knot_id": "foolery-7192",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. **Accurate count on unselected rows** — the knots-remaining badge on an unselected setlist row equals the number of knots whose state is NOT terminal (i.e., matches the count shown after selecting the row). Verify with Playwright: load the setlist screen via `bun dev` (non-3000 port), read the badge value on a collapsed row, then click to expand — both values must match.\n2. **Zero-remaining visual cue** — when knots-remaining is 0 for an unselected setlist, the row renders a distinct visual completion indicator (e.g., checkmark icon, 'Done' badge, or muted/strikethrough style). Verified via Playwright screenshot on a fully-shipped execution plan.\n3. **Complete-plan action button** — when a setlist's execution plan is not yet in its positive terminal state AND knots-remaining is 0, a clickable 'Complete' (or equivalent) button is visible that advances the execution_plan workflow to its positive terminal state. Button must be absent once the plan is already terminal. Verify via Playwright: click the button, confirm the plan reaches terminal state and the button disappears.\n4. **No regression on selected rows** — selecting a previously-incorrect setlist still shows the same corrected count (no double-correction). Verify by toggling selection back and forth; count must remain stable."
+  }
+}

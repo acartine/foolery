@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc868-eb97-7a23-8856-f340930dc9a2",
+  "occurred_at": "2026-04-26T06:10:12.503526Z",
+  "knot_id": "foolery-babd",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:foolery-babd-codex-output"
+  }
+}

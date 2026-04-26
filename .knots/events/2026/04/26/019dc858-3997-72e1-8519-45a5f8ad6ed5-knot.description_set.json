@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc858-3997-72e1-8519-45a5f8ad6ed5",
+  "occurred_at": "2026-04-26T05:51:58.359761Z",
+  "knot_id": "foolery-7192",
+  "type": "knot.description_set",
+  "data": {
+    "description": "An unselected setlist row displays the total knot count as though every knot is unshipped — it does not filter out knots already in terminal states. Selecting the setlist corrects the count (drops to the true remaining number, often 0). The bug is in how knots-remaining is computed for the unselected/collapsed row state: it counts all knots rather than only those in non-terminal states. Selecting the row should not be required to get an accurate count."
+  }
+}

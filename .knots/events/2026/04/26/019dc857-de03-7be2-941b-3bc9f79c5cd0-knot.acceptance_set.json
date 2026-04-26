@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc857-de03-7be2-941b-3bc9f79c5cd0",
+  "occurred_at": "2026-04-26T05:51:34.90939Z",
+  "knot_id": "foolery-7192",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- Beats remaining should be calculated accurately based on underlying beats' state\n- When beats remaining is 0 for unselected set list, there should be a visual cue that the execution plan has no remaining work.  \n- If the execution plan is not in terminal state , there should be a button you can click that completes the execution_plan workflow (whatever the postiive terminal state is)\n\nto recreate and verify,  you can look at the foolery repo setlist screen using bun dev and localhost:<port>.  don't use port 3000."
+  }
+}

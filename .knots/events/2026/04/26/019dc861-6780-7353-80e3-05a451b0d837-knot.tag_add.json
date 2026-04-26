@@ -1,0 +1,9 @@
+{
+  "event_id": "019dc861-6780-7353-80e3-05a451b0d837",
+  "occurred_at": "2026-04-26T06:01:59.936461Z",
+  "knot_id": "foolery-c30f",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:c30f-show-cli-approval-requests"
+  }
+}

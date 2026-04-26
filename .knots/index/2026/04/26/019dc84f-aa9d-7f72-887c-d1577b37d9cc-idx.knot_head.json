@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc84f-aa9d-7f72-887c-d1577b37d9cc",
+  "occurred_at": "2026-04-26T05:42:37.464317Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1933",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Apply terminal Setlist cues and workable counts",
+    "type": "work",
+    "updated_at": "2026-04-26T05:42:37.464317Z",
+    "workflow_id": "work_sdlc"
+  }
+}

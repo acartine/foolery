@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc860-5e31-76f1-a3be-97d649a5bb47",
+  "occurred_at": "2026-04-26T06:00:52.017108Z",
+  "knot_id": "foolery-a89b",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Handoff capsule for a89b implementation review: Branch worktree-foolery-a89b-codex-deltas (commit 566cb931) is on origin and ready to review. Edits: src/lib/codex-jsonrpc-session.ts adds Codex-local extractDeltaText + buildStreamEventDelta helpers and routes item/agentMessage/delta plus item/commandExecution/outputDelta through them so both params.delta and params.text surface as content_block_delta stream_event text; reasoning textDelta/summaryTextDelta accept both keys equally; translateReasoning now returns null when text is empty so item/completed reasoning with no summaryParts no longer renders (no text). Tests: new src/lib/__tests__/codex-jsonrpc-deltas.test.ts covers delta/text equivalence for agentMessage and outputDelta and empty-reasoning suppression. Quality gates: bun run lint, bunx tsc --noEmit, bun run test (272 files / 2753 passing), bun run build all clean. No shared formatters or non-Codex normalizers were touched, preserving Claude/OpenCode/Copilot/Gemini behavior.",
+    "datetime": "2026-04-26T06:00:52.017108Z",
+    "entry_id": "019dc860-5e31-76f1-a3be-97c68013f878",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.7"
+  }
+}

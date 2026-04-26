@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc869-6ab9-7743-9f4e-d1382b17d59e",
+  "occurred_at": "2026-04-26T06:10:45.049117Z",
+  "knot_id": "foolery-babd",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation pushed to branch foolery-babd-codex-output (commit e76fb2a2). Root cause: codex JSON-RPC translator read params.text but live Codex publishes params.delta — every streamed agent message and command outputDelta was silently dropped, leaving the detail buffer spammed with '(no text)' for empty reasoning items while real assistant text never rendered. Fix splits codex-jsonrpc-session.ts into a transport client and a pure-translation module (codex-jsonrpc-translate.ts) and adds a Codex-aware formatter (codex-event-format.ts). The translator now reads params.delta on agentMessage/reasoning/outputDelta, translates terminalInteraction, reads item.summary[] (newer field) plus summaryParts (legacy fallback), drops empty reasoning items so they no longer render as '(no text)', filters userMessage echoes, and emits item.delta for streaming reasoning. The formatter handles item.* and turn.* events with concise output (▶ command, dimmed output, magenta reasoning, red turn.failed visible to non-detail view). 43 new focused tests. Full unit suite passes (273 files / 2787 tests). Branch: foolery-babd-codex-output. Reviewer: verify Codex sessions in the dev server show streamed agent text and shell output instead of repeated '(no text)' lines.",
+    "datetime": "2026-04-26T06:10:45.049117Z",
+    "entry_id": "019dc869-6ab9-7743-9f4e-d120bb7d2c35",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

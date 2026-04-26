@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc84f-aa80-7f92-b186-52b947c4095e",
+  "occurred_at": "2026-04-26T05:42:37.435804Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-dc04",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Strengthen completed knot styling in Setlist",
+    "type": "work",
+    "updated_at": "2026-04-26T05:42:37.435804Z",
+    "workflow_id": "work_sdlc"
+  }
+}

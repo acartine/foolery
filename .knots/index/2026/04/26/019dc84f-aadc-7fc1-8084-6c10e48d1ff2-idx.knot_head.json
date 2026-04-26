@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc84f-aadc-7fc1-8084-6c10e48d1ff2",
+  "occurred_at": "2026-04-26T05:42:37.527669Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7f74",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add interactive approvals tab",
+    "type": "work",
+    "updated_at": "2026-04-26T05:42:37.527669Z",
+    "workflow_id": "work_sdlc"
+  }
+}

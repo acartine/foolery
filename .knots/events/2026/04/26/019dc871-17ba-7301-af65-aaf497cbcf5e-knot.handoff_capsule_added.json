@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc871-17ba-7301-af65-aaf497cbcf5e",
+  "occurred_at": "2026-04-26T06:19:08.090342Z",
+  "knot_id": "foolery-babd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation re-applied: rebased foolery-babd-codex-output onto origin/main (b0757c9a). Resolved conflicts in src/lib/codex-jsonrpc-session.ts and src/lib/terminal-manager-format.ts so the babd refactor (translator/formatter split, item.delta shape, summary[]+terminalInteraction+userMessage filter, drops empty reasoning) wins while preserving the approval-request-visibility integration from main (extractApprovalRequest is checked before formatCodexEvent in formatStreamEvent). Updated src/lib/__tests__/codex-jsonrpc-deltas.test.ts to assert the new item.delta contract — 566cb931's old stream_event/content_block_delta shape was superseded by the more semantic item.delta shape with text at top level. Quality gates green: bun run lint clean, bunx tsc --noEmit clean, bun run test 277 files / 2809 passing, bun run build green. Branch foolery-babd-codex-output force-pushed; tip 0942e7d3 (rebase commit 3cce3e97). Branch: foolery-babd-codex-output.",
+    "datetime": "2026-04-26T06:19:08.090342Z",
+    "entry_id": "019dc871-17ba-7301-af65-aaedaaf25923",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.7"
+  }
+}

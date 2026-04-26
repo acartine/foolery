@@ -1,0 +1,10 @@
+{
+  "event_id": "019dc858-3997-72e1-8519-459d10505ee3",
+  "occurred_at": "2026-04-26T05:51:58.359761Z",
+  "knot_id": "foolery-7192",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Setlist:  Unselected setlists calculate knots remaining incorrectly",
+    "to": "Setlist: Unselected rows show stale knots-remaining count (ignores terminal states)"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc861-6780-7353-80e3-05ca7d26eec2",
+  "occurred_at": "2026-04-26T06:01:59.936461Z",
+  "knot_id": "foolery-c30f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented CLI approval visibility for live terminal and history console. Added shared approval-request formatting for Codex mcpServer/elicitation/request, Gemini session/request_permission, and AskUserQuestion/Copilot user_input.requested; documented OpenCode as unsupported in current adapter fixtures. Branch: c30f-show-cli-approval-requests. Commit: dbe58d1d27376ddc46aa9356b5d62636a069b442. Verified: targeted approval/history tests, bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-04-26T06:01:59.936461Z",
+    "entry_id": "019dc861-6780-7353-80e3-05b64647b5bc",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc866-d164-7f92-a06d-1833ab1f8803",
+  "occurred_at": "2026-04-26T06:07:54.72442Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-a89b",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix Codex adapter deltas",
+    "type": "work",
+    "updated_at": "2026-04-26T06:07:54.72442Z",
+    "workflow_id": "work_sdlc"
+  }
+}

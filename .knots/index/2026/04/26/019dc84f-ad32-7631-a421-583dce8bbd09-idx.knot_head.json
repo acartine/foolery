@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc84f-ad32-7631-a421-583dce8bbd09",
+  "occurred_at": "2026-04-26T05:42:38.125061Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4973",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Drive active agent UI from lease metadata",
+    "type": "work",
+    "updated_at": "2026-04-26T05:42:38.125061Z",
+    "workflow_id": "work_sdlc"
+  }
+}

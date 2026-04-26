@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc84f-ad51-7941-ae32-b62ebe7a1fd0",
+  "occurred_at": "2026-04-26T05:42:38.155918Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e8f3",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Instrument prompt handoff lifecycle",
+    "type": "work",
+    "updated_at": "2026-04-26T05:42:38.155918Z",
+    "workflow_id": "work_sdlc"
+  }
+}

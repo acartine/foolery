@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc858-9b92-7fb2-8122-cf8cf464a3eb",
+  "occurred_at": "2026-04-26T05:52:23.435067Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5510",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Refine setlist viewport and active beat cues",
+    "type": "work",
+    "updated_at": "2026-04-26T05:52:23.435067Z",
+    "workflow_id": "work_sdlc"
+  }
+}

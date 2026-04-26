@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc84f-aa63-7532-8a96-69415a54d4a9",
+  "occurred_at": "2026-04-26T05:42:37.406401Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-f587",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement setlist id-only display and cold rehydrate",
+    "type": "work",
+    "updated_at": "2026-04-26T05:42:37.406401Z",
+    "workflow_id": "work_sdlc"
+  }
+}

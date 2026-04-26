@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc84f-ad12-7591-b85d-6f1413f03567",
+  "occurred_at": "2026-04-26T05:42:38.093051Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d8ea",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix take-loop clean-close follow-up",
+    "type": "work",
+    "updated_at": "2026-04-26T05:42:38.093051Z",
+    "workflow_id": "work_sdlc"
+  }
+}

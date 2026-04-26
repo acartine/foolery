@@ -1,0 +1,15 @@
+{
+  "event_id": "019dc862-81af-71f0-8fd6-9a27a478ecdd",
+  "occurred_at": "2026-04-26T06:03:12.175976Z",
+  "knot_id": "foolery-7192",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review requested revisions: the root cause and broad direction are sound, but the plan is not yet complete/feasible against repo constraints.\n\nRequired fixes before approval:\n1. Add an explicit line-budget/refactor step. Current file sizes are already near the 500-line ESLint cap: src/components/setlist-view.tsx is 493 lines, src/lib/orchestration-plan-manager.ts is 452, src/lib/openapi/paths-plans.ts is 438, and src/lib/setlist-chart.ts is 424. The proposed UI, manager, OpenAPI, and helper additions will likely fail max-lines unless work is extracted or files are split first.\n2. Do not nest the new Complete button inside PlanSummaryCard's existing root <button>. That is invalid HTML/accessibility and can cause event/hydration issues. The plan should make the card root non-button with a separate selectable control, or place Complete as a sibling action with clear propagation behavior.\n3. Account for component test shape if hooks are added. Existing PlanSummaryCard tests call the component as a pure function; adding useMutation inside it requires migrating those tests to render with a QueryClientProvider or lifting the mutation to a parent and keeping the card mostly presentational.\n4. Correct the backend implementation detail: the actual forced terminal primitive is exposed via getBackend().close(id, reason, repoPath) / markTerminal in src/lib/backends/knots-backend.ts and src/lib/backends/knots-backend-correction.ts, not src/lib/backends/knots.ts or close(..., { force: true }). Tests should still assert the underlying force behavior.\n\nWith those revisions, the plan should be approvable.",
+    "datetime": "2026-04-26T06:03:12.175976Z",
+    "entry_id": "019dc862-81af-71f0-8fd6-9a112a5460e4",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}
