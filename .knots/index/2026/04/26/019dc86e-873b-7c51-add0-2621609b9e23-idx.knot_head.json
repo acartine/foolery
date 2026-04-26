@@ -1,0 +1,21 @@
+{
+  "event_id": "019dc86e-873b-7c51-add0-2621609b9e23",
+  "occurred_at": "2026-04-26T06:16:20.025320077Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9a33",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Rename dispatch pool resolver modes to descriptive names",
+    "type": "work",
+    "updated_at": "2026-04-26T06:16:20.025320077Z",
+    "workflow_id": "work_sdlc"
+  }
+}
