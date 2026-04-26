@@ -13,6 +13,15 @@ import type { ChildProcess } from "node:child_process";
 import type {
   PromptDispatchHooks,
 } from "@/lib/session-prompt-delivery";
+import {
+  isTranslatedMethod,
+  translateAgentMessageDelta,
+  translateItemNotification,
+  translateOutputDelta,
+  translateReasoningDelta,
+  translateTerminalInteraction,
+  translateTurnCompleted,
+} from "@/lib/codex-jsonrpc-translate";
 
 // ── Types ─────────────────────────────────────────────
 
@@ -70,17 +79,6 @@ interface SessionState {
 
 const INITIALIZE_ID = 1;
 const THREAD_START_ID = 2;
-
-const TRANSLATED_METHODS = new Set([
-  "turn/started",
-  "turn/completed",
-  "item/started",
-  "item/completed",
-  "item/agentMessage/delta",
-  "item/reasoning/summaryTextDelta",
-  "item/reasoning/textDelta",
-  "item/commandExecution/outputDelta",
-]);
 
 // ── Low-level I/O ─────────────────────────────────────
 
@@ -227,140 +225,6 @@ function startTurnRequest(
   return sent;
 }
 
-// ── Item translation ──────────────────────────────────
-
-function translateItemNotification(
-  method: string,
-  params: Record<string, unknown>,
-): Record<string, unknown> | null {
-  const item =
-    params.item as
-      Record<string, unknown> | undefined;
-  if (!item) return null;
-  const eventType = method === "item/started"
-    ? "item.started" : "item.completed";
-
-  if (item.type === "commandExecution") {
-    return translateCommandExecution(
-      item, eventType,
-    );
-  }
-  if (item.type === "agentMessage") {
-    return translateAgentMessage(item, eventType);
-  }
-  if (item.type === "reasoning") {
-    return translateReasoning(item, eventType);
-  }
-  return null;
-}
-
-function translateCommandExecution(
-  item: Record<string, unknown>,
-  eventType: string,
-): Record<string, unknown> {
-  const command =
-    typeof item.command === "string"
-      ? item.command
-      : typeof item.call === "object" &&
-          item.call !== null
-        ? (item.call as Record<string, unknown>)
-            .command ?? ""
-        : "";
-  const output =
-    typeof item.output === "string"
-      ? item.output : "";
-  return {
-    type: eventType,
-    item: {
-      type: "command_execution",
-      id: item.id,
-      command,
-      aggregated_output: output,
-    },
-  };
-}
-
-function translateAgentMessage(
-  item: Record<string, unknown>,
-  eventType: string,
-): Record<string, unknown> | null {
-  if (eventType !== "item.completed") return null;
-  const fragments =
-    Array.isArray(item.fragments)
-      ? item.fragments : [];
-  const text = fragments
-    .map((f: unknown) => {
-      if (
-        typeof f === "object" &&
-        f !== null && "text" in f
-      ) {
-        return (f as Record<string, unknown>).text;
-      }
-      return "";
-    })
-    .filter(Boolean)
-    .join("\n");
-  return {
-    type: "item.completed",
-    item: {
-      type: "agent_message", id: item.id, text,
-    },
-  };
-}
-
-function translateReasoning(
-  item: Record<string, unknown>,
-  eventType: string,
-): Record<string, unknown> | null {
-  if (eventType !== "item.completed") return null;
-  const parts =
-    Array.isArray(item.summaryParts)
-      ? item.summaryParts : [];
-  const text = parts
-    .map((p: unknown) => {
-      if (
-        typeof p === "object" &&
-        p !== null && "text" in p
-      ) {
-        return (p as Record<string, unknown>).text;
-      }
-      return "";
-    })
-    .filter(Boolean)
-    .join("\n");
-  if (!text) return null;
-  return {
-    type: "item.completed",
-    item: { type: "reasoning", text },
-  };
-}
-
-// Codex delta events use `params.delta` or
-// `params.text` interchangeably depending on version.
-function extractDeltaText(
-  params: Record<string, unknown>,
-): string {
-  if (
-    typeof params.delta === "string" &&
-    params.delta.length > 0
-  ) return params.delta;
-  if (typeof params.text === "string") return params.text;
-  return "";
-}
-
-function buildStreamEventDelta(
-  text: string,
-): Record<string, unknown> | null {
-  if (!text) return null;
-  return {
-    type: "stream_event",
-    event: {
-      type: "content_block_delta",
-      delta: { type: "text_delta", text },
-    },
-  };
-}
-
 // ── Notification translation ──────────────────────────
 
 function translateNotification(
@@ -368,68 +232,42 @@ function translateNotification(
   s: SessionState,
 ): Record<string, unknown> | null {
   const { method, params } = msg;
-  if (!TRANSLATED_METHODS.has(method)) return null;
+  if (!isTranslatedMethod(method)) return null;
 
   if (method === "turn/started") {
     return { type: "turn.started" };
   }
   if (method === "turn/completed") {
-    return translateTurnCompleted(params, s);
+    const { event, turnFailed } =
+      translateTurnCompleted(params);
+    if (!turnFailed) s.turnId = null;
+    return event;
   }
   if (
     method === "item/started" ||
     method === "item/completed"
   ) {
-    return translateItemNotification(
-      method, params,
-    );
+    return translateItemNotification(method, params);
   }
-  if (
-    method === "item/agentMessage/delta" ||
-    method === "item/commandExecution/outputDelta"
-  ) {
-    return buildStreamEventDelta(
-      extractDeltaText(params),
-    );
+  if (method === "item/agentMessage/delta") {
+    return translateAgentMessageDelta(params);
   }
   if (
     method === "item/reasoning/summaryTextDelta" ||
     method === "item/reasoning/textDelta"
   ) {
-    const text = extractDeltaText(params);
-    return text
-      ? {
-          type: "item.completed",
-          item: { type: "reasoning", text },
-        }
-      : null;
+    return translateReasoningDelta(params);
+  }
+  if (method === "item/commandExecution/outputDelta") {
+    return translateOutputDelta(params);
+  }
+  if (
+    method ===
+      "item/commandExecution/terminalInteraction"
+  ) {
+    return translateTerminalInteraction(params);
   }
   return null;
-}
-
-function translateTurnCompleted(
-  params: Record<string, unknown>,
-  s: SessionState,
-): Record<string, unknown> {
-  const turn =
-    params.turn as
-      Record<string, unknown> | undefined;
-  if (turn?.status === "failed") {
-    const error =
-      turn.error as
-        Record<string, unknown> | undefined;
-    return {
-      type: "turn.failed",
-      error: {
-        message:
-          typeof error?.message === "string"
-            ? error.message
-            : "Turn failed",
-      },
-    };
-  }
-  s.turnId = null;
-  return { type: "turn.completed" };
 }
 
 // ── Factory ───────────────────────────────────────────

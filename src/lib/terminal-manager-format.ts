@@ -3,6 +3,7 @@ import {
   extractApprovalRequest,
   formatApprovalRequestBanner,
 } from "@/lib/approval-request-visibility";
+import { formatCodexEvent } from "@/lib/codex-event-format";
 
 export type JsonObject = Record<string, unknown>;
 
@@ -218,6 +219,12 @@ export function formatStreamEvent(
       isDetail: false,
     };
   }
+  // Codex-translated events (item.*, turn.*) need
+  // dedicated rendering — the generic adhoc formatter
+  // collapses their nested `item.text` payload into
+  // a useless "(no text)" line.
+  const codex = formatCodexEvent(obj);
+  if (codex) return codex;
   return formatAssistantEvent(obj)
     ?? formatStreamDelta(obj)
     ?? formatToolResult(obj)
