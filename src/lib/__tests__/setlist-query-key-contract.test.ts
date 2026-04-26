@@ -11,30 +11,30 @@ function source(rel: string): string {
 }
 
 describe("setlist query key contract", () => {
-  const setlistViewSource = source(
-    "src/components/setlist-view.tsx",
+  const setlistViewDataSource = source(
+    "src/components/setlist-view-data.ts",
   );
 
   it("reuses the shared beats query namespace for repo beat data", () => {
-    expect(setlistViewSource).toContain(
+    expect(setlistViewDataSource).toContain(
       'buildBeatsQueryKey("setlist", {}, repoScope)',
     );
-    expect(setlistViewSource).not.toContain(
+    expect(setlistViewDataSource).not.toContain(
       'queryKey: ["setlist-beats", repoPath]',
     );
   });
 
   it("keeps the missing-knot fallback that fetches beat detail by id", () => {
-    expect(setlistViewSource).toContain(
+    expect(setlistViewDataSource).toContain(
       "selectedPlanRecord.plan.beatIds.filter(",
     );
-    expect(setlistViewSource).toContain(
+    expect(setlistViewDataSource).toContain(
       "(beatId) => !beatMap.has(beatId)",
     );
-    expect(setlistViewSource).toContain(
+    expect(setlistViewDataSource).toContain(
       'queryKey: ["setlist-plan-beat", repoPath, beatId]',
     );
-    expect(setlistViewSource).toContain(
+    expect(setlistViewDataSource).toContain(
       "queryFn: () => fetchBeat(beatId, repoPath)",
     );
   });

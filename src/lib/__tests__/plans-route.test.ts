@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 const mockCreatePlan = vi.fn();
 const mockListPlans = vi.fn();
 const mockGetPlan = vi.fn();
+const mockCompletePlan = vi.fn();
 
 vi.mock("@/lib/orchestration-plan-manager", () => ({
   createPlan: (...args: unknown[]) => mockCreatePlan(...args),
@@ -11,11 +12,16 @@ vi.mock("@/lib/orchestration-plan-manager", () => ({
   getPlan: (...args: unknown[]) => mockGetPlan(...args),
 }));
 
+vi.mock("@/lib/orchestration-plan-correction", () => ({
+  completePlan: (...args: unknown[]) => mockCompletePlan(...args),
+}));
+
 import {
   GET as listPlansRoute,
   POST as createPlanRoute,
 } from "@/app/api/plans/route";
 import { GET as getPlanRoute } from "@/app/api/plans/[planId]/route";
+import { POST as completePlanRoute } from "@/app/api/plans/[planId]/complete/route";
 
 function makePersistedPlan(id = "plan-1") {
   return {
@@ -205,5 +211,77 @@ describe("plans routes read", () => {
       "repo-plan-1",
       "/repo",
     );
+  });
+});
+
+describe("plans complete route", () => {
+  function buildCompleteRequest(body: unknown): NextRequest {
+    return new NextRequest(
+      "http://localhost/api/plans/plan-1/complete",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      },
+    );
+  }
+
+  it("forces a plan to its terminal state and returns the refreshed record", async () => {
+    mockCompletePlan.mockResolvedValue({
+      ...makePersistedPlan("plan-1"),
+      artifact: {
+        ...makePersistedPlan("plan-1").artifact,
+        state: "shipped",
+      },
+    });
+
+    const response = await completePlanRoute(
+      buildCompleteRequest({ repoPath: "/repo" }),
+      { params: Promise.resolve({ planId: "plan-1" }) },
+    );
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json.data.artifact.state).toBe("shipped");
+    expect(mockCompletePlan).toHaveBeenCalledWith(
+      "plan-1",
+      "/repo",
+    );
+  });
+
+  it("returns 400 when repoPath is missing", async () => {
+    const response = await completePlanRoute(
+      buildCompleteRequest({}),
+      { params: Promise.resolve({ planId: "plan-1" }) },
+    );
+
+    expect(response.status).toBe(400);
+    expect(mockCompletePlan).not.toHaveBeenCalled();
+  });
+
+  it("returns 404 when the plan is missing", async () => {
+    mockCompletePlan.mockRejectedValue(
+      new Error("Plan plan-1 not found"),
+    );
+
+    const response = await completePlanRoute(
+      buildCompleteRequest({ repoPath: "/repo" }),
+      { params: Promise.resolve({ planId: "plan-1" }) },
+    );
+
+    expect(response.status).toBe(404);
+  });
+
+  it("returns 409 when the plan is already complete", async () => {
+    mockCompletePlan.mockRejectedValue(
+      new Error("Plan plan-1 is already complete (state=shipped)."),
+    );
+
+    const response = await completePlanRoute(
+      buildCompleteRequest({ repoPath: "/repo" }),
+      { params: Promise.resolve({ planId: "plan-1" }) },
+    );
+
+    expect(response.status).toBe(409);
   });
 });

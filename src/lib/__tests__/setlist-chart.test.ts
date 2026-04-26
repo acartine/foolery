@@ -3,7 +3,9 @@ import {
   buildSetlistChart,
   buildSetlistChartViewport,
   buildSetlistPlanPreview,
+  countWorkableBeatIds,
   countWorkableSetlistRows,
+  isTerminalPlanArtifactState,
   isTerminalSetlistState,
   sliceSetlistChart,
 } from "@/lib/setlist-chart";
@@ -304,6 +306,44 @@ describe("setlist chart helpers: display fallbacks", () => {
     expect(isTerminalSetlistState("closed")).toBe(true);
     expect(isTerminalSetlistState("ready_for_implementation")).toBe(false);
     expect(isTerminalSetlistState(undefined)).toBe(false);
+  });
+
+  it("treats only shipped and abandoned as terminal plan-artifact states", () => {
+    expect(isTerminalPlanArtifactState("shipped")).toBe(true);
+    expect(isTerminalPlanArtifactState("abandoned")).toBe(true);
+    expect(isTerminalPlanArtifactState("blocked")).toBe(false);
+    expect(isTerminalPlanArtifactState("deferred")).toBe(false);
+    expect(isTerminalPlanArtifactState("design")).toBe(false);
+    expect(isTerminalPlanArtifactState(undefined)).toBe(false);
+  });
+
+  it("counts non-terminal beats from a beat list against a beat map", () => {
+    const beatMap = new Map<string, Beat>([
+      ["beat-1", makeBeat("beat-1", { state: "shipped" })],
+      ["beat-2", makeBeat("beat-2", { state: "ready_for_implementation" })],
+      ["beat-3", makeBeat("beat-3", { state: "abandoned" })],
+      ["beat-4", makeBeat("beat-4", { state: "in_progress" })],
+    ]);
+
+    expect(
+      countWorkableBeatIds(
+        ["beat-1", "beat-2", "beat-3", "beat-4"],
+        beatMap,
+      ),
+    ).toBe(2);
+  });
+
+  it("ignores duplicate and unknown beat ids when counting workable beats", () => {
+    const beatMap = new Map<string, Beat>([
+      ["beat-1", makeBeat("beat-1", { state: "ready_for_implementation" })],
+    ]);
+
+    expect(
+      countWorkableBeatIds(
+        ["beat-1", "beat-1", "beat-missing", ""],
+        beatMap,
+      ),
+    ).toBe(2);
   });
 
   it("flags cells whose beats have an active lease", () => {

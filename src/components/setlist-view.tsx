@@ -1,37 +1,34 @@
 "use client";
 
-import {
-  useMemo,
-  useState,
-} from "react";
+import { useMemo, useState } from "react";
 import {
   type UseQueryResult,
-  useQueries,
-  useQuery,
+  useMutation,
+  useQueryClient,
 } from "@tanstack/react-query";
-import {
-  GitBranch,
-  ListMusic,
-  Music4,
-} from "lucide-react";
+import { ListMusic } from "lucide-react";
+import { toast } from "sonner";
+import { PlanSummaryCard } from "@/components/plan-summary-card";
 import { SetlistChartPanel } from "@/components/setlist-chart-panel";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
-  buildBeatsQueryKey,
-  fetchBeat,
-  fetchBeatsForScope,
-} from "@/lib/api";
-import { fetchPlan, fetchPlanSummaries } from "@/lib/plan-api";
+  EmptySetlistState,
+  getEmptySetlistState,
+} from "@/components/setlist-empty-state";
+import {
+  resolveSelectedPlanId,
+  useSelectedPlanData,
+  useSetlistBaseData,
+} from "@/components/setlist-view-data";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { completePlan as requestCompletePlan } from "@/lib/plan-api";
 import {
   buildSetlistChart,
   buildSetlistPlanPreview,
-  countWorkableSetlistRows,
+  isTerminalPlanArtifactState,
 } from "@/lib/setlist-chart";
 import type { PlanRecord, PlanSummary } from "@/lib/orchestration-plan-types";
-import type { BdResult, Beat } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import type { BdResult } from "@/lib/types";
 
 export function SetlistView({
   repoPath,
@@ -47,6 +44,7 @@ export function SetlistView({
     planSummaries,
     previews,
     summaryBeatMap,
+    workableBeatCountByPlan,
   } = useSetlistBaseData(repoPath);
   const selectedPlanId = useMemo(
     () => resolveSelectedPlanId(requestedPlanId, planSummaries),
@@ -79,11 +77,7 @@ export function SetlistView({
       planSummaries={planSummaries}
       previews={previews}
       selectedPlanId={selectedPlanId}
-      selectedWorkableBeatCount={
-        chart
-          ? countWorkableSetlistRows(chart)
-          : null
-      }
+      workableBeatCountByPlan={workableBeatCountByPlan}
       onSelectPlan={setRequestedPlanId}
       planQuery={planQuery}
       selectedPlanRecord={selectedPlanRecord}
@@ -92,61 +86,12 @@ export function SetlistView({
   );
 }
 
-function getEmptySetlistState(
-  repoPath: string | undefined,
-  isLoading: boolean,
-  plansOk: boolean | undefined,
-  beatsOk: boolean | undefined,
-  plansError: string | undefined,
-  beatsError: string | undefined,
-  planCount: number,
-): { title: string; description: string } | null {
-  if (!repoPath) {
-    return {
-      title: "Choose a repo for Setlist",
-      description:
-        "Setlist needs one active repository so it can load"
-        + " persisted execution plans and beat priorities.",
-    };
-  }
-  if (isLoading) {
-    return {
-      title: "Loading setlist",
-      description:
-        "Pulling execution plans and beat metadata for the selected repository.",
-    };
-  }
-  if (!plansOk) {
-    return {
-      title: "Couldn’t load execution plans",
-      description:
-        plansError ?? "Setlist failed to load plan summaries.",
-    };
-  }
-  if (!beatsOk) {
-    return {
-      title: "Couldn’t load beat details",
-      description:
-        beatsError ?? "Setlist failed to load repo beats.",
-    };
-  }
-  if (planCount === 0) {
-    return {
-      title: "No execution plans yet",
-      description:
-        "Create an execution plan for this repository and"
-        + " it will show up here as a selectable setlist.",
-    };
-  }
-  return null;
-}
-
 function LoadedSetlistView({
   repoPath,
   planSummaries,
   previews,
   selectedPlanId,
-  selectedWorkableBeatCount,
+  workableBeatCountByPlan,
   onSelectPlan,
   planQuery,
   selectedPlanRecord,
@@ -156,7 +101,7 @@ function LoadedSetlistView({
   planSummaries: PlanSummary[];
   previews: Map<string, ReturnType<typeof buildSetlistPlanPreview>>;
   selectedPlanId: string | null;
-  selectedWorkableBeatCount: number | null;
+  workableBeatCountByPlan: ReadonlyMap<string, number>;
   onSelectPlan: (planId: string) => void;
   planQuery: UseQueryResult<BdResult<PlanRecord>>;
   selectedPlanRecord: PlanRecord | null;
@@ -165,10 +110,11 @@ function LoadedSetlistView({
   return (
     <div className="flex flex-col gap-2">
       <SetlistSummaryPanel
+        repoPath={repoPath}
         planSummaries={planSummaries}
         previews={previews}
         selectedPlanId={selectedPlanId}
-        selectedWorkableBeatCount={selectedWorkableBeatCount}
+        workableBeatCountByPlan={workableBeatCountByPlan}
         onSelectPlan={onSelectPlan}
       />
 
@@ -195,18 +141,49 @@ function LoadedSetlistView({
 }
 
 function SetlistSummaryPanel({
+  repoPath,
   planSummaries,
   previews,
   selectedPlanId,
-  selectedWorkableBeatCount,
+  workableBeatCountByPlan,
   onSelectPlan,
 }: {
+  repoPath: string | undefined;
   planSummaries: PlanSummary[];
   previews: Map<string, ReturnType<typeof buildSetlistPlanPreview>>;
   selectedPlanId: string | null;
-  selectedWorkableBeatCount: number | null;
+  workableBeatCountByPlan: ReadonlyMap<string, number>;
   onSelectPlan: (planId: string) => void;
 }) {
+  const queryClient = useQueryClient();
+  const completeMutation = useMutation({
+    mutationFn: async (planId: string) => {
+      if (!repoPath) {
+        throw new Error("Cannot complete a plan without a repoPath.");
+      }
+      const result = await requestCompletePlan(planId, repoPath);
+      if (!result.ok) {
+        throw new Error(result.error ?? "Failed to complete plan.");
+      }
+      return { planId, plan: result.data };
+    },
+    onSuccess: ({ planId }) => {
+      toast.success("Plan completed");
+      void queryClient.invalidateQueries({
+        queryKey: ["setlist-plans", repoPath],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: ["setlist-plan", repoPath, planId],
+      });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+  const pendingPlanId = completeMutation.isPending
+    ? completeMutation.variables ?? null
+    : null;
+
   return (
     <Card className="gap-[5px] border-border/70 shadow-sm">
       <CardHeader className="gap-1">
@@ -222,270 +199,26 @@ function SetlistSummaryPanel({
       </CardHeader>
       <CardContent>
         <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
-          {planSummaries.map((plan) => (
-            <PlanSummaryCard
-              key={plan.artifact.id}
-              plan={plan}
-              preview={previews.get(plan.artifact.id)!}
-              selected={plan.artifact.id === selectedPlanId}
-              selectedWorkableBeatCount={
-                plan.artifact.id === selectedPlanId
-                  ? selectedWorkableBeatCount
-                  : null
-              }
-              onSelect={onSelectPlan}
-            />
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function useSetlistBaseData(repoPath?: string) {
-  const repoScope = useMemo(
-    () =>
-      repoPath
-        ? {
-          kind: "repo" as const,
-          key: `repo:${repoPath}`,
-          repo: repoPath,
-        }
-        : null,
-    [repoPath],
-  );
-  const plansQuery = useQuery({
-    queryKey: ["setlist-plans", repoPath],
-    queryFn: () => fetchPlanSummaries(repoPath!),
-    enabled: Boolean(repoPath),
-    staleTime: 15_000,
-    refetchOnWindowFocus: false,
-  });
-  const beatsQuery = useQuery({
-    queryKey: repoScope
-      ? buildBeatsQueryKey("setlist", {}, repoScope)
-      : ["beats", "setlist", "repo:none", "{}"],
-    queryFn: () => fetchBeatsForScope({}, repoScope!, []),
-    enabled: Boolean(repoScope),
-    staleTime: 15_000,
-    refetchOnWindowFocus: false,
-  });
-
-  const planSummaries = useMemo(
-    () => (plansQuery.data?.ok ? plansQuery.data.data ?? [] : []),
-    [plansQuery.data],
-  );
-  const repoBeats = useMemo(
-    () => (beatsQuery.data?.ok ? beatsQuery.data.data ?? [] : []),
-    [beatsQuery.data],
-  );
-  const beatMap = useMemo(
-    () => {
-      const map = new Map<string, Beat>();
-      for (const beat of repoBeats) {
-        indexBeat(map, beat);
-      }
-      return map;
-    },
-    [repoBeats],
-  );
-  const previews = useMemo(
-    () => new Map(planSummaries.map((plan) => [
-      plan.artifact.id,
-      buildSetlistPlanPreview(plan, beatMap),
-    ])),
-    [beatMap, planSummaries],
-  );
-
-  return {
-    plansQuery,
-    beatsQuery,
-    planSummaries,
-    repoBeats,
-    previews,
-    summaryBeatMap: beatMap,
-  };
-}
-
-function resolveSelectedPlanId(
-  requestedPlanId: string | null,
-  planSummaries: PlanSummary[],
-): string | null {
-  if (!requestedPlanId) {
-    return planSummaries[0]?.artifact.id ?? null;
-  }
-  return planSummaries.some(
-    (plan) => plan.artifact.id === requestedPlanId,
-  )
-    ? requestedPlanId
-    : planSummaries[0]?.artifact.id ?? null;
-}
-
-function useSelectedPlanData(
-  repoPath: string | undefined,
-  selectedPlanId: string | null,
-  beatMap: ReadonlyMap<string, Beat>,
-  activeBeatIds: ReadonlySet<string> | undefined,
-) {
-  const planQuery = useQuery({
-    queryKey: ["setlist-plan", repoPath, selectedPlanId],
-    queryFn: () => fetchPlan(selectedPlanId!, repoPath!),
-    enabled: Boolean(repoPath && selectedPlanId),
-    staleTime: 15_000,
-    refetchOnWindowFocus: false,
-  });
-  const selectedPlanRecord = planQuery.data?.ok
-    ? (planQuery.data.data ?? null)
-    : null;
-  const missingBeatIds = useMemo(
-    () => selectedPlanRecord
-      ? Array.from(
-          new Set(
-            selectedPlanRecord.plan.beatIds.filter(
-              (beatId) => !beatMap.has(beatId),
-            ),
-          ),
-        )
-      : [],
-    [beatMap, selectedPlanRecord],
-  );
-  const missingBeatQueries = useQueries({
-    queries: missingBeatIds.map((beatId) => ({
-      queryKey: ["setlist-plan-beat", repoPath, beatId],
-      queryFn: () => fetchBeat(beatId, repoPath),
-      enabled: Boolean(repoPath && selectedPlanRecord),
-      staleTime: 15_000,
-      retry: 1,
-      refetchOnWindowFocus: false,
-    })),
-  });
-  const chartBeatMap = useMemo(() => {
-    const map = new Map(beatMap);
-    missingBeatIds.forEach((beatId, index) => {
-      const result = missingBeatQueries[index]?.data;
-      if (!result?.ok || !result.data) {
-        return;
-      }
-      indexBeat(map, result.data, beatId);
-    });
-    return map;
-  }, [beatMap, missingBeatIds, missingBeatQueries]);
-  const chart = useMemo(
-    () => selectedPlanRecord
-      ? buildSetlistChart(
-          selectedPlanRecord.plan,
-          chartBeatMap,
-          { activeBeatIds },
-        )
-      : null,
-    [activeBeatIds, chartBeatMap, selectedPlanRecord],
-  );
-
-  return { planQuery, selectedPlanRecord, chart };
-}
-
-function indexBeat(
-  map: Map<string, Beat>,
-  beat: Beat,
-  requestedId?: string,
-): void {
-  if (requestedId) {
-    map.set(requestedId, beat);
-  }
-  map.set(beat.id, beat);
-  for (const alias of beat.aliases ?? []) {
-    map.set(alias, beat);
-  }
-}
-
-export function PlanSummaryCard({
-  plan,
-  preview,
-  selected,
-  selectedWorkableBeatCount,
-  onSelect,
-}: {
-  plan: PlanSummary;
-  preview: ReturnType<typeof buildSetlistPlanPreview>;
-  selected: boolean;
-  selectedWorkableBeatCount: number | null;
-  onSelect: (planId: string) => void;
-}) {
-  const beatCount = selectedWorkableBeatCount ?? preview.totalBeats;
-  const beatCountLabel = selectedWorkableBeatCount !== null
-    ? "remaining"
-    : "beats";
-
-  return (
-    <button
-      type="button"
-      className={cn(
-        "flex h-full flex-col rounded-xl border p-4 text-left transition-colors",
-        selected
-          ? "border-primary/35 bg-primary/[0.03] shadow-sm"
-          : "border-border/70 bg-card hover:border-primary/40 hover:bg-accent/30",
-      )}
-      onClick={() => onSelect(plan.artifact.id)}
-    >
-      <div className="flex items-center justify-between gap-2">
-        <Badge variant={selected ? "default" : "outline"}>
-          {selected ? "Selected" : "Execution plan"}
-        </Badge>
-        <span className="font-mono text-[11px] text-muted-foreground">
-          {plan.artifact.id}
-        </span>
-      </div>
-
-      <div className="mt-3 space-y-2">
-        <div>
-          <p className="text-base font-semibold leading-tight">
-            {preview.objective ?? "No objective captured."}
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {preview.summary}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
-            <Music4 className="size-3.5" />
-            {beatCount} {beatCountLabel}
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
-            <GitBranch className="size-3.5" />
-            {plan.plan.mode ?? "groom"}
-          </span>
-        </div>
-      </div>
-    </button>
-  );
-}
-
-function EmptySetlistState({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <Card className="border-dashed shadow-none">
-      <CardContent
-        className={
-          "flex min-h-[22rem] flex-col items-center"
-          + " justify-center gap-3 text-center"
-        }
-      >
-        <Button variant="outline" size="icon" className="pointer-events-none size-11 rounded-full">
-          <ListMusic className="size-5" />
-        </Button>
-        <div className="space-y-1">
-          <h2 className="text-lg font-semibold">
-            {title}
-          </h2>
-          <p className="max-w-lg text-sm text-muted-foreground">
-            {description}
-          </p>
+          {planSummaries.map((plan) => {
+            const workableBeatCount =
+              workableBeatCountByPlan.get(plan.artifact.id) ?? 0;
+            const canComplete =
+              workableBeatCount === 0 &&
+              !isTerminalPlanArtifactState(plan.artifact.state);
+            return (
+              <PlanSummaryCard
+                key={plan.artifact.id}
+                plan={plan}
+                preview={previews.get(plan.artifact.id)!}
+                selected={plan.artifact.id === selectedPlanId}
+                workableBeatCount={workableBeatCount}
+                canComplete={canComplete}
+                isCompleting={pendingPlanId === plan.artifact.id}
+                onSelect={onSelectPlan}
+                onComplete={(planId) => completeMutation.mutate(planId)}
+              />
+            );
+          })}
         </div>
       </CardContent>
     </Card>

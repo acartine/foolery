@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { PlanSummaryCard } from "@/components/setlist-view";
+import { PlanSummaryCard } from "@/components/plan-summary-card";
 import type { PlanSummary } from "@/lib/orchestration-plan-types";
 import type { SetlistPlanPreview } from "@/lib/setlist-chart";
 
@@ -15,6 +15,12 @@ type ElementWithProps = ReactElement<{
   children?: ReactNode;
   className?: string;
 }>;
+
+function expandElement(element: ReactElement): ReactNode {
+  if (typeof element.type !== "function") return element;
+  const Component = element.type as (props: unknown) => ReactNode;
+  return Component(element.props);
+}
 
 function flattenText(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") {
@@ -27,6 +33,9 @@ function flattenText(node: ReactNode): string {
     return node.map(flattenText).join("");
   }
   if (!isValidElement(node)) return "";
+  if (typeof node.type === "function") {
+    return flattenText(expandElement(node));
+  }
   return flattenText((node as ElementWithProps).props.children);
 }
 
@@ -36,6 +45,10 @@ function collectClassNames(node: ReactNode): string[] {
     return node.flatMap((child) => collectClassNames(child));
   }
   if (!isValidElement(node)) return [];
+
+  if (typeof node.type === "function") {
+    return collectClassNames(expandElement(node));
+  }
 
   const element = node as ElementWithProps;
   return [
@@ -56,6 +69,10 @@ function collectParagraphs(node: ReactNode): Array<{
   }
   if (!isValidElement(node)) return [];
 
+  if (typeof node.type === "function") {
+    return collectParagraphs(expandElement(node));
+  }
+
   const element = node as ElementWithProps;
   const children = Children.toArray(element.props.children);
   const paragraphs = element.type === "p"
@@ -71,7 +88,33 @@ function collectParagraphs(node: ReactNode): Array<{
   ];
 }
 
-function makePlanSummary(): PlanSummary {
+function findByTestId(
+  node: ReactNode,
+  testId: string,
+): ReactElement | null {
+  if (!node || typeof node === "boolean") return null;
+  if (Array.isArray(node)) {
+    for (const child of node) {
+      const found = findByTestId(child, testId);
+      if (found) return found;
+    }
+    return null;
+  }
+  if (!isValidElement(node)) return null;
+  const element = node as ReactElement<{
+    children?: ReactNode;
+    "data-testid"?: string;
+  }>;
+  if (element.props["data-testid"] === testId) return element;
+  if (typeof element.type === "function") {
+    return findByTestId(expandElement(element), testId);
+  }
+  return findByTestId(element.props.children ?? null, testId);
+}
+
+function makePlanSummary(
+  overrides: Partial<PlanSummary["artifact"]> = {},
+): PlanSummary {
   return {
     artifact: {
       id: "maestro-d6c6",
@@ -80,6 +123,7 @@ function makePlanSummary(): PlanSummary {
       workflowId: "execution_plan_sdlc",
       createdAt: "2026-04-19T00:00:00Z",
       updatedAt: "2026-04-19T00:00:00Z",
+      ...overrides,
     },
     plan: {
       repoPath: "/Users/cartine/maestro",
@@ -107,20 +151,27 @@ function makePreview(): SetlistPlanPreview {
   };
 }
 
+function defaultProps() {
+  return {
+    plan: makePlanSummary(),
+    preview: makePreview(),
+    selected: false,
+    workableBeatCount: 4,
+    canComplete: false,
+    isCompleting: false,
+    onSelect: vi.fn(),
+    onComplete: vi.fn(),
+  };
+}
+
 describe("PlanSummaryCard", () => {
   it("does not render preview beat rows for unselected plans", () => {
-    const tree = PlanSummaryCard({
-      plan: makePlanSummary(),
-      preview: makePreview(),
-      selected: false,
-      selectedWorkableBeatCount: null,
-      onSelect: vi.fn(),
-    });
+    const tree = PlanSummaryCard(defaultProps());
 
     const text = flattenText(tree);
 
     expect(text).toContain("AWS to Hetzner Migration");
-    expect(text).toContain("4 beats");
+    expect(text).toContain("4 remaining");
     expect(text).toContain("groom");
     expect(text).not.toContain("Preview beat one");
     expect(text).not.toContain("Preview beat two");
@@ -128,20 +179,17 @@ describe("PlanSummaryCard", () => {
     expect(text).not.toContain("+1 more beat");
   });
 
-  it("keeps selected and unselected cards on the same content structure", () => {
+  it("renders the same workable count for selected and unselected cards", () => {
+    const props = defaultProps();
     const selectedTree = PlanSummaryCard({
-      plan: makePlanSummary(),
-      preview: makePreview(),
+      ...props,
       selected: true,
-      selectedWorkableBeatCount: 2,
-      onSelect: vi.fn(),
+      workableBeatCount: 2,
     });
     const unselectedTree = PlanSummaryCard({
-      plan: makePlanSummary(),
-      preview: makePreview(),
+      ...props,
       selected: false,
-      selectedWorkableBeatCount: null,
-      onSelect: vi.fn(),
+      workableBeatCount: 2,
     });
 
     const selectedClasses = collectClassNames(selectedTree).join(" ");
@@ -151,26 +199,75 @@ describe("PlanSummaryCard", () => {
     expect(selectedText).toContain("Selected");
     expect(selectedText).toContain("2 remaining");
     expect(unselectedText).toContain("Execution plan");
-    expect(unselectedText).toContain("4 beats");
+    expect(unselectedText).toContain("2 remaining");
     expect(selectedClasses).toContain("bg-primary/[0.03]");
     expect(selectedClasses).toContain("border-primary/35");
   });
 
-  it("renders the objective as the primary line and the summary as secondary copy", () => {
+  it("shows the Done badge when no beats remain", () => {
     const tree = PlanSummaryCard({
-      plan: makePlanSummary(),
-      preview: makePreview(),
-      selected: false,
-      selectedWorkableBeatCount: null,
-      onSelect: vi.fn(),
+      ...defaultProps(),
+      workableBeatCount: 0,
     });
+
+    expect(findByTestId(tree, "plan-done-badge")).not.toBeNull();
+    expect(flattenText(tree)).toContain("Done");
+    expect(flattenText(tree)).toContain("0 remaining");
+  });
+
+  it("hides the Done badge when work remains", () => {
+    const tree = PlanSummaryCard({
+      ...defaultProps(),
+      workableBeatCount: 3,
+    });
+
+    expect(findByTestId(tree, "plan-done-badge")).toBeNull();
+  });
+
+  it("shows the Complete button when canComplete is true", () => {
+    const tree = PlanSummaryCard({
+      ...defaultProps(),
+      workableBeatCount: 0,
+      canComplete: true,
+    });
+
+    expect(findByTestId(tree, "plan-complete-button")).not.toBeNull();
+    expect(flattenText(tree)).toContain("Complete plan");
+  });
+
+  it("hides the Complete button once the plan is already terminal", () => {
+    const tree = PlanSummaryCard({
+      ...defaultProps(),
+      workableBeatCount: 0,
+      canComplete: false,
+    });
+
+    expect(findByTestId(tree, "plan-complete-button")).toBeNull();
+  });
+
+  it("disables the Complete button while completion is in flight", () => {
+    const tree = PlanSummaryCard({
+      ...defaultProps(),
+      workableBeatCount: 0,
+      canComplete: true,
+      isCompleting: true,
+    });
+
+    const button = findByTestId(tree, "plan-complete-button") as
+      | ReactElement<{ disabled?: boolean }>
+      | null;
+    expect(button).not.toBeNull();
+    expect(button?.props.disabled).toBe(true);
+    expect(flattenText(tree)).toContain("Completing");
+  });
+
+  it("renders the objective as the primary line and the summary as secondary copy", () => {
+    const tree = PlanSummaryCard(defaultProps());
 
     const paragraphs = collectParagraphs(tree);
 
-    expect(paragraphs[0]).toMatchObject({
-      className: "text-base font-semibold leading-tight",
-      text: "Migrate AWS infra",
-    });
+    expect(paragraphs[0]?.text).toBe("Migrate AWS infra");
+    expect(paragraphs[0]?.className).toContain("text-base font-semibold");
     expect(paragraphs[1]).toMatchObject({
       className: "mt-1 text-sm text-muted-foreground",
       text: "AWS to Hetzner Migration",
@@ -188,5 +285,21 @@ describe("setlist-view source contract", () => {
     expect(source).not.toContain("preview.previewBeats.map");
     expect(source).not.toContain("preview.remainingBeats > 0");
     expect(source).not.toContain("{!selected && (");
+  });
+});
+
+describe("plan-summary-card source contract", () => {
+  const cardSource = readFileSync(
+    path.join(process.cwd(), "src/components/plan-summary-card.tsx"),
+    "utf8",
+  );
+
+  it("uses role=button on a div root, not a nested <button> wrapper", () => {
+    expect(cardSource).toContain('role="button"');
+    expect(cardSource).not.toMatch(/<button[\s\S]*?type="button"[\s\S]*?onClick={\(\) => onSelect/);
+  });
+
+  it("stops propagation on the Complete button click", () => {
+    expect(cardSource).toContain("event.stopPropagation()");
   });
 });
