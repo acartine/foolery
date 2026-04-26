@@ -32,6 +32,11 @@ import {
   formatStreamEvent,
   pushFormattedEvent,
 } from "@/lib/terminal-manager-format";
+import {
+  extractApprovalRequest,
+  formatApprovalRequestBanner,
+  shouldEmitApprovalBannerFromRaw,
+} from "@/lib/approval-request-visibility";
 import type {
   SessionRuntimeState,
   SessionRuntimeConfig,
@@ -56,7 +61,6 @@ export function processNormalizedEvent(
 ): void {
   state.lastNormalizedEvent = obj;
   doResetWatchdog(child, state, config);
-  autoAnswerAskUser(child, obj, state, config);
   config.onLifecycleEvent?.({
     type: "normalized_event_observed",
     eventType: typeof obj.type === "string"
@@ -73,6 +77,7 @@ export function processNormalizedEvent(
   if (display) {
     pushFormattedEvent(display, config.pushEvent);
   }
+  autoAnswerAskUser(child, obj, state, config);
 }
 
 export function processLine(
@@ -84,6 +89,20 @@ export function processLine(
 ): void {
   try {
     const raw = JSON.parse(line) as JsonObject;
+    const approval = extractApprovalRequest(raw);
+    if (
+      approval &&
+      shouldEmitApprovalBannerFromRaw(raw)
+    ) {
+      config.pushEvent({
+        type: "stderr",
+        data: formatApprovalRequestBanner(
+          approval,
+          true,
+        ),
+        timestamp: Date.now(),
+      });
+    }
     if (dispatchTranslated(
       child, raw, state, config, signal,
     )) return;

@@ -16,6 +16,18 @@ describe("shouldShowHistoryResponseType", () => {
     expect(shouldShowHistoryResponseType("stream_event", false)).toBe(false);
   });
 
+  it("shows approval requests even when detail is off", () => {
+    expect(
+      shouldShowHistoryResponseType("", false, {
+        method: "mcpServer/elicitation/request",
+        params: {
+          serverName: "playwright",
+          toolName: "browser_evaluate",
+        },
+      }),
+    ).toBe(true);
+  });
+
   it("shows all response types when detail is on", () => {
     expect(shouldShowHistoryResponseType("assistant", true)).toBe(true);
     expect(shouldShowHistoryResponseType("result", true)).toBe(true);

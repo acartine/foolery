@@ -247,6 +247,70 @@ describe("sessions: workflow state annotations", () => {
   });
 });
 
+describe("sessions: approval request persistence", () => {
+  setupTempDir();
+
+  it("keeps persisted approval request responses in session history", async () => {
+    await writeLog(
+      tempDir,
+      "repo-a/2026-04-25/approval-history.jsonl",
+      [
+        {
+          kind: "session_start",
+          ts: "2026-04-25T07:29:49.000Z",
+          sessionId: "approval-history",
+          interactionType: "take",
+          repoPath: "/tmp/repo-a",
+          beatIds: ["foo-1"],
+        },
+        {
+          kind: "prompt",
+          ts: "2026-04-25T07:29:49.100Z",
+          sessionId: "approval-history",
+          prompt: "Prompt",
+          source: "initial",
+        },
+        {
+          kind: "response",
+          ts: "2026-04-25T07:29:50.000Z",
+          sessionId: "approval-history",
+          raw: JSON.stringify({
+            method: "mcpServer/elicitation/request",
+            params: {
+              serverName: "playwright",
+              toolName: "browser_evaluate",
+              message: "Allow browser_evaluate?",
+            },
+          }),
+        },
+        {
+          kind: "session_end",
+          ts: "2026-04-25T07:29:51.000Z",
+          sessionId: "approval-history",
+          status: "completed",
+          exitCode: 0,
+        },
+      ],
+    );
+
+    const history = await readAgentHistory({
+      logRoot: tempDir,
+      beatId: "foo-1",
+      beatRepoPath: "/tmp/repo-a",
+    });
+
+    const response = history.sessions[0]?.entries.find(
+      (entry) => entry.kind === "response",
+    );
+    expect(response?.raw).toContain(
+      "mcpServer/elicitation/request",
+    );
+    expect(response?.raw).toContain(
+      "browser_evaluate",
+    );
+  });
+});
+
 describe("sessions: worktree and query filtering", () => {
   setupTempDir();
 

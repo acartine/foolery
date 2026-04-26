@@ -5,6 +5,10 @@ import {
   formatModelDisplay,
 } from "@/hooks/use-agent-info";
 import {
+  extractApprovalRequest,
+  formatApprovalRequestBanner,
+} from "@/lib/approval-request-visibility";
+import {
   defaultWorkflowDescriptor,
   resolveStep,
 } from "@/lib/workflows";
@@ -172,6 +176,13 @@ export function summarizeResponse(
       string,
       unknown
     >;
+    const approval = extractApprovalRequest(parsed);
+    if (approval) {
+      return clipDisplay(
+        formatApprovalRequestBanner(approval)
+          .trimEnd(),
+      );
+    }
     const type =
       typeof parsed.type === "string"
         ? parsed.type

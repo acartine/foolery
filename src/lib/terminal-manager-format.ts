@@ -1,4 +1,8 @@
 import type { TerminalEvent } from "@/lib/types";
+import {
+  extractApprovalRequest,
+  formatApprovalRequestBanner,
+} from "@/lib/approval-request-visibility";
 
 export type JsonObject = Record<string, unknown>;
 
@@ -204,6 +208,16 @@ export function pushFormattedEvent(
 export function formatStreamEvent(
   obj: Record<string, unknown>,
 ): FormattedEvent | null {
+  const approval = extractApprovalRequest(obj);
+  if (approval) {
+    return {
+      text: formatApprovalRequestBanner(
+        approval,
+        true,
+      ),
+      isDetail: false,
+    };
+  }
   return formatAssistantEvent(obj)
     ?? formatStreamDelta(obj)
     ?? formatToolResult(obj)
