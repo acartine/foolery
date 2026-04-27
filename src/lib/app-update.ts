@@ -16,7 +16,7 @@ export const VERSION_UPDATE_COMMAND =
   "foolery update && foolery restart";
 
 const TERMINAL_STATUS_TTL_MS = 15 * 60_000;
-const LOCAL_HOSTS = new Set([
+const LOOPBACK_HOSTS = new Set([
   "localhost",
   "127.0.0.1",
   "::1",
@@ -362,10 +362,6 @@ export async function startAppUpdate(
 export function isAllowedLocalUpdateRequest(
   request: NextRequest,
 ): boolean {
-  if (!LOCAL_HOSTS.has(request.nextUrl.hostname)) {
-    return false;
-  }
-
   const origin = request.headers.get("origin");
   if (!origin) {
     return true;
@@ -373,11 +369,21 @@ export function isAllowedLocalUpdateRequest(
 
   try {
     const parsed = new URL(origin);
+    if (parsed.protocol !== request.nextUrl.protocol) {
+      return false;
+    }
+    if (
+      normalizedPort(parsed) !==
+      normalizedPort(request.nextUrl)
+    ) {
+      return false;
+    }
+    if (parsed.hostname === request.nextUrl.hostname) {
+      return true;
+    }
     return (
-      LOCAL_HOSTS.has(parsed.hostname) &&
-      parsed.protocol === request.nextUrl.protocol &&
-      normalizedPort(parsed) ===
-        normalizedPort(request.nextUrl)
+      LOOPBACK_HOSTS.has(parsed.hostname) &&
+      LOOPBACK_HOSTS.has(request.nextUrl.hostname)
     );
   } catch {
     return false;

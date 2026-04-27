@@ -181,4 +181,24 @@ describe("app-update request validation", () => {
     expect(isAllowedLocalUpdateRequest(good)).toBe(true);
     expect(isAllowedLocalUpdateRequest(bad)).toBe(false);
   });
+
+  it("accepts same-origin POSTs from non-loopback hostnames", () => {
+    const sameOrigin = new NextRequest(
+      "http://adrian:3210/api/app-update",
+      {
+        method: "POST",
+        headers: { origin: "http://adrian:3210" },
+      },
+    );
+    const crossOrigin = new NextRequest(
+      "http://adrian:3210/api/app-update",
+      {
+        method: "POST",
+        headers: { origin: "http://evil.example:3210" },
+      },
+    );
+
+    expect(isAllowedLocalUpdateRequest(sameOrigin)).toBe(true);
+    expect(isAllowedLocalUpdateRequest(crossOrigin)).toBe(false);
+  });
 });
