@@ -359,6 +359,25 @@ export async function startAppUpdate(
   }
 }
 
+function resolveRequestOrigin(
+  request: NextRequest,
+): URL {
+  const headerHost =
+    request.headers.get("x-forwarded-host") ??
+    request.headers.get("host");
+  if (headerHost) {
+    const headerProto =
+      request.headers.get("x-forwarded-proto") ??
+      request.nextUrl.protocol.replace(/:$/, "");
+    try {
+      return new URL(`${headerProto}://${headerHost}`);
+    } catch {
+      // fall through to nextUrl
+    }
+  }
+  return request.nextUrl;
+}
+
 export function isAllowedLocalUpdateRequest(
   request: NextRequest,
 ): boolean {
@@ -367,25 +386,25 @@ export function isAllowedLocalUpdateRequest(
     return true;
   }
 
+  let parsed: URL;
   try {
-    const parsed = new URL(origin);
-    if (parsed.protocol !== request.nextUrl.protocol) {
-      return false;
-    }
-    if (
-      normalizedPort(parsed) !==
-      normalizedPort(request.nextUrl)
-    ) {
-      return false;
-    }
-    if (parsed.hostname === request.nextUrl.hostname) {
-      return true;
-    }
-    return (
-      LOOPBACK_HOSTS.has(parsed.hostname) &&
-      LOOPBACK_HOSTS.has(request.nextUrl.hostname)
-    );
+    parsed = new URL(origin);
   } catch {
     return false;
   }
+
+  const effective = resolveRequestOrigin(request);
+  if (parsed.protocol !== effective.protocol) {
+    return false;
+  }
+  if (normalizedPort(parsed) !== normalizedPort(effective)) {
+    return false;
+  }
+  if (parsed.hostname === effective.hostname) {
+    return true;
+  }
+  return (
+    LOOPBACK_HOSTS.has(parsed.hostname) &&
+    LOOPBACK_HOSTS.has(effective.hostname)
+  );
 }

@@ -201,4 +201,51 @@ describe("app-update request validation", () => {
     expect(isAllowedLocalUpdateRequest(sameOrigin)).toBe(true);
     expect(isAllowedLocalUpdateRequest(crossOrigin)).toBe(false);
   });
+
+  it("accepts same-origin POSTs when next-server is bound to 0.0.0.0", () => {
+    // Production case: `next start --hostname 0.0.0.0` makes
+    // request.nextUrl.hostname report "0.0.0.0", but the browser sends
+    // Host: adrian:3210 and Origin: http://adrian:3210. Origin must be
+    // matched against the Host header, not against nextUrl.
+    const sameOrigin = new NextRequest(
+      "http://0.0.0.0:3210/api/app-update",
+      {
+        method: "POST",
+        headers: {
+          host: "adrian:3210",
+          origin: "http://adrian:3210",
+        },
+      },
+    );
+    const crossOrigin = new NextRequest(
+      "http://0.0.0.0:3210/api/app-update",
+      {
+        method: "POST",
+        headers: {
+          host: "adrian:3210",
+          origin: "http://evil.example:3210",
+        },
+      },
+    );
+
+    expect(isAllowedLocalUpdateRequest(sameOrigin)).toBe(true);
+    expect(isAllowedLocalUpdateRequest(crossOrigin)).toBe(false);
+  });
+
+  it("respects x-forwarded-host and x-forwarded-proto when present", () => {
+    const sameOrigin = new NextRequest(
+      "http://0.0.0.0:3210/api/app-update",
+      {
+        method: "POST",
+        headers: {
+          host: "internal.upstream:3210",
+          "x-forwarded-host": "adrian:3210",
+          "x-forwarded-proto": "https",
+          origin: "https://adrian:3210",
+        },
+      },
+    );
+
+    expect(isAllowedLocalUpdateRequest(sameOrigin)).toBe(true);
+  });
 });
