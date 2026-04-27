@@ -12,22 +12,22 @@ Foolery helps you capture work, break it down, dispatch agents, review what they
 <table align="center">
   <tr>
     <td align="center">
-      <a href="docs/screenshots/queues-20260314.png">
-        <img src="docs/screenshots/queues-20260314.png" width="160" alt="Queues View" />
+      <a href="docs/screenshots/queues-20260427.png">
+        <img src="docs/screenshots/queues-20260427.png" width="160" alt="Queues View" />
       </a>
       <br />
       <sub><b>Queues</b></sub>
     </td>
     <td align="center">
-      <a href="docs/screenshots/active-20260314.png">
-        <img src="docs/screenshots/active-20260314.png" width="160" alt="Active View" />
+      <a href="docs/screenshots/active-20260427.png">
+        <img src="docs/screenshots/active-20260427.png" width="160" alt="Active View" />
       </a>
       <br />
       <sub><b>Active</b></sub>
     </td>
     <td align="center">
-      <a href="docs/screenshots/retakes-20260314.png">
-        <img src="docs/screenshots/retakes-20260314.png" width="160" alt="Retakes" />
+      <a href="docs/screenshots/retakes-20260427.png">
+        <img src="docs/screenshots/retakes-20260427.png" width="160" alt="Retakes" />
       </a>
       <br />
       <sub><b>Retakes</b></sub>
@@ -35,15 +35,15 @@ Foolery helps you capture work, break it down, dispatch agents, review what they
   </tr>
   <tr>
     <td align="center">
-      <a href="docs/screenshots/history-20260314.png">
-        <img src="docs/screenshots/history-20260314.png" width="160" alt="History" />
+      <a href="docs/screenshots/history-20260427.png">
+        <img src="docs/screenshots/history-20260427.png" width="160" alt="History" />
       </a>
       <br />
       <sub><b>History</b></sub>
     </td>
     <td align="center">
-      <a href="docs/screenshots/hot-keys-20260314.png">
-        <img src="docs/screenshots/hot-keys-20260314.png" width="160" alt="Hot Keys" />
+      <a href="docs/screenshots/hot-keys-20260427.png">
+        <img src="docs/screenshots/hot-keys-20260427.png" width="160" alt="Hot Keys" />
       </a>
       <br />
       <sub><b>Hot Keys</b></sub>
@@ -128,13 +128,13 @@ Foolery supports two dispatch modes for assigning agents to work, configurable u
 
 Map one registered agent to each action type: **Take!** (execute a single beat) and **Scene!** (multi-beat orchestration). If you want to change your default agent, the Swap Agent tool updates all matching mappings at once.
 
-![Simple dispatch](docs/screenshots/dispatch-simple-20260314.png)
+![Simple dispatch](docs/screenshots/dispatch-simple-20260427.png)
 
 ### Advanced (Weighted pools per step)
 
 Assign weighted agent pools to each workflow step: Planning, Plan Review, Implementation, Implementation Review, Shipment, and Ship Review. Foolery picks from each pool according to the weights, which makes it useful for A/B testing models, mixing agent strengths, or spreading work across different tools. The Swap Agent tool still works across the whole dispatch configuration.
 
-![Advanced dispatch](docs/screenshots/dispatch-advanced-20260314.png)
+![Advanced dispatch](docs/screenshots/dispatch-advanced-20260427.png)
 
 ## Flow & Features
 
@@ -142,25 +142,25 @@ Assign weighted agent pools to each workflow step: Planning, Plan Review, Implem
 
 The default view. All beats queued and ready for action — filter by type, priority, or free-text search. Select rows with spacebar, bulk-update fields, drill into inline summaries, and trigger agent sessions on any beat. Create new beats with Shift+N.
 
-![Queues view](docs/screenshots/queues-20260314.png)
+![Queues view](docs/screenshots/queues-20260427.png)
 
 ### Active
 
 Beats currently in progress. See which agents are working, their model, version, and state at a glance. The Active view adds Agent, Model, and Version columns so you can monitor running work.
 
-![Active view](docs/screenshots/active-20260314.png)
+![Active view](docs/screenshots/active-20260427.png)
 
 ### Retakes
 
 The review lane for shipped beats. Browse handoff capsules from agent sessions, inspect what changed, and trigger follow-up passes when something needs another look.
 
-![Retakes view](docs/screenshots/retakes-20260314.png)
+![Retakes view](docs/screenshots/retakes-20260427.png)
 
 ### History
 
 A focused history feed for agent sessions. Browse recent beat activity, inspect beat metadata, and review app-to-agent and agent-to-app conversation logs in one timeline.
 
-![History view](docs/screenshots/history-20260314.png)
+![History view](docs/screenshots/history-20260427.png)
 
 ### Diagnostics
 
@@ -172,7 +172,7 @@ for lease analytics and agent throughput history.
 
 Need to stay in flow? Open the keyboard shortcut overlay (Shift+H) for a quick map of navigation, actions, editing, and panel controls across views.
 
-![Keyboard shortcuts overlay](docs/screenshots/hot-keys-20260314.png)
+![Keyboard shortcuts overlay](docs/screenshots/hot-keys-20260427.png)
 
 ## Why Foolery?
 
