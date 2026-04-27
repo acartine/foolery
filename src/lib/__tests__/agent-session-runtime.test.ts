@@ -449,3 +449,53 @@ describe("runtime: interactive codex stdout", () => {
     ).toBeNull();
   });
 });
+
+describe("runtime: codex turn failure tracking", () => {
+  beforeEach(() => { vi.useFakeTimers(); });
+  afterEach(() => { vi.useRealTimers(); });
+
+  it(
+    "records lastTurnError on turn/completed status=failed",
+    () => {
+      const config = makeInteractiveCodexConfig();
+      const rt = createSessionRuntime(config);
+      const child = makeChild(true);
+      rt.wireStdout(child);
+      const handshake = [
+        JSON.stringify({
+          id: 1, result: { userAgent: "t" },
+        }),
+        JSON.stringify({
+          id: 2,
+          result: { thread: { id: "t-1" } },
+        }),
+      ].join("\n") + "\n";
+      child.stdout!.emit(
+        "data", Buffer.from(handshake),
+      );
+      const failedTurn = JSON.stringify({
+        method: "turn/completed",
+        params: {
+          threadId: "t-1",
+          turn: {
+            id: "turn-1", items: [],
+            status: "failed",
+            error: {
+              message: "Quota exceeded.",
+              codexErrorInfo: "usageLimitExceeded",
+            },
+          },
+        },
+      }) + "\n";
+      child.stdout!.emit(
+        "data", Buffer.from(failedTurn),
+      );
+      expect(rt.state.resultObserved).toBe(true);
+      expect(rt.state.exitReason).toBe("turn_ended");
+      expect(rt.state.lastTurnError).not.toBeNull();
+      expect(
+        rt.state.lastTurnError?.eventType,
+      ).toBe("turn.failed");
+    },
+  );
+});

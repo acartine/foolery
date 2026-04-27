@@ -140,6 +140,18 @@ export interface SessionRuntimeState {
    * until the first chunk arrives.
    */
   lastStdoutAt: number | null;
+  /**
+   * Last turn-failed signal from the transport
+   * adapter (e.g. Codex `turn/completed` with
+   * `status: "failed"` for `usageLimitExceeded`).
+   * Set when a turn ends with `isError: true`;
+   * cleared when a subsequent turn ends cleanly.
+   * Read at child-close time so an iteration with a
+   * failed turn but a clean process exit code is still
+   * routed through the error path. Null until the
+   * first failed turn is observed.
+   */
+  lastTurnError: { eventType?: string } | null;
 }
 
 /**

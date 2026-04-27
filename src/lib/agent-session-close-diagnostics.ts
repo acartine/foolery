@@ -18,6 +18,14 @@ export interface ChildCloseDiagnostics {
   msSinceLastStdout: number | null;
   /** `type` field of last normalized event, or null. */
   lastEventType: string | null;
+  /**
+   * Set when the transport adapter signaled a failed
+   * turn (e.g. Codex `usageLimitExceeded`). Lets close
+   * handlers detect "agent exited 0 but its turn errored"
+   * — a clean OS exit that masks an unrecoverable agent
+   * failure.
+   */
+  turnError: { eventType?: string } | null;
 }
 
 function extractLastEventType(
@@ -42,6 +50,7 @@ export function captureChildCloseDiagnostics(
     exitReason,
     msSinceLastStdout,
     lastEventType: extractLastEventType(state),
+    turnError: state?.lastTurnError ?? null,
   };
 }
 
@@ -54,10 +63,14 @@ export function formatDiagnosticsForLog(
     ? "null"
     : String(diag.msSinceLastStdout);
   const evtStr = diag.lastEventType ?? "null";
+  const turnErrStr = diag.turnError
+    ? diag.turnError.eventType ?? "true"
+    : "null";
   return (
     ` signal=${signalStr}` +
     ` exitReason=${diag.exitReason}` +
     ` msSinceLastStdout=${msStr}` +
-    ` lastEventType=${evtStr}`
+    ` lastEventType=${evtStr}` +
+    ` turnError=${turnErrStr}`
   );
 }

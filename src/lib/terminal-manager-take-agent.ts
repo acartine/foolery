@@ -37,12 +37,9 @@ import {
 } from "@/lib/workflows-runtime";
 import {
   getLastStepAgent,
-  recordStepAgent,
 } from "@/lib/agent-pool";
 import {
   derivePoolKey,
-  DispatchFailureError,
-  resolveDispatchAgent,
 } from "@/lib/dispatch-pool-resolver";
 import type { Beat, MemoryWorkflowDescriptor } from "@/lib/types";
 import type {
@@ -51,6 +48,7 @@ import type {
 import {
   enforceQueueTerminalInvariant,
 } from "@/lib/terminal-manager-take-loop";
+import { runDispatch } from "@/lib/terminal-manager-take-dispatch";
 
 // ─── selectStepAgent ─────────────────────────────────
 
@@ -93,35 +91,13 @@ export async function selectStepAgent(
     priorAction,
   });
 
-  try {
-    const selected = resolveDispatchAgent(
-      { beatId: ctx.beatId, state, workflow, settings },
-      { excludeAgentIds, strictExclusion: isErrorRetry },
-    );
-    if (!selected) return { maxClaims };
-    if (selected.agentId) {
-      recordStepAgent(ctx.beatId, poolKey, selected.agentId);
-    }
-    logSelection(ctx, poolKey, selected, {
-      stepFailureRollback,
-      isReview,
-      excluded: excludeAgentIds,
-    });
-    return { stepAgentOverride: selected, maxClaims };
-  } catch (err) {
-    if (err instanceof DispatchFailureError) {
-      ctx.pushEvent({
-        type: "stderr",
-        data: err.banner,
-        timestamp: Date.now(),
-      });
-      recordTakeLoopLifecycle(ctx, "loop_stop", {
-        loopDecision: `dispatch_failure:${err.info.reason}:${poolKey}`,
-      });
-      return "stop";
-    }
-    throw err;
-  }
+  return runDispatch({
+    ctx, settings, workflow, state,
+    poolKey, queueType,
+    excludeAgentIds, isErrorRetry,
+    stepFailureRollback, isReview, priorAction,
+    failedAgentId, maxClaims,
+  });
 }
 
 function computeExclusions(args: {
@@ -151,32 +127,6 @@ function computeExclusions(args: {
     if (last) excluded.add(last);
   }
   return excluded;
-}
-
-function logSelection(
-  ctx: TakeLoopContext,
-  poolKey: string,
-  selected: CliAgentTarget,
-  context: {
-    stepFailureRollback: boolean;
-    isReview: boolean;
-    excluded: ReadonlySet<string>;
-  },
-): void {
-  const tag = `[terminal-manager] [${ctx.id}] [take-loop]`;
-  const reason = context.stepFailureRollback
-    ? "step failure retry"
-    : context.isReview ? "cross-agent review" : "pool selection";
-  const excludedStr =
-    context.excluded.size > 0
-      ? [...context.excluded].join(", ")
-      : "none";
-  console.log(
-    `${tag} ${reason}: ` +
-    `pool="${poolKey}" ` +
-    `selected="${selected.agentId ?? selected.command}" ` +
-    `(excluded: ${excludedStr})`,
-  );
 }
 
 // ─── handleMaxClaims ─────────────────────────────────

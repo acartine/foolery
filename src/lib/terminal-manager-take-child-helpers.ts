@@ -185,9 +185,56 @@ export function wireTakeChildClose(
     takeChild.stdout?.removeAllListeners();
     takeChild.stderr?.removeAllListeners();
     ctx.entry.process = null;
+    // Codex (and other JSON-RPC adapters) can exit
+    // with code=0 even when the agent's turn errored
+    // — e.g. an OpenAI quota / usageLimitExceeded
+    // response yields `turn/completed status=failed`
+    // followed by a clean process exit. Without this
+    // override the take loop classifies the iteration
+    // as a success, doesn't progress or roll back the
+    // beat, and then dies on the next dispatch when
+    // cross-agent review exclusion empties the pool.
+    const effectiveCode =
+      takeCode === 0 && diag.turnError ? 1 : takeCode;
+    if (takeCode === 0 && diag.turnError) {
+      const agentLabel =
+        effectiveAgent.label ??
+        effectiveAgent.agentId ??
+        effectiveAgent.command;
+      console.warn(
+        `[terminal-manager] [${ctx.id}] [take-loop] ` +
+        `agent exited code=0 but reported a failed ` +
+        `turn (${diag.turnError.eventType ?? "unknown"}) ` +
+        `— treating iteration as failure to trigger ` +
+        `error retry / loud dispatch failure`,
+      );
+      ctx.pushEvent({
+        type: "stderr",
+        data: `\x1b[33m--- Agent ended turn with an ` +
+          `error (${diag.turnError.eventType ?? "unknown"}) ` +
+          `but exited cleanly. Treating iteration as ` +
+          `failure so the take loop can retry or ` +
+          `surface a dispatch failure ---\x1b[0m\n`,
+        timestamp: Date.now(),
+      });
+      ctx.pushEvent({
+        type: "agent_failure",
+        data: JSON.stringify({
+          kind: "turn_failed",
+          message:
+            `${agentLabel} ended turn with ` +
+            `${diag.turnError.eventType ?? "an error"} ` +
+            `(exit code 0). Take loop will retry with ` +
+            `another agent.`,
+          beatId: ctx.beatId,
+        }),
+        timestamp: Date.now(),
+      });
+    }
     console.log(
       `[terminal-manager] [${ctx.id}] [take-loop]` +
       ` child close: code=${takeCode}` +
+      ` effectiveCode=${effectiveCode}` +
       formatDiagnosticsForLog(diag, signal) +
       ` aborted=${ctx.sessionAborted()}` +
       ` iteration=${ctx.takeIteration.value}` +
@@ -203,7 +250,7 @@ export function wireTakeChildClose(
     });
     handleTakeIterationClose(
       ctx,
-      takeCode,
+      effectiveCode,
       effectiveAgent,
       beatState ?? "unknown",
     ).catch((err) => {
@@ -212,7 +259,7 @@ export function wireTakeChildClose(
         `[take-loop] handleTakeIterationClose error:`,
         err,
       );
-      ctx.finishSession(takeCode ?? 1);
+      ctx.finishSession(effectiveCode ?? 1);
     });
   });
 }

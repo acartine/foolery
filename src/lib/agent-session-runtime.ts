@@ -71,6 +71,9 @@ function handleTurnEnded(
 ): void {
   state.resultObserved = true;
   state.exitReason = "turn_ended";
+  state.lastTurnError = info.isError
+    ? { eventType: info.eventType }
+    : null;
   config.onLifecycleEvent?.({
     type: "turn_ended",
     eventType: info.eventType,
@@ -213,6 +216,7 @@ function initState(
     exitReason: null,
     lastNormalizedEvent: null,
     lastStdoutAt: null,
+    lastTurnError: null,
   };
 }
 

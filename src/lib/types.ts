@@ -162,7 +162,17 @@ export interface TerminalEvent {
     | "exit"
     | "stream_end"
     | "agent_switch"
-    | "beat_state_observed";
+    | "beat_state_observed"
+    /**
+     * Operator-actionable mid-session failure. Triggers
+     * an in-app notification without ending the session.
+     * `data` is a JSON payload: `{ kind, message, beatId? }`.
+     * Used for events like a Codex turn returning
+     * `usageLimitExceeded` while the take falls back to
+     * another agent — the user needs to know without
+     * tailing the terminal.
+     */
+    | "agent_failure";
   data: string;
   timestamp: number;
 }

@@ -184,6 +184,7 @@ describe("formatDiagnosticsForLog: log format lock", () => {
           exitReason: "timeout",
           msSinceLastStdout: 1234,
           lastEventType: "assistant",
+          turnError: null,
         },
         "SIGTERM",
       );
@@ -195,6 +196,7 @@ describe("formatDiagnosticsForLog: log format lock", () => {
       expect(line).toContain(
         " lastEventType=assistant",
       );
+      expect(line).toContain(" turnError=null");
     },
   );
 
@@ -206,6 +208,7 @@ describe("formatDiagnosticsForLog: log format lock", () => {
           exitReason: "normal",
           msSinceLastStdout: null,
           lastEventType: null,
+          turnError: null,
         },
         null,
       );
@@ -215,6 +218,52 @@ describe("formatDiagnosticsForLog: log format lock", () => {
         " msSinceLastStdout=null",
       );
       expect(line).toContain(" lastEventType=null");
+      expect(line).toContain(" turnError=null");
+    },
+  );
+
+  it(
+    "surfaces turnError event type for greppable logs",
+    () => {
+      const line = formatDiagnosticsForLog(
+        {
+          exitReason: "turn_ended",
+          msSinceLastStdout: 0,
+          lastEventType: "turn.failed",
+          turnError: { eventType: "turn.failed" },
+        },
+        null,
+      );
+      expect(line).toContain(" turnError=turn.failed");
+    },
+  );
+});
+
+describe("captureChildCloseDiagnostics: turnError", () => {
+  it(
+    "is null when no failed turn was recorded",
+    () => {
+      const rt = createSessionRuntime(makeConfig());
+      const diag = captureChildCloseDiagnostics(
+        rt.state,
+      );
+      expect(diag.turnError).toBeNull();
+    },
+  );
+
+  it(
+    "captures turnError set by handleTurnEnded",
+    () => {
+      const rt = createSessionRuntime(makeConfig());
+      rt.state.lastTurnError = {
+        eventType: "turn.failed",
+      };
+      const diag = captureChildCloseDiagnostics(
+        rt.state,
+      );
+      expect(diag.turnError).toEqual({
+        eventType: "turn.failed",
+      });
     },
   );
 });

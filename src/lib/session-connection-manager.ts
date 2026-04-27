@@ -70,79 +70,15 @@ class SessionConnectionManager {
           return;
         }
 
+        if (event.type === "agent_failure") {
+          fireAgentFailureNotification(event.data, sessionId);
+          return;
+        }
+
         if (event.type === "exit") {
-          // Exit is terminal; ignore duplicate exit events from reconnect/replay.
-          if (conn.exitReceived) return;
-          conn.exitReceived = true;
-          conn.exitCode = parseInt(event.data, 10);
-
-          // Sentinel -2 means the session vanished from the backend
-          // (server crash / restart) — NOT a clean completion.
-          const isDisconnect = conn.exitCode === -2;
-
-          // If the store already shows "aborted" (set by the terminate
-          // action), preserve that status instead of overwriting it with
-          // completed/error derived from the exit code.
-          const currentTerminal = useTerminalStore
-            .getState()
-            .terminals.find((t) => t.sessionId === sessionId);
-          const alreadyAborted = currentTerminal?.status === "aborted";
-
-          // Update zustand store directly — outside React lifecycle
-          if (!alreadyAborted) {
-            useTerminalStore
-              .getState()
-              .updateStatus(
-                sessionId,
-                isDisconnect
-                  ? "disconnected"
-                  : conn.exitCode === 0
-                    ? "completed"
-                    : "error",
-              );
-          }
-
-          // Fire in-app notification for session exit
-          const terminal = currentTerminal ?? useTerminalStore
-            .getState()
-            .terminals.find((t) => t.sessionId === sessionId);
-          if (terminal) {
-            const { addNotification } = useNotificationStore.getState();
-            const status = alreadyAborted
-              ? "terminated"
-              : isDisconnect
-                ? "disconnected (server may have restarted)"
-                : conn.exitCode === 0
-                  ? "completed"
-                  : "exited with error";
-
-            // Extract last stderr content for error context
-            let errorDetail = "";
-            if (conn.exitCode !== 0 && !isDisconnect) {
-              const stderrEvents = conn.buffer.filter((e) => e.type === "stderr");
-              const lastStderr = stderrEvents
-                .slice(-3)
-                .map((e) => e.data.trim())
-                .filter(Boolean)
-                .join(" ")
-                .slice(0, 200);
-              if (lastStderr) {
-                errorDetail = ` — ${lastStderr}`;
-              } else {
-                errorDetail = ` (exit code ${conn.exitCode}, no error output captured)`;
-              }
-            }
-
-            addNotification({
-              message: `"${terminal.beatTitle}" session ${status}${errorDetail}`,
-              beatId: terminal.beatId,
-              repoPath: terminal.repoPath,
-            });
-          }
-
-          if (this.queryClient) {
-            void invalidateBeatListQueries(this.queryClient);
-          }
+          handleExitEvent(
+            event, conn, sessionId, this.queryClient,
+          );
         }
       },
       // onError — remove the connection entry so sync can reconnect,
@@ -254,3 +190,109 @@ class SessionConnectionManager {
 
 /** Singleton instance */
 export const sessionConnections = new SessionConnectionManager();
+
+function handleExitEvent(
+  event: TerminalEvent,
+  conn: Connection,
+  sessionId: string,
+  queryClient: QueryClient | null,
+): void {
+  if (conn.exitReceived) return;
+  conn.exitReceived = true;
+  conn.exitCode = parseInt(event.data, 10);
+  const isDisconnect = conn.exitCode === -2;
+  const currentTerminal = useTerminalStore
+    .getState()
+    .terminals.find((t) => t.sessionId === sessionId);
+  const alreadyAborted =
+    currentTerminal?.status === "aborted";
+  if (!alreadyAborted) {
+    useTerminalStore.getState().updateStatus(
+      sessionId,
+      isDisconnect
+        ? "disconnected"
+        : conn.exitCode === 0
+          ? "completed"
+          : "error",
+    );
+  }
+  const terminal = currentTerminal ?? useTerminalStore
+    .getState()
+    .terminals.find((t) => t.sessionId === sessionId);
+  if (terminal) {
+    fireExitNotification(
+      conn, terminal, alreadyAborted, isDisconnect,
+    );
+  }
+  if (queryClient) {
+    void invalidateBeatListQueries(queryClient);
+  }
+}
+
+function fireExitNotification(
+  conn: Connection,
+  terminal: { beatTitle: string; beatId?: string; repoPath?: string },
+  alreadyAborted: boolean,
+  isDisconnect: boolean,
+): void {
+  const status = alreadyAborted
+    ? "terminated"
+    : isDisconnect
+      ? "disconnected (server may have restarted)"
+      : conn.exitCode === 0
+        ? "completed"
+        : "exited with error";
+  let errorDetail = "";
+  if (conn.exitCode !== 0 && !isDisconnect) {
+    const stderrEvents = conn.buffer.filter(
+      (e) => e.type === "stderr",
+    );
+    const lastStderr = stderrEvents
+      .slice(-3)
+      .map((e) => e.data.trim())
+      .filter(Boolean)
+      .join(" ")
+      .slice(0, 200);
+    errorDetail = lastStderr
+      ? ` — ${lastStderr}`
+      : ` (exit code ${conn.exitCode}, no error output captured)`;
+  }
+  useNotificationStore.getState().addNotification({
+    message:
+      `"${terminal.beatTitle}" session ${status}${errorDetail}`,
+    beatId: terminal.beatId,
+    repoPath: terminal.repoPath,
+  });
+}
+
+interface AgentFailurePayload {
+  kind?: string;
+  message?: string;
+  beatId?: string;
+}
+
+function fireAgentFailureNotification(
+  data: string, sessionId: string,
+): void {
+  let payload: AgentFailurePayload = {};
+  try {
+    payload = JSON.parse(data) as AgentFailurePayload;
+  } catch {
+    payload = { message: data };
+  }
+  const terminal = useTerminalStore
+    .getState()
+    .terminals.find((t) => t.sessionId === sessionId);
+  const title = terminal
+    ? `"${terminal.beatTitle}"`
+    : "Take session";
+  const kindLabel = payload.kind
+    ? `[${payload.kind}] `
+    : "";
+  const message = payload.message ?? "Agent failure";
+  useNotificationStore.getState().addNotification({
+    message: `${kindLabel}${title}: ${message}`,
+    beatId: payload.beatId ?? terminal?.beatId,
+    repoPath: terminal?.repoPath,
+  });
+}
