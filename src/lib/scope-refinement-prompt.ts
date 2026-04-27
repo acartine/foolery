@@ -172,52 +172,24 @@ function handleResultEvent(
 
 // ── Prompt runner (with timeout) ──────────────────────────
 
-function spawnAndWire(
-  built: { command: string; args: string[] },
+const NO_OUTPUT_WARN_MS = 120_000;
+
+interface SpawnContext {
+  state: PromptState;
+  spawnedAt: number;
+  firstByteAt: { value: number | null };
+  pid: number | string;
+  safeResolve: (value: string) => void;
+  safeReject: (error: Error) => void;
+  processLine: (line: string) => void;
+}
+
+function makeProcessLine(
+  state: PromptState,
   normalizeEvent: (v: unknown) => unknown,
-  repoPath: string | undefined,
-  resolve: (v: string) => void,
-  reject: (e: Error) => void,
-): void {
-  let settled = false;
-  const state: PromptState = {
-    rawStdout: "",
-    stderrText: "",
-    ndjsonBuffer: "",
-    assistantText: "",
-    resultText: "",
-  };
-
-  const safeResolve = (value: string) => {
-    if (settled) return;
-    settled = true;
-    clearTimeout(timer);
-    resolve(value);
-  };
-  const safeReject = (error: Error) => {
-    if (settled) return;
-    settled = true;
-    clearTimeout(timer);
-    reject(error);
-  };
-
-  const child = spawn(built.command, built.args, {
-    cwd: repoPath?.trim() || process.cwd(),
-    env: process.env,
-  });
-
-  const timer = setTimeout(() => {
-    if (settled) return;
-    child.kill("SIGKILL");
-    safeReject(
-      new Error(
-        "scope refinement agent timed out after "
-          + `${PROMPT_TIMEOUT_MS / 1000}s`,
-      ),
-    );
-  }, PROMPT_TIMEOUT_MS);
-
-  const processLine = (line: string) => {
+  safeReject: (e: Error) => void,
+): (line: string) => void {
+  return (line: string) => {
     if (!line.trim()) return;
     let parsed: unknown;
     try {
@@ -229,40 +201,166 @@ function spawnAndWire(
     if (!obj || typeof obj.type !== "string") return;
     handleParsedEvent(obj, state, safeReject);
   };
+}
 
-  child.on("error", (e) => safeReject(e));
+function noteFirstByte(
+  ctx: SpawnContext,
+  source: "stdout" | "stderr",
+): void {
+  if (ctx.firstByteAt.value !== null) return;
+  ctx.firstByteAt.value = Date.now();
+  console.log(
+    `[scope-refinement][spawn] first_byte `
+      + `pid=${ctx.pid} source=${source} `
+      + `dt=${ctx.firstByteAt.value - ctx.spawnedAt}ms`,
+  );
+}
 
-  child.stdout?.on("data", (chunk: Buffer) => {
-    const text = chunk.toString();
-    state.rawStdout += text;
-    state.ndjsonBuffer += text;
-    const lines = state.ndjsonBuffer.split("\n");
-    state.ndjsonBuffer = lines.pop() ?? "";
-    for (const line of lines) processLine(line);
-  });
-
-  child.stderr?.on("data", (chunk: Buffer) => {
-    state.stderrText += chunk.toString();
-  });
-
-  child.on("close", (code) => {
-    if (state.ndjsonBuffer.trim()) {
-      processLine(state.ndjsonBuffer);
-    }
-    if (code !== 0) {
-      const detail =
-        state.stderrText.trim()
-        || "scope refinement agent exited with "
-          + `code ${code ?? "unknown"}`;
-      safeReject(new Error(detail));
-      return;
-    }
-    safeResolve(
-      state.resultText
-        || state.assistantText
-        || state.rawStdout,
+function wireChildIo(
+  child: ReturnType<typeof spawn>,
+  ctx: SpawnContext,
+): void {
+  child.on("error", (e) => {
+    console.warn(
+      `[scope-refinement][spawn] error `
+        + `pid=${ctx.pid} msg=${e.message}`,
     );
+    ctx.safeReject(e);
   });
+  child.stdout?.on("data", (chunk: Buffer) => {
+    noteFirstByte(ctx, "stdout");
+    const text = chunk.toString();
+    ctx.state.rawStdout += text;
+    ctx.state.ndjsonBuffer += text;
+    const lines = ctx.state.ndjsonBuffer.split("\n");
+    ctx.state.ndjsonBuffer = lines.pop() ?? "";
+    for (const line of lines) ctx.processLine(line);
+  });
+  child.stderr?.on("data", (chunk: Buffer) => {
+    noteFirstByte(ctx, "stderr");
+    ctx.state.stderrText += chunk.toString();
+  });
+  child.on("close", (code) => handleClose(code, ctx));
+}
+
+function handleClose(
+  code: number | null,
+  ctx: SpawnContext,
+): void {
+  if (ctx.state.ndjsonBuffer.trim()) {
+    ctx.processLine(ctx.state.ndjsonBuffer);
+  }
+  const elapsed = Date.now() - ctx.spawnedAt;
+  console.log(
+    `[scope-refinement][spawn] close `
+      + `pid=${ctx.pid} code=${code ?? "null"} `
+      + `elapsed_ms=${elapsed} `
+      + `stdout_bytes=${ctx.state.rawStdout.length} `
+      + `stderr_bytes=${ctx.state.stderrText.length}`,
+  );
+  if (code !== 0) {
+    const detail = ctx.state.stderrText.trim()
+      || "scope refinement agent exited with "
+        + `code ${code ?? "unknown"}`;
+    ctx.safeReject(new Error(detail));
+    return;
+  }
+  ctx.safeResolve(
+    ctx.state.resultText
+      || ctx.state.assistantText
+      || ctx.state.rawStdout,
+  );
+}
+
+function startTimers(
+  child: ReturnType<typeof spawn>,
+  ctx: SpawnContext,
+): { timer: NodeJS.Timeout; noOutputTimer: NodeJS.Timeout } {
+  const timer = setTimeout(() => {
+    console.warn(
+      `[scope-refinement][spawn] timeout `
+        + `pid=${ctx.pid} `
+        + `after=${PROMPT_TIMEOUT_MS / 1000}s `
+        + `stdout_bytes=${ctx.state.rawStdout.length} `
+        + `stderr_bytes=${ctx.state.stderrText.length} `
+        + "sending SIGKILL",
+    );
+    child.kill("SIGKILL");
+    ctx.safeReject(
+      new Error(
+        "scope refinement agent timed out after "
+          + `${PROMPT_TIMEOUT_MS / 1000}s`,
+      ),
+    );
+  }, PROMPT_TIMEOUT_MS);
+  const noOutputTimer = setTimeout(() => {
+    if (ctx.firstByteAt.value !== null) return;
+    console.warn(
+      `[scope-refinement][spawn] no_output `
+        + `pid=${ctx.pid} `
+        + `after=${NO_OUTPUT_WARN_MS / 1000}s `
+        + "(agent has produced no stdout/stderr; "
+        + "subprocess may be hung — will SIGKILL at "
+        + `${PROMPT_TIMEOUT_MS / 1000}s)`,
+    );
+  }, NO_OUTPUT_WARN_MS);
+  return { timer, noOutputTimer };
+}
+
+function spawnAndWire(
+  built: { command: string; args: string[] },
+  normalizeEvent: (v: unknown) => unknown,
+  repoPath: string | undefined,
+  resolve: (v: string) => void,
+  reject: (e: Error) => void,
+): void {
+  let settled = false;
+  const firstByteAt = { value: null as number | null };
+  const spawnedAt = Date.now();
+  const state: PromptState = {
+    rawStdout: "",
+    stderrText: "",
+    ndjsonBuffer: "",
+    assistantText: "",
+    resultText: "",
+  };
+
+  const cwd = repoPath?.trim() || process.cwd();
+  const child = spawn(built.command, built.args, {
+    cwd,
+    env: process.env,
+  });
+  const pid = child.pid ?? "?";
+  const cmdBase = built.command.split("/").pop()
+    ?? built.command;
+  console.log(
+    `[scope-refinement][spawn] cmd=${cmdBase} `
+      + `pid=${pid} cwd=${cwd}`,
+  );
+
+  const ctx: SpawnContext = {
+    state, spawnedAt, firstByteAt, pid,
+    safeResolve: (value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      clearTimeout(noOutputTimer);
+      resolve(value);
+    },
+    safeReject: (error) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      clearTimeout(noOutputTimer);
+      reject(error);
+    },
+    processLine: (l) => l,
+  };
+  ctx.processLine = makeProcessLine(
+    state, normalizeEvent, ctx.safeReject,
+  );
+  const { timer, noOutputTimer } = startTimers(child, ctx);
+  wireChildIo(child, ctx);
 }
 
 export async function runScopeRefinementPrompt(

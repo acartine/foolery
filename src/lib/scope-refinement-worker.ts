@@ -1,7 +1,5 @@
-import { getBackend } from "@/lib/backend-instance";
 import {
   getScopeRefinementAgent,
-  getScopeRefinementSettings,
 } from "@/lib/settings";
 import {
   dequeueScopeRefinementJob,
@@ -11,22 +9,18 @@ import {
   type ScopeRefinementJob,
 } from "@/lib/scope-refinement-queue";
 import {
-  recordScopeRefinementCompletion,
-} from "@/lib/scope-refinement-events";
-import {
-  buildRefinementUpdate,
-  buildScopeRefinementPrompt,
-  parseScopeRefinementOutput,
-  runScopeRefinementPrompt,
-} from "@/lib/scope-refinement-prompt";
+  fmtMs,
+  getWorkerState,
+} from "@/lib/scope-refinement-worker-state";
+import { processScopeRefinementJob } from "@/lib/scope-refinement-job-runner";
 import type {
-  ScopeRefinementFailure,
   ScopeRefinementWorkerHealth,
 } from "@/lib/types";
 
+export { processScopeRefinementJob };
+
 const MAX_WORKERS = 2;
-const MAX_RETRIES = 2;
-const MAX_RECENT_FAILURES = 20;
+const HEARTBEAT_INTERVAL_MS = 30_000;
 
 // ── WorkNotifier (counting semaphore) ─────────────────────
 
@@ -60,42 +54,10 @@ class WorkNotifier {
   }
 }
 
-// ── Worker state ──────────────────────────────────────────
-
-interface WorkerState {
-  workers: Promise<void>[];
-  stopping: boolean;
-  workerStartedAt: number | null;
-  activeJobs: Map<
-    number,
-    { beatId: string; startedAt: number }
-  >;
-  totalCompleted: number;
-  totalFailed: number;
-  recentFailures: ScopeRefinementFailure[];
-  retryCounts: Map<string, number>;
-}
-
 const g = globalThis as typeof globalThis & {
-  __scopeRefinementWorkerState?: WorkerState;
   __scopeRefinementNotifier?: WorkNotifier;
+  __scopeRefinementWatchdog?: ReturnType<typeof setInterval>;
 };
-
-function getWorkerState(): WorkerState {
-  if (!g.__scopeRefinementWorkerState) {
-    g.__scopeRefinementWorkerState = {
-      workers: [],
-      stopping: false,
-      workerStartedAt: null,
-      activeJobs: new Map(),
-      totalCompleted: 0,
-      totalFailed: 0,
-      recentFailures: [],
-      retryCounts: new Map(),
-    };
-  }
-  return g.__scopeRefinementWorkerState;
-}
 
 function getNotifier(): WorkNotifier {
   if (!g.__scopeRefinementNotifier) {
@@ -104,206 +66,45 @@ function getNotifier(): WorkNotifier {
   return g.__scopeRefinementNotifier;
 }
 
-// ── Retry logic ───────────────────────────────────────────
+// ── Worker loop ───────────────────────────────────────────
 
-function recordFailure(
-  state: WorkerState,
-  beatId: string,
-  reason: string,
-): void {
-  state.retryCounts.delete(beatId);
-  state.totalFailed++;
-  state.recentFailures = [
-    { beatId, reason, timestamp: Date.now() },
-    ...state.recentFailures,
-  ].slice(0, MAX_RECENT_FAILURES);
-}
-
-function maybeReenqueue(
-  job: ScopeRefinementJob,
-  reason: string,
-  failedAgentId?: string,
-): boolean {
-  const state = getWorkerState();
-  const retries =
-    state.retryCounts.get(job.beatId) ?? 0;
-  if (retries >= MAX_RETRIES) {
-    console.warn(
-      `[scope-refinement] dropping job for `
-        + `${job.beatId} after ${retries} retries: `
-        + reason,
-    );
-    recordFailure(state, job.beatId, reason);
-    return false;
-  }
-  const excludeAgentIds = [
-    ...(job.excludeAgentIds ?? []),
-    ...(failedAgentId ? [failedAgentId] : []),
-  ];
-  state.retryCounts.set(job.beatId, retries + 1);
-  enqueueScopeRefinementJob({
-    beatId: job.beatId,
-    repoPath: job.repoPath,
-    ...(excludeAgentIds.length
-      ? { excludeAgentIds }
-      : {}),
-  });
-  console.warn(
-    `[scope-refinement] re-enqueued `
-      + `${job.beatId} `
-      + `(retry ${retries + 1}/${MAX_RETRIES}): `
-      + reason,
-  );
-  return true;
-}
-
-// ── Agent resolution with exclusion ──────────────────────
-
-import type { AgentTarget } from "@/lib/types-agent-target";
-
-interface ResolvedAgent {
-  agent: AgentTarget;
-  agentId: string | undefined;
-}
-
-async function resolveJobAgent(
-  job: ScopeRefinementJob,
-): Promise<ResolvedAgent | null> {
-  const exclusions = job.excludeAgentIds?.length
-    ? new Set(job.excludeAgentIds)
-    : undefined;
-  const agent = await getScopeRefinementAgent(
-    exclusions,
-  );
-  if (!agent) {
-    const noAlt = exclusions && exclusions.size > 0;
-    const reason = noAlt
-      ? "no alternative refinement agent available"
-        + ` (excluded: `
-        + `${[...exclusions].join(", ")})`
-      : "no scope refinement agent configured";
-    console.warn(
-      `[scope-refinement] skipping `
-        + `${job.beatId}: ${reason}`,
-    );
-    if (noAlt) {
-      recordFailure(
-        getWorkerState(), job.beatId, reason,
-      );
-    }
-    return null;
-  }
-  const agentId = "agentId" in agent
-    ? (agent.agentId as string | undefined)
-    : undefined;
-  return { agent, agentId };
-}
-
-// ── Process a single job ──────────────────────────────────
-
-export async function processScopeRefinementJob(
+async function runOneJob(
+  index: number,
   job: ScopeRefinementJob,
 ): Promise<void> {
-  console.log(
-    `[scope-refinement] processing ${job.beatId}`,
-  );
-  const settings = await getScopeRefinementSettings();
-  const resolved = await resolveJobAgent(job);
-  if (!resolved) return;
-  const { agent, agentId } = resolved;
-
-  const beatResult = await getBackend().get(
-    job.beatId, job.repoPath,
-  );
-  if (!beatResult.ok || !beatResult.data) {
-    const reason =
-      "failed to load beat: "
-      + (beatResult.error?.message
-        ?? beatResult.error
-        ?? "unknown error");
-    console.warn(
-      `[scope-refinement] ${job.beatId}: ${reason}`,
-    );
-    maybeReenqueue(job, reason);
-    return;
-  }
-
-  const beat = beatResult.data;
-  const prompt = buildScopeRefinementPrompt({
-    title: beat.title,
-    description: beat.description,
-    acceptance: beat.acceptance,
-    template: settings.prompt,
-  });
-
-  let rawResponse: string;
-  try {
-    rawResponse = await runScopeRefinementPrompt(
-      prompt, job.repoPath, agent,
-    );
-  } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : String(error);
-    console.warn(
-      `[scope-refinement] agent failed for `
-        + `${job.beatId}: ${message}`,
-    );
-    maybeReenqueue(job, message, agentId);
-    return;
-  }
-
-  const refined = parseScopeRefinementOutput(
-    rawResponse,
-  );
-  if (!refined) {
-    console.warn(
-      `[scope-refinement] could not parse agent `
-        + `output for ${job.beatId}`,
-    );
-    maybeReenqueue(
-      job, "unparseable agent output", agentId,
-    );
-    return;
-  }
-
-  const update = buildRefinementUpdate(beat, refined);
-  if (Object.keys(update).length > 0) {
-    const updateResult = await getBackend().update(
-      job.beatId, update, job.repoPath,
-    );
-    if (!updateResult.ok) {
-      console.warn(
-        `[scope-refinement] failed to update `
-          + `${job.beatId}: `
-          + (updateResult.error ?? "unknown error"),
-      );
-      maybeReenqueue(
-        job,
-        "update failed: "
-          + (updateResult.error ?? "unknown"),
-      );
-      return;
-    }
-  }
-
-  getWorkerState().retryCounts.delete(job.beatId);
-  getWorkerState().totalCompleted++;
-
-  console.log(
-    `[scope-refinement] completed ${job.beatId}`,
-  );
-  recordScopeRefinementCompletion({
+  const pickedUpAt = Date.now();
+  const state = getWorkerState();
+  state.activeJobs.set(index, {
     beatId: job.beatId,
-    beatTitle: update.title ?? beat.title,
-    ...(job.repoPath
-      ? { repoPath: job.repoPath }
-      : {}),
+    startedAt: pickedUpAt,
   });
+  console.log(
+    `[scope-refinement] worker=${index} pickup `
+      + `job=${job.id} beat=${job.beatId} `
+      + `queue_age=${fmtMs(pickedUpAt - job.createdAt)} `
+      + `queue_remaining=${getScopeRefinementQueueSize()}`,
+  );
+  try {
+    await processScopeRefinementJob(job);
+  } catch (error) {
+    const message = error instanceof Error
+      ? error.message
+      : String(error);
+    console.warn(
+      `[scope-refinement] worker=${index} `
+        + `unexpected error job=${job.id} `
+        + `beat=${job.beatId}: ${message}`,
+    );
+  } finally {
+    const elapsed = Date.now() - pickedUpAt;
+    state.activeJobs.delete(index);
+    console.log(
+      `[scope-refinement] worker=${index} release `
+        + `job=${job.id} beat=${job.beatId} `
+        + `elapsed=${fmtMs(elapsed)}`,
+    );
+  }
 }
-
-// ── Worker loop ───────────────────────────────────────────
 
 async function workerLoop(
   index: number,
@@ -315,26 +116,39 @@ async function workerLoop(
     if (state.stopping) break;
     const job = dequeueScopeRefinementJob();
     if (!job) continue;
-    state.activeJobs.set(index, {
-      beatId: job.beatId,
-      startedAt: Date.now(),
-    });
-    try {
-      await processScopeRefinementJob(job);
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : String(error);
-      console.warn(
-        `[scope-refinement] worker ${index}: `
-          + `unexpected error processing `
-          + `${job.beatId}: ${message}`,
+    await runOneJob(index, job);
+  }
+}
+
+// ── Watchdog ──────────────────────────────────────────────
+
+function startWatchdog(): void {
+  if (g.__scopeRefinementWatchdog) return;
+  const handle = setInterval(() => {
+    const state = getWorkerState();
+    if (state.activeJobs.size === 0) return;
+    const now = Date.now();
+    for (const [index, info] of state.activeJobs) {
+      console.log(
+        `[scope-refinement] heartbeat `
+          + `worker=${index} beat=${info.beatId} `
+          + `age=${fmtMs(now - info.startedAt)}`,
       );
-      maybeReenqueue(job, message);
-    } finally {
-      state.activeJobs.delete(index);
     }
+  }, HEARTBEAT_INTERVAL_MS);
+  if (typeof handle === "object" && handle
+    && "unref" in handle
+    && typeof (handle as { unref: unknown }).unref
+      === "function") {
+    (handle as { unref: () => void }).unref();
+  }
+  g.__scopeRefinementWatchdog = handle;
+}
+
+function stopWatchdog(): void {
+  if (g.__scopeRefinementWatchdog) {
+    clearInterval(g.__scopeRefinementWatchdog);
+    g.__scopeRefinementWatchdog = undefined;
   }
 }
 
@@ -358,6 +172,12 @@ export function startScopeRefinementWorker(): void {
   for (let i = 0; i < pending; i++) {
     notifier.signal();
   }
+
+  startWatchdog();
+  console.log(
+    `[scope-refinement] workers started `
+      + `count=${MAX_WORKERS} replayed_signals=${pending}`,
+  );
 }
 
 export function stopScopeRefinementWorker(): void {
@@ -366,10 +186,11 @@ export function stopScopeRefinementWorker(): void {
   state.stopping = true;
   getNotifier().cancelAll();
   state.workers = [];
+  stopWatchdog();
+  console.log(`[scope-refinement] workers stopped`);
 }
 
-export function resetScopeRefinementWorkerState(
-): void {
+export function resetScopeRefinementWorkerState(): void {
   stopScopeRefinementWorker();
   const state = getWorkerState();
   state.retryCounts.clear();
@@ -385,9 +206,7 @@ export function getScopeRefinementWorkerHealth():
   const state = getWorkerState();
   return {
     workerCount: state.workers.length,
-    activeJobs: Array.from(
-      state.activeJobs.values(),
-    ),
+    activeJobs: Array.from(state.activeJobs.values()),
     totalCompleted: state.totalCompleted,
     totalFailed: state.totalFailed,
     recentFailures: [...state.recentFailures],
@@ -402,16 +221,17 @@ export async function enqueueBeatScopeRefinement(
   repoPath?: string,
 ): Promise<ScopeRefinementJob | null> {
   console.log(
-    `[scope-refinement] evaluating ${beatId}`
-      + ` (repo=${repoPath ?? "<none>"})`,
+    `[scope-refinement] evaluate beat=${beatId}`
+      + ` repo=${repoPath ?? "<none>"}`,
   );
   const agent = await getScopeRefinementAgent();
   if (!agent) {
     console.log(
-      `[scope-refinement] skipped ${beatId}:`
-        + " no agent configured"
-        + " (check dispatchMode, pools.scope_refinement,"
-        + " and actions.scopeRefinement)",
+      `[scope-refinement] skip beat=${beatId} `
+        + "reason=no_agent_configured "
+        + "(check dispatchMode, "
+        + "pools.scope_refinement, "
+        + "actions.scopeRefinement)",
     );
     return null;
   }
@@ -426,8 +246,9 @@ export async function enqueueBeatScopeRefinement(
     ?? agent.vendor
     ?? "unknown";
   console.log(
-    `[scope-refinement] enqueued ${beatId}`
-      + ` with agent=${agentLabel}`,
+    `[scope-refinement] enqueue job=${job.id} `
+      + `beat=${beatId} agent=${agentLabel} `
+      + `queue_size=${getScopeRefinementQueueSize()}`,
   );
   return job;
 }
