@@ -1069,7 +1069,10 @@ render_doctor_report() {
     return 0
   fi
 
-  printf '%s' "\$response" | node /dev/fd/3 "\$fix_mode" 3<<'NODE'
+  local script_file
+  script_file="\$(mktemp "\${TMPDIR:-/tmp}/foolery-doctor-render.XXXXXX.js")"
+  trap "rm -f '\$script_file'" RETURN
+  cat >"\$script_file" <<'NODE'
 const fs = require('node:fs');
 
 const raw = fs.readFileSync(0, 'utf8');
@@ -1191,6 +1194,8 @@ if (fixMode) {
 lines.push('');
 process.stdout.write(lines.join('\n'));
 NODE
+
+  printf '%s' "\$response" | node "\$script_file" "\$fix_mode"
 }
 
 render_doctor_stream() {
@@ -1198,7 +1203,10 @@ render_doctor_stream() {
     return 1
   fi
 
-  curl --silent --show-error --no-buffer --max-time 60 "\$LOCAL_URL/api/doctor?stream=1" 2>/dev/null | node /dev/fd/3 3<<'STREAM_NODE'
+  local script_file
+  script_file="\$(mktemp "\${TMPDIR:-/tmp}/foolery-doctor-stream.XXXXXX.js")"
+  trap "rm -f '\$script_file'" RETURN
+  cat >"\$script_file" <<'STREAM_NODE'
 const readline = require('node:readline');
 
 const GREEN = '\x1b[0;32m';
@@ -1258,6 +1266,8 @@ rl.on('line', (line) => {
 
 rl.on('close', () => {});
 STREAM_NODE
+
+  curl --silent --show-error --no-buffer --max-time 60 "\$LOCAL_URL/api/doctor?stream=1" 2>/dev/null | node "\$script_file"
 }
 
 doctor_cmd() {
@@ -1311,9 +1321,11 @@ doctor_cmd() {
   # Use node to extract fixable checks and their options, then prompt user
   local strategies_json
   local diag_json_file
+  local strategies_script
   diag_json_file="\$(mktemp "\${TMPDIR:-/tmp}/foolery-doctor-diag.XXXXXX")"
+  strategies_script="\$(mktemp "\${TMPDIR:-/tmp}/foolery-doctor-fix.XXXXXX.js")"
   printf '%s' "\$diag_response" > "\$diag_json_file"
-  strategies_json="\$(node /dev/fd/3 "\$diag_json_file" 3<<'NODE'
+  cat >"\$strategies_script" <<'NODE'
 const fs = require('node:fs');
 const readline = require('node:readline');
 
@@ -1433,11 +1445,11 @@ async function main() {
 
 main().catch(() => { process.exit(1); });
 NODE
-)" || {
-    rm -f "\$diag_json_file"
+  strategies_json="\$(node "\$strategies_script" "\$diag_json_file")" || {
+    rm -f "\$diag_json_file" "\$strategies_script"
     fail "Failed to process fix options."
   }
-  rm -f "\$diag_json_file"
+  rm -f "\$diag_json_file" "\$strategies_script"
 
   # If no strategies selected (all skipped), report and exit
   if [[ -z "\$strategies_json" || "\$strategies_json" == "{}" ]]; then
