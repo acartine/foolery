@@ -90,9 +90,17 @@ Reuse those primitives; do not invent a parallel failure mode.
 Before committing changes, ensure that the codebase passes all quality checks. Run the following commands:
 - **Linting:** `bun run lint`
 - **Type Checking:** `bunx tsc --noEmit`
-- **Testing:** `bun run test` (or `bun run test:all` to run all tests)
+- **Testing:** `bun run test` (or `bun run test:all` for unit + storybook)
 - **Building:** `bun run build`
 
 Do not push code that fails these checks unless explicitly instructed.
 
 **Fix all failures, not just yours.** Unless you are working on a specific non-implementation knot step (e.g., plan review, shipment review), you must fix all broken lint errors, type errors, formatting issues, and failing tests — even if they are pre-existing and not caused by your changes. Leave the codebase cleaner than you found it.
+
+## Hermetic Test Policy
+
+Tests in the default suite (`src/**/__tests__/`) MUST NOT touch the host environment. No `process.env`, no real fs (`tmpdir`, `mkdtemp`, real cwd reads), no `execFile`/`spawn`/`bash -c`, no real network or ports, no host binaries (`git`, `kno`, `node`, `bun`), no wall-clock timers. If a function depends on any of these, push the resolution up the stack and inject the dependency so tests target the deep, deterministic logic.
+
+Tests that genuinely must exercise the environment (e.g. shell-script integration, launcher generation) go in `src/**/__manual_tests__/` and run only via `bun run test:manual`. They are excluded from `bun run test`, `bun run test:all`, and CI on purpose. A failing manual test is not a CI failure.
+
+Full rationale and examples in `docs/DEVELOPING.md` → "Hermetic Test Policy".

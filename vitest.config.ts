@@ -33,6 +33,18 @@ export default defineConfig({
         },
       },
       {
+        // Tests in `__manual_tests__/` interact with the host environment
+        // (PATH, real fs, ports, exec'd binaries) and MUST NOT run in the
+        // default suite or CI. Invoke explicitly via `bun run test:manual`.
+        // Background: see "Hermetic Test Policy" in docs/DEVELOPING.md.
+        extends: true,
+        test: {
+          name: 'manual',
+          include: ['src/**/__manual_tests__/**/*.test.ts'],
+          environment: 'node',
+        },
+      },
+      {
         extends: true,
         plugins: [
           // The plugin will run tests for the stories defined in your Storybook config

@@ -44,7 +44,8 @@ src/
     ui/                 shadcn/ui primitives (new-york style)
   hooks/                Custom React hooks
   lib/                  Utilities, types, backend adapters, orchestration logic
-    __tests__/          Unit tests (Vitest)
+    __tests__/          Unit tests (Vitest) — hermetic; no env interaction
+    __manual_tests__/   Manual env-touching tests; opt-in only
   stores/               Zustand state management
   stories/              Storybook stories
 scripts/                Shell scripts (build, install, setup, testing)
@@ -58,9 +59,10 @@ docs/                   Project documentation
 | `bun run dev` | Dev server on :3000 |
 | `bun run build` | Production build |
 | `bun run start` | Serve production build |
-| `bun run test` | Vitest unit tests |
+| `bun run test` | Vitest unit tests (hermetic — runs in CI) |
 | `bun run test:storybook` | Storybook integration tests (Playwright) |
-| `bun run test:all` | All test suites |
+| `bun run test:all` | Unit + Storybook (does NOT include manual) |
+| `bun run test:manual` | Manual env-touching tests — opt-in, never CI |
 | `bun run test:coverage` | Unit tests with coverage |
 | `bun run lint` | ESLint |
 | `bun run lint:staged-size` | ESLint on staged `src/**/*.ts(x)` files |
@@ -250,15 +252,42 @@ The `scripts/install.sh` generates the `foolery` CLI launcher via a heredoc. Thi
 
 ## Testing
 
+### Hermetic Test Policy (read this first)
+
+Tests in the default suite (`__tests__/`, run by `bun run test` and CI) **must be hermetic**. A hermetic test does not touch anything outside the Vitest process:
+
+- **No environment variables.** Don't read `process.env`. Don't depend on `PATH`, `HOME`, `XDG_*`, or any host-set var. If logic depends on env, the test must inject the value, not rely on the ambient one.
+- **No real filesystem.** No `tmpdir()`, no `mkdtemp`, no reading `process.cwd()`-relative paths. Use in-memory fakes or mock the fs module.
+- **No spawned processes.** No `execFile`, `spawn`, `exec`, or `bash -c`. Mock the wrapper that calls them.
+- **No network.** No real ports, no real sockets, no `lsof`/`ss`/`netstat`. Mock at the boundary.
+- **No host binaries.** Don't invoke `git`, `kno`, `node`, `bun`, etc. Mock the module that wraps them.
+- **No timers tied to wall clock.** Use `vi.useFakeTimers()`.
+
+**Why this matters.** Two recent failures showed up that *looked* like product bugs but were tests reaching out into the host: one ran `install.sh` which invokes `lsof -iTCP:3210` against the real machine, so the test failed whenever the developer's foolery runtime was running. Tests that fail because of host state are not signal — they're noise that masks real regressions and trains everyone to ignore the suite.
+
+**How to write testable code.** Push environment resolution to the *edge* of the system and mock the boundary. Concretely:
+
+- A function that needs `process.env.FOO` should accept `foo` as a parameter; the caller (typically a route handler or `main()`) reads env once and passes it down.
+- A function that needs to spawn `kno` should depend on an injected `KnoClient` interface; production wires the real one, tests pass a fake.
+- A function that needs the filesystem should depend on an injected `FileReader` (or use `vi.mock("node:fs/promises")` at the test boundary, never wholesale).
+
+The dependency-resolution rule of thumb: **the deeper a function lives, the less it should know about the outside world.** Tests target the deep functions. The thin shell at the top is exercised by manual tests and end-to-end smoke scripts, not the unit suite.
+
+### What if I genuinely need to test something env-touching?
+
+Put it in `src/**/__manual_tests__/`. The `manual` Vitest project picks those files up; they only run via `bun run test:manual` and are excluded from `bun run test`, `bun run test:all`, and CI. Use this for shell-script integration (e.g. `install.sh`), launcher generation, or anything that has to exercise real disk/PATH behavior. Document any host preconditions inline at the top of the file.
+
+If a manual test fails, that is **not a CI failure** and should not block merge. It signals that the manual scenario needs a developer's attention.
+
 ### Unit Tests
 
 ```bash
-bun run test              # all unit tests
+bun run test              # all unit tests (hermetic)
 bun run test -- doctor    # filter by name
 bun run test:coverage     # with coverage report
 ```
 
-Tests live in `src/lib/__tests__/`. They use Vitest with `vi.mock()` for dependencies. Pattern:
+Tests live in `src/**/__tests__/`. They use Vitest with `vi.mock()` for dependencies. Pattern:
 
 ```typescript
 import { describe, it, expect, vi, beforeEach } from "vitest";
