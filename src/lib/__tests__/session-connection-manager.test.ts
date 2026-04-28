@@ -68,6 +68,25 @@ vi.mock("@/stores/notification-store", () => ({
   ),
 }));
 
+const approvalMocks = vi.hoisted(() => ({
+  mockUpsertPendingApproval: vi.fn(() => true),
+  mockToastWarning: vi.fn(),
+}));
+
+vi.mock("@/stores/approval-escalation-store", () => ({
+  useApprovalEscalationStore: {
+    getState: () => ({
+      upsertPendingApproval: approvalMocks.mockUpsertPendingApproval,
+    }),
+  },
+}));
+
+vi.mock("sonner", () => ({
+  toast: {
+    warning: approvalMocks.mockToastWarning,
+  },
+}));
+
 // ---------------------------------------------------------------------------
 // Import after mocks are set up
 // ---------------------------------------------------------------------------
@@ -82,6 +101,9 @@ beforeEach(() => {
   storeSubscribers = [];
   mockUpdateStatus.mockClear();
   mockAddNotification.mockClear();
+  approvalMocks.mockUpsertPendingApproval.mockClear();
+  approvalMocks.mockUpsertPendingApproval.mockReturnValue(true);
+  approvalMocks.mockToastWarning.mockClear();
   // Disconnect any leftover connections
   for (const id of sessionConnections.getConnectedIds()) {
     sessionConnections.disconnect(id);
@@ -379,5 +401,69 @@ describe("SessionConnectionManager: sync and notification", () => {
 
     // Should update status normally
     expect(mockUpdateStatus).toHaveBeenCalledWith("sess-running-exit", "completed");
+  });
+
+});
+
+describe("SessionConnectionManager: approval notifications", () => {
+  it("approval banner events feed approvals, toast, and inbox once", () => {
+    mockTerminals.push({
+      sessionId: "sess-approval",
+      status: "running",
+      beatId: "beat-approval",
+      beatTitle: "Approval fixture",
+      repoPath: "/repos/foolery",
+    });
+    sessionConnections.connect("sess-approval");
+
+    capturedOnEvent!({
+      type: "stderr",
+      data: [
+        "FOOLERY APPROVAL REQUIRED",
+        "adapter=codex",
+        "source=mcpServer/elicitation/request",
+        "serverName=playwright",
+        "toolName=browser_evaluate",
+        "message=Allow browser_evaluate?",
+      ].join("\n"),
+      timestamp: Date.now(),
+    });
+
+    expect(approvalMocks.mockUpsertPendingApproval).toHaveBeenCalledTimes(1);
+    expect(mockAddNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: "approval",
+        message: "Approval required: playwright / browser_evaluate",
+        beatId: "beat-approval",
+        repoPath: "/repos/foolery",
+        href: "/beats?view=finalcut&tab=approvals&repo=%2Frepos%2Ffoolery",
+      }),
+    );
+    expect(approvalMocks.mockToastWarning).toHaveBeenCalledTimes(1);
+  });
+
+  it("duplicate approval events do not emit a second notification", () => {
+    approvalMocks.mockUpsertPendingApproval.mockReturnValue(false);
+    mockTerminals.push({
+      sessionId: "sess-approval-dupe",
+      status: "running",
+      beatId: "beat-approval",
+      beatTitle: "Approval fixture",
+    });
+    sessionConnections.connect("sess-approval-dupe");
+
+    capturedOnEvent!({
+      type: "stdout",
+      data: [
+        "FOOLERY APPROVAL REQUIRED",
+        "adapter=codex",
+        "source=mcpServer/elicitation/request",
+      ].join("\n"),
+      timestamp: Date.now(),
+    });
+
+    expect(approvalMocks.mockUpsertPendingApproval).toHaveBeenCalledTimes(1);
+    expect(mockAddNotification).not.toHaveBeenCalled();
+    expect(approvalMocks.mockToastWarning).not.toHaveBeenCalled();
   });
 });

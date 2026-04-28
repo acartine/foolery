@@ -11,6 +11,10 @@ import { SettingsSheet } from "@/components/settings-sheet";
 import { HotkeyHelp } from "@/components/hotkey-help";
 import { useAppStore } from "@/stores/app-store";
 import {
+  selectPendingApprovalCount,
+  useApprovalEscalationStore,
+} from "@/stores/approval-escalation-store";
+import {
   useHumanActionCount,
 } from "@/hooks/use-human-action-count";
 import {
@@ -32,7 +36,11 @@ import {
   useRepoCycleHotkey,
 } from "./app-header-hooks";
 import {
+  buildApprovalsHref,
+} from "@/lib/approval-escalations";
+import {
   VersionBannerBar,
+  ApprovalBannerBar,
   HeaderToolbar,
   ActionButton,
   ViewSwitcher,
@@ -57,6 +65,9 @@ function useAppHeaderState() {
   const humanCount = useHumanActionCount(
     isBeats, beatsView === "finalcut",
   );
+  const approvalCount = useApprovalEscalationStore(
+    selectPendingApprovalCount,
+  );
   useScopeRefinementNotifications();
 
   const vb = useVersionBanner();
@@ -80,9 +91,42 @@ function useAppHeaderState() {
   return {
     router, searchParams, queryClient,
     activeRepo, isBeats, beatsView,
-    activeBeatId, humanCount,
+    activeBeatId, humanCount, approvalCount,
     vb, create, settings, setView, hotkeyOpen,
   };
+}
+
+type AppHeaderState = ReturnType<typeof useAppHeaderState>;
+
+function HeaderBanners({
+  state,
+  updateAction,
+}: {
+  state: AppHeaderState;
+  updateAction: ReturnType<typeof useVersionUpdateAction>;
+}) {
+  return (
+    <>
+      {state.approvalCount > 0 ? (
+        <ApprovalBannerBar
+          count={state.approvalCount}
+          onOpenApprovals={() => {
+            state.router.push(
+              buildApprovalsHref(state.activeRepo ?? undefined),
+            );
+          }}
+        />
+      ) : null}
+      {state.vb.banner && !state.vb.dismissed ? (
+        <VersionBannerBar
+          banner={state.vb.banner}
+          updateStatus={updateAction.status}
+          onUpdateNow={updateAction.triggerUpdate}
+          onDismiss={state.vb.dismiss}
+        />
+      ) : null}
+    </>
+  );
 }
 
 export function AppHeader() {
@@ -126,14 +170,10 @@ export function AppHeader() {
     <>
       <header className="border-b border-border/70 bg-background/95 supports-[backdrop-filter]:bg-background/90 supports-[backdrop-filter]:backdrop-blur">
         <div className="mx-auto max-w-[95vw] px-4 py-2">
-          {s.vb.banner && !s.vb.dismissed ? (
-            <VersionBannerBar
-              banner={s.vb.banner}
-              updateStatus={updateAction.status}
-              onUpdateNow={updateAction.triggerUpdate}
-              onDismiss={s.vb.dismiss}
-            />
-          ) : null}
+          <HeaderBanners
+            state={s}
+            updateAction={updateAction}
+          />
           <HeaderToolbar
             activeBeatId={s.activeBeatId}
             activeRepo={s.activeRepo}

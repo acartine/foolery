@@ -95,4 +95,34 @@ describe("notification store", () => {
     const n = useNotificationStore.getState().notifications[0];
     expect(n.repoPath).toBe("/repos/foolery");
   });
+
+  it("stores optional href and kind on notification", () => {
+    const store = useNotificationStore.getState();
+    store.addNotification({
+      message: "Approval waiting",
+      href: "/beats?view=finalcut&tab=approvals",
+      kind: "approval",
+    });
+
+    const n = useNotificationStore.getState().notifications[0];
+    expect(n.href).toBe("/beats?view=finalcut&tab=approvals");
+    expect(n.kind).toBe("approval");
+  });
+
+  it("suppresses notifications with a repeated dedupe key", () => {
+    const store = useNotificationStore.getState();
+
+    expect(store.addNotification({
+      message: "Approval waiting",
+      dedupeKey: "approval:1",
+    })).toBe(true);
+    expect(store.addNotification({
+      message: "Approval waiting again",
+      dedupeKey: "approval:1",
+    })).toBe(false);
+
+    const notifications = useNotificationStore.getState().notifications;
+    expect(notifications).toHaveLength(1);
+    expect(notifications[0].message).toBe("Approval waiting");
+  });
 });

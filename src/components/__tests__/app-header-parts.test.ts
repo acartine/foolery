@@ -7,6 +7,7 @@ import {
 import { describe, expect, it, vi } from "vitest";
 import {
   ActionButton,
+  ApprovalBannerBar,
   VersionBannerBar,
 } from "@/components/app-header-parts";
 import { Button } from "@/components/ui/button";
@@ -174,6 +175,28 @@ describe("ActionButton", () => {
     });
 
     expect(tree).toBeNull();
+  });
+});
+
+describe("ApprovalBannerBar", () => {
+  it("renders pending approval count and routes to approvals", () => {
+    const onOpenApprovals = vi.fn();
+    const tree = ApprovalBannerBar({
+      count: 2,
+      onOpenApprovals,
+    });
+
+    const openButton = findElement(
+      tree,
+      (element) =>
+        element.type === Button &&
+        element.props.onClick === onOpenApprovals,
+    );
+
+    expect(flattenText(tree)).toContain("2 approvals are waiting");
+    expect(openButton).not.toBeNull();
+    openButton!.props.onClick!();
+    expect(onOpenApprovals).toHaveBeenCalledTimes(1);
   });
 });
 

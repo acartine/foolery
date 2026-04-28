@@ -1,0 +1,43 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+
+function readComponent(name: string): string {
+  return readFileSync(
+    join(process.cwd(), "src/components", name),
+    "utf8",
+  );
+}
+
+describe("FinalCutView approvals tabs contract", () => {
+  const finalCut = readComponent("final-cut-view.tsx");
+  const approvalsPanel = readComponent("approval-escalations-panel.tsx");
+
+  it("keeps the existing human-action beat query and BeatTable", () => {
+    expect(finalCut).toContain('requiresHumanAction: "true"');
+    expect(finalCut).toContain("<BeatTable");
+    expect(finalCut).toContain("fetchBeatsForScope");
+  });
+
+  it("adds Notes Work and Approvals tabs", () => {
+    expect(finalCut).toContain('<TabsTrigger value="notes">');
+    expect(finalCut).toContain("Notes Work");
+    expect(finalCut).toContain('<TabsTrigger value="approvals">');
+    expect(finalCut).toContain("Approvals");
+  });
+
+  it("reads pending approvals from the approval escalation store", () => {
+    expect(finalCut).toContain("useApprovalEscalationStore");
+    expect(finalCut).toContain("selectPendingApprovals");
+    expect(finalCut).toContain("<ApprovalEscalationsPanel");
+  });
+
+  it("shows manual-action messaging instead of fake approve controls", () => {
+    expect(approvalsPanel).toContain("Manual action");
+    expect(approvalsPanel).toContain(
+      "Programmatic approve/deny is not wired",
+    );
+    expect(approvalsPanel).not.toContain("Approve");
+    expect(approvalsPanel).not.toContain("Deny");
+  });
+});

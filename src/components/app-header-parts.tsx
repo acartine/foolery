@@ -84,6 +84,33 @@ export function VersionBannerBar(props: {
   );
 }
 
+export function ApprovalBannerBar(props: {
+  count: number;
+  onOpenApprovals: () => void;
+}) {
+  const label = props.count === 1
+    ? "1 approval is waiting"
+    : `${props.count} approvals are waiting`;
+  return (
+    <div className="mb-2 flex items-start justify-between gap-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+      <p className="leading-6">
+        <span className="font-semibold">{label}</span>{" "}
+        for a human decision.{" "}
+        <Button
+          type="button"
+          variant="link"
+          size="xs"
+          className="h-auto px-0 font-semibold text-destructive"
+          onClick={props.onOpenApprovals}
+        >
+          Open approvals
+        </Button>
+        .
+      </p>
+    </div>
+  );
+}
+
 function renderBannerUpdateLabel(
   status: AppUpdateStatus,
 ): string {

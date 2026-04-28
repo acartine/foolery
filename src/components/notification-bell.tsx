@@ -42,6 +42,20 @@ export function NotificationBell() {
       navigate: (href) => router.push(href),
     });
   };
+  const openNotification = async (
+    notification: Notification,
+  ): Promise<void> => {
+    if (notification.href) {
+      router.push(notification.href);
+      setOpen(false);
+      return;
+    }
+    const beatId = notification.beatId?.trim();
+    if (beatId) {
+      await focusBeat(beatId, notification.repoPath);
+      setOpen(false);
+    }
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -77,7 +91,10 @@ export function NotificationBell() {
             </Button>
           )}
         </div>
-        <NotificationList notifications={notifications} onFocusBeat={focusBeat} />
+        <NotificationList
+          notifications={notifications}
+          onOpenNotification={openNotification}
+        />
       </PopoverContent>
     </Popover>
   );
@@ -85,13 +102,10 @@ export function NotificationBell() {
 
 function NotificationList({
   notifications,
-  onFocusBeat,
+  onOpenNotification,
 }: {
   notifications: readonly Notification[];
-  onFocusBeat: (
-    beatId: string,
-    explicitRepoPath?: string,
-  ) => Promise<void>;
+  onOpenNotification: (notification: Notification) => Promise<void>;
 }) {
   if (notifications.length === 0) {
     return (
@@ -104,7 +118,9 @@ function NotificationList({
   return (
     <ul className="max-h-64 overflow-y-auto">
       {notifications.map((n) => {
-        const beatId = n.beatId?.trim();
+        const targetLabel = n.href
+          ? "Open"
+          : n.beatId?.trim();
         return (
           <li
             key={n.id}
@@ -113,16 +129,16 @@ function NotificationList({
             }`}
           >
             <p className="leading-snug">{n.message}</p>
-            {beatId ? (
+            {targetLabel ? (
               <button
                 type="button"
                 className="mt-1 block font-mono text-[11px] text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
-                title={`Focus ${beatId}`}
+                title={n.href ? "Open notification" : `Focus ${targetLabel}`}
                 onClick={() => {
-                  void onFocusBeat(beatId, n.repoPath);
+                  void onOpenNotification(n);
                 }}
               >
-                {beatId}
+                {targetLabel}
               </button>
             ) : null}
             <time className="mt-0.5 block text-[10px] text-muted-foreground">
