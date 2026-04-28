@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
-import { backendErrorStatus } from "@/lib/backend-http";
+import {
+  backendErrorStatus,
+  withDispatchFailureHandling,
+} from "@/lib/backend-http";
 import { queryBeatSchema } from "@/lib/schemas";
 
 export async function POST(request: NextRequest) {
@@ -13,13 +16,15 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
-  const { expression, limit, sort } = parsed.data;
-  const result = await getBackend().query(expression, { limit, sort }, repoPath);
-  if (!result.ok) {
-    return NextResponse.json(
-      { error: result.error?.message },
-      { status: backendErrorStatus(result.error) },
-    );
-  }
-  return NextResponse.json({ data: result.data });
+  return withDispatchFailureHandling(async () => {
+    const { expression, limit, sort } = parsed.data;
+    const result = await getBackend().query(expression, { limit, sort }, repoPath);
+    if (!result.ok) {
+      return NextResponse.json(
+        { error: result.error?.message },
+        { status: backendErrorStatus(result.error) },
+      );
+    }
+    return NextResponse.json({ data: result.data });
+  });
 }

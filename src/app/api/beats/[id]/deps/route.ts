@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
-import { backendErrorStatus } from "@/lib/backend-http";
+import {
+  backendErrorStatus,
+  withDispatchFailureHandling,
+} from "@/lib/backend-http";
 import { addDepSchema } from "@/lib/schemas";
 
 export async function GET(
@@ -9,14 +12,16 @@ export async function GET(
 ) {
   const { id } = await params;
   const repoPath = request.nextUrl.searchParams.get("_repo") || undefined;
-  const result = await getBackend().listDependencies(id, repoPath);
-  if (!result.ok) {
-    return NextResponse.json(
-      { error: result.error?.message },
-      { status: backendErrorStatus(result.error) },
-    );
-  }
-  return NextResponse.json({ data: result.data });
+  return withDispatchFailureHandling(async () => {
+    const result = await getBackend().listDependencies(id, repoPath);
+    if (!result.ok) {
+      return NextResponse.json(
+        { error: result.error?.message },
+        { status: backendErrorStatus(result.error) },
+      );
+    }
+    return NextResponse.json({ data: result.data });
+  });
 }
 
 export async function POST(
@@ -33,12 +38,14 @@ export async function POST(
       { status: 400 }
     );
   }
-  const result = await getBackend().addDependency(id, parsed.data.blocks, repoPath);
-  if (!result.ok) {
-    return NextResponse.json(
-      { error: result.error?.message },
-      { status: backendErrorStatus(result.error) },
-    );
-  }
-  return NextResponse.json({ ok: true }, { status: 201 });
+  return withDispatchFailureHandling(async () => {
+    const result = await getBackend().addDependency(id, parsed.data.blocks, repoPath);
+    if (!result.ok) {
+      return NextResponse.json(
+        { error: result.error?.message },
+        { status: backendErrorStatus(result.error) },
+      );
+    }
+    return NextResponse.json({ ok: true }, { status: 201 });
+  });
 }

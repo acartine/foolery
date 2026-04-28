@@ -102,16 +102,32 @@ Do NOT:
 - Substitute a legacy mapping when the intended new mapping returns null.
 - Catch a dispatch failure and downgrade it to a warning.
 
-Historical incident this rule protects against: `getFallbackCommand` returned
-the first registered agent when no pool or action was configured. Since
-OpenCode was first in the user's TOML, every unrouted dispatch silently ran
-OpenCode — for months — while the real bug (non-SDLC workflow states were
-never consulting the configured pools) stayed invisible. A loud failure at
-the dispatch layer would have caught it on the first take.
+This rule covers backend resolution as well as agent dispatch.
+`AutoRoutingBackend` (see `src/lib/backend-factory.ts`) MUST throw
+`DispatchFailureError` (kind `"backend"`) when `repoPath` is missing or no
+memory-manager marker is present. The escape hatch is the explicit
+`FOOLERY_BACKEND=cli|knots|beads|stub` env var, not a silent default.
+
+Historical incidents this rule protects against:
+
+1. `getFallbackCommand` returned the first registered agent when no pool or
+   action was configured. Since OpenCode was first in the user's TOML, every
+   unrouted dispatch silently ran OpenCode — for months — while the real
+   bug (non-SDLC workflow states were never consulting the configured pools)
+   stayed invisible.
+2. `AutoRoutingBackend` defaulted to the BD/CLI backend when `repoPath` was
+   missing or unrecognised. Knots-only repos surfaced as
+   `table not found: issues` from the unrelated BD store instead of pointing
+   at the real config gap (no `_repo` query param, or no `.knots/` /
+   `.beads/` marker). A loud failure at the resolver layer caught it on the
+   first take.
 
 See `src/lib/dispatch-pool-resolver.ts` for the canonical implementation:
 `resolveDispatchAgent` + `DispatchFailureError` + `emitDispatchFailureBanner`.
-Reuse those primitives; do not invent a parallel failure mode.
+Reuse those primitives; do not invent a parallel failure mode. API route
+handlers should wrap their backend calls with `withDispatchFailureHandling`
+(see `src/lib/backend-http.ts`) so failures surface as a structured 500 with
+the red banner in the body.
 
 ## Quality Gates
 

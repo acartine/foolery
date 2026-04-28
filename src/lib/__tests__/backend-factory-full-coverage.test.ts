@@ -79,11 +79,14 @@ vi.mock("@/lib/backends/beads-backend", () => ({
 import { AutoRoutingBackend, createBackend } from "@/lib/backend-factory";
 import { detectMemoryManagerType } from "@/lib/memory-manager-detection";
 
+const REPO = "/repo";
+
 describe("AutoRoutingBackend", () => {
   let arb: AutoRoutingBackend;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(detectMemoryManagerType).mockReturnValue("beads");
     mockBeadsBuildTakePrompt.mockResolvedValue({
       ok: true,
       data: { prompt: "delegated take", claimed: false },
@@ -92,56 +95,57 @@ describe("AutoRoutingBackend", () => {
       ok: true,
       data: { prompt: "delegated poll", claimedId: "beat-1" },
     });
-    arb = new AutoRoutingBackend("cli");
+    arb = new AutoRoutingBackend();
   });
 
   describe("repo type resolution", () => {
-    it("resolves to fallback when no repoPath given", () => {
-    const caps = arb.capabilitiesForRepo();
-    expect(caps.canCreate).toBe(true); // cli has full caps
-  });
+    it("returns FULL_CAPABILITIES when no repoPath given (advisory only)", () => {
+      const caps = arb.capabilitiesForRepo();
+      expect(caps.canCreate).toBe(true);
+    });
 
-  it("resolves to knots when memory manager is knots", () => {
-    vi.mocked(detectMemoryManagerType).mockReturnValue("knots");
-    const caps = arb.capabilitiesForRepo("/repo");
-    expect(caps).toBeDefined();
-  });
+    it("resolves to knots when memory manager is knots", () => {
+      vi.mocked(detectMemoryManagerType).mockReturnValue("knots");
+      const caps = arb.capabilitiesForRepo(REPO);
+      expect(caps).toBeDefined();
+    });
 
-  it("resolves to cli for beads memory manager", () => {
-    vi.mocked(detectMemoryManagerType).mockReturnValue("beads");
-    const caps = arb.capabilitiesForRepo("/repo");
-    expect(caps.canCreate).toBe(true);
-  });
+    it("resolves to cli for beads memory manager", () => {
+      vi.mocked(detectMemoryManagerType).mockReturnValue("beads");
+      const caps = arb.capabilitiesForRepo(REPO);
+      expect(caps.canCreate).toBe(true);
+    });
 
-  it("resolves to fallback for unknown memory manager", () => {
-    vi.mocked(detectMemoryManagerType).mockReturnValue(null as never);
-    const caps = arb.capabilitiesForRepo("/repo");
-    expect(caps).toBeDefined();
-  });
+    it("returns FULL_CAPABILITIES for unknown memory manager (advisory only)", () => {
+      vi.mocked(detectMemoryManagerType).mockReturnValue(undefined);
+      const caps = arb.capabilitiesForRepo(REPO);
+      expect(caps).toBeDefined();
+      expect(caps.canCreate).toBe(true);
+    });
 
-  it("caches repo type resolution", () => {
-    vi.mocked(detectMemoryManagerType).mockReturnValue("knots");
-    arb.capabilitiesForRepo("/repo");
-    arb.capabilitiesForRepo("/repo");
-    // Only called once due to cache
-    expect(detectMemoryManagerType).toHaveBeenCalledTimes(1);
-  });
+    it("caches repo type resolution", () => {
+      vi.mocked(detectMemoryManagerType).mockReturnValue("knots");
+      arb.capabilitiesForRepo(REPO);
+      arb.capabilitiesForRepo(REPO);
+      // Only called once due to cache
+      expect(detectMemoryManagerType).toHaveBeenCalledTimes(1);
+    });
 
-  it("clearRepoCache clears specific repo", () => {
-    vi.mocked(detectMemoryManagerType).mockReturnValue("knots");
-    arb.capabilitiesForRepo("/repo");
-    arb.clearRepoCache("/repo");
-    arb.capabilitiesForRepo("/repo");
-    expect(detectMemoryManagerType).toHaveBeenCalledTimes(2);
-  });
+    it("clearRepoCache clears specific repo", () => {
+      vi.mocked(detectMemoryManagerType).mockReturnValue("knots");
+      arb.capabilitiesForRepo(REPO);
+      arb.clearRepoCache(REPO);
+      arb.capabilitiesForRepo(REPO);
+      expect(detectMemoryManagerType).toHaveBeenCalledTimes(2);
+    });
 
-  it("clearRepoCache clears all when no arg", () => {
-    vi.mocked(detectMemoryManagerType).mockReturnValue("knots");
-    arb.capabilitiesForRepo("/a");
-    arb.capabilitiesForRepo("/b");
-    arb.clearRepoCache();
-    arb.capabilitiesForRepo("/a");
-    expect(detectMemoryManagerType).toHaveBeenCalledTimes(3);
+    it("clearRepoCache clears all when no arg", () => {
+      vi.mocked(detectMemoryManagerType).mockReturnValue("knots");
+      arb.capabilitiesForRepo("/a");
+      arb.capabilitiesForRepo("/b");
+      arb.clearRepoCache();
+      arb.capabilitiesForRepo("/a");
+      expect(detectMemoryManagerType).toHaveBeenCalledTimes(3);
     });
   });
 
@@ -152,6 +156,10 @@ describe("AutoRoutingBackend delegated methods", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Re-pin the detection mock — earlier describe blocks mutate the
+    // implementation via mockReturnValue, and `clearAllMocks` does not
+    // reset implementations.
+    vi.mocked(detectMemoryManagerType).mockReturnValue("beads");
     mockBeadsBuildTakePrompt.mockResolvedValue({
       ok: true,
       data: { prompt: "delegated take", claimed: false },
@@ -160,85 +168,88 @@ describe("AutoRoutingBackend delegated methods", () => {
       ok: true,
       data: { prompt: "delegated poll", claimedId: "beat-1" },
     });
-    arb = new AutoRoutingBackend("cli");
+    arb = new AutoRoutingBackend();
   });
 
   describe("delegated methods", () => {
-    it("listWorkflows delegates", async () => {
-    const r = await arb.listWorkflows();
-    expect(r.ok).toBe(true);
-  });
+    it("listWorkflows with no repoPath returns builtin descriptors without delegating", async () => {
+      const r = await arb.listWorkflows();
+      expect(r.ok).toBe(true);
+      expect(Array.isArray(r.data)).toBe(true);
+      expect((r.data ?? []).length).toBeGreaterThan(0);
+      expect(mockBeadsBackendCtor).not.toHaveBeenCalled();
+    });
 
-  it("list delegates", async () => {
-    const r = await arb.list();
-    expect(r.ok).toBe(true);
-  });
+    it("list delegates", async () => {
+      const r = await arb.list({}, REPO);
+      expect(r.ok).toBe(true);
+    });
 
-  it("listReady delegates", async () => {
-    const r = await arb.listReady();
-    expect(r.ok).toBe(true);
-  });
+    it("listReady delegates", async () => {
+      const r = await arb.listReady({}, REPO);
+      expect(r.ok).toBe(true);
+    });
 
-  it("search delegates", async () => {
-    const r = await arb.search("q");
-    expect(r.ok).toBe(true);
-  });
+    it("search delegates", async () => {
+      const r = await arb.search("q", {}, REPO);
+      expect(r.ok).toBe(true);
+    });
 
-  it("query delegates", async () => {
-    const r = await arb.query("state:open");
-    expect(r.ok).toBe(true);
-  });
+    it("query delegates", async () => {
+      const r = await arb.query("state:open", {}, REPO);
+      expect(r.ok).toBe(true);
+    });
 
-  it("get delegates", async () => {
-    const r = await arb.get("x");
-    expect(r.ok).toBe(true);
-  });
+    it("get delegates", async () => {
+      const r = await arb.get("x", REPO);
+      expect(r.ok).toBe(true);
+    });
 
-  it("create delegates", async () => {
-    const r = await arb.create({ title: "t" } as never);
-    expect(r.ok).toBe(true);
-  });
+    it("create delegates", async () => {
+      const r = await arb.create({ title: "t" } as never, REPO);
+      expect(r.ok).toBe(true);
+    });
 
-  it("update delegates", async () => {
-    const r = await arb.update("id", {} as never);
-    expect(r.ok).toBe(true);
-  });
+    it("update delegates", async () => {
+      const r = await arb.update("id", {} as never, REPO);
+      expect(r.ok).toBe(true);
+    });
 
-  it("delete delegates", async () => {
-    const r = await arb.delete("id");
-    expect(r.ok).toBe(true);
-  });
+    it("delete delegates", async () => {
+      const r = await arb.delete("id", REPO);
+      expect(r.ok).toBe(true);
+    });
 
-  it("close delegates", async () => {
-    const r = await arb.close("id");
-    expect(r.ok).toBe(true);
-  });
+    it("close delegates", async () => {
+      const r = await arb.close("id", undefined, REPO);
+      expect(r.ok).toBe(true);
+    });
 
-  it("listDependencies delegates", async () => {
-    const r = await arb.listDependencies("id");
-    expect(r.ok).toBe(true);
-  });
+    it("listDependencies delegates", async () => {
+      const r = await arb.listDependencies("id", REPO);
+      expect(r.ok).toBe(true);
+    });
 
-  it("addDependency delegates", async () => {
-    const r = await arb.addDependency("a", "b");
-    expect(r.ok).toBe(true);
-  });
+    it("addDependency delegates", async () => {
+      const r = await arb.addDependency("a", "b", REPO);
+      expect(r.ok).toBe(true);
+    });
 
-  it("removeDependency delegates", async () => {
-    const r = await arb.removeDependency("a", "b");
-    expect(r.ok).toBe(true);
-  });
+    it("removeDependency delegates", async () => {
+      const r = await arb.removeDependency("a", "b", REPO);
+      expect(r.ok).toBe(true);
+    });
 
-  it("buildTakePrompt delegates", async () => {
-    const r = await arb.buildTakePrompt("id");
-    expect(r.ok).toBe(true);
-    expect(mockBeadsBackendCtor).toHaveBeenCalledTimes(1);
-  });
+    it("buildTakePrompt delegates", async () => {
+      const r = await arb.buildTakePrompt("id", undefined, REPO);
+      expect(r.ok).toBe(true);
+      expect(mockBeadsBackendCtor).toHaveBeenCalledTimes(1);
+    });
 
-  it("buildPollPrompt delegates", async () => {
-    const r = await arb.buildPollPrompt();
-    expect(r.ok).toBe(true);
-    expect(mockBeadsBackendCtor).toHaveBeenCalledTimes(1);
+    it("buildPollPrompt delegates", async () => {
+      const r = await arb.buildPollPrompt(undefined, REPO);
+      expect(r.ok).toBe(true);
+      expect(mockBeadsBackendCtor).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
+import { withDispatchFailureHandling } from "@/lib/backend-http";
 
 export async function GET(request: NextRequest) {
   const repoPath = request.nextUrl.searchParams.get("_repo") || undefined;
@@ -15,12 +16,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ data: {} });
   }
 
-  const results = await Promise.all(
-    ids.map(async (id) => {
-      const result = await getBackend().listDependencies(id, repoPath);
-      return [id, result.ok ? result.data ?? [] : []] as const;
-    })
-  );
+  return withDispatchFailureHandling(async () => {
+    const results = await Promise.all(
+      ids.map(async (id) => {
+        const result = await getBackend().listDependencies(id, repoPath);
+        return [id, result.ok ? result.data ?? [] : []] as const;
+      })
+    );
 
-  return NextResponse.json({ data: Object.fromEntries(results) });
+    return NextResponse.json({ data: Object.fromEntries(results) });
+  });
 }

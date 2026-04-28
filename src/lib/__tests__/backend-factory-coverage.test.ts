@@ -4,8 +4,8 @@
  * The uncovered lines (169-170, 193-194) are exhaustive default branches
  * with `never` type guards that cannot be reached in TypeScript. This file
  * covers the remaining edge cases:
- *  - AutoRoutingBackend fallback behaviour when no repoPath given
- *  - capabilitiesForRepo without a repo path
+ *  - AutoRoutingBackend strict no-fallback behaviour when no repoPath given
+ *  - capabilitiesForRepo advisory fallback to FULL_CAPABILITIES
  *  - createBackend for each concrete type
  */
 
@@ -86,7 +86,7 @@ vi.mock("@/lib/knots", () => ({
 
 import { createBackend, AutoRoutingBackend } from "@/lib/backend-factory";
 import { FULL_CAPABILITIES } from "@/lib/backend-capabilities";
-import { STUB_CAPABILITIES } from "@/lib/backends/stub-backend";
+import { DispatchFailureError } from "@/lib/dispatch-pool-resolver";
 
 function makeRepo(markerDirs: string[]): string {
   const dir = mkdtempSync(join(tmpdir(), "foolery-factory-cov-"));
@@ -100,30 +100,30 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe("AutoRoutingBackend fallback with no repoPath", () => {
-  it("uses fallback type when no repoPath is provided", async () => {
-    const backend = new AutoRoutingBackend("cli");
-    const result = await backend.list();
+describe("AutoRoutingBackend strict no-fallback contract", () => {
+  it("list() with no repoPath throws DispatchFailureError", async () => {
+    const backend = new AutoRoutingBackend();
+    await expect(backend.list()).rejects.toBeInstanceOf(DispatchFailureError);
+  });
+
+  it("list() against a beads-marked repo routes through BdCliBackend", async () => {
+    const backend = new AutoRoutingBackend();
+    const repo = makeRepo([".beads"]);
+    const result = await backend.list(undefined, repo);
     expect(result.ok).toBe(true);
     expect(mockListBeats).toHaveBeenCalled();
   });
 
-  it("uses stub fallback when configured", async () => {
-    const backend = new AutoRoutingBackend("stub");
-    const result = await backend.list();
-    expect(result.ok).toBe(true);
-    expect(result.data).toEqual([]);
+  it("capabilitiesForRepo without path returns FULL_CAPABILITIES (advisory only)", () => {
+    const backend = new AutoRoutingBackend();
+    const caps = backend.capabilitiesForRepo();
+    expect(caps).toEqual(FULL_CAPABILITIES);
   });
 
-  it("capabilitiesForRepo without path returns fallback caps", () => {
-    const backend = new AutoRoutingBackend("stub");
-    const caps = backend.capabilitiesForRepo();
-    expect(caps).toEqual(STUB_CAPABILITIES);
-  });
-
-  it("capabilitiesForRepo without path returns cli caps for cli fallback", () => {
-    const backend = new AutoRoutingBackend("cli");
-    const caps = backend.capabilitiesForRepo();
+  it("capabilitiesForRepo for an unknown repo returns FULL_CAPABILITIES (advisory only)", () => {
+    const backend = new AutoRoutingBackend();
+    const repo = makeRepo([]);
+    const caps = backend.capabilitiesForRepo(repo);
     expect(caps).toEqual(FULL_CAPABILITIES);
   });
 });
@@ -135,15 +135,22 @@ describe("createBackend edge cases", () => {
     expect(entry.capabilities).toEqual(FULL_CAPABILITIES);
   });
 
-  it("auto backend proxies all operations through resolved backend", async () => {
-    const repo = makeRepo([]);
+  it("auto backend proxies operations through the resolved backend when repo is recognised", async () => {
+    const repo = makeRepo([".beads"]);
     const entry = createBackend("auto");
 
-    // Verify all proxy methods work
     const listResult = await entry.port.list(undefined, repo);
     expect(listResult.ok).toBe(true);
 
     const workflowResult = await entry.port.listWorkflows(repo);
     expect(workflowResult.ok).toBe(true);
+  });
+
+  it("auto backend listWorkflows() with no repoPath returns builtin descriptors", async () => {
+    const entry = createBackend("auto");
+    const result = await entry.port.listWorkflows();
+    expect(result.ok).toBe(true);
+    expect(Array.isArray(result.data)).toBe(true);
+    expect((result.data ?? []).length).toBeGreaterThan(0);
   });
 });

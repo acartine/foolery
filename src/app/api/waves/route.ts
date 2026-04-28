@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
+import { withDispatchFailureHandling } from "@/lib/backend-http";
 import type { BeatListFilters } from "@/lib/backend-port";
 import { computeWaves } from "@/lib/wave-planner";
 import type {
@@ -271,6 +272,7 @@ function assembleFinalPlan(basePlan: WavePlan): WavePlan {
 export async function GET(request: NextRequest) {
   const repo =
     request.nextUrl.searchParams.get("_repo") || undefined;
+  return withDispatchFailureHandling(async () => {
   const wfResult = await getBackend().listWorkflows(repo);
   const workflowsById = workflowDescriptorById(
     wfResult.ok ? wfResult.data ?? [] : [],
@@ -325,5 +327,6 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json({
     data: assembleFinalPlan(basePlan),
+  });
   });
 }
