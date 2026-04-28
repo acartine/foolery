@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd2bc-469a-7d43-a183-47832f45f0cf",
+  "occurred_at": "2026-04-28T06:17:27.448791245Z",
+  "knot_id": "foolery-3200",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "Each test file under src/**/__tests__/ is hermetic per docs/DEVELOPING.md (no env vars, no real fs, no spawn, no network, no host binaries). Non-hermetic tests are either refactored or moved to src/**/__manual_tests__/. bun run test passes deterministically regardless of host state (foolery running, kno installed, etc.)."
+  }
+}

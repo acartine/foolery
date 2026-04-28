@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd2bc-469b-7bd1-8785-4b12eb857ed2",
+  "occurred_at": "2026-04-28T06:17:27.448791245Z",
+  "knot_id": "foolery-3200",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "slice:test-hygiene"
+  }
+}

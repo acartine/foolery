@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd2c7-439b-7bc3-a2d0-6938ba540d33",
+  "occurred_at": "2026-04-28T06:29:27.579810729Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d7b7",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "fix: `foolery doctor` crashes with ENOENT on Linux",
+    "type": "work",
+    "updated_at": "2026-04-28T06:29:27.579810729Z",
+    "workflow_id": "work_sdlc"
+  }
+}

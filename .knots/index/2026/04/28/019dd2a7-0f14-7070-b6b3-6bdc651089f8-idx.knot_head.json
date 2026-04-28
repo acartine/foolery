@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd2a7-0f14-7070-b6b3-6bdc651089f8",
+  "occurred_at": "2026-04-28T05:54:16.980456217Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-18b6",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Navigate to correct screen and open beat detail when clicking notification beat ID",
+    "type": "work",
+    "updated_at": "2026-04-28T05:54:16.980456217Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd2b5-6581-7930-9a9f-7c70b75920bf",
+  "occurred_at": "2026-04-28T06:09:56.60913028Z",
+  "knot_id": "foolery-c751",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:foolery-c751-no-bd-fallback"
+  }
+}

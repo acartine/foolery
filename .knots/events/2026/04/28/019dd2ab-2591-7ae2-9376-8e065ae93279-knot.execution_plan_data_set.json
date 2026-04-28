@@ -1,0 +1,57 @@
+{
+  "event_id": "019dd2ab-2591-7ae2-9376-8e065ae93279",
+  "occurred_at": "2026-04-28T05:58:44.881605807Z",
+  "knot_id": "foolery-9bf4",
+  "type": "knot.execution_plan_data_set",
+  "data": {
+    "execution_plan": {
+      "objective": "Ship native execution_plan support in Knots and Foolery's plan API end-to-end.",
+      "waves": [
+        {
+          "name": "Unblock both tracks",
+          "objective": "Land the Knots execution_plan type and rip out Foolery compat-status abstractions so downstream work can proceed.",
+          "steps": [
+            {
+              "knot_ids": [
+                "foolery-a9a2",
+                "foolery-48c1"
+              ],
+              "notes": "Concurrent foundations: Knots-repo execution_plan type (a9a2) and Foolery compat-status removal (48c1).",
+              "step_index": 1
+            }
+          ],
+          "wave_index": 1
+        },
+        {
+          "name": "Persist payload and rebuild plan path",
+          "objective": "Persist execution_plan payload in Knots and replace legacy Scene coupling in Foolery's plan API.",
+          "steps": [
+            {
+              "knot_ids": [
+                "foolery-a431",
+                "foolery-dd18"
+              ],
+              "notes": "Concurrent follow-ons: persist execution_plan payload in Knots (a431, needs a9a2) and rebuild POST /api/plans without Scene coupling (dd18, needs 48c1).",
+              "step_index": 1
+            }
+          ],
+          "wave_index": 2
+        },
+        {
+          "name": "Live validate",
+          "objective": "Exercise the repaired execution-plan API end-to-end against a real Knots repo.",
+          "steps": [
+            {
+              "knot_ids": [
+                "foolery-54e9"
+              ],
+              "notes": "Live validation (54e9): exercise the repaired /api/plans against a real Knots repo. Blocked by 48c1 + dd18.",
+              "step_index": 1
+            }
+          ],
+          "wave_index": 3
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd2af-f486-7fd3-800f-f40d81b0a60e",
+  "occurred_at": "2026-04-28T06:04:00.005988833Z",
+  "knot_id": "foolery-d7b7",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:foolery-d7b7-doctor-enoent"
+  }
+}

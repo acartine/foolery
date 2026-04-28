@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd2a3-7615-78a3-9571-e562e1453789",
+  "occurred_at": "2026-04-28T05:50:21.202581429Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b452",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Eliminate quarantined beads-compat-status migration debt",
+    "type": "work",
+    "updated_at": "2026-04-28T05:50:21.202581429Z",
+    "workflow_id": "work_sdlc"
+  }
+}

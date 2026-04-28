@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd2a0-f952-7e61-98c5-fb186a91fa43",
+  "occurred_at": "2026-04-28T05:47:38.192712886Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7a74",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Investigate setlist beat not found for foolery-79a3 1a3d",
+    "type": "work",
+    "updated_at": "2026-04-28T05:47:38.192712886Z",
+    "workflow_id": "work_sdlc"
+  }
+}

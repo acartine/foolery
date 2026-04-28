@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd2a1-15d0-7d20-a84a-966abd3894a1",
+  "occurred_at": "2026-04-28T05:47:45.485586827Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-33ce",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Fix queues screen to filter out non-claimable knots",
+    "type": "work",
+    "updated_at": "2026-04-28T05:47:45.485586827Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd2c2-d014-7e31-ac0f-a0bb0472d01a",
+  "occurred_at": "2026-04-28T06:24:35.860423239Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c751",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Remove BD backend as implicit fallback default",
+    "type": "work",
+    "updated_at": "2026-04-28T06:24:35.860423239Z",
+    "workflow_id": "work_sdlc"
+  }
+}

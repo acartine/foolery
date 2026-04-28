@@ -1,0 +1,17 @@
+{
+  "event_id": "019dd2bc-4698-7fd2-a0ff-29f86a940822",
+  "occurred_at": "2026-04-28T06:17:27.448791245Z",
+  "knot_id": "foolery-3200",
+  "type": "knot.created",
+  "data": {
+    "body": "Several tests in src/**/__tests__/ touch the host environment (process.env, real fs, execFile, real ports, host binaries) and produce false failures whenever the developer's machine state differs from the assumed defaults. install-launcher-path.test.ts has been moved to src/lib/__manual_tests__/ as the canonical example of an env-touching test that should not be in the default suite. This knot tracks finding the rest and either (a) refactoring to push environment resolution up the stack and inject mocks, or (b) moving them to __manual_tests__/. Audit by grepping for: execFile, child_process, mkdtemp, tmpdir, process.env, lsof, real ports. Reference: docs/DEVELOPING.md 'Hermetic Test Policy', AGENTS.md/CLAUDE.md 'Hermetic Test Policy'.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Audit and remediate non-hermetic tests in default suite",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
