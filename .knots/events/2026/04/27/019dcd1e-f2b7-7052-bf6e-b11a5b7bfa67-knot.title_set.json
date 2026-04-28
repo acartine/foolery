@@ -1,0 +1,10 @@
+{
+  "event_id": "019dcd1e-f2b7-7052-bf6e-b11a5b7bfa67",
+  "occurred_at": "2026-04-27T04:07:30.743174223Z",
+  "knot_id": "foolery-cd5e",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Log interactive watchdog lifecycle",
+    "to": "Log watchdog arm and cancel events in interactive session runtime"
+  }
+}

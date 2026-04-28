@@ -1,0 +1,21 @@
+{
+  "event_id": "019dcd13-a317-7831-98ef-4fff44aec887",
+  "occurred_at": "2026-04-27T03:55:09.460955615Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-8916",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Honor custom Knots workflow claimability",
+    "type": "work",
+    "updated_at": "2026-04-27T03:55:09.460955615Z",
+    "workflow_id": "work_sdlc"
+  }
+}

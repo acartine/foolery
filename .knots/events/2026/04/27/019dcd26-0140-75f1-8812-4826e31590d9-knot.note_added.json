@@ -1,0 +1,15 @@
+{
+  "event_id": "019dcd26-0140-75f1-8812-4826e31590d9",
+  "occurred_at": "2026-04-27T04:15:13.21617284Z",
+  "knot_id": "foolery-18b6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Re-implementation handoff: rebased branch foolery-18b6-notification-focus onto current main (now includes v0.13.0 + b47bd804 loom-derived state classification). Implementation logic unchanged — focusNotificationBeat / buildNotificationBeatFocusHref classify via builtinProfileDescriptor + workflowStatePhase, force view=queues|active before navigating, fail loudly with FOOLERY NOTIFICATION BEAT FOCUS FAILURE on terminal/fetch failure. Rebase was clean (no conflicts; only 1 commit reapplied). bun run lint, bunx tsc --noEmit, bun run build all pass. 7/7 notification-bell-actions unit tests pass. Pre-existing 3 failures in install-launcher-path.test.ts confirmed environmental (port 3210 held by installed runtime) and reproduce identically on plain main. Playwright-validated against dev server (port 3055, FOOLERY_BACKEND=knots) by mimicking bell click via window.next.router.push: history -> active (foolery-18b6 in implementation) opens detail dialog; history -> queues (foolery-cd5e in ready_for_planning) opens detail dialog; already-on-active regression still opens dialog. New commit 9bf64ef8a81bdc344639bb465af45e1fa5cbc886 pushed force-with-lease to origin/foolery-18b6-notification-focus.",
+    "datetime": "2026-04-27T04:15:13.21617284Z",
+    "entry_id": "019dcd26-0140-75f1-8812-4811b0cb79be",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019dcd13-b9e4-79b0-8c42-d34b59c6eba2",
+  "occurred_at": "2026-04-27T03:55:15.298941484Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9e12",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Invalidate setlist on known beat state changes",
+    "type": "work",
+    "updated_at": "2026-04-27T03:55:15.298941484Z",
+    "workflow_id": "work_sdlc"
+  }
+}

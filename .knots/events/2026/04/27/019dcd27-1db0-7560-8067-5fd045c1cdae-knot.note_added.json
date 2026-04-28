@@ -1,0 +1,15 @@
+{
+  "event_id": "019dcd27-1db0-7560-8067-5fd045c1cdae",
+  "occurred_at": "2026-04-27T04:16:26.032513408Z",
+  "knot_id": "foolery-18b6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Lease foolery-db4b completion blocked: state rolled back to ready_for_implementation by foolery take-loop (latest step in history shows lease_id foolery-4c1a completing as a no-op rollback at 2026-04-27T04:15:13Z). All implementation work IS complete on remote — branch foolery-18b6-notification-focus @ commit 9bf64ef8a81bdc344639bb465af45e1fa5cbc886 is pushed, rebased onto current main, lint+typecheck+build clean, 7/7 unit tests pass, and Playwright validated all three acceptance scenarios (history->active, history->queues, already-on-active regression). Next iteration should be able to advance directly to ready_for_implementation_review without re-implementing. kno next ... --expected-state implementation --lease foolery-db4b failed with: 'expected state implementation but knot is currently ready_for_implementation'.",
+    "datetime": "2026-04-27T04:16:26.032513408Z",
+    "entry_id": "019dcd27-1db0-7560-8067-5fc33bad680f",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019dcd1e-f2b7-7052-bf6e-b131e6de1b12",
+  "occurred_at": "2026-04-27T04:07:30.743174223Z",
+  "knot_id": "foolery-cd5e",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Calling `doResetWatchdog` on a live session emits a `console.log` line that contains `[terminal-manager] [watchdog]`, `armed`, and `timeoutMs=<N>` (where N is the configured timeout). 2. Triggering the dispose path (`runtime.dispose()`) while a watchdog timer is active emits a `console.log` line that contains `[terminal-manager] [watchdog]` and `cancelled`. 3. No log is emitted by dispose when `watchdogTimer` is already null (i.e. watchdog was never set or already fired). 4. The existing e2e test in `src/lib/__tests__/terminal-manager-watchdog-e2e.test.ts` continues to pass unchanged. 5. New unit assertions in that same file (or a companion spec) spy on `console.log` and assert lines 1 and 2 above are emitted with the correct tags and fields. Run `bun run test` to confirm all watchdog tests are green."
+  }
+}

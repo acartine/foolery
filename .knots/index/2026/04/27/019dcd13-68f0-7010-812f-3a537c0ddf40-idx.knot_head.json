@@ -1,0 +1,21 @@
+{
+  "event_id": "019dcd13-68f0-7010-812f-3a537c0ddf40",
+  "occurred_at": "2026-04-27T03:54:54.574962322Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-36d3",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Investigate and fix stale setlist terminal cues for abandoned beats",
+    "type": "work",
+    "updated_at": "2026-04-27T03:54:54.574962322Z",
+    "workflow_id": "work_sdlc"
+  }
+}

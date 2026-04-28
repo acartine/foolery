@@ -1,0 +1,21 @@
+{
+  "event_id": "019dcd13-c919-7332-9bcf-45270b5173ce",
+  "occurred_at": "2026-04-27T03:55:19.192068239Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-24b8",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Honor gate owner claimability in GUI and API",
+    "type": "work",
+    "updated_at": "2026-04-27T03:55:19.192068239Z",
+    "workflow_id": "work_sdlc"
+  }
+}

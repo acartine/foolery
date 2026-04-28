@@ -1,0 +1,119 @@
+{
+  "event_id": "019dcd13-e20a-79f3-bb13-e8bff1701558",
+  "occurred_at": "2026-04-27T03:55:25.577126664Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "execution_plan": {
+      "assumptions": [
+        "Work knots carry hierarchy and dependencies; the execution_plan knot carries plan provenance and wave structure.",
+        "Slice 3 reuses the six existing April 13 knots instead of recreating them."
+      ],
+      "mode": "groom",
+      "objective": "Ship the Grooming to Execution Plan spec",
+      "summary": "Three-slice execution plan: persist and expose plans, let agents drive plans, improve generation quality.",
+      "waves": [
+        {
+          "name": "Persist and expose execution plans",
+          "objective": "Land execution-plan storage, APIs, and coverage.",
+          "steps": [
+            {
+              "knot_ids": [
+                "foolery-1a3d"
+              ],
+              "notes": "Execution plan storage and types — persist execution plans as typed data.",
+              "step_index": 1
+            },
+            {
+              "knot_ids": [
+                "foolery-ef9c"
+              ],
+              "notes": "Execution plan read/write API — expose create/get/list plan routes.",
+              "step_index": 2
+            },
+            {
+              "knot_ids": [
+                "foolery-0cae"
+              ],
+              "notes": "Persisted plan coverage — cover persistence and readback behavior.",
+              "step_index": 3
+            }
+          ],
+          "wave_index": 1
+        },
+        {
+          "name": "Let external agents drive execution plans",
+          "objective": "Expose next/start/complete/fail plan-driving behavior.",
+          "steps": [
+            {
+              "knot_ids": [
+                "foolery-5b94"
+              ],
+              "notes": "Next-step selection — choose the next executable plan step.",
+              "step_index": 1
+            },
+            {
+              "knot_ids": [
+                "foolery-18e3"
+              ],
+              "notes": "Step-driving routes — start, complete, and fail plan steps.",
+              "step_index": 2
+            },
+            {
+              "knot_ids": [
+                "foolery-b7cf"
+              ],
+              "notes": "Plan-driving coverage — verify end-to-end plan driving flows.",
+              "step_index": 3
+            }
+          ],
+          "wave_index": 2
+        },
+        {
+          "name": "Improve execution plan generation quality",
+          "objective": "Improve planner selection, prompt context, and step protocol.",
+          "steps": [
+            {
+              "knot_ids": [
+                "foolery-fec0",
+                "foolery-0dee",
+                "foolery-4d52"
+              ],
+              "notes": "Planner selection and prompt foundations — land the first planner and prompt prerequisites.",
+              "step_index": 1
+            },
+            {
+              "knot_ids": [
+                "foolery-27fe",
+                "foolery-4e28"
+              ],
+              "notes": "Step protocol follow-through — complete planner follow-up and prompt step protocol work.",
+              "step_index": 2
+            },
+            {
+              "knot_ids": [
+                "foolery-a873"
+              ],
+              "notes": "Plan quality cleanup — finish the final quality and cleanup pass.",
+              "step_index": 3
+            }
+          ],
+          "wave_index": 3
+        }
+      ]
+    },
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-79a3",
+    "profile_id": "execution_plan_sdlc/autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Ship local execution-plan API and driver",
+    "type": "execution_plan",
+    "updated_at": "2026-04-27T03:55:25.577126664Z",
+    "workflow_id": "execution_plan_sdlc"
+  }
+}

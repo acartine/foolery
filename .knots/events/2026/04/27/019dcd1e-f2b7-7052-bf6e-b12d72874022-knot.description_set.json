@@ -1,0 +1,9 @@
+{
+  "event_id": "019dcd1e-f2b7-7052-bf6e-b12d72874022",
+  "occurred_at": "2026-04-27T04:07:30.743174223Z",
+  "knot_id": "foolery-cd5e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The interactive session watchdog (`doResetWatchdog` in `agent-session-runtime-helpers.ts`) emits a `console.warn` when it fires (`[terminal-manager] [watchdog] timeout_fired`), but produces no log when it is armed or when it is cancelled at dispose time. Operators diagnosing silent-kill incidents have no way to confirm the timer was ever started or when it was cleared. Add structured `console.log` lines at both the arm site (inside `doResetWatchdog`) and the cancel site (inside the `dispose` closure in `agent-session-runtime.ts`) using the same `[terminal-manager] [watchdog]` tag and key=value fields (pid, timeoutMs) already used by the fire log."
+  }
+}
