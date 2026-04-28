@@ -15,6 +15,7 @@ import {
   deriveWorkflowRuntimeState,
   normalizeStateForWorkflow,
 } from "@/lib/workflows";
+import { isPlanBeat } from "@/lib/orchestration-plan-payload";
 
 import {
   normalizePriority,
@@ -209,6 +210,8 @@ export function applyFilters(
   beats: Beat[],
   filters?: BeatListFilters,
 ): Beat[] {
+  // Plan knots show only in the setlist; hide from beat-list paths.
+  beats = beats.filter((b) => !isPlanBeat(b));
   if (!filters) return beats;
 
   const isQueuedPhaseFilter = filters.state === "queued";

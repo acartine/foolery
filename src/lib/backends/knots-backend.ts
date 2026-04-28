@@ -329,7 +329,7 @@ export class KnotsBackend implements BackendPort {
     const matches = (result.data ?? []).filter((beat) =>
       matchExpression(beat, expression),
     );
-    return ok(matches);
+    return ok(applyFilters(matches));
   }
 
   async get(

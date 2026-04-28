@@ -2,7 +2,7 @@ import type {
   ExecutionPlanRecord,
   KnotRecord,
 } from "@/lib/knots";
-import type { OrchestrationPlan } from "@/lib/types";
+import type { Beat, OrchestrationPlan } from "@/lib/types";
 import type {
   CreatePlanInput,
   PlanArtifact,
@@ -253,6 +253,15 @@ export function isPlanKnot(record: KnotRecord): boolean {
   if (record.execution_plan != null) return true;
   if (record.workflow_id === PLAN_WORKFLOW_ID) return true;
   return record.type === "execution_plan";
+}
+
+// Beat-shaped mirror of `isPlanKnot` for filtering already-mapped beats.
+// `execution_plan` payload isn't on Beat, so we rely on `type`/`workflowId`.
+export function isPlanBeat(beat: Beat): boolean {
+  return (
+    beat.type === "execution_plan" ||
+    beat.workflowId === PLAN_WORKFLOW_ID
+  );
 }
 
 export function mapPlanArtifact(
