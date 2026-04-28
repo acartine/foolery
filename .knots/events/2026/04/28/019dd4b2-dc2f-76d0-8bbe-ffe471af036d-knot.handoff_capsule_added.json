@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd4b2-dc2f-76d0-8bbe-ffe471af036d",
+  "occurred_at": "2026-04-28T15:26:24.815934Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment completed. Branch codex/foolery-7f74-approvals-tab was fast-forward shipped to origin/main at dbcdee7069b8303fc378bc8fd229e422ad3d1985. Remote checks for that commit completed successfully: CI success and Coverage Badge success. Local gates before shipment also passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build. Knot is queued for shipment review; do not mark shipped without explicit terminal-state approval.",
+    "datetime": "2026-04-28T15:26:24Z",
+    "entry_id": "019dd4b2-dc2f-76d0-8bbe-ffd3cef69881",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd48c-917b-7393-8968-9513d0b6b4fe",
+  "occurred_at": "2026-04-28T14:44:35.3233Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Correction: moved from shipped back to ready_for_planning at user request because this tracks unfinished Escalations approvals/notes tab work and appears to have been shipped incorrectly.",
+    "datetime": "2026-04-28T14:44:35Z",
+    "entry_id": "019dd48c-917b-7393-8968-9503848c9601",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

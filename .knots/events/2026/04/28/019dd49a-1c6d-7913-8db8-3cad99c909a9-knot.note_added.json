@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd49a-1c6d-7913-8db8-3cad99c909a9",
+  "occurred_at": "2026-04-28T14:59:22.861643Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Scope update: include detailed approval logging plus three notification surfaces for pending approvals: lower-right toast, global banner/headline across all screens, and inbox/bell item linking to Escalations -> Approvals. Also require duplicate/coalescing behavior so a single approval request does not spam the UI.",
+    "datetime": "2026-04-28T14:59:22Z",
+    "entry_id": "019dd49a-1c6d-7913-8db8-3c92825112de",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

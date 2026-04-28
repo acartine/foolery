@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd49a-1c6d-7913-8db8-3c76465316b4",
+  "occurred_at": "2026-04-28T14:59:22.861643Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add an interactive Approvals tab to the Escalations screen while preserving the existing human-owned beats view. Approval requests must be observable as first-class escalation work, not hidden inside terminal/session history only. The implementation should reuse the durable approval-event plumbing from c30f or later primitives, add detailed structured logging for approval detection and lifecycle events, and surface pending approvals through three user-visible notification paths: lower-right toast, global banner, and inbox/bell item linking directly to the Approvals tab."
+  }
+}

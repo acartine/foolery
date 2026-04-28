@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd4af-f98d-7d82-9ebd-0242206cfab8",
+  "occurred_at": "2026-04-28T15:23:15.725364Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved after rebasing branch codex/foolery-7f74-approvals-tab onto origin/main. Current artifact: branch codex/foolery-7f74-approvals-tab at commit dbcdee70. Review notes: Escalations preserves the notes-work BeatTable path and adds an Approvals tab; approval banners produce structured FOOLERY APPROVAL ESCALATION logs, toast, global banner, and inbox/bell navigation to /beats?view=finalcut&tab=approvals; notification-bell changes preserve origin/main focusNotificationBeat fallback for existing beat notifications; unsupported approve/deny remains a loud manual-action path. Gates passed after rebase: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-04-28T15:23:15Z",
+    "entry_id": "019dd4af-f98d-7d82-9ebd-023063759d71",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

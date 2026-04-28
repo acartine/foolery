@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd49a-1c6d-7913-8db8-3c8c886b350f",
+  "occurred_at": "2026-04-28T14:59:22.861643Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The Escalations screen has two tabs: the existing human-owned beats view and a new Approvals view.\n2. The existing human-owned beats view remains functionally equivalent and covered by regression tests.\n3. Approval requests from supported CLI adapter event shapes create visible entries in the Approvals tab with beat ID, session ID, adapter/provider, tool/server, message, and parameter summary.\n4. Users can take the implemented approval lifecycle action from the Approvals tab, or see a loud unsupported/manual-action explanation when programmatic approval is not available.\n5. Approval entries link to or identify the related live/history console context.\n6. Approval detection, persistence, notification emission, user action, unsupported/manual-action paths, and resolution all write detailed structured logs with stable event names and enough context to debug missing or stale approvals.\n7. When a new pending approval is detected, the app fires a lower-right notification/toast unless an equivalent approval notification is already active.\n8. Pending approvals appear in a global banner/headline visible across all app screens, with clear copy and a link or action that opens Escalations -> Approvals.\n9. Pending approvals create an inbox/bell item and badge count entry; selecting the inbox item navigates directly to the Approvals tab on the Escalations screen.\n10. Duplicate notifications are suppressed or coalesced by approval identity so one approval request does not spam the toast, banner, or inbox.\n11. The implementation includes automated tests for logging, toast notification, global banner, inbox/bell link, Approvals tab rendering, and existing human-owned beats regression, and passes lint, typecheck, tests, and build."
+  }
+}

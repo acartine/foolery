@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd4a3-d6f6-76b1-819e-bfdbd23c7b44",
+  "occurred_at": "2026-04-28T15:10:00.437879Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning update complete for 7f74. The implementation should split `FinalCutView` into Human Action/Notes Work and Approvals tabs, reuse `approval-request-visibility` extraction, add a pending approval model/store with dedupe, extend notification store entries with href/dedupe support, route bell/banner/toast to `/beats?view=finalcut&tab=approvals`, and add structured logs for detection, persistence/notification, duplicate suppression, unsupported/manual actions, and resolution. Preserve existing BeatTable behavior for the human-owned Escalations view. Implement in a dedicated worktree and run lint, typecheck, test, and build.",
+    "datetime": "2026-04-28T15:10:00Z",
+    "entry_id": "019dd4a3-d6f6-76b1-819e-bfcde387aaeb",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

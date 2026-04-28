@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd4ad-4761-78d0-8081-3defbbd051e6",
+  "occurred_at": "2026-04-28T15:20:19.041257Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation completed on branch codex/foolery-7f74-approvals-tab at commit ab5efc46. Changes: Escalations now has Notes Work and Approvals tabs; approval terminal banners are parsed into a dedicated approval escalation store with structured FOOLERY APPROVAL ESCALATION logs; pending approvals trigger lower-right Sonner toasts, a global header banner, and inbox/bell notifications that navigate to /beats?view=finalcut&tab=approvals; duplicate approval notifications are suppressed by stable approval identity; unsupported programmatic approve/deny is explicitly rendered as manual action. Gates passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-04-28T15:20:18Z",
+    "entry_id": "019dd4ad-4761-78d0-8081-3dd13323560e",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

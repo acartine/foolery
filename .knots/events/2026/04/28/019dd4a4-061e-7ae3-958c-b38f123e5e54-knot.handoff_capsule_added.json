@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd4a4-061e-7ae3-958c-b38f123e5e54",
+  "occurred_at": "2026-04-28T15:10:12.510695Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approved. Implement 7f74 per the updated plan, preserving existing Escalations beat behavior and adding approvals logging/toast/banner/inbox surfaces with dedupe. Keep approve/deny manual unless adapter response support is real.",
+    "datetime": "2026-04-28T15:10:12Z",
+    "entry_id": "019dd4a4-061e-7ae3-958c-b37aa2601ee1",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

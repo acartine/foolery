@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd4a4-061e-7ae3-958c-b367a160c3c3",
+  "occurred_at": "2026-04-28T15:10:12.510695Z",
+  "knot_id": "foolery-7f74",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approval, 2026-04-28\n\nApproved for implementation. The plan is complete enough for this pass: it preserves the existing human-owned Escalations BeatTable, adds an Approvals tab, reuses existing approval extraction, adds structured logging, and covers lower-right toast, global banner, and inbox/bell navigation with duplicate suppression.\n\nImplementation constraints:\n- Do not invent fake approve/deny mechanics. If no adapter response path exists, render and log an explicit manual/unsupported state.\n- Keep notification store changes backward compatible with existing beat-focused notifications.\n- Use tab-specific counts/copy so human-owned beats and approval requests do not become misleadingly combined.\n- Keep approval parsing isolated so a future server-side durable approval index can replace the initial live-event source.\n\nTest strategy is sufficient: helper/store unit tests, session connection notification tests, header/banner/bell navigation tests, and FinalCut tab regression tests.",
+    "datetime": "2026-04-28T15:10:12Z",
+    "entry_id": "019dd4a4-061e-7ae3-958c-b35635ad7595",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}
