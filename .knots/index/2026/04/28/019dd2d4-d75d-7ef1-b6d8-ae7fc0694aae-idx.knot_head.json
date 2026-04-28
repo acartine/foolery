@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd2d4-d75d-7ef1-b6d8-ae7fc0694aae",
+  "occurred_at": "2026-04-28T06:44:17.371098544Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-19bd",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix setlist terminal cues after abandoned state updates",
+    "type": "work",
+    "updated_at": "2026-04-28T06:44:17.371098544Z",
+    "workflow_id": "work_sdlc"
+  }
+}
