@@ -38,7 +38,7 @@ async function writeGeneratedLauncher(launcherPath: string) {
   await execFileAsync(
     "bash",
     [
-      "-lc",
+      "-c",
       String.raw`
         set -euo pipefail
         script_path="$FOOLERY_TEST_INSTALL_SCRIPT"
@@ -68,7 +68,7 @@ async function evalLauncher(
   return execFileAsync(
     "bash",
     [
-      "-lc",
+      "-c",
       `
         set -euo pipefail
         launcher="$FOOLERY_TEST_GENERATED_LAUNCHER"
@@ -113,7 +113,7 @@ async function runInstallMainWithPathCli(cliName: string | null) {
 
   return execFileAsync(
     "/bin/bash",
-    ["-lc", runInstallMainScript],
+    ["-c", runInstallMainScript],
     {
       cwd: process.cwd(),
       env: {
