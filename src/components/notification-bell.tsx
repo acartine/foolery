@@ -9,8 +9,10 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { buildBeatFocusHref, resolveBeatRepoPath } from "@/lib/beat-navigation";
-import { markAllNotificationsReadAndClose } from "@/components/notification-bell-actions";
+import {
+  focusNotificationBeat,
+  markAllNotificationsReadAndClose,
+} from "@/components/notification-bell-actions";
 import {
   useNotificationStore,
   selectUnreadCount,
@@ -27,22 +29,18 @@ export function NotificationBell() {
   const markAllRead = useNotificationStore((s) => s.markAllRead);
   const registeredRepos = useAppStore((s) => s.registeredRepos);
   const setActiveRepo = useAppStore((s) => s.setActiveRepo);
-  const focusBeat = (beatId: string, explicitRepoPath?: string) => {
-    const normalizedBeatId = beatId.trim();
-    if (!normalizedBeatId) return;
-    const repoPath = resolveBeatRepoPath(
-      normalizedBeatId,
+  const focusBeat = async (
+    beatId: string,
+    explicitRepoPath?: string,
+  ): Promise<void> => {
+    await focusNotificationBeat({
+      beatId,
+      currentSearch: searchParams.toString(),
       registeredRepos,
       explicitRepoPath,
-    );
-    if (repoPath) setActiveRepo(repoPath);
-    router.push(
-      buildBeatFocusHref(
-        normalizedBeatId,
-        searchParams.toString(),
-        repoPath ? { repo: repoPath, detailRepo: repoPath } : undefined,
-      ),
-    );
+      setActiveRepo,
+      navigate: (href) => router.push(href),
+    });
   };
 
   return (
@@ -90,7 +88,10 @@ function NotificationList({
   onFocusBeat,
 }: {
   notifications: readonly Notification[];
-  onFocusBeat: (beatId: string, explicitRepoPath?: string) => void;
+  onFocusBeat: (
+    beatId: string,
+    explicitRepoPath?: string,
+  ) => Promise<void>;
 }) {
   if (notifications.length === 0) {
     return (
@@ -117,7 +118,9 @@ function NotificationList({
                 type="button"
                 className="mt-1 block font-mono text-[11px] text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
                 title={`Focus ${beatId}`}
-                onClick={() => onFocusBeat(beatId, n.repoPath)}
+                onClick={() => {
+                  void onFocusBeat(beatId, n.repoPath);
+                }}
               >
                 {beatId}
               </button>
