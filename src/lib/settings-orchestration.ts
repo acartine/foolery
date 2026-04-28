@@ -65,6 +65,7 @@ export function resolveOrchestrationAgent(
     ? "no_pool_configured"
     : "no_eligible_agent";
   emitDispatchFailureBanner({
+    kind: "agent",
     beatId: "<orchestration>",
     state: "<orchestration>",
     workflowId: "<orchestration>",

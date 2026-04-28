@@ -147,28 +147,29 @@ beforeEach(() => {
 describe("AutoRoutingBackend.capabilitiesForRepo", () => {
   it("returns KNOTS_CAPABILITIES for a .knots repo", () => {
     const repo = makeRepo([".knots"]);
-    const backend = new AutoRoutingBackend("cli");
+    const backend = new AutoRoutingBackend();
     const caps = backend.capabilitiesForRepo(repo);
     expect(caps).toEqual(KNOTS_CAPABILITIES);
   });
 
   it("returns FULL_CAPABILITIES for a .beats repo", () => {
-    const repo = makeRepo([".beats"]);
-    const backend = new AutoRoutingBackend("cli");
+    const repo = makeRepo([".beads"]);
+    const backend = new AutoRoutingBackend();
     const caps = backend.capabilitiesForRepo(repo);
     expect(caps).toEqual(FULL_CAPABILITIES);
   });
 
-  it("returns fallback capabilities when repoPath is undefined", () => {
-    const backend = new AutoRoutingBackend("cli");
+  it("returns FULL_CAPABILITIES (advisory) when repoPath is undefined", () => {
+    const backend = new AutoRoutingBackend();
     const caps = backend.capabilitiesForRepo(undefined);
-    // Fallback is "cli" which uses FULL_CAPABILITIES
+    // capabilitiesForRepo treats resolution failure as advisory and returns
+    // FULL_CAPABILITIES so render paths don't crash; the data path still throws.
     expect(caps).toEqual(FULL_CAPABILITIES);
   });
 
-  it("returns fallback capabilities for an unmarked repo", () => {
+  it("returns FULL_CAPABILITIES (advisory) for an unmarked repo", () => {
     const repo = makeRepo([]);
-    const backend = new AutoRoutingBackend("cli");
+    const backend = new AutoRoutingBackend();
     const caps = backend.capabilitiesForRepo(repo);
     expect(caps).toEqual(FULL_CAPABILITIES);
   });
@@ -178,8 +179,8 @@ describe("AutoRoutingBackend.capabilitiesForRepo", () => {
 
 describe("Mixed tracker operation routing", () => {
   it("routes to Knots when both .knots and .beats markers exist", async () => {
-    const repo = makeRepo([".knots", ".beats"]);
-    const backend = new AutoRoutingBackend("cli");
+    const repo = makeRepo([".knots", ".beads"]);
+    const backend = new AutoRoutingBackend();
 
     const result = await backend.list(undefined, repo);
     expect(result.ok).toBe(true);
@@ -190,8 +191,8 @@ describe("Mixed tracker operation routing", () => {
 
   it("routes different repos to different backends in the same instance", async () => {
     const knotsRepo = makeRepo([".knots"]);
-    const beatsRepo = makeRepo([".beats"]);
-    const backend = new AutoRoutingBackend("cli");
+    const beatsRepo = makeRepo([".beads"]);
+    const backend = new AutoRoutingBackend();
 
     const knotsResult = await backend.list(undefined, knotsRepo);
     expect(knotsResult.ok).toBe(true);
@@ -206,8 +207,8 @@ describe("Mixed tracker operation routing", () => {
 
   it("returns Knots-shaped data for .knots and Beats-shaped data for .beats", async () => {
     const knotsRepo = makeRepo([".knots"]);
-    const beatsRepo = makeRepo([".beats"]);
-    const backend = new AutoRoutingBackend("cli");
+    const beatsRepo = makeRepo([".beads"]);
+    const backend = new AutoRoutingBackend();
 
     const knotsResult = await backend.list(undefined, knotsRepo);
     expect(knotsResult.ok).toBe(true);
@@ -231,8 +232,8 @@ describe("Cache behavior with mixed repos", () => {
   it("caches per-repo so routing repo A to Knots does not affect repo B", async () => {
     const spy = vi.spyOn(memoryManagerDetection, "detectMemoryManagerType");
     const repoA = makeRepo([".knots"]);
-    const repoB = makeRepo([".beats"]);
-    const backend = new AutoRoutingBackend("cli");
+    const repoB = makeRepo([".beads"]);
+    const backend = new AutoRoutingBackend();
 
     // First call for each repo triggers detection
     await backend.list(undefined, repoA);
@@ -256,8 +257,8 @@ describe("Cache behavior with mixed repos", () => {
   it("clearRepoCache(repoPath) only clears the specified repo", async () => {
     const spy = vi.spyOn(memoryManagerDetection, "detectMemoryManagerType");
     const repoA = makeRepo([".knots"]);
-    const repoB = makeRepo([".beats"]);
-    const backend = new AutoRoutingBackend("cli");
+    const repoB = makeRepo([".beads"]);
+    const backend = new AutoRoutingBackend();
 
     // Populate cache for both repos
     await backend.list(undefined, repoA);
@@ -280,8 +281,8 @@ describe("Cache behavior with mixed repos", () => {
   it("clearRepoCache() with no args clears all cached repos", async () => {
     const spy = vi.spyOn(memoryManagerDetection, "detectMemoryManagerType");
     const repoA = makeRepo([".knots"]);
-    const repoB = makeRepo([".beats"]);
-    const backend = new AutoRoutingBackend("cli");
+    const repoB = makeRepo([".beads"]);
+    const backend = new AutoRoutingBackend();
 
     // Populate cache for both repos
     await backend.list(undefined, repoA);

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
-import { backendErrorStatus } from "@/lib/backend-http";
+import {
+  backendErrorStatus,
+  withDispatchFailureHandling,
+} from "@/lib/backend-http";
 import { closeBeatSchema } from "@/lib/schemas";
 import {
   WorkflowCorrectionFailureError,
@@ -13,7 +16,6 @@ export async function POST(
   const { id } = await params;
   const body = await request.json();
   const { _repo: repoPath, ...rest } = body;
-  const backend = getBackend();
   const parsed = closeBeatSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
@@ -22,31 +24,34 @@ export async function POST(
     );
   }
 
-  const current = await backend.get(id, repoPath);
-  const canonicalId =
-    current.ok && current.data ? current.data.id : id;
+  return withDispatchFailureHandling(async () => {
+    const backend = getBackend();
+    const current = await backend.get(id, repoPath);
+    const canonicalId =
+      current.ok && current.data ? current.data.id : id;
 
-  try {
-    const result = await backend.reopen(
-      canonicalId,
-      parsed.data.reason,
-      repoPath,
-    );
-    if (!result.ok) {
-      return NextResponse.json(
-        { error: result.error?.message },
-        { status: backendErrorStatus(result.error) },
+    try {
+      const result = await backend.reopen(
+        canonicalId,
+        parsed.data.reason,
+        repoPath,
       );
+      if (!result.ok) {
+        return NextResponse.json(
+          { error: result.error?.message },
+          { status: backendErrorStatus(result.error) },
+        );
+      }
+    } catch (err) {
+      if (err instanceof WorkflowCorrectionFailureError) {
+        return NextResponse.json(
+          { error: err.message },
+          { status: 400 },
+        );
+      }
+      throw err;
     }
-  } catch (err) {
-    if (err instanceof WorkflowCorrectionFailureError) {
-      return NextResponse.json(
-        { error: err.message },
-        { status: 400 },
-      );
-    }
-    throw err;
-  }
 
-  return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true });
+  });
 }

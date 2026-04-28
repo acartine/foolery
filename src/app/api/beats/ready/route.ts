@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
-import { backendErrorStatus } from "@/lib/backend-http";
+import {
+  backendErrorStatus,
+  withDispatchFailureHandling,
+} from "@/lib/backend-http";
 import type { BeatListFilters } from "@/lib/backend-port";
 import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
 import { filterByVisibleAncestorChain } from "@/lib/ready-ancestor-filter";
@@ -13,6 +16,7 @@ export async function GET(request: NextRequest) {
   const query = params.q;
   delete params.q;
 
+  return withDispatchFailureHandling(async () => {
   // Query open + in_progress items via backend.list (which returns labels)
   // instead of backend.listReady (which can omit labels depending on backend).
   const [rawOpen, rawInProgress] = await Promise.all([
@@ -58,4 +62,5 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.json({ data: result });
+  });
 }

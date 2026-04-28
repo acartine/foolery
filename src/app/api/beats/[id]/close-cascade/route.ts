@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { backendErrorStatus } from "@/lib/backend-http";
+import {
+  backendErrorStatus,
+  withDispatchFailureHandling,
+} from "@/lib/backend-http";
 import { getBackend } from "@/lib/backend-instance";
 import { cascadeCloseSchema } from "@/lib/schemas";
 import { getOpenDescendants, cascadeClose } from "@/lib/cascade-close";
@@ -11,7 +14,6 @@ export async function POST(
   const { id } = await params;
   const body = await request.json();
   const { _repo: repoPath, ...rest } = body;
-  const backend = getBackend();
   const parsed = cascadeCloseSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
@@ -20,28 +22,31 @@ export async function POST(
     );
   }
 
-  const current = await backend.get(id, repoPath);
-  const canonicalId = current.ok && current.data ? current.data.id : id;
+  return withDispatchFailureHandling(async () => {
+    const backend = getBackend();
+    const current = await backend.get(id, repoPath);
+    const canonicalId = current.ok && current.data ? current.data.id : id;
 
-  if (!parsed.data.confirmed) {
-    // Preview mode: return the list of descendants that would be closed
-    const result = await getOpenDescendants(canonicalId, repoPath);
+    if (!parsed.data.confirmed) {
+      // Preview mode: return the list of descendants that would be closed
+      const result = await getOpenDescendants(canonicalId, repoPath);
+      if (!result.ok) {
+        return NextResponse.json(
+          { error: result.error?.message ?? "Failed to list descendants" },
+          { status: backendErrorStatus(result.error) },
+        );
+      }
+      return NextResponse.json({ ok: true, data: { descendants: result.data } });
+    }
+
+    // Confirmed: close all descendants then the parent
+    const result = await cascadeClose(canonicalId, parsed.data.reason, repoPath);
     if (!result.ok) {
       return NextResponse.json(
-        { error: result.error?.message ?? "Failed to list descendants" },
+        { error: result.error?.message ?? "Failed to close descendants" },
         { status: backendErrorStatus(result.error) },
       );
     }
-    return NextResponse.json({ ok: true, data: { descendants: result.data } });
-  }
-
-  // Confirmed: close all descendants then the parent
-  const result = await cascadeClose(canonicalId, parsed.data.reason, repoPath);
-  if (!result.ok) {
-    return NextResponse.json(
-      { error: result.error?.message ?? "Failed to close descendants" },
-      { status: backendErrorStatus(result.error) },
-    );
-  }
-  return NextResponse.json({ ok: true, data: result.data });
+    return NextResponse.json({ ok: true, data: result.data });
+  });
 }

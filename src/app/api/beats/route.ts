@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
 import type { BeatListFilters } from "@/lib/backend-port";
 import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
-import { backendErrorStatus } from "@/lib/backend-http";
+import {
+  backendErrorStatus,
+  withDispatchFailureHandling,
+} from "@/lib/backend-http";
 import { createBeatSchema } from "@/lib/schemas";
 import { logApiError } from "@/lib/server-logger";
 import { withServerTiming } from "@/lib/server-timing";
@@ -27,7 +30,7 @@ export async function GET(request: NextRequest) {
       route: "GET /api/beats",
       context: { repoPath, scope, query },
     },
-    async ({ measure }) => {
+    async ({ measure }) => withDispatchFailureHandling(async () => {
       if (scope === "all" && !repoPath) {
         const wantStream =
           request.headers.get("accept") === "application/x-ndjson";
@@ -73,7 +76,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: result.error?.message }, { status });
       }
       return NextResponse.json({ data: result.data });
-    },
+    }),
   );
 }
 
@@ -119,7 +122,7 @@ export async function POST(request: NextRequest) {
       route: "POST /api/beats",
       context: { repoPath },
     },
-    async ({ measure }) => {
+    async ({ measure }) => withDispatchFailureHandling(async () => {
       const parsed = createBeatSchema.safeParse(rest);
       if (!parsed.success) {
         logApiError({ method: "POST", path: "/api/beats", status: 400, error: "Validation failed" });
@@ -180,6 +183,6 @@ export async function POST(request: NextRequest) {
         );
       });
       return NextResponse.json({ data: result.data }, { status: 201 });
-    },
+    }),
   );
 }

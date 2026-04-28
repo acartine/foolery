@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
-import { backendErrorStatus } from "@/lib/backend-http";
+import {
+  backendErrorStatus,
+  withDispatchFailureHandling,
+} from "@/lib/backend-http";
 import { z } from "zod/v4";
 
 const mergeBeatsSchema = z.object({
@@ -21,6 +24,7 @@ export async function POST(request: NextRequest) {
 
   const { survivorId, consumedId } = parsed.data;
 
+  return withDispatchFailureHandling(async () => {
   // Fetch both beats in parallel
   const [survivorResult, consumedResult] = await Promise.all([
     getBackend().get(survivorId, repoPath),
@@ -102,4 +106,5 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ ok: true, data: { survivorId, consumedId } });
+  });
 }

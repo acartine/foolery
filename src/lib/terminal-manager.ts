@@ -222,6 +222,7 @@ async function resolveSessionAgent(
   );
   if (!selected) {
     throw new DispatchFailureError({
+      kind: "agent",
       beatId,
       state: prepared.beat.state,
       workflowId: workflow.id,

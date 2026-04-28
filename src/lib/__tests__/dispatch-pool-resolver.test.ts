@@ -170,10 +170,12 @@ describe("resolveDispatchAgent", () => {
     } catch (err) {
       expect(err).toBeInstanceOf(DispatchFailureError);
       expect((err as Error).message).toContain(DISPATCH_FAILURE_MARKER);
-      expect((err as DispatchFailureError).info.poolKey).toBe("evaluating");
-      expect((err as DispatchFailureError).info.reason).toBe(
-        "no_pool_configured",
-      );
+      const info = (err as DispatchFailureError).info;
+      expect(info.kind).toBe("agent");
+      if (info.kind === "agent") {
+        expect(info.poolKey).toBe("evaluating");
+        expect(info.reason).toBe("no_pool_configured");
+      }
     }
   });
 

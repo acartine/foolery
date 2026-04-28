@@ -45,14 +45,46 @@ export const DISPATCH_FAILURE_MARKER = "FOOLERY DISPATCH FAILURE";
 const ANSI_RED_BG_WHITE = "\x1b[41;37;1m";
 const ANSI_RESET = "\x1b[0m";
 
-export interface DispatchFailureInfo {
+export type AgentDispatchFailureReason =
+  | "no_pool_key"
+  | "no_pool_configured"
+  | "pool_empty"
+  | "no_eligible_agent";
+
+export interface AgentDispatchFailure {
+  kind: "agent";
   beatId: string;
   state: string;
   workflowId: string;
   poolKey: string | null;
-  reason: "no_pool_key" | "no_pool_configured" | "pool_empty" | "no_eligible_agent";
+  reason: AgentDispatchFailureReason;
   excluded?: ReadonlyArray<string>;
 }
+
+export type BackendDispatchFailureReason =
+  | "repo_path_missing"
+  | "repo_type_unknown";
+
+export interface BackendDispatchFailure {
+  kind: "backend";
+  /** The repo path that was passed (or null when none was supplied). */
+  repoPath: string | null;
+  /** Name of the backend method whose call site triggered the failure. */
+  method: string;
+  /** Detected memory-manager type, if any (currently always undefined for both reasons). */
+  detectedType?: string;
+  reason: BackendDispatchFailureReason;
+}
+
+export type DispatchFailureInfo =
+  | AgentDispatchFailure
+  | BackendDispatchFailure;
+
+/**
+ * Back-compat alias for the legacy agent-only dispatch-failure shape. New code
+ * should use {@link AgentDispatchFailure} directly.
+ */
+export type AgentDispatchFailureInfo = AgentDispatchFailure;
 
 /**
  * Build the unmissable red banner. Writes to console.error AND returns the
@@ -62,6 +94,18 @@ export interface DispatchFailureInfo {
 export function emitDispatchFailureBanner(
   info: DispatchFailureInfo,
 ): string {
+  const plain = info.kind === "backend"
+    ? backendBannerBody(info)
+    : agentBannerBody(info);
+  const banner = buildBanner(plain);
+
+  console.error(
+    `\n${ANSI_RED_BG_WHITE}${banner}${ANSI_RESET}\n`,
+  );
+  return `\n${ANSI_RED_BG_WHITE}${banner}${ANSI_RESET}\n`;
+}
+
+function agentBannerBody(info: AgentDispatchFailure): string {
   const heading =
     `${DISPATCH_FAILURE_MARKER}: cannot dispatch agent for beat ${info.beatId}`;
   const body = [
@@ -72,18 +116,28 @@ export function emitDispatchFailureBanner(
     info.excluded && info.excluded.length > 0
       ? `  excluded     = ${info.excluded.join(", ")}`
       : "",
-    remediationFor(info),
+    agentRemediationFor(info),
   ]
     .filter(Boolean)
     .join("\n");
+  return [heading, body].join("\n");
+}
 
-  const plain = [heading, body].join("\n");
-  const banner = buildBanner(plain);
-
-  console.error(
-    `\n${ANSI_RED_BG_WHITE}${banner}${ANSI_RESET}\n`,
-  );
-  return `\n${ANSI_RED_BG_WHITE}${banner}${ANSI_RESET}\n`;
+function backendBannerBody(info: BackendDispatchFailure): string {
+  const heading =
+    `${DISPATCH_FAILURE_MARKER}: cannot resolve backend for ${info.method}()`;
+  const body = [
+    `  repoPath     = ${info.repoPath ?? "<missing>"}`,
+    `  method       = ${info.method}`,
+    `  reason       = ${info.reason}`,
+    info.detectedType
+      ? `  detectedType = ${info.detectedType}`
+      : "",
+    backendRemediationFor(info),
+  ]
+    .filter(Boolean)
+    .join("\n");
+  return [heading, body].join("\n");
 }
 
 function buildBanner(inner: string): string {
@@ -101,7 +155,7 @@ function buildBanner(inner: string): string {
   return [top, middle, bottom].join("\n");
 }
 
-function remediationFor(info: DispatchFailureInfo): string {
+function agentRemediationFor(info: AgentDispatchFailure): string {
   const base = `  remediation  =`;
   switch (info.reason) {
     case "no_pool_key":
@@ -115,17 +169,37 @@ function remediationFor(info: DispatchFailureInfo): string {
   }
 }
 
+function backendRemediationFor(info: BackendDispatchFailure): string {
+  const base = `  remediation  =`;
+  switch (info.reason) {
+    case "repo_path_missing":
+      return `${base} pass \`_repo=<absolute path>\` query/body or set the repoPath argument; the auto-router cannot pick a backend without it. To bypass auto-routing entirely, set FOOLERY_BACKEND=cli|knots|beads|stub.`;
+    case "repo_type_unknown":
+      return `${base} no memory-manager marker (e.g., .knots/, .beads/) found in ${info.repoPath ?? "<missing>"}. Run \`kno init\` (knots) or \`bd init\` (beads), or set FOOLERY_BACKEND=cli|knots|beads|stub to bypass detection.`;
+  }
+}
+
+function buildErrorMessage(info: DispatchFailureInfo): string {
+  if (info.kind === "backend") {
+    return (
+      `${DISPATCH_FAILURE_MARKER}: method=${info.method} ` +
+      `repoPath=${info.repoPath ?? "<missing>"} reason=${info.reason}`
+    );
+  }
+  return (
+    `${DISPATCH_FAILURE_MARKER}: beat=${info.beatId} ` +
+    `state=${info.state} workflow=${info.workflowId} ` +
+    `poolKey=${info.poolKey ?? "<none>"} reason=${info.reason}`
+  );
+}
+
 /** Error thrown by resolveDispatchAgent on unresolvable dispatch. */
 export class DispatchFailureError extends Error {
   readonly info: DispatchFailureInfo;
   readonly banner: string;
   constructor(info: DispatchFailureInfo) {
     const banner = emitDispatchFailureBanner(info);
-    super(
-      `${DISPATCH_FAILURE_MARKER}: beat=${info.beatId} ` +
-      `state=${info.state} workflow=${info.workflowId} ` +
-      `poolKey=${info.poolKey ?? "<none>"} reason=${info.reason}`,
-    );
+    super(buildErrorMessage(info));
     this.name = "DispatchFailureError";
     this.info = info;
     this.banner = banner;
@@ -166,6 +240,7 @@ export function resolveDispatchAgent(
   const poolKey = derivePoolKey(ctx);
   if (!poolKey) {
     throw new DispatchFailureError({
+      kind: "agent",
       beatId: ctx.beatId,
       state: ctx.state,
       workflowId: ctx.workflow.id,
@@ -177,6 +252,7 @@ export function resolveDispatchAgent(
   const pool: PoolEntry[] | undefined = ctx.settings.pools?.[poolKey];
   if (!pool || pool.length === 0) {
     throw new DispatchFailureError({
+      kind: "agent",
       beatId: ctx.beatId,
       state: ctx.state,
       workflowId: ctx.workflow.id,
@@ -197,6 +273,7 @@ export function resolveDispatchAgent(
     const reason =
       validAgents.length === 0 ? "pool_empty" : "no_eligible_agent";
     throw new DispatchFailureError({
+      kind: "agent",
       beatId: ctx.beatId,
       state: ctx.state,
       workflowId: ctx.workflow.id,
@@ -208,6 +285,7 @@ export function resolveDispatchAgent(
 
   if (selected.kind !== "cli") {
     throw new DispatchFailureError({
+      kind: "agent",
       beatId: ctx.beatId,
       state: ctx.state,
       workflowId: ctx.workflow.id,
