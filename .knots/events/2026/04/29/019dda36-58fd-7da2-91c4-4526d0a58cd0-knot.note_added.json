@@ -1,0 +1,18 @@
+{
+  "event_id": "019dda36-58fd-7da2-91c4-4526d0a58cd0",
+  "occurred_at": "2026-04-29T17:08:08.061489Z",
+  "knot_id": "foolery-e780",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Scope refinement from user, 2026-04-29:\n\nPlease expand the approval/escalation work beyond the OpenCode {} parsing bug so each approval card contains the information a human needs without opening logs. Add these fields to the escalation presentation and store them in the approval record at capture time so they survive session disappearance:\n\n1. Timestamp: show the approval detected/created timestamp from createdAt, and preserve updatedAt/resolved timestamps where applicable. Render it in a readable local format, with exact timestamp available if the UI pattern supports it.\n2. Agent identity: show the agent provider/name, model, and version using the existing nice formatting helpers/patterns already used for agent labels. Source this from the terminal session at detection time, e.g. agentName, agentModel, agentVersion, and agentCommand where helpful. Do not require the live terminal session to still exist to display the agent identity.\n3. Tool call: show the actual normalized tool call, not only the tool name or raw JSON. For the observed OpenCode bash case, the card should communicate something like bash rm /Users/cartine/knots/src/db/tests_pagination.rs, derived from patterns/toolUseId/permissionName/command-shaped metadata.\n4. Persistence: pending/unresolved approval escalations must not automatically clear just because the terminal session disappears, completes, or is auto-removed from the UI. They should remain until an explicit approve, reject, manual-action resolution, or dismiss action. Resolved approvals may be shown as history or filtered, but they should not vanish solely due to session cleanup.\n\nImplementation guidance:\n- PendingApprovalRecord/ApprovalEscalation should carry the display-ready timestamp, agent identity fields, and normalized tool-call detail independent of TerminalSession.\n- session approval hydration currently depends on listSessions() and live session.pendingApprovals. Add a durable approval source or store path so reload/hydration can restore pending approvals even when /api/terminal no longer lists the original session. At minimum, terminal auto-close/removeTerminal must not delete existing approval-store entries.\n- Reuse the existing agent display formatting utilities rather than inventing a second label format.\n\nAdditional acceptance coverage:\n1. Approval rows show a created/detected timestamp.\n2. Approval rows show formatted agent provider/model/version after the originating session is gone.\n3. Approval rows show the full normalized tool call for the OpenCode bash rm fixture instead of {}.\n4. Pending approval records persist after terminal auto-close/removal and are not cleared merely because sessions disappear from /api/terminal.\n5. Hydration/reload coverage proves a pending approval can be restored independently of a live TerminalSession, or the durable-store behavior is otherwise explicitly tested.\n6. Tests cover terminal auto-close not clearing approvals.",
+    "datetime": "2026-04-29T17:08:08.061489Z",
+    "entry_id": "019dda36-58fd-7da2-91c4-45194226fbd0",
+    "model": "openrouter/moonshotai/kimi-k2.6",
+    "username": "OpenCode",
+    "version": "unknown"
+  },
+  "precondition": {
+    "profile_etag": "019dd9c9-0d2c-7ba0-ac4d-5563b6606682"
+  }
+}
