@@ -195,8 +195,15 @@ function translateEvent(
   if (type === "permission.asked") return event;
   const name = asString(event.event)
     ?? asString(event.name);
-  return name === "permission.asked"
-    ? { ...event, type: name }
+  if (name === "permission.asked") {
+    return { ...event, type: name };
+  }
+  const part = toObject(event.part);
+  const partType = asString(part?.type)
+    ?? asString(part?.event)
+    ?? asString(part?.name);
+  return partType === "permission.asked"
+    ? { ...event, type: partType }
     : null;
 }
 

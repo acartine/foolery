@@ -59,6 +59,7 @@ function requestCandidates(
     "data",
     "params",
     "metadata",
+    "part",
   ];
   for (let index = 0; index < candidates.length; index += 1) {
     const source = candidates[index];
@@ -206,7 +207,17 @@ export function extractOpenCodePermissionAsked(
   const eventName = asString(obj?.type)
     ?? asString(obj?.event)
     ?? asString(obj?.name);
-  if (!obj || eventName !== "permission.asked") {
+  const part = toObject(obj?.part);
+  const partEventName = asString(part?.type)
+    ?? asString(part?.event)
+    ?? asString(part?.name);
+  if (
+    !obj ||
+    (
+      eventName !== "permission.asked" &&
+      partEventName !== "permission.asked"
+    )
+  ) {
     return null;
   }
   const candidates = requestCandidates(obj);

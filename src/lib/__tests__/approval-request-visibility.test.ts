@@ -166,6 +166,33 @@ describe("OpenCode permission.asked extraction", () => {
   });
 });
 
+describe("OpenCode wrapped permission.asked extraction", () => {
+  it("extracts fields from a permission request nested in part", () => {
+    const request = extractApprovalRequest({
+      type: "event",
+      part: {
+        type: "permission.asked",
+        id: "perm-wrapped-1",
+        sessionID: "ses_opencode_3",
+        permission: "bash",
+        patterns: ["Bash(rm:*)"],
+        metadata: { command: "rm temp.txt" },
+        tool: { callID: "call_wrapped_1" },
+      },
+    });
+
+    expect(request).not.toBeNull();
+    expect(request?.sessionId).toBe("ses_opencode_3");
+    expect(request?.requestId).toBe("perm-wrapped-1");
+    expect(request?.permissionName).toBe("bash");
+    expect(request?.patterns).toEqual(["Bash(rm:*)"]);
+    expect(request?.toolUseId).toBe("call_wrapped_1");
+    expect(request?.parameterSummary).toContain(
+      "rm temp.txt",
+    );
+  });
+});
+
 describe("formatApprovalRequestBanner", () => {
   it("includes the stable marker and greppable details", () => {
     const banner = formatApprovalRequestBanner({
