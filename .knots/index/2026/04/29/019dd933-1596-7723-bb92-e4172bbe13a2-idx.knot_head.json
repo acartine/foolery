@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd933-1596-7723-bb92-e4172bbe13a2",
+  "occurred_at": "2026-04-29T12:24:56.982918Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-a7a1",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Forbid one-shot take and scene dispatch",
+    "type": "work",
+    "updated_at": "2026-04-29T12:24:56.982918Z",
+    "workflow_id": "work_sdlc"
+  }
+}
