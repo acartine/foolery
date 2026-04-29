@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd965-992b-7831-9425-5a163c859ec1",
+  "occurred_at": "2026-04-29T13:20:07.467449Z",
+  "knot_id": "foolery-a01f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Merged to main as 0a483446 (merge commit). Pushed to origin/main. Branch worktree-foolery-a01f-opencode-render preserved on remote.\n\nVerifying CI status next.",
+    "datetime": "2026-04-29T13:20:07.467449Z",
+    "entry_id": "019dd965-992b-7831-9425-5a01d7b4ae8b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

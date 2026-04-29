@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd957-b19f-7a71-9566-3255723d67a3",
+  "occurred_at": "2026-04-29T13:04:56.223869Z",
+  "knot_id": "foolery-a96c",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Surface text change only: rename every user-visible occurrence of 'Notes Work' to 'Human Beats' in the Escalations UI. No logic, routing, or data-model changes."
+  }
+}

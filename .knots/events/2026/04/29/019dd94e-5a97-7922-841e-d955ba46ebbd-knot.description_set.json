@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd94e-5a97-7922-841e-d955ba46ebbd",
+  "occurred_at": "2026-04-29T12:54:44.110238Z",
+  "knot_id": "foolery-a96c",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, simple surface text change"
+  }
+}

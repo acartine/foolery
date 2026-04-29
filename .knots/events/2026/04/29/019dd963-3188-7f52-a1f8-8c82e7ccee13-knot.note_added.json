@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd963-3188-7f52-a1f8-8c82e7ccee13",
+  "occurred_at": "2026-04-29T13:17:29.864546Z",
+  "knot_id": "foolery-a01f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation pushed.\n\nBranch: worktree-foolery-a01f-opencode-render\nCommit: d569c4f8\n\nFiles changed:\n- NEW src/lib/opencode-event-translate.ts (370 lines): pure translateOpenCodePart / translateOpenCodeEvent / translateOpenCodeResponse / hasOpenCodeMessagePayload. Handles step-start, text, step-finish, tool (running and completed → tool_use + tool_result), reasoning, file, snapshot. SSE envelopes: permission.{asked,updated}, message.part.updated, message.updated, step.updated, session.idle, session.error.\n- src/lib/opencode-http-session.ts: 488 → 402 lines after extraction. Adds emittedToolUseIds / emittedToolResultIds dedupe Sets so streaming tool parts emit at most one tool_use and one tool_result per call id even when OpenCode pushes pending → running → completed transitions.\n- src/lib/agent-adapter-normalizers.ts: createOpenCodeNormalizer now handles tool_use → assistant tool_use block, tool_result → user tool_result block, reasoning → stream_event delta, session_error → result(is_error: true). Existing text/step_start/step_finish behavior preserved.\n- NEW src/lib/opencode-event-format.ts: formatOpenCodeEvent for native lifecycle types (reasoning, step_updated, session_idle, session_error, file, snapshot, message_updated). tool_use / tool_result deliberately fall through to the existing Claude-shape renderers (formatAssistantEvent / formatToolResult).\n- src/lib/terminal-manager-format.ts: wires formatOpenCodeEvent into formatStreamEvent right after formatCodexEvent.\n\nTests added (all hermetic, run under bun run test):\n- src/lib/__tests__/opencode-event-translate.test.ts (27 tests)\n- src/lib/__tests__/agent-adapter-opencode.test.ts (10 tests)\n- src/lib/__tests__/opencode-event-format.test.ts (12 tests)\n- src/lib/__tests__/opencode-pipeline-smoke.test.ts (3 tests) — feeds a representative SSE-and-message stream through the full pipeline (translate → normalize → format) and asserts the rendered terminal text contains tool name + command (▶ bash + ls -la /tmp), tool output (drwxr-xr-x...), reasoning, and assistant message.\n\nQuality gates (in worktree):\n- bun run lint: clean.\n- bunx tsc --noEmit: clean.\n- bun run test: 294 files / 2965 tests passed (49 new).\n- bun run build: succeeded.\n\nOperational evidence: PORT=3071 bun run dev started cleanly, /api/version returned {ok:true,...} with the new code loaded. Full UI-level OpenCode dispatch test deferred to the user's a96c environment (which is the bug they originally reported — once they pull this branch they will see tool calls, reasoning, and assistant text in the terminal pane that today shows essentially nothing).",
+    "datetime": "2026-04-29T13:17:29.864546Z",
+    "entry_id": "019dd963-3188-7f52-a1f8-8c7cdaf5775a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd964-d83d-7741-b324-ed5f4495816b",
+  "occurred_at": "2026-04-29T13:19:18.076992Z",
+  "knot_id": "foolery-a01f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved.\n\nBranch: worktree-foolery-a01f-opencode-render (commits d569c4f8 + 199e7c4a)\nDiff vs origin/main: 10 files changed, 1445 insertions, 172 deletions.\n\nAcceptance criteria coverage:\n1. ✓ translateOpenCodePart in src/lib/opencode-event-translate.ts handles tool (state.input/state.output/state.status), reasoning, file, snapshot — verified by 13 tests in opencode-event-translate.test.ts and exercised in pipeline smoke.\n2. ✓ translateOpenCodeEvent forwards message.updated, message.part.updated, step.updated, session.idle, session.error plus permission.{asked,updated} — verified by 11 tests in opencode-event-translate.test.ts.\n3. ✓ createOpenCodeNormalizer produces tool_use assistant blocks, tool_result user blocks, reasoning stream_event deltas, and session_error result(is_error:true) — verified by 10 tests in agent-adapter-opencode.test.ts.\n4. ✓ formatOpenCodeEvent in src/lib/opencode-event-format.ts wired into formatStreamEvent at terminal-manager-format.ts line ~234 — verified by 12 tests in opencode-event-format.test.ts.\n5. ✓ All new tests live in src/lib/__tests__ and are hermetic (no real network/fs/env/host binaries; only pure JSON inputs and synchronous outputs).\n6. ✓ Pipeline smoke (opencode-pipeline-smoke.test.ts) feeds a representative SSE+message stream through translate → normalize → format and asserts the rendered terminal text contains tool name+command, tool output, reasoning, and assistant text. Dev server boot confirmed in worktree (PORT=3071, /api/version returned ok).\n7. ✓ bun run lint, bunx tsc --noEmit, bun run test (295 files / 2968 tests passed), bun run build all green.\n\nInvariant adherence:\n- kno workflows untouched; no synthetic transitions in TS.\n- No silent fallbacks; unknown OpenCode part/event types return empty arrays explicitly. The translator is exhaustive over the named handler set; missing types do not silently coalesce.\n- File size limits respected: opencode-http-session.ts shrank from 488 → 402 lines; opencode-event-translate.ts is 370 lines; opencode-event-format.ts is 142 lines.\n- Hermetic test policy respected: no fetch/process.env/fs/spawn in any new test.",
+    "datetime": "2026-04-29T13:19:18.076992Z",
+    "entry_id": "019dd964-d83d-7741-b324-ed405eff0513",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

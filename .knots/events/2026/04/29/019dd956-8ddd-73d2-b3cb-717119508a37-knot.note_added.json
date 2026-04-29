@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd956-8ddd-73d2-b3cb-717119508a37",
+  "occurred_at": "2026-04-29T13:03:41.533526Z",
+  "knot_id": "foolery-a01f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan reviewed. Steps 1-8 are concrete and tied to acceptance criteria #1-#7. File-size mitigation (extract to opencode-event-translate.ts) is correctly identified as mandatory rather than optional. Hermetic test plan covers translator, normalizer, and formatter without touching real network/fs/env. Tool dedup (emit tool_use on first sight of a tool id, tool_result on terminal status) will be handled in the SSE consumer using a Set, keeping the translator pure. No invariant or constraint violations. Approved.",
+    "datetime": "2026-04-29T13:03:41.533526Z",
+    "entry_id": "019dd956-8ddd-73d2-b3cb-7169028723a5",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

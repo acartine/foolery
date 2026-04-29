@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd9d8-ec35-7650-9f60-779cf3da9516",
+  "occurred_at": "2026-04-29T15:26:05.365954Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-0768",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Create Knots leases from canonical agent identity",
+    "type": "work",
+    "updated_at": "2026-04-29T15:26:05.365954Z",
+    "workflow_id": "work_sdlc"
+  }
+}

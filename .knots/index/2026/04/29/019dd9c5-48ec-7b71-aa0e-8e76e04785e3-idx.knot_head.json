@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd9c5-48ec-7b71-aa0e-8e76e04785e3",
+  "occurred_at": "2026-04-29T15:04:38.374468Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-43fa",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Rename mode: \"scene\" to spec-native terminology in execution-plan API",
+    "type": "work",
+    "updated_at": "2026-04-29T15:04:38.374468Z",
+    "workflow_id": "work_sdlc"
+  }
+}

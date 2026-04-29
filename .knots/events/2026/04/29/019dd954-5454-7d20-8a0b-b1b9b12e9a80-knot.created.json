@@ -1,0 +1,17 @@
+{
+  "event_id": "019dd954-5454-7d20-8a0b-b1b9b12e9a80",
+  "occurred_at": "2026-04-29T13:01:15.732516Z",
+  "knot_id": "foolery-a01f",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nWhen an OpenCode agent runs under Foolery (interactive HTTP session), the terminal display should show useful step-by-step activity comparable to Claude and Codex: tool calls (Bash/Read/Edit/Grep/etc.) with target/command, tool results (output, abbreviated), reasoning (magenta), assistant text, and turn boundaries. Today nearly everything except final assistant text is dropped silently — the terminal looks empty while the agent is working.\n\nInvestigation already done:\n- src/lib/opencode-http-session.ts `translatePart` only handles `step-start`, `text`, `step-finish`. Tool, reasoning, file, error, snapshot parts return null.\n- Same file `translateEvent` only forwards `permission.asked` / `permission.updated`. OpenCode SSE also emits `message.updated`, `message.part.updated`, `session.idle`, `session.error`, `step.updated` — all dropped.\n- src/lib/agent-adapter-normalizers.ts `createOpenCodeNormalizer` only normalizes `step_start`, `text`, `step_finish` to Claude-shape.\n- No `formatOpenCodeEvent` exists in src/lib/terminal-manager-format.ts (Codex has its own).\n- Existing reference to compare against: src/lib/codex-event-format.ts (terminal renderer for Codex's translated `item.*` / `turn.*`) and src/lib/agent-adapter-normalizers.ts `createCodexNormalizer`.\n\nVerification:\n1. Hermetic unit tests for `translatePart` covering tool, tool-input/output, reasoning, file, snapshot, error parts.\n2. Hermetic unit tests for `translateEvent` covering `message.part.updated`, `message.updated`, `session.idle`, `session.error`, plus existing permission paths.\n3. Hermetic unit tests for `createOpenCodeNormalizer` covering tool_use → assistant tool_use block, tool result → user tool_result block, reasoning → stream_event delta, error → result(is_error=true).\n4. Hermetic unit tests for `formatOpenCodeEvent` rendering tool calls (▶ <tool> <summary>), tool results (dim, clipped), reasoning (magenta), and step finish.\n5. End-to-end smoke: run the dev server (`bun run dev`) in the foolery worktree on a non-3000 port, dispatch a take to OpenCode, and confirm the terminal pane shows tool calls, results, and reasoning rather than only the final message. Capture observable evidence (screenshot or a log excerpt) before marking the knot SHIPPED.\n6. `bun run lint`, `bunx tsc --noEmit`, `bun run test` all green.\n\nConstraints:\n- Do not edit `kno`'s loom workflow or invent synthetic transitions in TS.\n- Do not add silent fallbacks; unknown OpenCode part/event types should be ignored cleanly (return null) but tested types must be handled — fail loudly if a previously-handled type stops resolving.\n- Keep file/function/line-length limits (500/100/100). Prefer adding a new `opencode-event-format.ts` and an `opencode-event-translate.ts` over expanding the existing files past their limits.\n- Work in a fresh git worktree; integrate to remote `main` per repo policy. Other agents are already running in many worktrees — pick a fresh path.\n- Tests in src/**/__tests__ must remain hermetic (no real network, fs, env, or host binaries).",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Render OpenCode tool calls, reasoning, and tool results in the terminal",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

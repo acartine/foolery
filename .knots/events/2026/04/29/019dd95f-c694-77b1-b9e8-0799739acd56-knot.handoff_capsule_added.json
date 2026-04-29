@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd95f-c694-77b1-b9e8-0799739acd56",
+  "occurred_at": "2026-04-29T13:13:45.876895Z",
+  "knot_id": "foolery-a96c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: foolery-a96c. Commit: b9fe223cae643aea46ff78ea64d327c8bec5fe4b. Renamed the Escalations notes tab from Notes Work to Human Beats and updated the contract test. Validated with lint, typecheck, unit tests, build, and Playwright snapshot grep: Notes Work=0, Human Beats>0.",
+    "datetime": "2026-04-29T13:13:45.876895Z",
+    "entry_id": "019dd95f-c694-77b1-b9e8-078f72799a74",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

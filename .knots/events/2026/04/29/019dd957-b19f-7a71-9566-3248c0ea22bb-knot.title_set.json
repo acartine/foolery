@@ -1,0 +1,10 @@
+{
+  "event_id": "019dd957-b19f-7a71-9566-3248c0ea22bb",
+  "occurred_at": "2026-04-29T13:04:56.223869Z",
+  "knot_id": "foolery-a96c",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Escalations: Rename \"Notes Work\" to \"Human Beats\"",
+    "to": "Escalations: Rename 'Notes Work' to 'Human Beats' in UI"
+  }
+}

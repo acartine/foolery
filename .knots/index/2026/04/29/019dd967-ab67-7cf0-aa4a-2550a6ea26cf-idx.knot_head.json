@@ -1,0 +1,37 @@
+{
+  "event_id": "019dd967-ab67-7cf0-aa4a-2550a6ea26cf",
+  "occurred_at": "2026-04-29T13:22:23.207559Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-a01f",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Render OpenCode tool calls, reasoning, and tool results in the terminal",
+    "type": "work",
+    "updated_at": "2026-04-29T13:22:23.207559Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019dd967-9ef0-7310-9875-92e02a05d655"
+  }
+}

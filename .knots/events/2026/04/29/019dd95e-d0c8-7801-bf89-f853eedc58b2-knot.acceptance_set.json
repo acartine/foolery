@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd95e-d0c8-7801-bf89-f853eedc58b2",
+  "occurred_at": "2026-04-29T13:12:42.93409Z",
+  "knot_id": "foolery-e780",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. OpenCode permission.asked events for bash commands with empty metadata and populated patterns render a meaningful command/pattern detail instead of {} in the Approvals tab and notifications.\n2. extractOpenCodePermissionAsked treats empty objects/arrays as absent and prioritizes command-like fields and patterns when building toolParamsDisplay/parameterSummary.\n3. Approval detail formatting includes patterns and permission/tool identity as fallbacks when message, question, toolParamsDisplay, and parameterSummary are absent.\n4. Repeated OpenCode permission.asked events for the same logical tool use are coalesced or otherwise displayed in a way that avoids duplicate indistinguishable pending rows while preserving a valid native reply target.\n5. The Approvals tab is repo-aware: an approval from /Users/cartine/knots is either hidden when /Users/cartine/foolery is the active repo or clearly labeled as cross-repo.\n6. Automated coverage includes OpenCode bash rm parsing, approval detail rendering, duplicate/coalescing behavior, and repo scoping or repo labeling.\n7. Focused approval tests, bun run lint, bunx tsc --noEmit, bun run test, and bun run build pass."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd967-ebac-7381-8612-66478fbda1fb",
+  "occurred_at": "2026-04-29T13:22:39.660546Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-a01f",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Render OpenCode tool calls, reasoning, and tool results in the terminal",
+    "type": "work",
+    "updated_at": "2026-04-29T13:22:39.660546Z",
+    "workflow_id": "work_sdlc"
+  }
+}

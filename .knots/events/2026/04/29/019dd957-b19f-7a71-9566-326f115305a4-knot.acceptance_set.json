@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd957-b19f-7a71-9566-326f115305a4",
+  "occurred_at": "2026-04-29T13:04:56.223869Z",
+  "knot_id": "foolery-a96c",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Open the Escalations view in the browser.\n2. Search the rendered page for the string 'Notes Work' — it must not appear anywhere.\n3. Confirm 'Human Beats' appears in its place in all locations where 'Notes Work' previously appeared (labels, headings, tab titles, tooltips, empty-state text).\n4. No other text or layout is affected.\n\nValidation: Use `mcp__playwright__browser_snapshot` or `mcp__chrome-devtools__take_snapshot` to capture the Escalations view and grep the snapshot output for 'Notes Work' (expect zero matches) and 'Human Beats' (expect one or more matches)."
+  }
+}

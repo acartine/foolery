@@ -1,0 +1,47 @@
+{
+  "event_id": "019dd95f-c6ae-75d3-ae99-9c9047c73207",
+  "occurred_at": "2026-04-29T13:13:45.876895Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-a96c",
+    "next_step_metadata": {
+      "action_kind": "gate",
+      "action_state": "implementation_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "implementation",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Escalations: Rename 'Notes Work' to 'Human Beats' in UI",
+    "type": "work",
+    "updated_at": "2026-04-29T13:13:45.876895Z",
+    "workflow_id": "work_sdlc"
+  }
+}

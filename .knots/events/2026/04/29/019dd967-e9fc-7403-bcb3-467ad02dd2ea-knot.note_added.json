@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd967-e9fc-7403-bcb3-467ad02dd2ea",
+  "occurred_at": "2026-04-29T13:22:39.22839Z",
+  "knot_id": "foolery-a01f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review sign-off.\n\nLive on origin/main:\n- 0a483446 (merge commit, tagged)\n- 199e7c4a (typecheck fix for smoke test, tagged)\n- d569c4f8 (main implementation, tagged)\n- branch:worktree-foolery-a01f-opencode-render (preserved on remote, tagged)\n\nCI/CD: both 'CI' and 'Coverage Badge' workflows completed with status success on the merge commit.\n\nInvariants confirmed in shipped code:\n- kno workflows untouched. No synthetic transitions or post-processing in TS.\n- File length: opencode-http-session.ts 402 lines; opencode-event-translate.ts 370 lines; opencode-event-format.ts 142 lines; all under 500.\n- Hermetic tests: every new test file imports only pure TS modules; no fetch/process.env/fs/spawn/host-binary calls.\n- No silent fallbacks: translateOpenCodePart and translateOpenCodeEvent are exhaustive over their named handler set; unknown types return [] explicitly. createOpenCodeNormalizer returns null for non-objects and unknown types.\n- Backward compatibility: pre-existing OpenCode tests (opencode-interactive-session.test.ts, opencode-http-session-approvals.test.ts, opencode-model-selection.test.ts) all still pass without modification.\n\nNo regressions detected in dependent systems.",
+    "datetime": "2026-04-29T13:22:39.22839Z",
+    "entry_id": "019dd967-e9fc-7403-bcb3-466c8c58547e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

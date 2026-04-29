@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd963-314e-7f00-92bb-9a709fb517dc",
+  "occurred_at": "2026-04-29T13:17:29.80626Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-68eb",
+    "profile_id": "lease",
+    "state": "lease_terminated",
+    "terminal": true,
+    "title": "Lease: claim-foolery-a01f",
+    "type": "lease",
+    "updated_at": "2026-04-29T13:17:29.80626Z",
+    "workflow_id": "lease_sdlc"
+  }
+}

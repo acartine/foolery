@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd967-9af7-75d3-8563-0b7901aae173",
+  "occurred_at": "2026-04-29T13:22:18.999036Z",
+  "knot_id": "foolery-a01f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "CI green on origin/main after merge:\n- CI workflow: success (run 25111293149)\n- Coverage Badge: success (run 25111293206)\n\nShipment complete.",
+    "datetime": "2026-04-29T13:22:18.999036Z",
+    "entry_id": "019dd967-9af7-75d3-8563-0b6f1d16a7fc",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
