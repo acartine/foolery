@@ -44,6 +44,14 @@ Shell drivers with matching `.mjs` implementations for interactive/browser paths
 - **`test-queue-pulldown-stability.{sh,mjs}`** — Queue pulldown stability under load
 - **`test-terminal-rehydration-multicontext.{sh,mjs}`** — Terminal rehydration across contexts
 
+## Manual Smoke Tests
+
+- **`test-cli-approvals-manual.{sh,mjs}`** — Manual-only real CLI approval
+  validation for Codex, Claude Code, and OpenCode. This backs up and restores
+  user config, launches real providers, and is intentionally excluded from
+  default tests and CI. The Node driver also supports `--dry-helper-checks`
+  for offline helper coverage. See [docs/APPROVALS.md](../docs/APPROVALS.md).
+
 ## Subdirectories
 
 - **`release/`** — Release channel management (`channel-install.sh`, `channel-use.sh`)

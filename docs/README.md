@@ -8,6 +8,7 @@ Project documentation for Foolery.
 - **`DEVELOPING.md`** — Contributor guide: prerequisites, setup, dev workflow, testing
 - **`API.md`** — REST API reference for agent clients (beats, waves, terminals, orchestration)
 - **`SETTINGS.md`** — Settings schema and configuration reference
+- **`APPROVALS.md`** — Manual approval-flow harnesses and provider support notes
 - **`backend-extension-guide.md`** — How to add a new `BackendPort` implementation
 - **`interactive-agent-session-protocol.md`** — Canonical contract for interactive
   agent session integrations
