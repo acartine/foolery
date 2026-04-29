@@ -43,7 +43,10 @@ describe("getRegisteredAgents", () => {
 
   it("returns agents from TOML", async () => {
     const toml = [
-      '[agents.claude]', 'command = "claude"', 'label = "Claude Code"',
+      '[agents.claude]',
+      'command = "claude"',
+      'label = "Claude Code"',
+      'approvalMode = "prompt"',
     ].join("\n");
     mockReadFile.mockResolvedValue(toml);
     const agents = await getRegisteredAgents();
@@ -54,6 +57,7 @@ describe("getRegisteredAgents", () => {
       provider: "Claude",
       agent_name: "Claude",
       label: "Claude",
+      approvalMode: "prompt",
     });
   });
 });
@@ -285,4 +289,3 @@ describe("removeRegisteredAgent planning", () => {
     );
   });
 });
-

@@ -338,6 +338,7 @@ export interface RegisteredAgent {
   model?: string;
   flavor?: string;
   version?: string;
+  approvalMode?: "bypass" | "prompt";
   label?: string;
   /** Execution kind. Defaults to "cli" when omitted. */
   kind?: "cli";

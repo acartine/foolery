@@ -10,6 +10,7 @@ export interface AgentTargetBase {
   model?: string;
   flavor?: string;
   version?: string;
+  approvalMode?: "bypass" | "prompt";
   label?: string;
   agentId?: string;
 }
