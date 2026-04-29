@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd7a6-7160-74a2-851a-35b7dde23ce4",
+  "occurred_at": "2026-04-29T05:11:42.68864Z",
+  "knot_id": "foolery-c4db",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/foolery-c4db-worker-a"
+  }
+}

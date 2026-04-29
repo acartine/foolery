@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd79d-4249-7e52-b886-724e07b17b97",
+  "occurred_at": "2026-04-29T05:01:40.799536Z",
+  "knot_id": "foolery-5edd",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. `docs/APPROVALS.md` or a linked harness script describes exact setup, approval, continuation, stop, and restore steps for Codex, Claude Code, and OpenCode.\n2. Codex approval behavior is verified against the current approval UI.\n3. Claude Code approval behavior is verified or blocked with a precise missing implementation note.\n4. OpenCode approval behavior is verified or blocked with a precise missing implementation note.\n5. Any harness script protects user config files with timestamped backups and restores them on success or failure."
+  }
+}

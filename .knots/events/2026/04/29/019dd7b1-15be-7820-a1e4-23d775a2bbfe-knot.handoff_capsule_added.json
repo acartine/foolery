@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd7b1-15be-7820-a1e4-23d775a2bbfe",
+  "occurred_at": "2026-04-29T05:23:20.126564Z",
+  "knot_id": "foolery-5edd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete for foolery-5edd. Branch: codex/foolery-5edd-planning-d. Commit: 505d7e628275e5e9577872ebfe114ea16deb8876. Added docs/APPROVALS.md, docs/scripts index links, and a manual-only approval harness at scripts/test-cli-approvals-manual.sh plus .mjs support modules. The wrapper backs up/restores Foolery and OpenCode config with manifest/checksum verification; the driver can force one provider, start/reuse Foolery, POST /api/terminal, watch SSE for FOOLERY APPROVAL REQUIRED, verify/click the approvals UI, require provider-specific continuation markers/files, and report PASS/BLOCKED/FAIL. Known current blockers are surfaced precisely for Codex approvalPolicy, Claude bypass launch, OpenCode permission.asked extraction, and missing approve UI. Gates passed: node driver help, shell help/restore dry path, OpenCode blocked dry path, git diff --check, bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-04-29T05:23:20.126564Z",
+    "entry_id": "019dd7b1-15be-7820-a1e4-23c81bfcbef2",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

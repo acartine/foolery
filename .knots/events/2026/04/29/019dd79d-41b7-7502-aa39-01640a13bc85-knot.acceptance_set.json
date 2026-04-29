@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd79d-41b7-7502-aa39-01640a13bc85",
+  "occurred_at": "2026-04-29T05:01:40.652381Z",
+  "knot_id": "foolery-c4db",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. `src/lib/approval-request-visibility.ts` recognizes OpenCode `permission.asked` events and returns adapter `opencode`, source `permission.asked`, the permission name, patterns, metadata summary, session id, request id, and tool context when present.\n2. OpenCode approval banners include enough stable fields for dedupe and later reply routing.\n3. OpenCode HTTP session handling does not drop pending permission events before the turn finishes or blocks.\n4. Unit tests cover representative OpenCode bash and shemcp permission requests.\n5. Lint and typecheck pass."
+  }
+}

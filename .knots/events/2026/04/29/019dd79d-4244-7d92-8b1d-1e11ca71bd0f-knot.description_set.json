@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd79d-4244-7d92-8b1d-1e11ca71bd0f",
+  "occurred_at": "2026-04-29T05:01:40.799536Z",
+  "knot_id": "foolery-5edd",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nBuild or document repeatable validation for Claude Code, Codex, and OpenCode approvals after the implementation work lands.\n\nVerification:\n1. Run or document a Codex approval scenario and expected Foolery UI results.\n2. Run or document a Claude Code approval scenario and expected Foolery UI results.\n3. Run or document an OpenCode approval scenario and expected Foolery UI results.\n4. Restore any modified config files after each manual harness run.\n\nConstraints:\nTests that mutate `~/.config` must create timestamped backups and restore them. Prefer scripts or checklists that fail loudly if restore cannot complete."
+  }
+}

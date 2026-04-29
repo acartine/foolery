@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd7ac-8562-72d1-a7fc-bc5e9c7526bf",
+  "occurred_at": "2026-04-29T05:18:21.026419Z",
+  "knot_id": "foolery-94da",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review fix complete for Claude approval support.\n\nBranch: codex/foolery-94da-claude-approvals\nNew commit: e826e6c5 test(adapter): preserve coverage in focused files\nPrior implementation commit: 39fe8f69 feat(claude): support approval prompt launch mode\nWorktree: /Users/cartine/foolery/.worktrees/foolery-94da\n\nChange summary:\n- Restored/preserved the old adapter coverage by splitting it into focused files instead of leaving reviewers to infer it from a large partial deletion.\n- `agent-adapter-dialect-prompt.test.ts` now carries the previous `resolveDialect` coverage plus Claude/Codex/Copilot/Gemini prompt-mode arg coverage, including baseline Claude model behavior.\n- `agent-adapter-codex.test.ts` now carries the previous Codex normalizer event/completion/error coverage.\n- `agent-adapter-copilot-gemini.test.ts` continues to carry the previous Copilot/Gemini normalizer coverage.\n- `agent-adapter.test.ts` remains as the small Claude passthrough normalizer suite.\n- New Claude approval launch/config tests remain in `claude-approval-launch-args.test.ts`; Claude approval fixture assertions remain narrowly scoped.\n\nVerification:\n- bun run test src/lib/__tests__/agent-adapter.test.ts src/lib/__tests__/agent-adapter-dialect-prompt.test.ts src/lib/__tests__/agent-adapter-codex.test.ts src/lib/__tests__/agent-adapter-copilot-gemini.test.ts src/lib/__tests__/claude-approval-launch-args.test.ts src/lib/__tests__/approval-request-visibility.test.ts src/lib/__tests__/approval-request-runtime.test.ts src/lib/__tests__/settings-agents.test.ts\n- bun run lint\n- bunx tsc --noEmit\n- bun run test\n- bun run build",
+    "datetime": "2026-04-29T05:18:21.026419Z",
+    "entry_id": "019dd7ac-8562-72d1-a7fc-bc45ff4b044c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

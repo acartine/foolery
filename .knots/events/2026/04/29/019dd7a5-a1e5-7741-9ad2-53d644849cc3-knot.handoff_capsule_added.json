@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd7a5-a1e5-7741-9ad2-53d644849cc3",
+  "occurred_at": "2026-04-29T05:10:49.57374Z",
+  "knot_id": "foolery-5800",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete for foolery-5800. Implement server-owned approval actions by adding a shared approval action/reply-target contract, recording pending approvals on the live `SessionEntry`, exposing `POST /api/terminal/[sessionId]/approvals/[approvalId]`, and delegating replies through `AgentSessionRuntime` to transport-specific responders. UI/store should only render actions advertised by `supportedActions`, call the server endpoint, and track responding/resolved/failed/unsupported states; `session-connection-manager` remains receive-only for SSE banners. Coordinate with c4db (OpenCode metadata), 94da (Claude prompt-mode support), and 5edd (manual harness validation). No child knots were created because those sibling knots already split the approvals todo list.",
+    "datetime": "2026-04-29T05:10:49.57374Z",
+    "entry_id": "019dd7a5-a1e5-7741-9ad2-53c3f82f712d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

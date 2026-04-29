@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd79f-8e8b-74d1-b291-a9b70ec7f800",
+  "occurred_at": "2026-04-29T05:04:11.403574Z",
+  "knot_id": "foolery-94da",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff for next state\n- Worktree/branch ready for implementation: `/Users/cartine/foolery/.worktrees/foolery-94da` on `codex/foolery-94da-claude-approvals`; dependencies installed with `bun install --frozen-lockfile`.\n- Current extraction answer: Claude AskUserQuestion approval requests already flow to `FOOLERY APPROVAL REQUIRED` banners via `approval-request-visibility` and runtime wiring.\n- Implement shared Claude arg builders plus an explicit per-agent approval/non-bypass setting; keep omitted/default behavior as permission bypass.\n- Primary files to touch: `src/lib/agent-adapter.ts`, `src/lib/terminal-manager-initial-child-helpers.ts`, `src/lib/terminal-manager-take-child-helpers.ts`, focused tests under `src/lib/__tests__/`; only touch schemas/settings/docs if using the config field route.\n- Avoid OpenCode and approval UI/action files; other agents own those areas.",
+    "datetime": "2026-04-29T05:04:11.403574Z",
+    "entry_id": "019dd79f-8e8b-74d1-b291-a9aa7d04e3cd",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd79d-41bc-7c31-b4b0-6911d14febd7",
+  "occurred_at": "2026-04-29T05:01:40.652381Z",
+  "knot_id": "foolery-c4db",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "approvals"
+  }
+}

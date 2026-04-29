@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd79d-4210-72d0-9355-15d8efa8e4bf",
+  "occurred_at": "2026-04-29T05:01:40.743877Z",
+  "knot_id": "foolery-94da",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Claude Code approval request shapes used by Foolery are documented in tests and extracted into `FOOLERY APPROVAL REQUIRED` banners.\n2. Foolery can launch a Claude Code approval-test session without `--dangerously-skip-permissions`.\n3. Existing autonomous Claude sessions keep their current behavior unless configuration explicitly opts into approval testing.\n4. Tests cover launch args for bypass and non-bypass modes plus approval extraction.\n5. Lint and typecheck pass."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd7ab-2e0d-7eb1-b321-eb666f67ab99",
+  "occurred_at": "2026-04-29T05:16:53.133811Z",
+  "knot_id": "foolery-c4db",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Final review request addressed: Branch `codex/foolery-c4db-worker-a` pushed to origin at commit `64cdfb844acffd1a9972c15da7bab9daed04bb29`. Added `part` to OpenCode approval extraction candidates and taught OpenCode HTTP event translation to preserve wrappers whose nested `part` is `permission.asked`, covering both `{ type: \"event\", part: { type: \"permission.asked\", ... } }` and field extraction from nested part payloads. Added focused approval visibility and HTTP preservation tests for wrapped permission events. Verification passed: focused approval/OpenCode tests, `bun run lint`, and `bunx tsc --noEmit`. Touched source files remain under 500 lines.",
+    "datetime": "2026-04-29T05:16:53.133811Z",
+    "entry_id": "019dd7ab-2e0d-7eb1-b321-eb522e584fdd",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

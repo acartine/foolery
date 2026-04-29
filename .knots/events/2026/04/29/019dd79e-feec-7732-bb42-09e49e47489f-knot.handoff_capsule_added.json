@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd79e-feec-7732-bb42-09e49e47489f",
+  "occurred_at": "2026-04-29T05:03:34.636194Z",
+  "knot_id": "foolery-c4db",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning handoff: use worktree `/Users/cartine/foolery/.worktrees/foolery-c4db-worker-a` on branch `codex/foolery-c4db-worker-a`; dependencies are installed. Implement optional OpenCode fields in `ApprovalRequest`, add a `permission.asked` extractor and banner lines, forward unknown OpenCode HTTP permission parts/events instead of dropping them, and verify with approval visibility + OpenCode interactive tests, lint, and typecheck. No child knots were created to avoid parallel write contention in Worker A's narrow source scope.",
+    "datetime": "2026-04-29T05:03:34.636194Z",
+    "entry_id": "019dd79e-feec-7732-bb42-09dcd0723112",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd79d-420c-7110-9a95-a85453a1999b",
+  "occurred_at": "2026-04-29T05:01:40.743877Z",
+  "knot_id": "foolery-94da",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nDetermine and implement Claude Code CLI approval support for Foolery sessions, including a non-bypass launch mode for approval testing if needed.\n\nVerification:\n1. Confirm whether Foolery already extracts Claude approval requests from current Claude stream shapes.\n2. Run focused tests for Claude approval extraction and session launch args.\n3. Run `bun run lint` and `bunx tsc --noEmit`.\n\nConstraints:\nDo not break existing default autonomous sessions. If permission bypass remains the default, add an explicit test/harness mode rather than changing production behavior blindly."
+  }
+}

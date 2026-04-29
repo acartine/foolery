@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd7a6-7160-74a2-851a-35dfd07a4736",
+  "occurred_at": "2026-04-29T05:11:42.68864Z",
+  "knot_id": "foolery-c4db",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation handoff: Branch `codex/foolery-c4db-worker-a` pushed to origin at commit `4ef95a81c7f0dbafd2aea4a55b64096f381e05b0`. OpenCode `permission.asked` events now extract into `ApprovalRequest` with adapter/source, permission name, patterns, metadata/params summary, OpenCode session id, request id, and tool context. OpenCode HTTP session translation now preserves permission events from response parts plus event/stream/item collections instead of dropping them. Verification passed: focused approval visibility tests, focused OpenCode HTTP/session tests, `bun run lint`, and `bunx tsc --noEmit`.",
+    "datetime": "2026-04-29T05:11:42.68864Z",
+    "entry_id": "019dd7a6-7160-74a2-851a-35c02356ffb6",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

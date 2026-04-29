@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd7b6-8bc4-7923-9ef7-da400c7b9427",
+  "occurred_at": "2026-04-29T05:29:18.020328Z",
+  "knot_id": "foolery-5edd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review follow-up complete. Commit a8713992e14f3848ce6851f8b7a5fdf27972b4e8 fixes the manual approval harness review feedback: Claude temporary settings mutation now sets the selected agent approvalMode to prompt; OpenCode known-blocker detection recognizes permission.asked in either approval-request-visibility.ts or the split opencode-approval-request.ts extractor. Added node --dry-helper-checks coverage for the Claude prompt mutation and split OpenCode extractor heuristic. Gates passed: bun install --frozen-lockfile; node help; bash syntax; node dry-helper checks; shell help/restore path; codex/claude/opencode blocked dry paths; git diff --check; bun run lint; bunx tsc --noEmit; bun run test; bun run build.",
+    "datetime": "2026-04-29T05:29:18.020328Z",
+    "entry_id": "019dd7b6-8bc4-7923-9ef7-da368a8385da",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd7a6-991a-7771-8a1d-6636b154a337",
+  "occurred_at": "2026-04-29T05:11:52.858654Z",
+  "knot_id": "foolery-5edd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete for foolery-5edd. Implement docs/APPROVALS.md plus scripts/test-cli-approvals-manual.{sh,mjs}; keep real CLI/config runs manual-only and out of default tests. The harness should back up ~/.config/foolery/settings.toml and OpenCode config when touched, force one provider at a time, start sessions via POST /api/terminal, watch SSE for FOOLERY APPROVAL REQUIRED, approve the first request from Foolery, then prove continuation with a provider-specific token marker and file. Known blockers must be precise: Codex approvalPolicy/responder, Claude non-bypass launch/responder, OpenCode permission.asked extraction and /permissions responder.",
+    "datetime": "2026-04-29T05:11:52.858654Z",
+    "entry_id": "019dd7a6-991a-7771-8a1d-662a6a224eed",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

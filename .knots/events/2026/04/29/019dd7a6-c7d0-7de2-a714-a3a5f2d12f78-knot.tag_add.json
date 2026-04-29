@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd7a6-c7d0-7de2-a714-a3a5f2d12f78",
+  "occurred_at": "2026-04-29T05:12:04.816158Z",
+  "knot_id": "foolery-94da",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/foolery-94da-claude-approvals"
+  }
+}
