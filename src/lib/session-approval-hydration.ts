@@ -7,6 +7,9 @@ import {
 import {
   enqueueApprovalEscalation,
 } from "@/lib/approval-escalation-client";
+import {
+  fetchApprovalEscalations,
+} from "@/lib/approval-escalation-api";
 import type { TerminalSession } from "@/lib/types";
 
 export function hydrateApprovalEscalationsFromSessions(
@@ -20,5 +23,13 @@ export function hydrateApprovalEscalationsFromSessions(
         "approval.hydrated",
       );
     }
+  }
+}
+
+export async function hydrateApprovalEscalationsFromApi(): Promise<void> {
+  const items = await fetchApprovalEscalations({ active: true });
+  for (const item of items) {
+    if (!isActiveApprovalStatus(item.status)) continue;
+    enqueueApprovalEscalation(item, "approval.hydrated");
   }
 }

@@ -16,6 +16,7 @@ import {
 } from "@/lib/openapi/paths-streaming";
 import { settingsPaths } from "@/lib/openapi/paths-settings";
 import { registryPaths, systemPaths } from "@/lib/openapi/paths-system";
+import { approvalsPaths } from "@/lib/openapi/paths-approvals";
 
 export const openApiSpec = {
   openapi: "3.1.0",
@@ -34,6 +35,7 @@ export const openApiSpec = {
     { name: "Plans", description: "Persisted execution plans and step driving" },
     { name: "Waves", description: "Wave-based execution planning" },
     { name: "Terminal", description: "Agent terminal sessions and SSE streams" },
+    { name: "Approvals", description: "Approval escalations queue, listing, and per-record actions" },
     { name: "Orchestration", description: "Multi-wave orchestration sessions" },
     { name: "Settings", description: "Application and agent configuration" },
     { name: "Registry", description: "Repository registration and browsing" },
@@ -47,6 +49,7 @@ export const openApiSpec = {
     ...plansCompletePaths,
     ...wavesPaths,
     ...terminalPaths,
+    ...approvalsPaths,
     ...orchestrationPaths,
     ...settingsPaths,
     ...registryPaths,

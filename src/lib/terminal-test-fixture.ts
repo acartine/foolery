@@ -1,6 +1,10 @@
 import { EventEmitter } from "node:events";
 import { noopInteractionLog } from "@/lib/interaction-logger";
 import { getTerminalSessions } from "@/lib/terminal-session-registry";
+import {
+  cleanupTerminalSessionResources,
+} from "@/lib/terminal-session-cleanup";
+import { clearApprovalRegistry } from "@/lib/approval-registry";
 import type { SessionEntry } from "@/lib/terminal-manager-types";
 import type {
   TerminalEvent,
@@ -78,7 +82,10 @@ export function createFixtureSession(
         timestamp: Date.now(),
       });
       setTimeout(() => {
-        sessions.delete(session.id);
+        cleanupTerminalSessionResources(
+          session.id,
+          "fixture_aborted",
+        );
       }, FIXTURE_CLEANUP_DELAY_MS);
     },
   };
@@ -106,7 +113,10 @@ export function emitFixtureEvent(
 
   if (event.type === "exit") {
     setTimeout(() => {
-      getTerminalSessions().delete(sessionId);
+      cleanupTerminalSessionResources(
+        sessionId,
+        "fixture_exit",
+      );
     }, FIXTURE_CLEANUP_DELAY_MS);
   }
 
@@ -115,4 +125,5 @@ export function emitFixtureEvent(
 
 export function clearFixtureSessions(): void {
   getTerminalSessions().clear();
+  clearApprovalRegistry();
 }

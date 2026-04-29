@@ -16,16 +16,24 @@ import {
   type ApprovalReplyResult,
   type PendingApprovalRecord,
 } from "@/lib/approval-actions";
+import {
+  attachResponderForSession,
+  getApproval,
+  registerApproval,
+  type ApprovalResponder,
+} from "@/lib/approval-registry";
 import type {
   SessionEntry,
 } from "@/lib/terminal-manager-types";
 import type { TerminalEvent } from "@/lib/types";
+import type { ExecutionAgentInfo } from "@/lib/execution-port";
 
 interface ApprovalActionExecution {
   ok: boolean;
   httpStatus: number;
   record?: PendingApprovalRecord;
   error?: string;
+  code?: string;
 }
 
 const MAX_BUFFER = 5_000;
@@ -42,8 +50,14 @@ export function attachApprovalResponder(
   entry: SessionEntry,
   runtime: AgentSessionRuntime,
 ): void {
-  entry.approvalResponder = (record, action) =>
+  const responder: ApprovalResponder = (record, action) =>
     respondWithRuntime(runtime, record, action);
+  entry.approvalResponder = responder;
+  attachResponderForSession(
+    entry.session.id,
+    responder,
+    agentInfoFromEntry(entry),
+  );
 }
 
 export function recordPendingApproval(
@@ -68,6 +82,12 @@ export function recordPendingApproval(
       existing.supportedActions = record.supportedActions;
       existing.replyTarget = record.replyTarget;
     }
+    registerApproval({
+      sessionId: entry.session.id,
+      record: existing,
+      responder: entry.approvalResponder ?? null,
+      agentInfo: agentInfoFromEntry(entry),
+    });
     logApprovalEscalation(
       "approval.pending_duplicate_refreshed",
       logContext(existing),
@@ -75,6 +95,12 @@ export function recordPendingApproval(
     return existing;
   }
   entry.pendingApprovals.set(record.approvalId, record);
+  registerApproval({
+    sessionId: entry.session.id,
+    record,
+    responder: entry.approvalResponder ?? null,
+    agentInfo: agentInfoFromEntry(entry),
+  });
   logApprovalEscalation(
     "approval.pending_recorded",
     logContext(record),
@@ -95,6 +121,48 @@ export async function performApprovalAction(
       error: "Approval request not found",
     };
   }
+  return executeApprovalAction({
+    record,
+    responder: entry.approvalResponder ?? null,
+    action,
+    onFailureBanner: (failureRecord, reason) =>
+      pushApprovalFailureEvent(entry, failureRecord, reason),
+  });
+}
+
+export async function applyApprovalAction(
+  approvalId: string,
+  action: ApprovalAction,
+): Promise<ApprovalActionExecution> {
+  const entry = getApproval(approvalId);
+  if (!entry) {
+    return {
+      ok: false,
+      httpStatus: 404,
+      error: "Approval request not found",
+    };
+  }
+  return executeApprovalAction({
+    record: entry.record,
+    responder: entry.responder,
+    action,
+  });
+}
+
+interface ExecuteApprovalActionInput {
+  record: PendingApprovalRecord;
+  responder: ApprovalResponder | null | undefined;
+  action: ApprovalAction;
+  onFailureBanner?: (
+    record: PendingApprovalRecord,
+    reason?: string,
+  ) => void;
+}
+
+async function executeApprovalAction(
+  input: ExecuteApprovalActionInput,
+): Promise<ApprovalActionExecution> {
+  const { record, responder, action, onFailureBanner } = input;
   logApprovalEscalation(
     "approval.action_requested",
     logContext(record, action),
@@ -102,7 +170,7 @@ export async function performApprovalAction(
   const unsupported = unsupportedReason(
     record,
     action,
-    entry.approvalResponder,
+    responder,
   );
   if (unsupported) {
     markUnsupported(record, action, unsupported);
@@ -110,6 +178,7 @@ export async function performApprovalAction(
       ok: false,
       httpStatus: 409,
       record,
+      code: unsupported,
       error: `Approval action is not supported: ${unsupported}`,
     };
   }
@@ -119,8 +188,13 @@ export async function performApprovalAction(
     "approval.action_sent",
     logContext(record, action),
   );
-  const result = await entry.approvalResponder!(record, action);
-  return finishApprovalReply(entry, record, action, result);
+  const result = await responder!(record, action);
+  return finishApprovalReply(
+    record,
+    action,
+    result,
+    onFailureBanner,
+  );
 }
 
 async function respondWithRuntime(
@@ -214,7 +288,7 @@ function pendingRecordFromApproval(
 function unsupportedReason(
   record: PendingApprovalRecord,
   action: ApprovalAction,
-  responder: SessionEntry["approvalResponder"],
+  responder: ApprovalResponder | null | undefined,
 ): string | null {
   if (!record.supportedActions.includes(action)) {
     return "approval_action_not_supported";
@@ -223,7 +297,7 @@ function unsupportedReason(
     return "approval_reply_target_missing";
   }
   if (!responder) {
-    return "approval_responder_missing";
+    return "approval_responder_unavailable";
   }
   return null;
 }
@@ -242,10 +316,13 @@ function markUnsupported(
 }
 
 function finishApprovalReply(
-  entry: SessionEntry,
   record: PendingApprovalRecord,
   action: ApprovalAction,
   result: ApprovalReplyResult,
+  onFailureBanner?: (
+    record: PendingApprovalRecord,
+    reason?: string,
+  ) => void,
 ): ApprovalActionExecution {
   if (!result.ok) {
     record.status = result.status === "unsupported"
@@ -260,11 +337,14 @@ function finishApprovalReply(
       eventName,
       logContext(record, action, reason),
     );
-    pushApprovalFailureEvent(entry, record, reason);
+    onFailureBanner?.(record, reason);
     return {
       ok: false,
       httpStatus: record.status === "unsupported" ? 409 : 502,
       record,
+      code: record.status === "unsupported"
+        ? "approval_action_not_supported"
+        : "approval_reply_failed",
       error: record.status === "unsupported"
         ? `Approval action is not supported: ${reason}`
         : reason ?? "Approval reply failed",
@@ -294,6 +374,17 @@ function pushApprovalFailureEvent(
   if (entry.buffer.length >= MAX_BUFFER) entry.buffer.shift();
   entry.buffer.push(evt);
   entry.emitter.emit("data", evt);
+}
+
+function agentInfoFromEntry(
+  entry: SessionEntry,
+): ExecutionAgentInfo | undefined {
+  const session = entry.session;
+  const info: ExecutionAgentInfo = {};
+  if (session.agentName) info.agentName = session.agentName;
+  if (session.agentModel) info.agentModel = session.agentModel;
+  if (session.agentVersion) info.agentVersion = session.agentVersion;
+  return Object.keys(info).length > 0 ? info : undefined;
 }
 
 function logContext(

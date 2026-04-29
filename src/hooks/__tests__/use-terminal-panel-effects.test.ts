@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const listSessionsMock = vi.fn();
 const rehydrateFromBackendMock = vi.fn();
-const hydrateApprovalEscalationsFromSessionsMock = vi.fn();
+const hydrateApprovalEscalationsFromApiMock = vi.fn();
 
 vi.mock("react", () => ({
   useEffect: (callback: () => void | (() => void)) => {
@@ -25,8 +25,8 @@ vi.mock("@/stores/terminal-store", () => ({
 }));
 
 vi.mock("@/lib/session-approval-hydration", () => ({
-  hydrateApprovalEscalationsFromSessions:
-    hydrateApprovalEscalationsFromSessionsMock,
+  hydrateApprovalEscalationsFromApi:
+    hydrateApprovalEscalationsFromApiMock,
 }));
 
 describe("useRehydrateTerminals", () => {
@@ -34,7 +34,8 @@ describe("useRehydrateTerminals", () => {
     vi.useFakeTimers();
     listSessionsMock.mockReset();
     rehydrateFromBackendMock.mockReset();
-    hydrateApprovalEscalationsFromSessionsMock.mockReset();
+    hydrateApprovalEscalationsFromApiMock.mockReset();
+    hydrateApprovalEscalationsFromApiMock.mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -63,8 +64,8 @@ describe("useRehydrateTerminals", () => {
     expect(listSessionsMock).toHaveBeenCalledTimes(1);
     expect(rehydrateFromBackendMock).toHaveBeenCalledWith(sessions);
     expect(
-      hydrateApprovalEscalationsFromSessionsMock,
-    ).toHaveBeenCalledWith(sessions);
+      hydrateApprovalEscalationsFromApiMock,
+    ).toHaveBeenCalledTimes(1);
     expect(setEnabled).toHaveBeenCalledWith(true);
   });
 
@@ -98,11 +99,8 @@ describe("useRehydrateTerminals", () => {
     expect(rehydrateFromBackendMock).toHaveBeenNthCalledWith(1, initialSessions);
     expect(rehydrateFromBackendMock).toHaveBeenNthCalledWith(2, nextSessions);
     expect(
-      hydrateApprovalEscalationsFromSessionsMock,
-    ).toHaveBeenNthCalledWith(1, initialSessions);
-    expect(
-      hydrateApprovalEscalationsFromSessionsMock,
-    ).toHaveBeenNthCalledWith(2, nextSessions);
+      hydrateApprovalEscalationsFromApiMock,
+    ).toHaveBeenCalledTimes(2);
     expect(setEnabled).toHaveBeenCalledTimes(1);
   });
 });

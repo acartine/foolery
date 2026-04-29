@@ -4,6 +4,7 @@
 
 import { extendedComponentSchemas } from "./schemas-extended";
 import { planComponentSchemas } from "./schemas-plans";
+import { approvalComponentSchemas } from "./schemas-approvals";
 
 const coreSchemas = {
   Beat: {
@@ -140,6 +141,13 @@ const coreSchemas = {
       status: { type: "string", enum: ["idle", "running", "completed", "error", "aborted"] },
       startedAt: { type: "string", format: "date-time" },
       exitCode: { type: "integer" },
+      pendingApprovals: {
+        type: "array",
+        description:
+          "Compatibility view: approval escalations attached to this " +
+          "session. Same records also appear in GET /api/approvals.",
+        items: { $ref: "#/components/schemas/ApprovalEscalation" },
+      },
     },
   },
 
@@ -418,4 +426,5 @@ export const componentSchemas = {
   ...coreSchemas,
   ...planComponentSchemas,
   ...extendedComponentSchemas,
+  ...approvalComponentSchemas,
 } as const;

@@ -48,6 +48,9 @@ import {
 import {
   getTerminalSessions,
 } from "@/lib/terminal-session-registry";
+import {
+  cleanupTerminalSessionResources,
+} from "@/lib/terminal-session-cleanup";
 import type {
   SessionEntry,
 } from "@/lib/terminal-manager-types";
@@ -215,7 +218,7 @@ export async function createSession(
     agentInfo,
     session, entry, emitter, buffer,
     interactionLog, pushEvent, prompt,
-    customPrompt, sessions,
+    customPrompt,
   );
 }
 
@@ -461,7 +464,7 @@ function handleCwdError(
   );
   setTimeout(() => {
     entry.buffer.length = 0;
-    sessions.delete(id);
+    cleanupTerminalSessionResources(id, "invalid_cwd");
   }, CLEANUP_DELAY_MS);
   return session;
 }
