@@ -273,6 +273,36 @@ function translateSessionIdle(
   return { type: "session_idle", sessionID };
 }
 
+/**
+ * `session.status` carries the `busy`/`idle` flip for a
+ * session. The `idle` variant is the authoritative
+ * turn-end signal — it fires after the model has fully
+ * finished responding (including any internal tool
+ * cycles). `busy` is informational and is not
+ * surfaced to the runtime.
+ *
+ * Observed payload shape (probed via opencode 1.14.29
+ * `/event` SSE):
+ *   {"type":"session.status",
+ *    "properties":{"sessionID":"...",
+ *                  "status":{"type":"busy"|"idle"}}}
+ */
+function translateSessionStatus(
+  event: Record<string, unknown>,
+): Array<Record<string, unknown>> {
+  const container = findPartContainer(event);
+  const status = toObject(container?.status)
+    ?? toObject(event.status);
+  const statusType = asString(status?.type);
+  if (statusType !== "idle") return [];
+  const sessionID = asString(container?.sessionID)
+    ?? asString(container?.sessionId)
+    ?? asString(event.sessionID)
+    ?? asString(event.sessionId)
+    ?? "";
+  return [{ type: "session_idle", sessionID }];
+}
+
 function translateSessionError(
   event: Record<string, unknown>,
 ): Record<string, unknown> {
@@ -299,6 +329,7 @@ const SSE_TRANSLATORS: Record<
   "message.updated": translateMessageUpdated,
   "step.updated": translateStepUpdated,
   "session.idle": translateSessionIdle,
+  "session.status": translateSessionStatus,
   "session.error": translateSessionError,
 };
 

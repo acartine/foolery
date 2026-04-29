@@ -92,14 +92,39 @@ function normalizeOpenCodeText(
 function normalizeOpenCodeStepFinish(
   obj: Record<string, unknown>,
   state: OpenCodeNormalizerState,
-): Record<string, unknown> {
+): Record<string, unknown> | null {
   const part = obj.part as Record<string, unknown> | undefined;
   const reason = typeof part?.reason === "string" ? part.reason : "";
+  // OpenCode emits one `step-finish` part per model
+  // response (see service=session.prompt step=N loop in
+  // server logs). Within a single user turn the model can
+  // produce many such steps as it cycles through tool
+  // calls. The turn boundary is `session.idle` /
+  // `session.status` status=idle, NOT step-finish.
+  //
+  // Only `reason: "error"` is a real turn end — it is
+  // synthesized by `emitErrorResult` in
+  // opencode-http-session.ts when the HTTP transport
+  // fails, and it always means the turn is over.
+  if (reason !== "error") return null;
   return {
     type: "result",
     result: state.accumulatedText,
-    is_error: reason === "error",
+    is_error: true,
   };
+}
+
+function normalizeOpenCodeSessionIdle(
+  state: OpenCodeNormalizerState,
+): Record<string, unknown> {
+  const result = {
+    type: "result",
+    result: state.accumulatedText,
+    is_error: false,
+  };
+  // Reset accumulated text for the next turn.
+  state.accumulatedText = "";
+  return result;
 }
 
 function normalizeOpenCodeToolUse(
@@ -186,6 +211,9 @@ export function createOpenCodeNormalizer(
     if (type === "text") return normalizeOpenCodeText(obj, state);
     if (type === "step_finish") {
       return normalizeOpenCodeStepFinish(obj, state);
+    }
+    if (type === "session_idle") {
+      return normalizeOpenCodeSessionIdle(state);
     }
     if (type === "tool_use") return normalizeOpenCodeToolUse(obj);
     if (type === "tool_result") {

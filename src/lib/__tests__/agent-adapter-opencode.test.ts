@@ -10,43 +10,77 @@ import {
 } from "@/lib/agent-adapter-normalizers";
 
 describe("createOpenCodeNormalizer text", () => {
-  it("emits assistant text and accumulates result", () => {
-    const norm = createOpenCodeNormalizer();
-    const a = norm({
-      type: "text",
-      part: { text: "hello" },
-    });
-    expect(a).toEqual({
-      type: "assistant",
-      message: { content: [{ type: "text", text: "hello" }] },
-    });
-    const b = norm({
-      type: "text",
-      part: { text: "world" },
-    });
-    expect(b).toMatchObject({ type: "assistant" });
-    const finish = norm({
-      type: "step_finish",
-      part: { reason: "stop" },
-    });
-    expect(finish).toEqual({
-      type: "result",
-      result: "hello\nworld",
-      is_error: false,
-    });
-  });
+  it(
+    "emits assistant text and emits result on session_idle",
+    () => {
+      const norm = createOpenCodeNormalizer();
+      const a = norm({
+        type: "text",
+        part: { text: "hello" },
+      });
+      expect(a).toEqual({
+        type: "assistant",
+        message: { content: [{ type: "text", text: "hello" }] },
+      });
+      const b = norm({
+        type: "text",
+        part: { text: "world" },
+      });
+      expect(b).toMatchObject({ type: "assistant" });
+      // step_finish on a non-error reason is a per-message
+      // boundary, NOT a turn boundary. It must not emit a
+      // result event — that would spam turn_ended on every
+      // model response.
+      const finish = norm({
+        type: "step_finish",
+        part: { reason: "stop" },
+      });
+      expect(finish).toBeNull();
+      // session_idle is the real turn boundary; it carries
+      // the accumulated text.
+      const idle = norm({ type: "session_idle" });
+      expect(idle).toEqual({
+        type: "result",
+        result: "hello\nworld",
+        is_error: false,
+      });
+    },
+  );
 
-  it("step_finish reason=error flags result as error", () => {
-    const norm = createOpenCodeNormalizer();
-    const out = norm({
-      type: "step_finish",
-      part: { reason: "error" },
-    });
-    expect(out).toMatchObject({
-      type: "result",
-      is_error: true,
-    });
-  });
+  it(
+    "step_finish reason=error still flags result as error",
+    () => {
+      // Synthesised by emitErrorResult in
+      // opencode-http-session.ts when the HTTP transport
+      // fails. The turn really is over, so this remains
+      // the turn-end signal for transport errors.
+      const norm = createOpenCodeNormalizer();
+      const out = norm({
+        type: "step_finish",
+        part: { reason: "error" },
+      });
+      expect(out).toMatchObject({
+        type: "result",
+        is_error: true,
+      });
+    },
+  );
+
+  it(
+    "session_idle resets accumulated text for next turn",
+    () => {
+      const norm = createOpenCodeNormalizer();
+      norm({ type: "text", part: { text: "first" } });
+      norm({ type: "session_idle" });
+      norm({ type: "text", part: { text: "second" } });
+      const idle = norm({ type: "session_idle" });
+      expect(idle).toEqual({
+        type: "result",
+        result: "second",
+        is_error: false,
+      });
+    },
+  );
 
   it("step_start is dropped", () => {
     const norm = createOpenCodeNormalizer();

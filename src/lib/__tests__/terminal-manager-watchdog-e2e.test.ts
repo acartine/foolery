@@ -179,6 +179,7 @@ function makeTakeLoopContext(
     claimsPerQueueType: new Map(),
     lastAgentPerQueueType: new Map(),
     failedAgentsPerQueueType: new Map(),
+    followUpAttempts: { count: 0, lastState: null },
   };
 }
 

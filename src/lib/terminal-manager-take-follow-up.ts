@@ -32,6 +32,23 @@ import {
 
 const FOLLOW_UP_SOURCE = "take_loop_follow_up";
 
+/**
+ * Maximum consecutive in-iteration follow-up prompts
+ * permitted while the beat state stays the same.
+ *
+ * The take-loop follow-up exists to nudge agents that
+ * exit too early after a single turn. In practice, an
+ * agent that hasn't advanced after this many follow-ups
+ * is either looping (e.g. kimi-k2.6 emitting step_finish
+ * without invoking tools, knots-a08a 2026-04-29) or
+ * trapped behind a broken transport that synthesizes
+ * `{type: "result"}` on every HTTP failure
+ * (foolery-e780 2026-04-29). Either way, more prompts
+ * over the same session won't help — give up and let
+ * `handleTakeIterationClose` reassess.
+ */
+const MAX_FOLLOW_UPS_PER_STATE = 5;
+
 // ── Prompt builder ────────────────────────────────────
 
 export function buildTakeLoopFollowUpPrompt(
@@ -130,6 +147,36 @@ function sendFollowUpPrompt(
   return false;
 }
 
+function emitFollowUpCapBanner(
+  ctx: TakeLoopContext,
+  beatId: string,
+  state: string,
+  count: number,
+): void {
+  ctx.pushEvent({
+    type: "stderr",
+    data:
+      `\x1b[31m--- Take-loop follow-up cap reached: ` +
+      `knot ${beatId} stuck in state ${state} after ` +
+      `${count} consecutive follow-up prompts. ` +
+      `Closing session so the take loop can reassess. ` +
+      `---\x1b[0m\n`,
+    timestamp: Date.now(),
+  });
+}
+
+function recordFollowUpProgress(
+  ctx: TakeLoopContext,
+  state: string,
+): number {
+  if (ctx.followUpAttempts.lastState !== state) {
+    ctx.followUpAttempts.count = 0;
+    ctx.followUpAttempts.lastState = state;
+  }
+  ctx.followUpAttempts.count += 1;
+  return ctx.followUpAttempts.count;
+}
+
 export async function handleTakeLoopTurnEnded(
   ctx: TakeLoopContext,
   runtime: AgentSessionRuntime,
@@ -140,6 +187,19 @@ export async function handleTakeLoopTurnEnded(
   if (resolveCtxWorkflow(ctx, state)) {
     // Agent advanced the knot; let the runtime's
     // grace-period close logic run as normal.
+    ctx.followUpAttempts.count = 0;
+    ctx.followUpAttempts.lastState = state;
+    return false;
+  }
+  const count = recordFollowUpProgress(ctx, state);
+  if (count > MAX_FOLLOW_UPS_PER_STATE) {
+    console.warn(
+      `[terminal-manager] [${ctx.id}] [take-loop] ` +
+      `follow-up cap reached for beat=${ctx.beatId} ` +
+      `state=${state} count=${count} — stopping ` +
+      `in-iteration follow-ups`,
+    );
+    emitFollowUpCapBanner(ctx, ctx.beatId, state, count);
     return false;
   }
   return sendFollowUpPrompt(ctx, runtime, child, state);

@@ -254,6 +254,42 @@ describe("translateOpenCodeEvent session lifecycle", () => {
     }]);
   });
 
+  it(
+    "translates session.status status=idle to session_idle",
+    () => {
+      // Probed shape from opencode 1.14.29 /event SSE.
+      // session.status fires twice per turn (busy → idle).
+      // Only the idle variant is the turn-end signal.
+      const out = translateOpenCodeEvent({
+        type: "session.status",
+        properties: {
+          sessionID: "ses_status_1",
+          status: { type: "idle" },
+        },
+      });
+      expect(out).toEqual([{
+        type: "session_idle",
+        sessionID: "ses_status_1",
+      }]);
+    },
+  );
+
+  it(
+    "drops session.status status=busy",
+    () => {
+      // Busy is informational; surfacing it would
+      // re-introduce the per-step turn_ended spam.
+      const out = translateOpenCodeEvent({
+        type: "session.status",
+        properties: {
+          sessionID: "ses_status_2",
+          status: { type: "busy" },
+        },
+      });
+      expect(out).toEqual([]);
+    },
+  );
+
   it("translates session.error to session_error", () => {
     const out = translateOpenCodeEvent({
       type: "session.error",

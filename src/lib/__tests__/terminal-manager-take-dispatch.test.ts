@@ -162,6 +162,7 @@ function makeCtx(): TakeLoopContext {
     claimsPerQueueType: new Map(),
     lastAgentPerQueueType: new Map(),
     failedAgentsPerQueueType: new Map(),
+    followUpAttempts: { count: 0, lastState: null },
   } as unknown as TakeLoopContext;
 }
 

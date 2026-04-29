@@ -100,6 +100,7 @@ function makeCtx(
     claimsPerQueueType: new Map(),
     lastAgentPerQueueType: new Map(),
     failedAgentsPerQueueType: new Map(),
+    followUpAttempts: { count: 0, lastState: null },
     ...overrides,
   };
 }
@@ -224,6 +225,170 @@ describe("handleTakeLoopTurnEnded (foolery-6881)", () => {
     },
   );
 });
+
+// Test E: per-state follow-up cap (knots-a08a /
+// foolery-e780 spin regression, 2026-04-29). When an
+// agent emits turn_ended repeatedly without advancing
+// the beat, follow-ups must stop after a small number
+// of attempts so the take loop can reassess.
+describe(
+  "handleTakeLoopTurnEnded: cap stops the spin",
+  () => {
+    beforeEach(() => {
+      backendGet.mockReset();
+    });
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it(
+      "stops sending follow-ups after 5 stuck turns",
+      async () => {
+        const ctx = makeCtx();
+        const runtime = makeRuntime(true);
+        const child = makeChild();
+        const warn = vi.spyOn(console, "warn")
+          .mockImplementation(() => undefined);
+        backendGet.mockResolvedValue({
+          ok: true,
+          data: { id: "beat-6881", state: "planning" },
+        });
+
+        const results: boolean[] = [];
+        for (let i = 0; i < 7; i += 1) {
+          results.push(
+            await handleTakeLoopTurnEnded(
+              ctx, runtime, child,
+            ),
+          );
+        }
+
+        // First 5 firings send a follow-up; 6th and 7th
+        // hit the cap and return false without sending.
+        expect(results).toEqual([
+          true, true, true, true, true, false, false,
+        ]);
+        expect(runtime.sendUserTurn)
+          .toHaveBeenCalledTimes(5);
+        expect(warn).toHaveBeenCalled();
+      },
+    );
+
+    it(
+      "emits a stderr banner when the cap is reached",
+      async () => {
+        const ctx = makeCtx();
+        const runtime = makeRuntime(true);
+        const child = makeChild();
+        vi.spyOn(console, "warn")
+          .mockImplementation(() => undefined);
+        backendGet.mockResolvedValue({
+          ok: true,
+          data: { id: "beat-6881", state: "planning" },
+        });
+
+        for (let i = 0; i < 6; i += 1) {
+          await handleTakeLoopTurnEnded(
+            ctx, runtime, child,
+          );
+        }
+
+        const pushEvent = ctx.pushEvent as
+          ReturnType<typeof vi.fn>;
+        const banner = pushEvent.mock.calls
+          .map((call) => call[0])
+          .find((evt) =>
+            evt.type === "stderr" &&
+            String(evt.data).includes(
+              "follow-up cap reached",
+            ),
+          );
+        expect(banner).toBeDefined();
+        expect(String(banner.data))
+          .toContain("beat-6881");
+        expect(String(banner.data)).toContain("planning");
+      },
+    );
+  },
+);
+
+describe(
+  "handleTakeLoopTurnEnded: cap reset paths",
+  () => {
+    beforeEach(() => {
+      backendGet.mockReset();
+    });
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it(
+      "resets the cap when the beat state advances",
+      async () => {
+        const fallbackWorkflow = {
+          id: "default", label: "default",
+          states: ["open", "planning", "review", "shipped"],
+          terminalStates: ["shipped"],
+          initialState: "open",
+          actionStates: ["planning", "review"],
+          queueStates: [],
+          queueActions: {},
+        } as unknown as TakeLoopContext["fallbackWorkflow"];
+        const ctx = makeCtx({ fallbackWorkflow });
+        const runtime = makeRuntime(true);
+        const child = makeChild();
+        // Three stuck turns at "planning"
+        backendGet.mockResolvedValue({
+          ok: true,
+          data: { id: "beat-6881", state: "planning" },
+        });
+        for (let i = 0; i < 3; i += 1) {
+          await handleTakeLoopTurnEnded(
+            ctx, runtime, child,
+          );
+        }
+        expect(ctx.followUpAttempts.count).toBe(3);
+        // State advances to a different active state
+        backendGet.mockResolvedValue({
+          ok: true,
+          data: { id: "beat-6881", state: "review" },
+        });
+        const advanced = await handleTakeLoopTurnEnded(
+          ctx, runtime, child,
+        );
+        expect(advanced).toBe(true);
+        expect(ctx.followUpAttempts.count).toBe(1);
+        expect(ctx.followUpAttempts.lastState)
+          .toBe("review");
+      },
+    );
+
+    it(
+      "resets the cap when the beat reaches a queue " +
+        "or terminal state",
+      async () => {
+        const ctx = makeCtx();
+        ctx.followUpAttempts.count = 7;
+        ctx.followUpAttempts.lastState = "planning";
+        const runtime = makeRuntime(true);
+        const child = makeChild();
+        backendGet.mockResolvedValueOnce({
+          ok: true,
+          data: { id: "beat-6881", state: "shipped" },
+        });
+
+        const result = await handleTakeLoopTurnEnded(
+          ctx, runtime, child,
+        );
+
+        expect(result).toBe(false);
+        expect(ctx.followUpAttempts.count).toBe(0);
+        expect(ctx.followUpAttempts.lastState)
+          .toBe("shipped");
+      },
+    );
+  },
+);
 
 describe("buildTakeLoopFollowUpPrompt", () => {
   it("embeds the beat id and state", () => {

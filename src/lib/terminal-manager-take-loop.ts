@@ -64,6 +64,21 @@ export interface TakeLoopContext {
   claimsPerQueueType: Map<string, number>;
   lastAgentPerQueueType: Map<string, string>;
   failedAgentsPerQueueType: Map<string, Set<string>>;
+  /**
+   * Counter for consecutive in-iteration follow-up
+   * prompts that observed no state change. Reset on
+   * each new take iteration (`spawnTakeChild`) and on
+   * any observed state advance. See
+   * `terminal-manager-take-follow-up.ts` for the cap.
+   *
+   * Why: without this, an agent that emits step_finish
+   * (or whose transport keeps synthesizing one) without
+   * advancing the knot puts the take loop into an
+   * infinite turn_ended → follow-up → turn_ended spin.
+   * Observed in knots-a08a (398 follow-ups) and
+   * foolery-e780 (89 follow-ups) on 2026-04-29.
+   */
+  followUpAttempts: { count: number; lastState: string | null };
   claimedAt?: number;
 }
 

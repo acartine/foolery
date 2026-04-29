@@ -245,7 +245,7 @@ describe("onTurnEnded: http (OpenCode)", () => {
   beforeEach(() => { vi.useFakeTimers(); });
   afterEach(() => { vi.useRealTimers(); });
 
-  it("fires on injected step_finish event", () => {
+  it("fires on injected session_idle event", () => {
     const onTurnEnded = vi.fn(() => true);
     // httpSession just needs to exist; we inject the
     // translator's output directly via injectLine to
@@ -259,16 +259,49 @@ describe("onTurnEnded: http (OpenCode)", () => {
     }));
     const child = makeChild();
 
-    // HTTP transport: server writes `step_finish`
-    // JSON to the runtime through `injectLine`.
+    // HTTP transport: turn ends on `session.idle`
+    // (translated to `session_idle` by
+    // `translateOpenCodeEvent`). Per-message
+    // `step_finish` parts must NOT trigger turn-ended
+    // — that bug was knots-a08a / foolery-e780 in 2026-04.
     rt.injectLine(child, JSON.stringify({
       type: "step_finish",
       part: { reason: "stop" },
     }));
+    expect(onTurnEnded).not.toHaveBeenCalled();
 
+    rt.injectLine(child, JSON.stringify({
+      type: "session_idle",
+    }));
     expect(onTurnEnded).toHaveBeenCalledOnce();
     expect(rt.state.exitReason).toBe("turn_ended");
   });
+
+  it(
+    "still fires on synthesised step_finish reason=error",
+    () => {
+      // emitErrorResult in opencode-http-session.ts
+      // injects this when the HTTP transport fails. The
+      // turn really is over, so it must trigger
+      // turn-ended.
+      const onTurnEnded = vi.fn(() => true);
+      const httpSession = createOpenCodeHttpSession(
+        vi.fn(), vi.fn(),
+      );
+      const rt = createSessionRuntime(baseConfig("opencode", {
+        httpSession,
+        onTurnEnded,
+      }));
+      const child = makeChild();
+
+      rt.injectLine(child, JSON.stringify({
+        type: "step_finish",
+        part: { reason: "error" },
+      }));
+      expect(onTurnEnded).toHaveBeenCalledOnce();
+      expect(rt.state.exitReason).toBe("turn_ended");
+    },
+  );
 });
 
 // ── Canary: unrelated events must NOT fire ──────────

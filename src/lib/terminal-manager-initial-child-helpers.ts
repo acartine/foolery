@@ -194,6 +194,7 @@ export function buildTakeLoopCtx(
     claimsPerQueueType: new Map(),
     lastAgentPerQueueType: new Map(),
     failedAgentsPerQueueType: new Map(),
+    followUpAttempts: { count: 0, lastState: null },
     claimedAt: Date.now(),
   };
 }

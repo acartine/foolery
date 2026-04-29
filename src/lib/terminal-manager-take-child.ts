@@ -80,6 +80,11 @@ export function spawnTakeChild(
   const effectiveAgent =
     agentOverride ?? ctx.agent;
   applyEffectiveAgent(ctx, effectiveAgent);
+  // Each take iteration spawns its own runtime and child;
+  // the follow-up cap is per-iteration. Reset before any
+  // turn-ended fires for this child.
+  ctx.followUpAttempts.count = 0;
+  ctx.followUpAttempts.lastState = null;
   recordTakeLoopLifecycle(ctx, "prompt_built", {
     claimedState: beatState,
     leaseId: ctx.entry.knotsLeaseId,

@@ -209,7 +209,7 @@ describe("opencode interactive: completion", () => {
   beforeEach(() => { vi.useFakeTimers(); });
   afterEach(() => { vi.useRealTimers(); });
 
-  it("detects result from injected step_finish", () => {
+  it("detects result from injected session_idle", () => {
     const { config } = makeConfigWithHttp();
     const rt = createSessionRuntime(config);
     const child = makeChild();
@@ -222,9 +222,17 @@ describe("opencode interactive: completion", () => {
     }));
     expect(rt.state.resultObserved).toBe(false);
 
+    // step_finish is a per-message boundary, NOT a turn
+    // boundary — it must not flip resultObserved.
     rt.injectLine(child, JSON.stringify({
       type: "step_finish",
       part: { reason: "stop" },
+    }));
+    expect(rt.state.resultObserved).toBe(false);
+
+    // session_idle is the authoritative turn boundary.
+    rt.injectLine(child, JSON.stringify({
+      type: "session_idle",
     }));
     expect(rt.state.resultObserved).toBe(true);
     expect(rt.state.exitReason).toBe(
@@ -256,8 +264,7 @@ describe("opencode interactive: completion", () => {
     rt.wireStdout(child);
 
     rt.injectLine(child, JSON.stringify({
-      type: "step_finish",
-      part: { reason: "stop" },
+      type: "session_idle",
     }));
     expect(endSpy).not.toHaveBeenCalled();
 
@@ -280,8 +287,7 @@ describe("opencode interactive: completion", () => {
     rt.wireStdout(child);
 
     rt.injectLine(child, JSON.stringify({
-      type: "step_finish",
-      part: { reason: "stop" },
+      type: "session_idle",
     }));
 
     vi.advanceTimersByTime(2000);
@@ -354,8 +360,7 @@ describe("opencode interactive: watchdog", () => {
       rt.wireStdout(child);
 
       rt.injectLine(child, JSON.stringify({
-        type: "step_finish",
-        part: { reason: "stop" },
+        type: "session_idle",
       }));
       expect(rt.state.resultObserved).toBe(true);
 
@@ -389,8 +394,7 @@ describe("opencode interactive: follow-up", () => {
     rt.wireStdout(child);
 
     rt.injectLine(child, JSON.stringify({
-      type: "step_finish",
-      part: { reason: "stop" },
+      type: "session_idle",
     }));
     expect(onTurnEnded).toHaveBeenCalledOnce();
 
@@ -405,8 +409,7 @@ describe("opencode interactive: follow-up", () => {
     rt.wireStdout(child);
 
     rt.injectLine(child, JSON.stringify({
-      type: "step_finish",
-      part: { reason: "stop" },
+      type: "session_idle",
     }));
     expect(rt.state.resultObserved).toBe(true);
 
@@ -427,8 +430,7 @@ describe("opencode interactive: follow-up", () => {
     rt.wireStdout(child);
 
     rt.injectLine(child, JSON.stringify({
-      type: "step_finish",
-      part: { reason: "stop" },
+      type: "session_idle",
     }));
     expect(rt.state.exitReason).toBe(
       "turn_ended",
