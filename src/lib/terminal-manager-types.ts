@@ -38,6 +38,8 @@ export interface SessionEntry {
     record: PendingApprovalRecord,
     action: ApprovalAction,
   ) => Promise<ApprovalReplyResult>;
+  approvalBridgeBaseUrl?: string;
+  approvalBridgeToken?: string;
 }
 
 export const INPUT_CLOSE_GRACE_MS = 2000;

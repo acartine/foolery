@@ -26,6 +26,7 @@
 
 # test-cli-approvals-manual.sh artifacts
 /.test-cli-approvals-manual/
+/.approval-validation/
 
 # build-cli.sh local state
 /.local-state/

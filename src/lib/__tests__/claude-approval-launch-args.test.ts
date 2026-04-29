@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildClaudeInteractiveArgs,
   buildPromptModeArgs,
+  CLAUDE_APPROVAL_PROMPT_TOOL,
 } from "@/lib/agent-adapter";
 import {
   buildAgentArgs,
@@ -17,6 +18,17 @@ const SKIP_PERMISSIONS = "--dangerously-skip-permissions";
 
 describe("Claude approval launch args", () => {
   const prompt = "Do something";
+
+  function expectClaudeApprovalBridge(args: string[]) {
+    expect(args).toContain("--permission-mode");
+    expect(args).toContain("default");
+    expect(args).toContain("--setting-sources");
+    expect(args).toContain("project");
+    expect(args).toContain("--strict-mcp-config");
+    expect(args).toContain("--mcp-config");
+    expect(args).toContain("--permission-prompt-tool");
+    expect(args).toContain(CLAUDE_APPROVAL_PROMPT_TOOL);
+  }
 
   it("keeps Claude prompt-mode sessions autonomous by default", () => {
     const result = buildPromptModeArgs(
@@ -39,7 +51,7 @@ describe("Claude approval launch args", () => {
       { command: "claude", approvalMode: "prompt" },
       prompt,
     );
-    expect(result.args).toEqual([
+    expect(result.args.slice(0, 8)).toEqual([
       "-p",
       prompt,
       "--input-format",
@@ -49,6 +61,8 @@ describe("Claude approval launch args", () => {
       "--include-partial-messages",
       "--verbose",
     ]);
+    expect(result.args).not.toContain(SKIP_PERMISSIONS);
+    expectClaudeApprovalBridge(result.args);
   });
 
   it("keeps Claude interactive sessions autonomous by default", () => {
@@ -75,16 +89,18 @@ describe("Claude approval launch args", () => {
       model: "sonnet",
       approvalMode: "prompt",
     });
-    expect(result.args).toEqual([
+    expect(result.args.slice(0, 6)).toEqual([
       "-p",
       "--input-format",
       "stream-json",
       "--verbose",
       "--output-format",
       "stream-json",
-      "--model",
-      "sonnet",
     ]);
+    expect(result.args).not.toContain(SKIP_PERMISSIONS);
+    expectClaudeApprovalBridge(result.args);
+    expect(result.args).toContain("--model");
+    expect(result.args).toContain("sonnet");
   });
 });
 
@@ -124,6 +140,7 @@ describe("terminal Claude launch args", () => {
     );
     expect(result.agentCmd).toBe("claude");
     expect(result.args).not.toContain(SKIP_PERMISSIONS);
+    expect(result.args).toContain("--permission-prompt-tool");
   });
 
   it("keeps bypass args for take-loop interactive sessions by default", () => {
@@ -151,6 +168,7 @@ describe("terminal Claude launch args", () => {
     );
     expect(result.cmd).toBe("claude");
     expect(result.args).not.toContain(SKIP_PERMISSIONS);
+    expect(result.args).toContain("--permission-prompt-tool");
   });
 });
 

@@ -160,11 +160,11 @@ export async function detectKnownBlocker(provider, options) {
   }
   if (provider === "claude") {
     const source = await readTextIfExists(
-      path.join(rootDir, "src/lib/terminal-manager-initial-child-helpers.ts"),
+      path.join(rootDir, "src/lib/agent-adapter.ts"),
     );
-    if (source.includes("--dangerously-skip-permissions")) {
+    if (!source.includes("--permission-prompt-tool")) {
       throw new BlockedError(
-        "Claude interactive launch still includes --dangerously-skip-permissions.",
+        "Claude interactive launch is missing a permission prompt bridge.",
       );
     }
   }
@@ -363,7 +363,7 @@ async function findHarnessBeat(repo, title) {
 export function approvalPrompt(provider, token) {
   const config = providers[provider];
   const targetFile = `${approvalDir}/${config.fileName}`;
-  if (provider === "codex") {
+  if (provider === "codex" || provider === "claude") {
     const command = "python3 -c "
       + JSON.stringify(
         "from pathlib import Path; "
@@ -376,7 +376,8 @@ export function approvalPrompt(provider, token) {
       "Run exactly this shell command from the repository root:",
       command,
       "Do not use apply_patch or direct file editing.",
-      `After the file exists, print exactly: ${config.marker} ${token}`,
+      "If the command is blocked or denied, do not print the marker.",
+      `After the command succeeds, print exactly: ${config.marker} ${token}`,
       "Do not move any knots to terminal states.",
     ].join("\n");
   }

@@ -447,6 +447,7 @@ function spawnAndWire(
 ): import("node:child_process").ChildProcess {
   const child = spawn(agentCmd, args, {
     cwd: prepared.resolvedRepoPath,
+    env: approvalBridgeEnv(entry, id),
     stdio: [
       isInteractive ? "pipe" : "ignore",
       "pipe", "pipe",
@@ -494,4 +495,18 @@ function spawnAndWire(
   }
 
   return child;
+}
+
+function approvalBridgeEnv(
+  entry: SessionEntry,
+  sessionId: string,
+): NodeJS.ProcessEnv {
+  return {
+    ...process.env,
+    FOOLERY_TERMINAL_SESSION_ID: sessionId,
+    FOOLERY_APPROVAL_BRIDGE_BASE_URL:
+      entry.approvalBridgeBaseUrl ?? "",
+    FOOLERY_APPROVAL_BRIDGE_TOKEN:
+      entry.approvalBridgeToken ?? "",
+  };
 }

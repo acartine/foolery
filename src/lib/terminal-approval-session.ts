@@ -164,6 +164,12 @@ async function respondWithRuntime(
     }
     return session.respondToApproval(target, action);
   }
+  if (
+    target.adapter === "claude-bridge" &&
+    target.transport === "stdio"
+  ) {
+    return { ok: true };
+  }
   return {
     ok: false,
     status: "unsupported",

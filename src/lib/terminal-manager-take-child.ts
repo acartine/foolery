@@ -125,6 +125,7 @@ export function spawnTakeChild(
 
   const takeChild = spawn(cmd, args, {
     cwd: ctx.cwd,
+    env: approvalBridgeEnv(ctx.entry, ctx.id),
     stdio: [
       isInteractive ? "pipe" : "ignore",
       "pipe", "pipe",
@@ -259,4 +260,18 @@ function invokeTakeLoopTurnEnded(
     return Promise.resolve(false);
   }
   return handleTakeLoopTurnEnded(ctx, runtime, child);
+}
+
+function approvalBridgeEnv(
+  entry: TakeLoopContext["entry"],
+  sessionId: string,
+): NodeJS.ProcessEnv {
+  return {
+    ...process.env,
+    FOOLERY_TERMINAL_SESSION_ID: sessionId,
+    FOOLERY_APPROVAL_BRIDGE_BASE_URL:
+      entry.approvalBridgeBaseUrl ?? "",
+    FOOLERY_APPROVAL_BRIDGE_TOKEN:
+      entry.approvalBridgeToken ?? "",
+  };
 }

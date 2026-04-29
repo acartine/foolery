@@ -1,4 +1,5 @@
 import { EventEmitter } from "node:events";
+import { randomUUID } from "node:crypto";
 import { getBackend } from "@/lib/backend-instance";
 import {
   startInteractionLog,
@@ -113,6 +114,7 @@ export async function createSession(
   beatId: string,
   repoPath?: string,
   customPrompt?: string,
+  serverOrigin?: string,
 ): Promise<TerminalSession> {
   const settings = await loadSettings();
   const maxSessions =
@@ -168,6 +170,8 @@ export async function createSession(
   const entry: SessionEntry = {
     session, process: null,
     emitter, buffer, interactionLog,
+    approvalBridgeBaseUrl: serverOrigin,
+    approvalBridgeToken: randomUUID(),
   };
   sessions.set(id, entry);
   await setupKnotsLease(entry, id, prepared, agentInfo, preparedPoolKey);

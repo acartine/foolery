@@ -24,7 +24,15 @@ export async function POST(request: NextRequest) {
     { route: "POST /api/terminal", context: { beatId, repoPath: _repo } },
     async ({ measure }) => {
       try {
-        const session = await measure("create", () => createSession(beatId, _repo, prompt));
+        const session = await measure(
+          "create",
+          () => createSession(
+            beatId,
+            _repo,
+            prompt,
+            request.nextUrl.origin,
+          ),
+        );
         return NextResponse.json({ data: session }, { status: 201 });
       } catch (err) {
         const message = err instanceof Error ? err.message : "Failed to create session";

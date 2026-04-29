@@ -161,6 +161,35 @@ describe("terminal approval session responder routing", () => {
       "approve",
     );
   });
+
+  it("marks Claude bridge approvals after UI action", async () => {
+    const entry = makeEntry();
+    attachApprovalResponder(
+      entry,
+      { config: {} } as unknown as AgentSessionRuntime,
+    );
+    const record = recordPendingApproval(entry, {
+      adapter: "claude",
+      source: "permission-prompt-tool",
+      options: [],
+      toolName: "Bash",
+      supportedActions: ["approve", "reject"],
+      replyTarget: {
+        adapter: "claude-bridge",
+        transport: "stdio",
+        requestId: "toolu_1",
+      },
+    });
+
+    const result = await performApprovalAction(
+      entry,
+      record.approvalId,
+      "approve",
+    );
+
+    expect(result.ok).toBe(true);
+    expect(record.status).toBe("approved");
+  });
 });
 
 describe("terminal approval session failure paths", () => {

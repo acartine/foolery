@@ -149,6 +149,45 @@ export function shouldBypassClaudePermissions(
   return agent.approvalMode !== "prompt";
 }
 
+export const CLAUDE_APPROVAL_MCP_SERVER =
+  "foolery_approval";
+export const CLAUDE_APPROVAL_PROMPT_TOOL =
+  "mcp__foolery_approval__ask";
+
+function claudeApprovalBridgeMcpConfig(): string {
+  return JSON.stringify({
+    mcpServers: {
+      [CLAUDE_APPROVAL_MCP_SERVER]: {
+        command: process.execPath,
+        args: [
+          `${process.cwd()}/scripts/claude-approval-bridge-mcp.mjs`,
+        ],
+      },
+    },
+  });
+}
+
+function appendClaudePermissionArgs(
+  args: string[],
+  agent: PermissionModeAgent,
+): void {
+  if (shouldBypassClaudePermissions(agent)) {
+    args.push("--dangerously-skip-permissions");
+    return;
+  }
+  args.push(
+    "--permission-mode",
+    "default",
+    "--setting-sources",
+    "project",
+    "--strict-mcp-config",
+    "--mcp-config",
+    claudeApprovalBridgeMcpConfig(),
+    "--permission-prompt-tool",
+    CLAUDE_APPROVAL_PROMPT_TOOL,
+  );
+}
+
 export function buildClaudeInteractiveArgs(
   agent: PermissionModeAgent,
 ): PromptModeArgs {
@@ -165,9 +204,7 @@ export function buildClaudeInteractiveArgs(
     "--output-format",
     "stream-json",
   ];
-  if (shouldBypassClaudePermissions(agent)) {
-    args.push("--dangerously-skip-permissions");
-  }
+  appendClaudePermissionArgs(args, agent);
   if (agent.model) args.push("--model", agent.model);
   return { command, args };
 }
@@ -191,9 +228,7 @@ export function buildClaudePromptModeArgs(
     "--include-partial-messages",
     "--verbose",
   ];
-  if (shouldBypassClaudePermissions(agent)) {
-    args.push("--dangerously-skip-permissions");
-  }
+  appendClaudePermissionArgs(args, agent);
   if (agent.model) args.push("--model", agent.model);
   return { command, args };
 }

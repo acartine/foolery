@@ -92,7 +92,7 @@ launching provider CLIs or touching host config.
 | Provider | Force approval | Approve first request | Continuation marker |
 | --- | --- | --- | --- |
 | Codex | Run app-server with approval policy other than `never`; prompt asks for a shell/write action. | Foolery must preserve the native Codex request identity and respond through the structured approval path. | `FOOLERY_APPROVAL_CONTINUED_CODEX <token>` |
-| Claude Code | Launch stream-json without `--dangerously-skip-permissions`, using default permission mode. | Foolery must respond to the native Claude permission request. | `FOOLERY_APPROVAL_CONTINUED_CLAUDE <token>` |
+| Claude Code | Launch stream-json without `--dangerously-skip-permissions`, using default permission mode, project-only settings, and the Foolery permission MCP bridge. | Claude delegates the tool permission check to `mcp__foolery_approval__ask`; the bridge records a Foolery approval and waits for the UI action before returning `allow` or `deny`. | `FOOLERY_APPROVAL_CONTINUED_CLAUDE <token>` |
 | OpenCode | Run with `permission` rules that make `edit` and `bash` ask. | Map `Approve once` to `POST /session/:id/permissions/:permissionID` with `response="once"` and `remember=false`. | `FOOLERY_APPROVAL_CONTINUED_OPENCODE <token>` |
 
 The harness reports `BLOCKED` instead of `FAIL` for known missing
@@ -100,8 +100,7 @@ implementation paths:
 
 - Codex still starts with `approvalPolicy: "never"`.
 - Codex approval requests do not carry enough identity to respond.
-- Claude still launches with `--dangerously-skip-permissions`.
-- Claude emits a permission shape Foolery does not extract.
+- Claude prompt-mode launch is missing `--permission-prompt-tool`.
 - The selected provider has no implemented Foolery approve/reject action.
 
 Older OpenCode-specific blockers covered missing approval-event extraction and
@@ -128,6 +127,10 @@ Important files:
 - `src/lib/session-connection-manager.ts` stores approvals and notifications.
 - `src/components/final-cut-view.tsx` renders the Escalations tabs.
 - `src/components/approval-escalations-panel.tsx` renders approval rows.
+- `scripts/claude-approval-bridge-mcp.mjs` exposes the Claude permission
+  prompt MCP tool.
+- `src/app/api/terminal/[sessionId]/approvals/claude-bridge/route.ts` records
+  Claude bridge approvals and returns the UI decision to the MCP tool.
 
 Currently recognized shapes include:
 
@@ -140,8 +143,9 @@ Currently recognized shapes include:
 OpenCode approval rows now expose Approve, Always, and Reject when the
 request carries a native session id plus permission id. The responder posts to
 `POST /session/:id/permissions/:permissionID` and maps Foolery actions to
-OpenCode `once`, `always`, and `reject` responses. Claude and Codex may still
-need responder wiring after approval visibility is forced.
+OpenCode `once`, `always`, and `reject` responses. Claude approval-mode rows
+expose Approve and Reject through the local bridge responder; approving returns
+`{"behavior":"allow","updatedInput":...}` to Claude's permission prompt tool.
 
 ## Manual Recovery
 
