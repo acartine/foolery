@@ -54,7 +54,12 @@ function makeChild(
 }
 
 function makeConfig(
-  dialect: "claude" | "codex" | "copilot" | "gemini",
+  dialect:
+    | "claude"
+    | "codex"
+    | "copilot"
+    | "gemini"
+    | "opencode",
   overrides: Partial<SessionRuntimeConfig> = {},
 ): SessionRuntimeConfig {
   return {
@@ -250,5 +255,46 @@ describe("approval request runtime visibility: Gemini", () => {
       "toolName=browser_evaluate",
     );
     expect(writeSpy).toHaveBeenCalled();
+  });
+});
+
+describe("approval request runtime visibility: OpenCode", () => {
+  it("captures and shows OpenCode permission requests", () => {
+    const pushEvent = vi.fn();
+    const onApprovalRequest = vi.fn();
+    const runtime = createSessionRuntime(
+      makeConfig("opencode", {
+        pushEvent,
+        onApprovalRequest,
+      }),
+    );
+    const child = makeChild(true);
+
+    runtime.wireStdout(child);
+    emitLine(child, {
+      type: "permission.updated",
+      properties: {
+        id: "perm-opencode-1",
+        sessionID: "ses-opencode-1",
+        type: "bash",
+        metadata: { command: "git status --short" },
+      },
+    });
+
+    expect(onApprovalRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        adapter: "opencode",
+        nativeSessionId: "ses-opencode-1",
+        requestId: "perm-opencode-1",
+      }),
+    );
+    const stderr = eventTexts(pushEvent, "stderr")
+      .join("");
+    expect(stderr).toContain(
+      "FOOLERY APPROVAL REQUIRED",
+    );
+    expect(stderr).toContain(
+      "supportedActions=approve | always_approve | reject",
+    );
   });
 });

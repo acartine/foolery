@@ -2,14 +2,19 @@ import {
   APPROVAL_REQUIRED_MARKER,
   type ApprovalRequest,
 } from "@/lib/approval-request-visibility";
+import {
+  isApprovalAction,
+  normalizeSupportedActions,
+  type ApprovalAction,
+  type ApprovalEscalationStatus,
+} from "@/lib/approval-actions";
+
+export type {
+  ApprovalEscalationStatus,
+} from "@/lib/approval-actions";
 
 export const APPROVAL_ESCALATION_LOG_MARKER =
   "FOOLERY APPROVAL ESCALATION";
-
-export type ApprovalEscalationStatus =
-  | "pending"
-  | "manual_required"
-  | "dismissed";
 
 export interface ApprovalEscalationContext {
   sessionId: string;
@@ -42,7 +47,11 @@ export interface ApprovalEscalationLogContext {
   serverName?: string;
   toolName?: string;
   status?: ApprovalEscalationStatus;
+  action?: ApprovalAction;
+  nativeSessionId?: string;
+  requestId?: string;
   reason?: string;
+  error?: string;
 }
 
 const ANSI_PATTERN = /\x1b\[[0-9;]*m/g;
@@ -121,6 +130,14 @@ export function parseApprovalBanner(
     ?.split("|")
     .map((option) => option.trim())
     .filter(Boolean) ?? [];
+  const supportedActions = entries.get("supportedActions")
+    ?.split("|")
+    .map((action) => action.trim())
+    .filter(isApprovalAction) ?? [];
+  const patterns = entries.get("patterns")
+    ?.split("|")
+    .map((pattern) => pattern.trim())
+    .filter(Boolean) ?? [];
   return {
     adapter,
     source,
@@ -132,6 +149,14 @@ export function parseApprovalBanner(
     toolParamsDisplay: entries.get("toolParamsDisplay"),
     parameterSummary: entries.get("parameterSummary"),
     toolUseId: entries.get("toolUseId"),
+    nativeSessionId:
+      entries.get("nativeSessionId") ?? entries.get("sessionId"),
+    sessionId: entries.get("sessionId"),
+    requestId: entries.get("requestId"),
+    permissionId: entries.get("permissionId"),
+    permissionName: entries.get("permissionName"),
+    patterns,
+    supportedActions,
   };
 }
 
@@ -141,13 +166,28 @@ export function approvalEscalationFromBanner(
 ): ApprovalEscalation | null {
   const request = parseApprovalBanner(data);
   if (!request) return null;
+  return approvalEscalationFromRequest(request, context);
+}
+
+export function approvalEscalationFromRequest(
+  request: ApprovalRequest,
+  context: ApprovalEscalationContext,
+): ApprovalEscalation {
   const now = context.timestamp ?? Date.now();
+  const normalizedRequest: ApprovalRequest = {
+    ...request,
+    nativeSessionId:
+      request.nativeSessionId ?? request.sessionId,
+    supportedActions: normalizeSupportedActions(
+      request.supportedActions,
+    ),
+  };
   const notificationKey = buildApprovalNotificationKey(
-    request,
+    normalizedRequest,
     context,
   );
   return {
-    ...request,
+    ...normalizedRequest,
     id: shortHash(notificationKey),
     notificationKey,
     status: "pending",
@@ -184,11 +224,17 @@ function buildApprovalNotificationKey(
     request.serverName ?? "",
     request.toolName ?? "",
     request.toolUseId ?? "",
+    request.nativeSessionId ?? request.sessionId ?? "",
+    request.requestId ?? "",
+    request.permissionId ?? "",
+    request.permissionName ?? "",
+    request.patterns?.join("|") ?? "",
     request.message ?? "",
     request.question ?? "",
     request.toolParamsDisplay ?? "",
     request.parameterSummary ?? "",
     request.options.join("|"),
+    request.supportedActions?.join("|") ?? "",
   ].join("\u0000");
 }
 

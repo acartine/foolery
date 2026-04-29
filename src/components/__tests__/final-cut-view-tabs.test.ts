@@ -32,12 +32,12 @@ describe("FinalCutView approvals tabs contract", () => {
     expect(finalCut).toContain("<ApprovalEscalationsPanel");
   });
 
-  it("shows manual-action messaging instead of fake approve controls", () => {
+  it("shows real approval actions and manual fallback messaging", () => {
     expect(approvalsPanel).toContain("Manual action");
     expect(approvalsPanel).toContain(
-      "Programmatic approve/deny is not wired",
+      "Programmatic approval is not available",
     );
-    expect(approvalsPanel).not.toContain("Approve");
-    expect(approvalsPanel).not.toContain("Deny");
+    expect(approvalsPanel).toContain('action="approve"');
+    expect(approvalsPanel).toContain('action="reject"');
   });
 });

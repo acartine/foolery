@@ -66,6 +66,9 @@ import {
 import {
   createTakeLoopRuntimeLifecycleHandler,
 } from "@/lib/terminal-manager-runtime-lifecycle";
+import {
+  attachApprovalResponder, createApprovalRequestHandler,
+} from "@/lib/terminal-approval-session";
 
 // ─── Session lifecycle factory ──────────────────────
 
@@ -189,10 +192,10 @@ export function spawnInitialChild(
       agent, takeLoopCtx, jsonrpcSession, acpSession,
       buildContinueAfterCleanClose(
         stateRef,
-        runtimeConfig,
-        buildInitialState,
-        pushEvent,
-        startTurn,
+    runtimeConfig,
+    buildInitialState,
+    pushEvent,
+    startTurn,
       ),
     );
     sendInitialPrompt(
@@ -359,6 +362,7 @@ function prepareInitialRuntimeBundle(
       prepared,
     ),
     stateRef,
+    entry,
   );
   return {
     isTakeLoop,
@@ -389,11 +393,13 @@ function finalizeInitialRuntimeConfig(
   stateRef: ReturnType<
     typeof createInitialRuntime
   >["stateRef"],
+  entry: SessionEntry,
 ): void {
   Object.assign(runtimeConfig, {
     httpSession: sessions.httpSession,
     jsonrpcSession: sessions.jsonrpcSession,
     acpSession: sessions.acpSession,
+    onApprovalRequest: createApprovalRequestHandler(entry),
     ...(lifecycleHandler
       ? { onLifecycleEvent: lifecycleHandler }
       : {}),
@@ -449,6 +455,7 @@ function spawnAndWire(
     detached: true,
   });
   entry.process = child;
+  attachApprovalResponder(entry, state.runtime);
   logAgentSpawn(agent, child);
 
   wireStdout(

@@ -17,6 +17,14 @@ import type {
 import {
   terminateProcessGroup,
 } from "@/lib/agent-session-process";
+import {
+  respondToOpenCodeApproval,
+} from "@/lib/opencode-approval-actions";
+import type {
+  ApprovalAction,
+  ApprovalReplyResult,
+  ApprovalReplyTarget,
+} from "@/lib/approval-actions";
 
 // ── Types ─────────────────────────────────────────────
 
@@ -69,6 +77,10 @@ export interface OpenCodeHttpSession {
    * server process.
    */
   interruptTurn(child: ChildProcess): boolean;
+  respondToApproval(
+    target: ApprovalReplyTarget,
+    action: ApprovalAction,
+  ): Promise<ApprovalReplyResult>;
 }
 
 // ── Internal state ────────────────────────────────────
@@ -192,17 +204,26 @@ function translateEvent(
   const event = toObject(value);
   if (!event) return null;
   const type = asString(event.type);
-  if (type === "permission.asked") return event;
+  if (
+    type === "permission.asked" ||
+    type === "permission.updated"
+  ) return event;
   const name = asString(event.event)
     ?? asString(event.name);
-  if (name === "permission.asked") {
+  if (
+    name === "permission.asked" ||
+    name === "permission.updated"
+  ) {
     return { ...event, type: name };
   }
   const part = toObject(event.part);
   const partType = asString(part?.type)
     ?? asString(part?.event)
     ?? asString(part?.name);
-  return partType === "permission.asked"
+  return (
+    partType === "permission.asked" ||
+    partType === "permission.updated"
+  )
     ? { ...event, type: partType }
     : null;
 }
@@ -460,6 +481,17 @@ export function createOpenCodeHttpSession(
         s.shutdownInFlight = null;
       });
       return true;
+    },
+
+    respondToApproval(target, action) {
+      return respondToOpenCodeApproval({
+        baseUrl: s.serverUrl,
+        nativeSessionId:
+          target.nativeSessionId ?? s.sessionId,
+        permissionId:
+          target.permissionId ?? target.requestId,
+        action,
+      });
     },
   };
 }

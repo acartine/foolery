@@ -1,3 +1,7 @@
+import type {
+  ApprovalAction,
+  ApprovalEscalationStatus,
+} from "@/lib/approval-actions";
 import type { TerminalSession, TerminalEvent, BdResult } from "./types";
 import { withClientPerfSpan } from "@/lib/client-perf";
 
@@ -48,6 +52,43 @@ export async function abortSession(sessionId: string): Promise<BdResult<void>> {
     if (!res.ok) return { ok: false, error: json.error ?? "Failed to abort session" };
     return { ok: true };
   }, () => ({ method: "DELETE", meta: { sessionId } }));
+}
+
+export interface ApprovalActionResponse {
+  approvalId: string;
+  action: ApprovalAction;
+  status: ApprovalEscalationStatus;
+}
+
+export async function sendApprovalAction(
+  sessionId: string,
+  approvalId: string,
+  action: ApprovalAction,
+): Promise<BdResult<ApprovalActionResponse>> {
+  return withClientPerfSpan(
+    "api",
+    `${BASE}/${sessionId}/approvals/${approvalId}`,
+    async () => {
+      const res = await fetch(
+        `${BASE}/${encodeURIComponent(sessionId)}` +
+          `/approvals/${encodeURIComponent(approvalId)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action }),
+        },
+      );
+      const json = await res.json();
+      if (!res.ok) {
+        return {
+          ok: false,
+          error: json.error ?? "Failed to send approval action",
+        };
+      }
+      return { ok: true, data: json.data };
+    },
+    () => ({ method: "POST", meta: { sessionId, approvalId, action } }),
+  );
 }
 
 async function fetchSessionStatus(

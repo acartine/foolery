@@ -26,6 +26,9 @@ import type {
 import type {
   GeminiAcpSession,
 } from "@/lib/gemini-acp-session";
+import type {
+  ApprovalRequest,
+} from "@/lib/approval-request-visibility";
 
 // ── Exit reason ────────────────────────────────────────
 
@@ -104,6 +107,9 @@ export interface SessionRuntimeConfig {
   onTurnEnded?: () => boolean | Promise<boolean>;
   onLifecycleEvent?: (
     event: SessionRuntimeLifecycleEvent,
+  ) => void;
+  onApprovalRequest?: (
+    request: ApprovalRequest,
   ) => void;
   /**
    * Optional Codex JSON-RPC session for

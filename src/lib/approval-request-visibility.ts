@@ -1,6 +1,10 @@
 import {
   extractOpenCodePermissionAsked,
 } from "@/lib/opencode-approval-request";
+import type {
+  ApprovalAction,
+  ApprovalReplyTarget,
+} from "@/lib/approval-actions";
 
 const MAX_VALUE_CHARS = 320;
 
@@ -13,15 +17,26 @@ export interface ApprovalRequest {
   message?: string;
   question?: string;
   options: string[];
+  optionItems?: ApprovalOptionItem[];
+  supportedActions?: ApprovalAction[];
+  replyTarget?: ApprovalReplyTarget;
   serverName?: string;
   toolName?: string;
   toolParamsDisplay?: string;
   parameterSummary?: string;
   toolUseId?: string;
   sessionId?: string;
+  nativeSessionId?: string;
   requestId?: string;
+  permissionId?: string;
   permissionName?: string;
   patterns?: string[];
+}
+
+export interface ApprovalOptionItem {
+  id: string;
+  label: string;
+  action?: ApprovalAction;
 }
 
 function toObject(
@@ -323,7 +338,8 @@ export function shouldEmitApprovalBannerFromRaw(
   value: unknown,
 ): boolean {
   const obj = toObject(value);
-  return obj?.method === "mcpServer/elicitation/request"
+  return extractOpenCodePermissionAsked(value) !== null
+    || obj?.method === "mcpServer/elicitation/request"
     || obj?.method === "session/request_permission";
 }
 
@@ -345,6 +361,14 @@ export function formatApprovalRequestBanner(
     `adapter=${request.adapter}`,
     `source=${request.source}`,
   ];
+  if (
+    request.supportedActions &&
+    request.supportedActions.length > 0
+  ) {
+    lines.push(
+      `supportedActions=${request.supportedActions.join(" | ")}`,
+    );
+  }
   if (request.serverName) {
     lines.push(`serverName=${request.serverName}`);
   }
@@ -360,8 +384,14 @@ export function formatApprovalRequestBanner(
   if (request.sessionId) {
     lines.push(`sessionId=${request.sessionId}`);
   }
+  if (request.nativeSessionId) {
+    lines.push(`nativeSessionId=${request.nativeSessionId}`);
+  }
   if (request.requestId) {
     lines.push(`requestId=${request.requestId}`);
+  }
+  if (request.permissionId) {
+    lines.push(`permissionId=${request.permissionId}`);
   }
   if (request.message) {
     lines.push(`message=${request.message}`);

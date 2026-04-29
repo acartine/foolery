@@ -45,6 +45,10 @@ import {
 import {
   handleTakeLoopTurnEnded,
 } from "@/lib/terminal-manager-take-follow-up";
+import {
+  attachApprovalResponder,
+  createApprovalRequestHandler,
+} from "@/lib/terminal-approval-session";
 
 // ─── spawnTakeChild (entry point) ────────────────────
 
@@ -128,6 +132,7 @@ export function spawnTakeChild(
     detached: true,
   });
   ctx.entry.process = takeChild;
+  attachApprovalResponder(ctx.entry, runtime);
   httpRefs.childRef = takeChild;
 
   console.log(
@@ -211,6 +216,8 @@ export function createTakeRuntimeBundle(
     interactionLog: ctx.interactionLog,
     beatIds: [ctx.beatId],
     onLifecycleEvent: handleLifecycleEvent,
+    onApprovalRequest:
+      createApprovalRequestHandler(ctx.entry),
     // foolery-6881: every take iteration must get the
     // same in-session follow-up capability the initial
     // child has (foolery-a401). Without this wiring, a

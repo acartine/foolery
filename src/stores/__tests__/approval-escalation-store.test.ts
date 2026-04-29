@@ -75,4 +75,27 @@ describe("approval escalation store", () => {
       useApprovalEscalationStore.getState(),
     )).toBe(0);
   });
+
+  it("records resolved and failed action states", () => {
+    const store = useApprovalEscalationStore.getState();
+    store.upsertPendingApproval(makeApproval("approval-1"));
+
+    store.markApprovalResponding("approval-1", "approve");
+    expect(selectPendingApprovals(
+      useApprovalEscalationStore.getState(),
+    )[0]?.status).toBe("responding");
+
+    store.markApprovalResolved("approval-1", "approve");
+    expect(useApprovalEscalationStore.getState()
+      .approvals[0]?.status).toBe("approved");
+    expect(selectPendingApprovalCount(
+      useApprovalEscalationStore.getState(),
+    )).toBe(0);
+
+    store.upsertPendingApproval(makeApproval("approval-2"));
+    store.markApprovalFailed("approval-2", "network_down");
+    expect(selectPendingApprovals(
+      useApprovalEscalationStore.getState(),
+    )[0]?.status).toBe("reply_failed");
+  });
 });

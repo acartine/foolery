@@ -9,6 +9,9 @@ import {
   fetchBeatsForScope,
   resolveBeatsScope,
 } from "@/lib/api";
+import {
+  sendApprovalAction,
+} from "@/lib/terminal-api";
 import { Badge } from "@/components/ui/badge";
 import { BeatTable } from "@/components/beat-table";
 import { ApprovalEscalationsPanel } from "@/components/approval-escalations-panel";
@@ -26,6 +29,7 @@ import {
   useApprovalEscalationStore,
 } from "@/stores/approval-escalation-store";
 import type { ApprovalEscalation } from "@/lib/approval-escalations";
+import type { ApprovalAction } from "@/lib/approval-actions";
 import type { Beat } from "@/lib/types";
 import { useBeatsScreenWarmup } from "@/hooks/use-beats-screen-warmup";
 import { RepoSwitchLoadingState } from "@/components/repo-switch-loading-state";
@@ -49,6 +53,7 @@ export function FinalCutView() {
   const markManualAction = useApprovalEscalationStore(
     (s) => s.markManualAction,
   );
+  const handleApprovalAction = useApprovalActionHandler();
   const scope = resolveBeatsScope(activeRepo, registeredRepos);
   const activeTab: EscalationsTab =
     searchParams.get("tab") === "approvals"
@@ -113,7 +118,6 @@ export function FinalCutView() {
     },
     [router, searchParams],
   );
-
   return (
     <div className="space-y-4 pb-4">
       <EscalationsHeader
@@ -131,8 +135,61 @@ export function FinalCutView() {
         onSelectionChange={handleSelectionChange}
         onDismissApproval={dismissApproval}
         onManualAction={markManualAction}
+        onApprovalAction={handleApprovalAction}
       />
     </div>
+  );
+}
+
+function useApprovalActionHandler() {
+  const markApprovalResponding = useApprovalEscalationStore(
+    (s) => s.markApprovalResponding,
+  );
+  const markApprovalResolved = useApprovalEscalationStore(
+    (s) => s.markApprovalResolved,
+  );
+  const markApprovalUnsupported = useApprovalEscalationStore(
+    (s) => s.markApprovalUnsupported,
+  );
+  const markApprovalFailed = useApprovalEscalationStore(
+    (s) => s.markApprovalFailed,
+  );
+  return useCallback(
+    async (
+      approval: ApprovalEscalation,
+      action: ApprovalAction,
+    ) => {
+      markApprovalResponding(approval.id, action);
+      const result = await sendApprovalAction(
+        approval.sessionId,
+        approval.id,
+        action,
+      );
+      if (!result.ok) {
+        const message = result.error ??
+          "Approval action failed";
+        if (
+          message.includes("not supported") ||
+          message.includes("not_supported")
+        ) {
+          markApprovalUnsupported(approval.id, message);
+        } else {
+          markApprovalFailed(approval.id, message);
+        }
+        return;
+      }
+      markApprovalResolved(
+        approval.id,
+        action,
+        result.data?.status,
+      );
+    },
+    [
+      markApprovalResponding,
+      markApprovalResolved,
+      markApprovalUnsupported,
+      markApprovalFailed,
+    ],
   );
 }
 
@@ -178,6 +235,10 @@ function EscalationsTabs(props: {
   onSelectionChange: (ids: string[]) => void;
   onDismissApproval: (id: string) => void;
   onManualAction: (id: string) => void;
+  onApprovalAction: (
+    approval: ApprovalEscalation,
+    action: ApprovalAction,
+  ) => void;
 }) {
   return (
     <Tabs value={props.activeTab} onValueChange={props.onTabChange}>
@@ -199,6 +260,7 @@ function EscalationsTabs(props: {
           approvals={props.approvals}
           onDismiss={props.onDismissApproval}
           onManualAction={props.onManualAction}
+          onApprovalAction={props.onApprovalAction}
         />
       </TabsContent>
     </Tabs>

@@ -132,6 +132,17 @@ describe("OpenCode permission.asked extraction", () => {
     expect(request?.parameterSummary).toContain(
       "git status --short",
     );
+    expect(request?.supportedActions).toEqual([
+      "approve",
+      "always_approve",
+      "reject",
+    ]);
+    expect(request?.replyTarget).toMatchObject({
+      adapter: "opencode",
+      transport: "http",
+      nativeSessionId: "ses_opencode_1",
+      permissionId: "perm-bash-1",
+    });
   });
 
   it("extracts an OpenCode shemcp permission.asked fixture", () => {
@@ -166,6 +177,30 @@ describe("OpenCode permission.asked extraction", () => {
     expect(request?.patterns).toEqual([
       "shemcp:slack_send_message",
     ]);
+  });
+});
+
+describe("OpenCode permission.updated extraction", () => {
+  it("extracts current OpenCode permission events", () => {
+    const request = extractApprovalRequest({
+      type: "permission.updated",
+      properties: {
+        id: "perm-current-1",
+        sessionID: "ses_current_1",
+        type: "bash",
+        pattern: "git status *",
+        metadata: {
+          command: "git status --short",
+        },
+      },
+    });
+
+    expect(request?.source).toBe("permission.updated");
+    expect(request?.requestId).toBe("perm-current-1");
+    expect(request?.nativeSessionId).toBe("ses_current_1");
+    expect(request?.permissionName).toBe("bash");
+    expect(request?.toolName).toBe("bash");
+    expect(request?.supportedActions).toContain("reject");
   });
 });
 

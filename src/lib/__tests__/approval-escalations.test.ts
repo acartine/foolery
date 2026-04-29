@@ -14,6 +14,9 @@ describe("approval escalations", () => {
     "source=mcpServer/elicitation/request",
     "serverName=playwright",
     "toolName=browser_evaluate",
+    "supportedActions=approve | reject",
+    "nativeSessionId=native-session-1",
+    "requestId=request-1",
     "message=Allow browser_evaluate?",
     "toolParamsDisplay=pageFunction=document.title()",
   ].join("\n");
@@ -26,6 +29,9 @@ describe("approval escalations", () => {
       source: "mcpServer/elicitation/request",
       serverName: "playwright",
       toolName: "browser_evaluate",
+      supportedActions: ["approve", "reject"],
+      nativeSessionId: "native-session-1",
+      requestId: "request-1",
       message: "Allow browser_evaluate?",
       toolParamsDisplay: "pageFunction=document.title()",
     });

@@ -44,6 +44,40 @@ function startReadySession(
   return session;
 }
 
+describe("OpenCodeHttpSession approval replies", () => {
+  it("responds to permission requests through OpenCode HTTP", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => true,
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const session = startReadySession(vi.fn());
+    const result = await session.respondToApproval(
+      {
+        adapter: "opencode",
+        transport: "http",
+        nativeSessionId: "ses_123",
+        permissionId: "perm-bash-1",
+      },
+      "always_approve",
+    );
+
+    expect(result.ok).toBe(true);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://127.0.0.1:9999/session/ses_123" +
+        "/permissions/perm-bash-1",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          response: "always",
+          remember: true,
+        }),
+      }),
+    );
+  });
+});
+
 describe("OpenCodeHttpSession approvals", () => {
   it("forwards permission.asked response parts", async () => {
     const onEvent = vi.fn();

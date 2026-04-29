@@ -100,9 +100,11 @@ implementation paths:
 - Codex approval requests do not carry enough identity to respond.
 - Claude still launches with `--dangerously-skip-permissions`.
 - Claude emits a permission shape Foolery does not extract.
-- OpenCode `permission.asked` is not extracted.
-- OpenCode permission ids are not preserved for replies.
-- Foolery has no approve/reject UI or API action yet.
+- The selected provider has no implemented Foolery approve/reject action.
+
+Older OpenCode-specific blockers covered missing approval-event extraction and
+missing permission ids. Those should not trigger with the current
+implementation.
 
 Use `--allow-known-blockers` only when debugging a newly landed provider fix
 before the source-code blocker heuristic has been updated.
@@ -116,9 +118,11 @@ approval entry, toast, global banner, and inbox notification.
 Important files:
 
 - `src/lib/approval-request-visibility.ts` extracts supported request shapes.
-- `src/lib/opencode-approval-request.ts` may hold split-out OpenCode
-  `permission.asked` extraction.
+- `src/lib/opencode-approval-request.ts` handles OpenCode `permission.asked`
+  and `permission.updated` extraction.
 - `src/lib/agent-session-runtime-events.ts` emits approval banners.
+- `src/lib/terminal-approval-session.ts` stores pending approval reply
+  records and routes implemented responders.
 - `src/lib/session-connection-manager.ts` stores approvals and notifications.
 - `src/components/final-cut-view.tsx` renders the Escalations tabs.
 - `src/components/approval-escalations-panel.tsx` renders approval rows.
@@ -129,10 +133,13 @@ Currently recognized shapes include:
 - Gemini `session/request_permission`.
 - Copilot `user_input.requested`.
 - Claude-style `AskUserQuestion` tool-use blocks.
+- OpenCode `permission.asked` and `permission.updated`.
 
-OpenCode still needs `permission.asked` extraction and response wiring. Claude
-needs a non-bypass validation launch mode. Codex may still need responder
-wiring after approval visibility is forced.
+OpenCode approval rows now expose Approve, Always, and Reject when the
+request carries a native session id plus permission id. The responder posts to
+`POST /session/:id/permissions/:permissionID` and maps Foolery actions to
+OpenCode `once`, `always`, and `reject` responses. Claude and Codex may still
+need responder wiring after approval visibility is forced.
 
 ## Manual Recovery
 

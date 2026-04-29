@@ -90,6 +90,9 @@ export function processLine(
   try {
     const raw = JSON.parse(line) as JsonObject;
     const approval = extractApprovalRequest(raw);
+    if (approval) {
+      config.onApprovalRequest?.(approval);
+    }
     if (
       approval &&
       shouldEmitApprovalBannerFromRaw(raw)

@@ -9,6 +9,11 @@ import type { ExecutionAgentInfo } from "@/lib/execution-port";
 import type {
   TakeLoopIterationTrace,
 } from "@/lib/terminal-manager-take-lifecycle";
+import type {
+  ApprovalAction,
+  ApprovalReplyResult,
+  PendingApprovalRecord,
+} from "@/lib/approval-actions";
 
 export interface SessionEntry {
   session: TerminalSession;
@@ -28,6 +33,11 @@ export interface SessionEntry {
   knotsLeaseAgentInfo?: ExecutionAgentInfo;
   lastReleasedKnotsLeaseId?: string;
   takeLoopLifecycle?: Map<number, TakeLoopIterationTrace>;
+  pendingApprovals?: Map<string, PendingApprovalRecord>;
+  approvalResponder?: (
+    record: PendingApprovalRecord,
+    action: ApprovalAction,
+  ) => Promise<ApprovalReplyResult>;
 }
 
 export const INPUT_CLOSE_GRACE_MS = 2000;

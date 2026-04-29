@@ -1,6 +1,9 @@
 import type {
   ApprovalRequest,
 } from "@/lib/approval-request-visibility";
+import {
+  APPROVAL_ACTIONS,
+} from "@/lib/approval-actions";
 
 const MAX_VALUE_CHARS = 320;
 
@@ -211,13 +214,11 @@ export function extractOpenCodePermissionAsked(
   const partEventName = asString(part?.type)
     ?? asString(part?.event)
     ?? asString(part?.name);
-  if (
-    !obj ||
-    (
-      eventName !== "permission.asked" &&
-      partEventName !== "permission.asked"
-    )
-  ) {
+  const source = [eventName, partEventName]
+    .find((name) =>
+      name === "permission.asked" ||
+      name === "permission.updated");
+  if (!obj || !source) {
     return null;
   }
   const candidates = requestCandidates(obj);
@@ -231,31 +232,43 @@ export function extractOpenCodePermissionAsked(
     "toolArgs",
     "tool_args",
   ]);
+  const nativeSessionId = pickRequestString(candidates, [
+    "sessionID",
+    "sessionId",
+  ]) ?? undefined;
+  const permissionId = pickRequestString(candidates, [
+    "requestID",
+    "requestId",
+    "permissionID",
+    "permissionId",
+    "id",
+  ]) ?? undefined;
+  const supportedActions = nativeSessionId && permissionId
+    ? [...APPROVAL_ACTIONS]
+    : undefined;
+  const permissionName = pickRequestString(candidates, [
+    "permission",
+    "permissionName",
+    "permission_name",
+  ]) ?? pickRequestString(candidates.slice(1), [
+    "type",
+  ]);
+  const toolName = extractToolName(candidates)
+    ?? permissionName;
   return {
     adapter: "opencode",
-    source: "permission.asked",
-    sessionId: pickRequestString(candidates, [
-      "sessionID",
-      "sessionId",
-    ]) ?? undefined,
-    requestId: pickRequestString(candidates, [
-      "requestID",
-      "requestId",
-      "permissionID",
-      "permissionId",
-      "id",
-    ]) ?? undefined,
-    permissionName: pickRequestString(candidates, [
-      "permission",
-      "permissionName",
-      "permission_name",
-    ]) ?? undefined,
+    source,
+    sessionId: nativeSessionId,
+    nativeSessionId,
+    requestId: permissionId,
+    permissionId,
+    permissionName: permissionName ?? undefined,
     patterns: pickRequestStrings(candidates, [
       "patterns",
       "pattern",
     ]),
     serverName: extractServerName(candidates) ?? undefined,
-    toolName: extractToolName(candidates) ?? undefined,
+    toolName: toolName ?? undefined,
     toolUseId: extractToolUseId(candidates) ?? undefined,
     toolParamsDisplay: pickRequestSummary(candidates, [
       "tool_params_display",
@@ -263,6 +276,16 @@ export function extractOpenCodePermissionAsked(
       "toolArgumentsDisplay",
     ]) ?? undefined,
     parameterSummary: params ?? metadata ?? undefined,
+    supportedActions,
+    replyTarget: supportedActions
+      ? {
+        adapter: "opencode",
+        transport: "http",
+        nativeSessionId,
+        requestId: permissionId,
+        permissionId,
+      }
+      : undefined,
     options: [],
   };
 }
