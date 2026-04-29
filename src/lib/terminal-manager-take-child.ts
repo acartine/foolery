@@ -201,6 +201,7 @@ export function createTakeRuntimeBundle(
     isAcp,
     ctx.cwd,
     ctx.agent.model,
+    ctx.agent.approvalMode,
     httpRefs,
     ctx.pushEvent,
     emitRuntimeLifecycle,

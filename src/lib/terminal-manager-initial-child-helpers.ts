@@ -16,6 +16,7 @@ import {
   createOpenCodeHttpSession,
 } from "@/lib/opencode-http-session";
 import {
+  codexSessionOptionsForMode,
   createCodexJsonRpcSession,
 } from "@/lib/codex-jsonrpc-session";
 import {
@@ -106,6 +107,7 @@ export function createInitialTransportSessions(
   isAcp: boolean,
   resolvedRepoPath: string,
   model: string | undefined,
+  approvalMode: CliAgentTarget["approvalMode"],
   stateRef: { current: InitialChildState },
   pushEvent: (evt: TerminalEvent) => void,
   emitRuntimeLifecycle: (
@@ -118,6 +120,7 @@ export function createInitialTransportSessions(
         "jsonrpc",
         emitRuntimeLifecycle,
       ),
+      codexSessionOptionsForMode(approvalMode),
     )
     : undefined;
   const httpSession = isHttpServer

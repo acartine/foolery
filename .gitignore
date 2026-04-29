@@ -24,6 +24,9 @@
 # test-plans-live.sh artifacts
 /.test-plans-live/
 
+# test-cli-approvals-manual.sh artifacts
+/.test-cli-approvals-manual/
+
 # build-cli.sh local state
 /.local-state/
 

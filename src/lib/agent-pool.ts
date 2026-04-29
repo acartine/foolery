@@ -414,6 +414,9 @@ function toAgentTarget(
     ...(reg.model ? { model: reg.model } : {}),
     ...(reg.flavor ? { flavor: reg.flavor } : {}),
     ...(reg.version ? { version: reg.version } : {}),
+    ...(reg.approvalMode
+      ? { approvalMode: reg.approvalMode }
+      : {}),
     ...(reg.label ? { label: reg.label } : {}),
     ...(agentId ? { agentId } : {}),
   };

@@ -342,6 +342,7 @@ function prepareInitialRuntimeBundle(
     transport === "acp-stdio",
     prepared.resolvedRepoPath,
     agent.model,
+    agent.approvalMode,
     stateRef,
     pushEvent,
     emitRuntimeLifecycle,

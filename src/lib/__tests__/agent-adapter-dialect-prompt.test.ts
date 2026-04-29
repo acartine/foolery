@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildCodexInteractiveArgs,
   buildPromptModeArgs,
   resolveDialect,
 } from "@/lib/agent-adapter";
@@ -114,6 +115,34 @@ describe("buildPromptModeArgs: Claude and Codex", () => {
       PROMPT,
     );
     expect(result.args[0]).toBe("exec");
+  });
+});
+
+describe("buildCodexInteractiveArgs", () => {
+  it("starts the app-server without prompt overrides by default", () => {
+    const result = buildCodexInteractiveArgs({ command: "codex" });
+    expect(result.command).toBe("codex");
+    expect(result.args).toEqual([
+      "app-server",
+      "--listen",
+      "stdio://",
+    ]);
+  });
+
+  it("starts prompt-mode app-server with approval and sandbox overrides", () => {
+    const result = buildCodexInteractiveArgs({
+      approvalMode: "prompt",
+      command: "codex",
+    });
+    expect(result.args).toEqual([
+      "app-server",
+      "-c",
+      'approval_policy="untrusted"',
+      "-c",
+      'sandbox_mode="read-only"',
+      "--listen",
+      "stdio://",
+    ]);
   });
 });
 

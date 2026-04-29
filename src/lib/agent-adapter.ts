@@ -66,9 +66,16 @@ export function buildCodexInteractiveArgs(
     typeof agent.command === "string"
       ? agent.command
       : "codex";
-  const args = [
-    "app-server", "--listen", "stdio://",
-  ];
+  const args = ["app-server"];
+  if (agent.approvalMode === "prompt") {
+    args.push(
+      "-c",
+      'approval_policy="untrusted"',
+      "-c",
+      'sandbox_mode="read-only"',
+    );
+  }
+  args.push("--listen", "stdio://");
   if (agent.model) {
     args.push("-c", `model="${agent.model}"`);
   }

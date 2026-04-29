@@ -187,9 +187,9 @@ export const registeredAgentSchema = z.object({
     "Marketing version string (e.g. `4.7`, `5.4`). Informational.",
   ),
   approvalMode: z.enum(["bypass", "prompt"]).optional().describe(
-    "Claude Code permission launch mode. Omit or set `bypass` to keep "
-    + "autonomous sessions using `--dangerously-skip-permissions`; set "
-    + "`prompt` on approval-test Claude agents to omit that flag.",
+    "CLI permission launch mode. Omit or set `bypass` to keep autonomous "
+    + "sessions using each adapter's default bypass policy; set `prompt` "
+    + "on approval-test agents to force native permission prompts.",
   ),
   label: z.string().optional().describe(
     "Human-friendly override for the agent's display label. Falls back to "

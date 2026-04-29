@@ -22,18 +22,31 @@ import {
   translateTerminalInteraction,
   translateTurnCompleted,
 } from "@/lib/codex-jsonrpc-translate";
+import type {
+  ApprovalAction,
+  ApprovalReplyResult,
+  ApprovalReplyTarget,
+} from "@/lib/approval-actions";
 
 // ── Types ─────────────────────────────────────────────
 
+type JsonRpcId = number | string;
+
 interface JsonRpcRequest {
   jsonrpc: "2.0";
-  id: number;
+  id: JsonRpcId;
   method: string;
   params: Record<string, unknown>;
 }
 
+interface JsonRpcResult {
+  jsonrpc: "2.0";
+  id: JsonRpcId;
+  result: Record<string, unknown>;
+}
+
 interface JsonRpcResponse {
-  id: number;
+  id: JsonRpcId;
   result: Record<string, unknown>;
 }
 
@@ -43,8 +56,42 @@ interface JsonRpcNotification {
 }
 
 interface JsonRpcError {
-  id: number;
+  id: JsonRpcId;
   error: { code: number; message: string };
+}
+
+export type CodexApprovalPolicy =
+  | "untrusted"
+  | "on-failure"
+  | "on-request"
+  | "never";
+
+export type CodexSandboxMode =
+  | "read-only"
+  | "workspace-write"
+  | "danger-full-access";
+
+export interface CodexJsonRpcSessionOptions {
+  approvalPolicy?: CodexApprovalPolicy;
+  sandboxMode?: CodexSandboxMode;
+}
+
+export function codexApprovalPolicyForMode(
+  mode: "bypass" | "prompt" | undefined,
+): CodexApprovalPolicy {
+  return mode === "prompt" ? "untrusted" : "never";
+}
+
+export function codexSessionOptionsForMode(
+  mode: "bypass" | "prompt" | undefined,
+): CodexJsonRpcSessionOptions {
+  if (mode === "prompt") {
+    return {
+      approvalPolicy: "untrusted",
+      sandboxMode: "read-only",
+    };
+  }
+  return { approvalPolicy: "never" };
 }
 
 export interface CodexJsonRpcSession {
@@ -59,6 +106,10 @@ export interface CodexJsonRpcSession {
     child: ChildProcess, prompt: string,
   ): boolean;
   interruptTurn(child: ChildProcess): boolean;
+  respondToApproval(
+    target: ApprovalReplyTarget,
+    action: ApprovalAction,
+  ): Promise<ApprovalReplyResult>;
 }
 
 // ── Internal state ────────────────────────────────────
@@ -73,6 +124,11 @@ interface SessionState {
     child: ChildProcess; prompt: string;
   } | null;
   hooks: PromptDispatchHooks;
+  child: ChildProcess | null;
+  approvalPolicy: CodexApprovalPolicy;
+  sandboxMode: CodexSandboxMode | null;
+  approvalRequestIds: Map<string, JsonRpcId>;
+  approvalRequestMethods: Map<string, string>;
 }
 
 // ── Constants ─────────────────────────────────────────
@@ -82,9 +138,9 @@ const THREAD_START_ID = 2;
 
 // ── Low-level I/O ─────────────────────────────────────
 
-function writeRequest(
+function writeJsonLine(
   child: ChildProcess,
-  req: JsonRpcRequest,
+  payload: JsonRpcRequest | JsonRpcResult,
 ): boolean {
   if (
     !child.stdin ||
@@ -94,7 +150,7 @@ function writeRequest(
     return false;
   }
   try {
-    child.stdin.write(JSON.stringify(req) + "\n");
+    child.stdin.write(JSON.stringify(payload) + "\n");
     return true;
   } catch {
     return false;
@@ -138,16 +194,18 @@ function flushPendingTurn(s: SessionState): void {
   if (!s.pendingTurn || !s.threadId) return;
   const { child, prompt } = s.pendingTurn;
   s.pendingTurn = null;
+  s.child = child;
   const id = s.nextId++;
   s.activeTurnRequestId = id;
   s.hooks.onAttempted?.();
-  const sent = writeRequest(child, {
+  const sent = writeJsonLine(child, {
     jsonrpc: "2.0",
     id,
     method: "turn/start",
     params: {
       threadId: s.threadId,
       input: [{ type: "text", text: prompt }],
+      approvalPolicy: s.approvalPolicy,
     },
   });
   if (sent) {
@@ -182,6 +240,7 @@ function processSessionMessage(
     "method" in parsed &&
     typeof parsed.method === "string"
   ) {
+    recordApprovalRequestId(parsed, s);
     return translateNotification(
       {
         method: parsed.method,
@@ -200,6 +259,7 @@ function startTurnRequest(
   child: ChildProcess,
   prompt: string,
 ): boolean {
+  s.child = child;
   if (!s.ready || !s.threadId) {
     s.pendingTurn = { child, prompt };
     s.hooks.onDeferred?.("awaiting_thread_start");
@@ -208,13 +268,14 @@ function startTurnRequest(
   const id = s.nextId++;
   s.activeTurnRequestId = id;
   s.hooks.onAttempted?.();
-  const sent = writeRequest(child, {
+  const sent = writeJsonLine(child, {
     jsonrpc: "2.0",
     id,
     method: "turn/start",
     params: {
       threadId: s.threadId,
       input: [{ type: "text", text: prompt }],
+      approvalPolicy: s.approvalPolicy,
     },
   });
   if (sent) {
@@ -223,6 +284,112 @@ function startTurnRequest(
     s.hooks.onFailed?.("turn_start_write_failed");
   }
   return sent;
+}
+
+function requestIdKey(value: unknown): string | null {
+  if (typeof value === "string" && value.trim()) {
+    return value;
+  }
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return String(value);
+  }
+  return null;
+}
+
+function recordApprovalRequestId(
+  parsed: Record<string, unknown>,
+  s: SessionState,
+): void {
+  if (!isApprovalRequestMethod(parsed.method)) {
+    return;
+  }
+  const key = requestIdKey(parsed.id);
+  if (!key) return;
+  s.approvalRequestIds.set(
+    key,
+    parsed.id as JsonRpcId,
+  );
+  s.approvalRequestMethods.set(
+    key,
+    parsed.method as string,
+  );
+}
+
+function isApprovalRequestMethod(value: unknown): boolean {
+  return value === "mcpServer/elicitation/request" ||
+    value === "item/commandExecution/requestApproval" ||
+    value === "item/fileChange/requestApproval" ||
+    value === "execCommandApproval" ||
+    value === "applyPatchApproval";
+}
+
+function approvalResultForAction(
+  action: ApprovalAction,
+  method: string | undefined,
+): Record<string, unknown> {
+  if (
+    method === "item/commandExecution/requestApproval" ||
+    method === "item/fileChange/requestApproval"
+  ) {
+    if (action === "reject") return { decision: "decline" };
+    if (action === "always_approve") {
+      return { decision: "acceptForSession" };
+    }
+    return { decision: "accept" };
+  }
+  if (
+    method === "execCommandApproval" ||
+    method === "applyPatchApproval"
+  ) {
+    if (action === "reject") return { decision: "denied" };
+    if (action === "always_approve") {
+      return { decision: "approved_for_session" };
+    }
+    return { decision: "approved" };
+  }
+  if (action === "reject") {
+    return { action: "decline" };
+  }
+  return { action: "accept", content: {} };
+}
+
+async function respondToCodexApproval(
+  s: SessionState,
+  target: ApprovalReplyTarget,
+  action: ApprovalAction,
+): Promise<ApprovalReplyResult> {
+  if (!target.requestId) {
+    return {
+      ok: false,
+      status: "unsupported",
+      reason: "missing_request_id",
+    };
+  }
+  if (!s.child) {
+    return {
+      ok: false,
+      status: "reply_failed",
+      reason: "missing_child_process",
+    };
+  }
+  const id = s.approvalRequestIds.get(target.requestId)
+    ?? target.requestId;
+  const method = s.approvalRequestMethods.get(
+    target.requestId,
+  );
+  const sent = writeJsonLine(s.child, {
+    jsonrpc: "2.0",
+    id,
+    result: approvalResultForAction(action, method),
+  });
+  if (!sent) {
+    return {
+      ok: false,
+      status: "reply_failed",
+      reason: "approval_response_write_failed",
+    };
+  }
+  return { ok: true };
 }
 
 // ── Notification translation ──────────────────────────
@@ -274,6 +441,7 @@ function translateNotification(
 
 export function createCodexJsonRpcSession(
   hooks: PromptDispatchHooks = {},
+  options: CodexJsonRpcSessionOptions = {},
 ): CodexJsonRpcSession {
   const s: SessionState = {
     nextId: 3,
@@ -283,6 +451,11 @@ export function createCodexJsonRpcSession(
     activeTurnRequestId: null,
     pendingTurn: null,
     hooks,
+    child: null,
+    approvalPolicy: options.approvalPolicy ?? "never",
+    sandboxMode: options.sandboxMode ?? null,
+    approvalRequestIds: new Map(),
+    approvalRequestMethods: new Map(),
   };
 
   return {
@@ -295,7 +468,8 @@ export function createCodexJsonRpcSession(
     },
 
     sendHandshake(child) {
-      writeRequest(child, {
+      s.child = child;
+      writeJsonLine(child, {
         jsonrpc: "2.0",
         id: INITIALIZE_ID,
         method: "initialize",
@@ -306,11 +480,16 @@ export function createCodexJsonRpcSession(
           },
         },
       });
-      writeRequest(child, {
+      writeJsonLine(child, {
         jsonrpc: "2.0",
         id: THREAD_START_ID,
         method: "thread/start",
-        params: { approvalPolicy: "never" },
+        params: {
+          approvalPolicy: s.approvalPolicy,
+          ...(s.sandboxMode
+            ? { sandbox: s.sandboxMode }
+            : {}),
+        },
       });
     },
 
@@ -320,8 +499,9 @@ export function createCodexJsonRpcSession(
 
     interruptTurn(child) {
       if (!s.turnId || !s.threadId) return false;
+      s.child = child;
       const id = s.nextId++;
-      return writeRequest(child, {
+      return writeJsonLine(child, {
         jsonrpc: "2.0",
         id,
         method: "turn/interrupt",
@@ -330,6 +510,10 @@ export function createCodexJsonRpcSession(
           turnId: s.turnId,
         },
       });
+    },
+
+    respondToApproval(target, action) {
+      return respondToCodexApproval(s, target, action);
     },
   };
 }

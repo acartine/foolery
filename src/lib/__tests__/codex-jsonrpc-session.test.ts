@@ -79,6 +79,41 @@ describe("codex-jsonrpc: handshake", () => {
     expect(params.approvalPolicy).toBe("never");
   });
 
+  it("can request approval prompting for harness sessions", () => {
+    const session = createCodexJsonRpcSession(
+      {},
+      { approvalPolicy: "untrusted" },
+    );
+    const child = makeChild();
+    const writes = captureWrites(child);
+
+    session.sendHandshake(child);
+
+    const msgs = parseWrites(writes);
+    const params =
+      msgs[1].params as Record<string, unknown>;
+    expect(params.approvalPolicy).toBe("untrusted");
+  });
+
+  it("can request read-only sandboxing for harness sessions", () => {
+    const session = createCodexJsonRpcSession(
+      {},
+      {
+        approvalPolicy: "untrusted",
+        sandboxMode: "read-only",
+      },
+    );
+    const child = makeChild();
+    const writes = captureWrites(child);
+
+    session.sendHandshake(child);
+
+    const msgs = parseWrites(writes);
+    const params =
+      msgs[1].params as Record<string, unknown>;
+    expect(params.sandbox).toBe("read-only");
+  });
+
   it("sets ready after thread/start response", () => {
     const session = createCodexJsonRpcSession();
     expect(session.ready).toBe(false);
@@ -126,6 +161,7 @@ describe("codex-jsonrpc: turn lifecycle", () => {
     const params =
       msgs[0].params as Record<string, unknown>;
     expect(params.threadId).toBe("t-1");
+    expect(params.approvalPolicy).toBe("never");
     const input = params.input as Array<
       Record<string, unknown>
     >;
@@ -163,6 +199,7 @@ describe("codex-jsonrpc: turn lifecycle", () => {
     const params =
       msgs[0].params as Record<string, unknown>;
     expect(params.threadId).toBe("t-2");
+    expect(params.approvalPolicy).toBe("never");
   });
 
   it("emits deferred and dispatched prompt delivery hooks", () => {
@@ -222,6 +259,116 @@ describe("codex-jsonrpc: turn lifecycle", () => {
     const session = readySession();
     const child = makeChild();
     expect(session.interruptTurn(child)).toBe(false);
+  });
+});
+
+// ── Approval replies ─────────────────────────────────
+
+describe("codex-jsonrpc: approval replies", () => {
+  it("responds to elicitation requests by JSON-RPC id", async () => {
+    const session = createCodexJsonRpcSession();
+    const child = makeChild();
+    const writes = captureWrites(child);
+
+    session.sendHandshake(child);
+    session.processLine({
+      id: 1,
+      result: { userAgent: "test" },
+    });
+    session.processLine({
+      id: 2,
+      result: { thread: { id: "t-1" } },
+    });
+    writes.length = 0;
+
+    session.processLine({
+      jsonrpc: "2.0",
+      id: 44,
+      method: "mcpServer/elicitation/request",
+      params: {
+        serverName: "playwright",
+        message: "Allow browser_evaluate?",
+      },
+    });
+
+    const result = await session.respondToApproval(
+      {
+        adapter: "codex",
+        transport: "jsonrpc",
+        requestId: "44",
+      },
+      "approve",
+    );
+
+    expect(result.ok).toBe(true);
+    const msgs = parseWrites(writes);
+    expect(msgs).toEqual([{
+      jsonrpc: "2.0",
+      id: 44,
+      result: { action: "accept", content: {} },
+    }]);
+  });
+
+  it("declines rejected elicitation requests", async () => {
+    const session = createCodexJsonRpcSession();
+    const child = makeChild();
+    const writes = captureWrites(child);
+    session.sendHandshake(child);
+    writes.length = 0;
+
+    const result = await session.respondToApproval(
+      {
+        adapter: "codex",
+        transport: "jsonrpc",
+        requestId: "approval-1",
+      },
+      "reject",
+    );
+
+    expect(result.ok).toBe(true);
+    const msgs = parseWrites(writes);
+    expect(msgs[0]).toEqual({
+      jsonrpc: "2.0",
+      id: "approval-1",
+      result: { action: "decline" },
+    });
+  });
+
+  it("approves command execution requests", async () => {
+    const session = createCodexJsonRpcSession();
+    const child = makeChild();
+    const writes = captureWrites(child);
+    session.sendHandshake(child);
+    writes.length = 0;
+
+    session.processLine({
+      jsonrpc: "2.0",
+      id: "req-command-1",
+      method: "item/commandExecution/requestApproval",
+      params: {
+        threadId: "t-1",
+        turnId: "turn-1",
+        itemId: "item-1",
+        command: "mkdir -p .approval-validation",
+      },
+    });
+
+    const result = await session.respondToApproval(
+      {
+        adapter: "codex",
+        transport: "jsonrpc",
+        requestId: "req-command-1",
+      },
+      "always_approve",
+    );
+
+    expect(result.ok).toBe(true);
+    const msgs = parseWrites(writes);
+    expect(msgs[0]).toEqual({
+      jsonrpc: "2.0",
+      id: "req-command-1",
+      result: { decision: "acceptForSession" },
+    });
   });
 });
 

@@ -5,7 +5,12 @@ import type { RegisteredAgentConfig, PoolsSettings } from "@/lib/schemas";
 
 const agents: Record<string, RegisteredAgentConfig> = {
   "agent-a": { command: "claude", label: "Claude", model: "opus" },
-  "agent-b": { command: "codex", label: "Codex", model: "o4-mini" },
+  "agent-b": {
+    command: "codex",
+    label: "Codex",
+    model: "o4-mini",
+    approvalMode: "prompt",
+  },
 };
 
 const pool: PoolEntry[] = [
@@ -24,6 +29,7 @@ describe("selectFromPoolStrict", () => {
     expect(result!.kind).toBe("cli");
     if (result!.kind === "cli") {
       expect(result!.agentId).toBe("agent-b");
+      expect(result!.approvalMode).toBe("prompt");
     }
   });
 

@@ -150,6 +150,20 @@ async function respondWithRuntime(
     }
     return session.respondToApproval(target, action);
   }
+  if (
+    target.adapter === "codex" &&
+    target.transport === "jsonrpc"
+  ) {
+    const session = runtime.config.jsonrpcSession;
+    if (!session) {
+      return {
+        ok: false,
+        status: "unsupported",
+        reason: "missing_jsonrpc_session",
+      };
+    }
+    return session.respondToApproval(target, action);
+  }
   return {
     ok: false,
     status: "unsupported",

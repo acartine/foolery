@@ -40,9 +40,12 @@ describe("approval request fixtures", () => {
       "No",
     ]);
   });
+});
 
+describe("Codex approval request fixtures", () => {
   it("extracts a Codex elicitation fixture with Playwright details", () => {
     const request = extractApprovalRequest({
+      id: 7,
       method: "mcpServer/elicitation/request",
       params: {
         serverName: "playwright",
@@ -61,8 +64,54 @@ describe("approval request fixtures", () => {
     expect(request?.toolParamsDisplay).toBe(
       "pageFunction=document.title()",
     );
+    expect(request?.requestId).toBe("7");
+    expect(request?.supportedActions).toEqual([
+      "approve",
+      "reject",
+    ]);
+    expect(request?.replyTarget).toMatchObject({
+      adapter: "codex",
+      transport: "jsonrpc",
+      requestId: "7",
+    });
   });
 
+  it("extracts a Codex command approval fixture", () => {
+    const request = extractApprovalRequest({
+      id: "req-command-1",
+      method: "item/commandExecution/requestApproval",
+      params: {
+        itemId: "item-1",
+        command: "mkdir -p .approval-validation",
+        cwd: "/repo",
+        reason: "Command requires approval",
+      },
+    });
+
+    expect(request).not.toBeNull();
+    expect(request?.adapter).toBe("codex");
+    expect(request?.source).toBe(
+      "item/commandExecution/requestApproval",
+    );
+    expect(request?.requestId).toBe("req-command-1");
+    expect(request?.toolName).toBe("command_execution");
+    expect(request?.parameterSummary).toContain(
+      "mkdir -p .approval-validation",
+    );
+    expect(request?.supportedActions).toEqual([
+      "approve",
+      "always_approve",
+      "reject",
+    ]);
+    expect(request?.replyTarget).toMatchObject({
+      adapter: "codex",
+      transport: "jsonrpc",
+      requestId: "req-command-1",
+    });
+  });
+});
+
+describe("other approval request fixtures", () => {
   it("extracts a Copilot user_input.requested fixture", () => {
     const request = extractApprovalRequest({
       type: "user_input.requested",

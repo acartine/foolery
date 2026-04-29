@@ -10,7 +10,11 @@ import {
 import type {
   SessionEntry,
 } from "@/lib/terminal-manager-types";
+import type {
+  AgentSessionRuntime,
+} from "@/lib/agent-session-runtime";
 import {
+  attachApprovalResponder,
   performApprovalAction,
   recordPendingApproval,
 } from "@/lib/terminal-approval-session";
@@ -116,7 +120,50 @@ describe("terminal approval session", () => {
       "approve",
     );
   });
+});
 
+describe("terminal approval session responder routing", () => {
+  it("routes Codex approval replies through JSON-RPC", async () => {
+    const entry = makeEntry();
+    const respondToApproval = vi.fn()
+      .mockResolvedValue({ ok: true });
+    attachApprovalResponder(
+      entry,
+      {
+        config: {
+          jsonrpcSession: { respondToApproval },
+        },
+      } as unknown as AgentSessionRuntime,
+    );
+    const record = recordPendingApproval(entry, {
+      adapter: "codex",
+      source: "mcpServer/elicitation/request",
+      options: [],
+      requestId: "44",
+      supportedActions: ["approve", "reject"],
+      replyTarget: {
+        adapter: "codex",
+        transport: "jsonrpc",
+        requestId: "44",
+      },
+    });
+
+    const result = await performApprovalAction(
+      entry,
+      record.approvalId,
+      "approve",
+    );
+
+    expect(result.ok).toBe(true);
+    expect(record.status).toBe("approved");
+    expect(respondToApproval).toHaveBeenCalledWith(
+      record.replyTarget,
+      "approve",
+    );
+  });
+});
+
+describe("terminal approval session failure paths", () => {
   it("marks unsupported and failed reply paths", async () => {
     const entry = makeEntry();
     const record = recordPendingApproval(entry, {

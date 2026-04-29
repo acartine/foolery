@@ -1,6 +1,9 @@
 import {
   extractOpenCodePermissionAsked,
 } from "@/lib/opencode-approval-request";
+import {
+  extractCodexApprovalRequest,
+} from "@/lib/codex-approval-request";
 import type {
   ApprovalAction,
   ApprovalReplyTarget,
@@ -245,43 +248,6 @@ function extractRequestServerName(
   return null;
 }
 
-function extractCodexApprovalRequest(
-  value: unknown,
-): ApprovalRequest | null {
-  const obj = toObject(value);
-  if (obj?.method !== "mcpServer/elicitation/request") {
-    return null;
-  }
-  const candidates = requestCandidates(
-    toObject(obj.params),
-  );
-  return {
-    adapter: "codex",
-    source: "mcpServer/elicitation/request",
-    serverName:
-      extractRequestServerName(candidates) ?? undefined,
-    toolName:
-      extractRequestToolName(candidates) ?? undefined,
-    message: pickRequestString(candidates, [
-      "message",
-      "prompt",
-      "description",
-    ]) ?? undefined,
-    toolParamsDisplay: pickRequestSummary(candidates, [
-      "tool_params_display",
-      "toolParamsDisplay",
-      "toolParametersDisplay",
-    ]) ?? undefined,
-    parameterSummary: pickRequestSummary(candidates, [
-      "arguments",
-      "params",
-      "toolArgs",
-      "tool_args",
-    ]) ?? undefined,
-    options: [],
-  };
-}
-
 function extractGeminiPermissionRequest(
   value: unknown,
 ): ApprovalRequest | null {
@@ -339,7 +305,7 @@ export function shouldEmitApprovalBannerFromRaw(
 ): boolean {
   const obj = toObject(value);
   return extractOpenCodePermissionAsked(value) !== null
-    || obj?.method === "mcpServer/elicitation/request"
+    || extractCodexApprovalRequest(value) !== null
     || obj?.method === "session/request_permission";
 }
 

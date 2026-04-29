@@ -38,6 +38,10 @@ function runDryHelperChecks() {
         command: "claude",
         approvalMode: "bypass",
       },
+      "codex-validation": {
+        command: "codex",
+        approvalMode: "bypass",
+      },
     },
     pools: {
       planning: [{ agentId: "other", weight: 1 }],
@@ -52,6 +56,16 @@ function runDryHelperChecks() {
   assert.equal(settings.agents["claude-validation"].approvalMode, "prompt");
   assert.deepEqual(settings.pools.planning, [
     { agentId: "claude-validation", weight: 1 },
+  ]);
+  forceProviderInSettings(
+    settings,
+    "codex",
+    "codex-validation",
+    "planning",
+  );
+  assert.equal(settings.agents["codex-validation"].approvalMode, "prompt");
+  assert.deepEqual(settings.pools.planning, [
+    { agentId: "codex-validation", weight: 1 },
   ]);
 
   const visibilitySource =

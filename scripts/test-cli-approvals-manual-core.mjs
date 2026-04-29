@@ -150,7 +150,9 @@ export async function detectKnownBlocker(provider, options) {
     const source = await readTextIfExists(
       path.join(rootDir, "src/lib/codex-jsonrpc-session.ts"),
     );
-    if (source.includes('approvalPolicy: "never"')) {
+    if (
+      /params:\s*\{\s*approvalPolicy:\s*"never"\s*\}/u.test(source)
+    ) {
       throw new BlockedError(
         'Codex app-server still starts threads with approvalPolicy "never".',
       );
@@ -233,11 +235,11 @@ export async function mutateFoolerySettings(provider, options) {
 export function forceProviderInSettings(settings, provider, agentId, poolStep) {
   settings.agents = isObject(settings.agents) ? settings.agents : {};
   settings.maxConcurrentSessions = 1;
-  if (provider === "claude") {
+  if (provider === "claude" || provider === "codex") {
     const agent = settings.agents[agentId];
     if (!isObject(agent)) {
       throw new BlockedError(
-        `Selected Claude agent is not an object in settings: ${agentId}`,
+        `Selected ${provider} agent is not an object in settings: ${agentId}`,
       );
     }
     agent.approvalMode = "prompt";
@@ -361,6 +363,23 @@ async function findHarnessBeat(repo, title) {
 export function approvalPrompt(provider, token) {
   const config = providers[provider];
   const targetFile = `${approvalDir}/${config.fileName}`;
+  if (provider === "codex") {
+    const command = "python3 -c "
+      + JSON.stringify(
+        "from pathlib import Path; "
+        + `p = Path(${JSON.stringify(targetFile)}); `
+        + "p.parent.mkdir(exist_ok=True); "
+        + `p.write_text(${JSON.stringify(`${token}\n`)})`,
+      );
+    return [
+      "This is a Foolery approval-flow validation run.",
+      "Run exactly this shell command from the repository root:",
+      command,
+      "Do not use apply_patch or direct file editing.",
+      `After the file exists, print exactly: ${config.marker} ${token}`,
+      "Do not move any knots to terminal states.",
+    ].join("\n");
+  }
   return [
     "This is a Foolery approval-flow validation run.",
     `Create ${targetFile} with exactly this token: ${token}`,
