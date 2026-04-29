@@ -54,6 +54,7 @@ export function createDeferredHttpSession(
   emitRuntimeLifecycle: (
     event: SessionRuntimeLifecycleEvent,
   ) => void,
+  model: string | undefined,
 ): import(
   "@/lib/opencode-http-session"
 ).OpenCodeHttpSession | undefined {
@@ -78,6 +79,7 @@ export function createDeferredHttpSession(
       "http",
       emitRuntimeLifecycle,
     ),
+    { model },
   );
 }
 
@@ -86,6 +88,7 @@ export function createTakeTransportSessions(
   isHttpServer: boolean,
   isAcp: boolean,
   cwd: string,
+  model: string | undefined,
   refs: DeferredHttpRefs,
   pushEvent: TakeLoopContext["pushEvent"],
   emitRuntimeLifecycle: (
@@ -114,6 +117,7 @@ export function createTakeTransportSessions(
     refs,
     pushEvent,
     emitRuntimeLifecycle,
+    model,
   );
   return { jsonrpcSession, acpSession, httpSession };
 }

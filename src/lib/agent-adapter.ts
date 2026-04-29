@@ -114,9 +114,6 @@ export function buildOpenCodeInteractiveArgs(
   const args = [
     "serve", "--port", "0", "--print-logs",
   ];
-  if (agent.model) {
-    args.push("-m", agent.model);
-  }
   return { command, args };
 }
 

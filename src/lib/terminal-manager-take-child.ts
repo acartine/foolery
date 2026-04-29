@@ -200,6 +200,7 @@ export function createTakeRuntimeBundle(
     isHttpServer,
     isAcp,
     ctx.cwd,
+    ctx.agent.model,
     httpRefs,
     ctx.pushEvent,
     emitRuntimeLifecycle,

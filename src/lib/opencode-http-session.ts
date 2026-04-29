@@ -3,12 +3,6 @@
  *
  * Wraps `opencode serve` to provide multi-turn
  * interactive sessions via the OpenCode HTTP API.
- * Handles:
- *   1. Server URL discovery from stdout
- *   2. Session creation via POST /session
- *   3. Turn delivery via POST /session/:id/message
- *   4. Translation of HTTP response parts → JSONL
- *      events for the existing OpenCode normalizer
  */
 import type { ChildProcess } from "node:child_process";
 import type {
@@ -83,6 +77,10 @@ export interface OpenCodeHttpSession {
   ): Promise<ApprovalReplyResult>;
 }
 
+export interface OpenCodeHttpSessionOptions {
+  model?: string;
+}
+
 // ── Internal state ────────────────────────────────────
 
 interface SessionState {
@@ -90,6 +88,7 @@ interface SessionState {
   sessionId: string | null;
   ready: boolean;
   turnInFlight: boolean;
+  model?: string;
   shutdownInFlight: Promise<void> | null;
   pendingTurn: {
     child: ChildProcess; prompt: string;
@@ -133,6 +132,7 @@ async function sendMessage(
   baseUrl: string,
   sessionId: string,
   prompt: string,
+  model?: string,
 ): Promise<OpenCodeMessageResponse | null> {
   try {
     const resp = await fetch(
@@ -143,6 +143,7 @@ async function sendMessage(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          ...(model ? { model } : {}),
           parts: [{ type: "text", text: prompt }],
         }),
       },
@@ -358,7 +359,7 @@ async function doTurn(
       return;
     }
     const resp = await sendMessage(
-      s.serverUrl, s.sessionId, prompt,
+      s.serverUrl, s.sessionId, prompt, s.model,
     );
     if (!resp || !hasMessagePayload(resp)) {
       hooks.onFailed?.("http_message_request_failed");
@@ -434,12 +435,14 @@ export function createOpenCodeHttpSession(
   onEvent: (jsonLine: string) => void,
   onError: (message: string) => void,
   hooks: PromptDispatchHooks = {},
+  options: OpenCodeHttpSessionOptions = {},
 ): OpenCodeHttpSession {
   const s: SessionState = {
     serverUrl: null,
     sessionId: null,
     ready: false,
     turnInFlight: false,
+    model: options.model,
     shutdownInFlight: null,
     pendingTurn: null,
   };

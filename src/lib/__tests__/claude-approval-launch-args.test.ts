@@ -181,8 +181,6 @@ describe("terminal take launch args forbid one-shot fallbacks", () => {
       "--port",
       "0",
       "--print-logs",
-      "-m",
-      "openrouter/z-ai/glm-5.1",
     ]);
   });
 

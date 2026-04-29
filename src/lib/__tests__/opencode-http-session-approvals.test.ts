@@ -32,10 +32,13 @@ function makeChild(): ChildProcess {
 
 function startReadySession(
   onEvent: (line: string) => void,
+  model?: string,
 ): ReturnType<typeof createOpenCodeHttpSession> {
   const session = createOpenCodeHttpSession(
     onEvent,
     vi.fn(),
+    {},
+    { model },
   );
   session.processStdoutLine(
     "opencode server listening on " +
@@ -72,6 +75,42 @@ describe("OpenCodeHttpSession approval replies", () => {
         body: JSON.stringify({
           response: "always",
           remember: true,
+        }),
+      }),
+    );
+  });
+});
+
+describe("OpenCodeHttpSession model selection", () => {
+  it("sends configured model with message turns", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ id: "ses_123" }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          parts: [{ type: "step-finish" }],
+        }),
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const session = startReadySession(
+      vi.fn(), "openrouter/z-ai/glm-5.1",
+    );
+    session.startTurn(makeChild(), "hello");
+
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      "http://127.0.0.1:9999/session/ses_123/message",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          model: "openrouter/z-ai/glm-5.1",
+          parts: [{ type: "text", text: "hello" }],
         }),
       }),
     );

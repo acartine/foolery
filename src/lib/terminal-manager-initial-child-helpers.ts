@@ -73,6 +73,7 @@ export function createOpenCodeInteractiveSession(
   emitRuntimeLifecycle: (
     event: SessionRuntimeLifecycleEvent,
   ) => void,
+  model: string | undefined,
 ): import(
   "@/lib/opencode-http-session"
 ).OpenCodeHttpSession {
@@ -95,6 +96,7 @@ export function createOpenCodeInteractiveSession(
       "http",
       emitRuntimeLifecycle,
     ),
+    { model },
   );
 }
 
@@ -103,6 +105,7 @@ export function createInitialTransportSessions(
   isHttpServer: boolean,
   isAcp: boolean,
   resolvedRepoPath: string,
+  model: string | undefined,
   stateRef: { current: InitialChildState },
   pushEvent: (evt: TerminalEvent) => void,
   emitRuntimeLifecycle: (
@@ -122,6 +125,7 @@ export function createInitialTransportSessions(
       stateRef,
       pushEvent,
       emitRuntimeLifecycle,
+      model,
     )
     : undefined;
   const acpSession = isAcp
