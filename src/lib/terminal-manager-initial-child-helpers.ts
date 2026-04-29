@@ -63,6 +63,9 @@ import {
   formatTakeSceneOneShotFailure,
   type TerminalDispatchKind,
 } from "@/lib/terminal-dispatch-capabilities";
+import {
+  cleanupTerminalSessionResources,
+} from "@/lib/terminal-session-cleanup";
 
 type InitialChildState = import(
   "@/lib/terminal-manager-initial-io"
@@ -300,7 +303,6 @@ export function sendInitialPrompt(
   id: string,
   agent: CliAgentTarget,
   prompt: string,
-  sessions: Map<string, SessionEntry>,
   takeLoopCtx?: TakeLoopContext,
 ): void {
   if (takeLoopCtx) {
@@ -371,7 +373,10 @@ export function sendInitialPrompt(
     "initial_prompt_send_failed",
     "error",
   );
-  sessions.delete(id);
+  cleanupTerminalSessionResources(
+    id,
+    "initial_prompt_send_failed",
+  );
   throw new Error(
     `Failed to send initial prompt to agent: ${
       formatAgentDisplayLabel(agent)

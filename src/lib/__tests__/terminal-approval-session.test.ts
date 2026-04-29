@@ -18,13 +18,28 @@ import {
   performApprovalAction,
   recordPendingApproval,
 } from "@/lib/terminal-approval-session";
+import {
+  clearApprovalRegistry,
+  getApproval,
+  listApprovals,
+} from "@/lib/approval-registry";
+import {
+  cleanupTerminalSessionResources,
+} from "@/lib/terminal-session-cleanup";
+import {
+  getTerminalSessions,
+} from "@/lib/terminal-session-registry";
 
 beforeEach(() => {
+  clearApprovalRegistry();
+  getTerminalSessions().clear();
   vi.spyOn(console, "info").mockImplementation(() => {});
 });
 
 afterEach(() => {
   vi.restoreAllMocks();
+  clearApprovalRegistry();
+  getTerminalSessions().clear();
 });
 
 function makeEntry(): SessionEntry {
@@ -189,6 +204,45 @@ describe("terminal approval session responder routing", () => {
 
     expect(result.ok).toBe(true);
     expect(record.status).toBe("approved");
+  });
+});
+
+describe("registry survives session cleanup", () => {
+  it("keeps records visible with actionable=false after cleanup", () => {
+    const entry = makeEntry();
+    getTerminalSessions().set(entry.session.id, entry);
+    const record = recordPendingApproval(entry, {
+      adapter: "opencode",
+      source: "permission.asked",
+      options: [],
+      nativeSessionId: "ses_1",
+      requestId: "perm_1",
+      permissionId: "perm_1",
+      supportedActions: ["approve", "reject"],
+      replyTarget: {
+        adapter: "opencode",
+        transport: "http",
+        nativeSessionId: "ses_1",
+        permissionId: "perm_1",
+      },
+    });
+    expect(getApproval(record.approvalId)).toBeDefined();
+
+    cleanupTerminalSessionResources(
+      entry.session.id, "session_aborted",
+    );
+
+    expect(
+      getTerminalSessions().has(entry.session.id),
+    ).toBe(false);
+    const dtos = listApprovals();
+    expect(dtos).toHaveLength(1);
+    expect(dtos[0]?.id).toBe(record.approvalId);
+    expect(dtos[0]?.status).toBe("manual_required");
+    expect(dtos[0]?.actionable).toBe(false);
+    expect(dtos[0]?.actionableReason).toBe(
+      "approval_responder_unavailable",
+    );
   });
 });
 

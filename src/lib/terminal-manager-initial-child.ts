@@ -77,7 +77,6 @@ function createSessionLifecycle(
   beatId: string,
   prepared: PreparedTargets,
   agent: CliAgentTarget,
-  sessions: Map<string, SessionEntry>,
 ): {
   finishSession: (exitCode: number) => void;
   sessionAborted: () => boolean;
@@ -101,7 +100,7 @@ function createSessionLifecycle(
         exitCode, session, aborted,
         interactionLog, pushEvent, entry,
         emitter, buffer, id, beatId,
-        prepared, agent, sessions,
+        prepared, agent,
       );
     },
     sessionAborted: () => aborted,
@@ -125,13 +124,12 @@ export function spawnInitialChild(
   pushEvent: (evt: TerminalEvent) => void,
   prompt: string,
   customPrompt: string | undefined,
-  sessions: Map<string, SessionEntry>,
 ): TerminalSession {
   const { finishSession, sessionAborted } =
     createSessionLifecycle(
       entry, session, interactionLog, pushEvent,
       emitter, buffer, id, beatId, prepared,
-      agent, sessions,
+      agent,
     );
   const dialect = resolveDialect(agent.command);
   const {
@@ -195,7 +193,7 @@ export function spawnInitialChild(
       child, isInteractive,
       stateRef.current,
       interactionLog, session, entry, id, agent,
-      turnPrompt, sessions,
+      turnPrompt,
       isTakeLoop ? takeLoopCtx : undefined,
     );
   };

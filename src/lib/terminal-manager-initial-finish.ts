@@ -22,6 +22,9 @@ import type {
 import type {
   PreparedTargets,
 } from "@/lib/terminal-manager-session-prep";
+import {
+  cleanupTerminalSessionResources,
+} from "@/lib/terminal-session-cleanup";
 
 // ─── Constants ───────────────────────────────────────
 
@@ -42,7 +45,6 @@ export function finishSessionImpl(
   beatId: string,
   prepared: PreparedTargets,
   agent: CliAgentTarget,
-  sessions: Map<string, SessionEntry>,
 ): void {
   session.exitCode = exitCode;
   session.status = sessionAborted
@@ -78,7 +80,14 @@ export function finishSessionImpl(
   );
   setTimeout(() => {
     buffer.length = 0;
-    sessions.delete(id);
+    cleanupTerminalSessionResources(
+      id,
+      sessionAborted
+        ? "session_aborted"
+        : exitCode === 0
+          ? "session_completed"
+          : "session_error",
+    );
   }, CLEANUP_DELAY_MS);
 }
 

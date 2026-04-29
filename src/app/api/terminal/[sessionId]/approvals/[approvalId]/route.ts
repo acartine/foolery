@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/terminal-manager";
 import { isApprovalAction } from "@/lib/approval-actions";
 import {
-  performApprovalAction,
+  applyApprovalAction,
 } from "@/lib/terminal-approval-session";
 import { withServerTiming } from "@/lib/server-timing";
 
@@ -42,7 +42,7 @@ export async function POST(
       }
       const result = await measure(
         "approval",
-        () => performApprovalAction(entry, approvalId, action),
+        () => applyApprovalAction(approvalId, action),
       );
       if (!result.ok || !result.record) {
         return NextResponse.json(
