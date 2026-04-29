@@ -40,4 +40,17 @@ describe("FinalCutView approvals tabs contract", () => {
     expect(approvalsPanel).toContain('action="approve"');
     expect(approvalsPanel).toContain('action="reject"');
   });
+
+  it("scopes the approvals view to the active repo", () => {
+    expect(finalCut).toContain("annotateApprovalsForRepo");
+    expect(finalCut).toContain("activeRepo");
+  });
+
+  it("renders cross-repo, agent identity, and detected timestamp on rows", () => {
+    expect(approvalsPanel).toContain("approval-cross-repo-badge");
+    expect(approvalsPanel).toContain("approval-agent");
+    expect(approvalsPanel).toContain("approval-created");
+    expect(approvalsPanel).toContain("formatAgentDisplayLabel");
+    expect(approvalsPanel).toContain("formatRelativeTimestamp");
+  });
 });

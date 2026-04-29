@@ -1,11 +1,14 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import {
   logApprovalEscalation,
+  mergeApprovalReplyTarget,
   type ApprovalEscalation,
 } from "@/lib/approval-escalations";
 import {
   approvalStatusForAction,
   isActiveApprovalStatus,
+  isTerminalApprovalStatus,
   type ApprovalAction,
   type ApprovalEscalationStatus,
 } from "@/lib/approval-actions";
@@ -43,67 +46,87 @@ type ApprovalEscalationSet = (
     ) => Partial<ApprovalEscalationState>),
 ) => void;
 
+export const APPROVAL_ESCALATION_STORE_NAME =
+  "foolery-approval-escalations";
+
 export const useApprovalEscalationStore =
-  create<ApprovalEscalationState>((set) => ({
-    approvals: [],
-    upsertPendingApproval:
-      createUpsertPendingApproval(set),
-    markApprovalResponding: (id, action) => {
-      updateApprovalStatus(
-        set,
-        id,
-        "responding",
-        "approval.action_requested",
-        action,
-      );
-    },
-    markApprovalResolved: (id, action, status) => {
-      updateApprovalStatus(
-        set,
-        id,
-        status ?? approvalStatusForAction(action),
-        "approval.action_resolved",
-        action,
-      );
-    },
-    markApprovalUnsupported: (id, reason) => {
-      updateApprovalStatus(
-        set,
-        id,
-        "unsupported",
-        "approval.action_unsupported",
-        undefined,
-        reason,
-      );
-    },
-    markApprovalFailed: (id, reason) => {
-      updateApprovalStatus(
-        set,
-        id,
-        "reply_failed",
-        "approval.reply_failed",
-        undefined,
-        reason,
-      );
-    },
-    markManualAction: (id) => {
-      updateApprovalStatus(
-        set,
-        id,
-        "manual_required",
-        "approval.manual_action_marked",
-      );
-    },
-    dismissApproval: (id) => {
-      updateApprovalStatus(
-        set,
-        id,
-        "dismissed",
-        "approval.dismissed",
-      );
-    },
-    clearAll: () => set({ approvals: [] }),
-  }));
+  create<ApprovalEscalationState>()(
+    persist(
+      (set) => ({
+        approvals: [],
+        upsertPendingApproval:
+          createUpsertPendingApproval(set),
+        markApprovalResponding: (id, action) => {
+          updateApprovalStatus(
+            set,
+            id,
+            "responding",
+            "approval.action_requested",
+            action,
+          );
+        },
+        markApprovalResolved: (id, action, status) => {
+          updateApprovalStatus(
+            set,
+            id,
+            status ?? approvalStatusForAction(action),
+            "approval.action_resolved",
+            action,
+          );
+        },
+        markApprovalUnsupported: (id, reason) => {
+          updateApprovalStatus(
+            set,
+            id,
+            "unsupported",
+            "approval.action_unsupported",
+            undefined,
+            reason,
+          );
+        },
+        markApprovalFailed: (id, reason) => {
+          updateApprovalStatus(
+            set,
+            id,
+            "reply_failed",
+            "approval.reply_failed",
+            undefined,
+            reason,
+          );
+        },
+        markManualAction: (id) => {
+          updateApprovalStatus(
+            set,
+            id,
+            "manual_required",
+            "approval.manual_action_marked",
+          );
+        },
+        dismissApproval: (id) => {
+          updateApprovalStatus(
+            set,
+            id,
+            "dismissed",
+            "approval.dismissed",
+          );
+        },
+        clearAll: () => set({ approvals: [] }),
+      }),
+      {
+        name: APPROVAL_ESCALATION_STORE_NAME,
+        storage: createJSONStorage(() =>
+          typeof window !== "undefined"
+            ? window.localStorage
+            : memoryStorage(),
+        ),
+        version: 1,
+        partialize: (state) => ({
+          approvals: state.approvals.filter((approval) =>
+            isActiveApprovalStatus(approval.status)),
+        }),
+      },
+    ),
+  );
 
 export function selectPendingApprovals(
   state: Pick<ApprovalEscalationState, "approvals">,
@@ -125,9 +148,11 @@ function createUpsertPendingApproval(
   return (approval: ApprovalEscalation): boolean => {
     let created = false;
     set((state) => {
+      const matchKey = approval.logicalKey
+        ?? approval.notificationKey;
       const existing = state.approvals.find(
-        (item) =>
-          item.notificationKey === approval.notificationKey,
+        (item) => (item.logicalKey ?? item.notificationKey)
+          === matchKey,
       );
       if (existing) {
         logApprovalEscalation(
@@ -135,11 +160,46 @@ function createUpsertPendingApproval(
           approvalLogContext(existing),
         );
         return {
-          approvals: state.approvals.map((item) =>
-            item.notificationKey === approval.notificationKey
-              ? { ...item, updatedAt: approval.updatedAt }
-              : item,
-          ),
+          approvals: state.approvals.map((item) => {
+            if (
+              (item.logicalKey ?? item.notificationKey)
+                !== matchKey
+            ) return item;
+            if (isTerminalApprovalStatus(item.status)) {
+              return { ...item, updatedAt: approval.updatedAt };
+            }
+            return {
+              ...item,
+              updatedAt: approval.updatedAt,
+              requestId: approval.requestId ?? item.requestId,
+              permissionId:
+                approval.permissionId ?? item.permissionId,
+              replyTarget: mergeApprovalReplyTarget(
+                item.replyTarget,
+                approval.replyTarget,
+              ),
+              supportedActions:
+                approval.supportedActions
+                ?? item.supportedActions,
+              parameterSummary:
+                approval.parameterSummary
+                ?? item.parameterSummary,
+              toolParamsDisplay:
+                approval.toolParamsDisplay
+                ?? item.toolParamsDisplay,
+              patterns:
+                approval.patterns?.length
+                  ? approval.patterns
+                  : item.patterns,
+              agentName: approval.agentName ?? item.agentName,
+              agentModel:
+                approval.agentModel ?? item.agentModel,
+              agentVersion:
+                approval.agentVersion ?? item.agentVersion,
+              agentCommand:
+                approval.agentCommand ?? item.agentCommand,
+            };
+          }),
         };
       }
       created = true;
@@ -198,5 +258,18 @@ function approvalLogContext(
     status: approval.status,
     action,
     reason,
+  };
+}
+
+function memoryStorage() {
+  const map = new Map<string, string>();
+  return {
+    getItem: (key: string) => map.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      map.set(key, value);
+    },
+    removeItem: (key: string) => {
+      map.delete(key);
+    },
   };
 }

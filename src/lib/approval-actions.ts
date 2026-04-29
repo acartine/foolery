@@ -44,6 +44,7 @@ export interface PendingApprovalRecord {
   notificationKey: string;
   terminalSessionId: string;
   beatId?: string;
+  beatTitle?: string;
   repoPath?: string;
   adapter: string;
   source: string;
@@ -63,6 +64,10 @@ export interface PendingApprovalRecord {
   replyTarget?: ApprovalReplyTarget;
   supportedActions: ApprovalAction[];
   status: ApprovalEscalationStatus;
+  agentName?: string;
+  agentModel?: string;
+  agentVersion?: string;
+  agentCommand?: string;
   createdAt: number;
   updatedAt: number;
 }

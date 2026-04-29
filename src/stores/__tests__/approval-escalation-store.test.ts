@@ -9,10 +9,12 @@ import {
 function makeApproval(
   id: string,
   notificationKey = id,
+  overrides: Partial<ApprovalEscalation> = {},
 ): ApprovalEscalation {
   return {
     id,
     notificationKey,
+    logicalKey: notificationKey,
     status: "pending",
     sessionId: "sess-1",
     beatId: "beat-1",
@@ -21,6 +23,7 @@ function makeApproval(
     options: [],
     createdAt: 1,
     updatedAt: 1,
+    ...overrides,
   };
 }
 

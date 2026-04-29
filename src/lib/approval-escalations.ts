@@ -8,6 +8,7 @@ import {
   type ApprovalAction,
   type ApprovalEscalationStatus,
   type PendingApprovalRecord,
+  type ApprovalReplyTarget,
 } from "@/lib/approval-actions";
 
 export type {
@@ -17,7 +18,15 @@ export type {
 export const APPROVAL_ESCALATION_LOG_MARKER =
   "FOOLERY APPROVAL ESCALATION";
 
-export interface ApprovalEscalationContext {
+export interface ApprovalEscalationAgentIdentity {
+  agentName?: string;
+  agentModel?: string;
+  agentVersion?: string;
+  agentCommand?: string;
+}
+
+export interface ApprovalEscalationContext
+  extends ApprovalEscalationAgentIdentity {
   sessionId: string;
   beatId?: string;
   beatTitle?: string;
@@ -25,9 +34,11 @@ export interface ApprovalEscalationContext {
   timestamp?: number;
 }
 
-export interface ApprovalEscalation extends ApprovalRequest {
+export interface ApprovalEscalation
+  extends ApprovalRequest, ApprovalEscalationAgentIdentity {
   id: string;
   notificationKey: string;
+  logicalKey: string;
   status: ApprovalEscalationStatus;
   sessionId: string;
   beatId?: string;
@@ -92,20 +103,49 @@ export function formatApprovalPrimaryText(
   return approval.toolName ?? approval.serverName ?? approval.adapter;
 }
 
+const RAW_EMPTY_OBJECT_PATTERN = /^\s*\{\s*\}\s*$/;
+const RAW_EMPTY_ARRAY_PATTERN = /^\s*\[\s*\]\s*$/;
+
+function meaningfulSummary(value?: string): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  if (RAW_EMPTY_OBJECT_PATTERN.test(trimmed)) return undefined;
+  if (RAW_EMPTY_ARRAY_PATTERN.test(trimmed)) return undefined;
+  return trimmed;
+}
+
 export function formatApprovalDetailText(
   approval: Pick<
     ApprovalEscalation,
     "message" | "question" | "toolParamsDisplay" | "parameterSummary"
-      | "options"
+      | "options" | "patterns" | "permissionName" | "toolName"
+      | "toolUseId"
   >,
 ): string {
-  return approval.message
-    ?? approval.question
-    ?? approval.toolParamsDisplay
-    ?? approval.parameterSummary
-    ?? (approval.options.length > 0
-      ? `Options: ${approval.options.join(" | ")}`
-      : "Manual approval is required.");
+  const direct = meaningfulSummary(approval.message)
+    ?? meaningfulSummary(approval.question)
+    ?? meaningfulSummary(approval.toolParamsDisplay)
+    ?? meaningfulSummary(approval.parameterSummary);
+  if (direct) return direct;
+  const meaningfulPatterns = (approval.patterns ?? [])
+    .map((pattern) => pattern.trim())
+    .filter((pattern) => pattern.length > 0);
+  if (meaningfulPatterns.length > 0) {
+    return meaningfulPatterns.join(" | ");
+  }
+  if (approval.options.length > 0) {
+    return `Options: ${approval.options.join(" | ")}`;
+  }
+  const identityParts = [
+    approval.permissionName,
+    approval.toolName,
+    approval.toolUseId,
+  ].filter((part): part is string => Boolean(part?.trim()));
+  if (identityParts.length > 0) {
+    return `Awaiting approval for ${identityParts.join(" / ")}`;
+  }
+  return "Manual approval is required.";
 }
 
 export function parseApprovalBanner(
@@ -183,19 +223,28 @@ export function approvalEscalationFromRequest(
       request.supportedActions,
     ),
   };
+  const logicalKey = buildApprovalLogicalKey(
+    normalizedRequest,
+    context,
+  );
   const notificationKey = buildApprovalNotificationKey(
     normalizedRequest,
     context,
   );
   return {
     ...normalizedRequest,
-    id: shortHash(notificationKey),
+    id: shortHash(logicalKey),
     notificationKey,
+    logicalKey,
     status: "pending",
     sessionId: context.sessionId,
     beatId: context.beatId,
     beatTitle: context.beatTitle,
     repoPath: context.repoPath,
+    agentName: context.agentName,
+    agentModel: context.agentModel,
+    agentVersion: context.agentVersion,
+    agentCommand: context.agentCommand,
     createdAt: now,
     updatedAt: now,
   };
@@ -204,12 +253,15 @@ export function approvalEscalationFromRequest(
 export function approvalEscalationFromPendingRecord(
   record: PendingApprovalRecord,
 ): ApprovalEscalation {
+  const logicalKey = record.notificationKey;
   return {
     id: record.approvalId,
     notificationKey: record.notificationKey,
+    logicalKey,
     status: record.status,
     sessionId: record.terminalSessionId,
     beatId: record.beatId,
+    beatTitle: record.beatTitle,
     repoPath: record.repoPath,
     adapter: record.adapter,
     source: record.source,
@@ -230,6 +282,10 @@ export function approvalEscalationFromPendingRecord(
       record.supportedActions,
     ),
     replyTarget: record.replyTarget,
+    agentName: record.agentName,
+    agentModel: record.agentModel,
+    agentVersion: record.agentVersion,
+    agentCommand: record.agentCommand,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
   };
@@ -246,9 +302,15 @@ export function logApprovalEscalation(
   }));
 }
 
-function buildApprovalNotificationKey(
+/**
+ * Stable identity for the same logical tool-use approval request,
+ * even when an upstream adapter rotates a per-event permission id.
+ * Excludes requestId/permissionId so two OpenCode permission.asked
+ * events for the same toolUseId/patterns collapse to one row.
+ */
+export function buildApprovalLogicalKey(
   request: ApprovalRequest,
-  context: ApprovalEscalationContext,
+  context: Pick<ApprovalEscalationContext, "repoPath" | "beatId" | "sessionId">,
 ): string {
   return [
     context.repoPath ?? "",
@@ -260,17 +322,29 @@ function buildApprovalNotificationKey(
     request.toolName ?? "",
     request.toolUseId ?? "",
     request.nativeSessionId ?? request.sessionId ?? "",
-    request.requestId ?? "",
-    request.permissionId ?? "",
     request.permissionName ?? "",
     request.patterns?.join("|") ?? "",
-    request.message ?? "",
-    request.question ?? "",
-    request.toolParamsDisplay ?? "",
-    request.parameterSummary ?? "",
     request.options.join("|"),
-    request.supportedActions?.join("|") ?? "",
-  ].join("\u0000");
+  ].join(" ");
+}
+
+function buildApprovalNotificationKey(
+  request: ApprovalRequest,
+  context: ApprovalEscalationContext,
+): string {
+  return buildApprovalLogicalKey(request, context);
+}
+
+export function mergeApprovalReplyTarget(
+  current: ApprovalReplyTarget | undefined,
+  next: ApprovalReplyTarget | undefined,
+): ApprovalReplyTarget | undefined {
+  if (!next) return current;
+  if (!current) return next;
+  return {
+    ...current,
+    ...next,
+  };
 }
 
 function shortHash(value: string): string {
