@@ -19,9 +19,9 @@ describe("FinalCutView approvals tabs contract", () => {
     expect(finalCut).toContain("fetchBeatsForScope");
   });
 
-  it("adds Notes Work and Approvals tabs", () => {
+  it("adds Human Beats and Approvals tabs", () => {
     expect(finalCut).toContain('<TabsTrigger value="notes">');
-    expect(finalCut).toContain("Notes Work");
+    expect(finalCut).toContain("Human Beats");
     expect(finalCut).toContain('<TabsTrigger value="approvals">');
     expect(finalCut).toContain("Approvals");
   });

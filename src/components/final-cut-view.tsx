@@ -281,7 +281,7 @@ function EscalationsTabList(props: {
     <TabsList className="w-fit">
       <TabsTrigger value="notes">
         <Megaphone className="size-4" />
-        Notes Work
+        Human Beats
         {props.beatCount > 0 ? (
           <Badge variant="secondary" className="ml-1">
             {props.beatCount}
