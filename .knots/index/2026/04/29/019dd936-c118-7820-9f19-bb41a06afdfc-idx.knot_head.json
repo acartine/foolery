@@ -1,0 +1,37 @@
+{
+  "event_id": "019dd936-c118-7820-9f19-bb41a06afdfc",
+  "occurred_at": "2026-04-29T12:28:57.496675Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-94da",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Implement Claude Code approval support",
+    "type": "work",
+    "updated_at": "2026-04-29T12:28:57.496675Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019dd81f-ee40-75b1-a82c-020c79587d14"
+  }
+}

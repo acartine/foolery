@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd937-1c98-7a22-ad7c-24ded2a631fa",
+  "occurred_at": "2026-04-29T12:29:20.910867Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1017",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Approval harness codex codex-1777463184264-dd5e8edf08de48",
+    "type": "work",
+    "updated_at": "2026-04-29T12:29:20.910867Z",
+    "workflow_id": "work_sdlc"
+  }
+}

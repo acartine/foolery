@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd937-06c9-7fb0-886e-4ce5128908ff",
+  "occurred_at": "2026-04-29T12:29:15.337549Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5800",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wire Foolery approval actions",
+    "type": "work",
+    "updated_at": "2026-04-29T12:29:15.337549Z",
+    "workflow_id": "work_sdlc"
+  }
+}

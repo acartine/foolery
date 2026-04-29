@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd936-c2f3-7902-96c8-6e8d10e4f6e5",
+  "occurred_at": "2026-04-29T12:28:57.971774Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5edd",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Validate CLI approval harnesses",
+    "type": "work",
+    "updated_at": "2026-04-29T12:28:57.971774Z",
+    "workflow_id": "work_sdlc"
+  }
+}

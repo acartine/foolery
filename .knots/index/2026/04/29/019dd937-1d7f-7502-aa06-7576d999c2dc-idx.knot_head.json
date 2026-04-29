@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd937-1d7f-7502-aa06-7576d999c2dc",
+  "occurred_at": "2026-04-29T12:29:21.140318Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7517",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Approval harness opencode opencode-1777457321538-838a79aca9ff4",
+    "type": "work",
+    "updated_at": "2026-04-29T12:29:21.140318Z",
+    "workflow_id": "work_sdlc"
+  }
+}

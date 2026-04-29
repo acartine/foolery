@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd936-c19b-7fd2-9190-f2c9db5395f3",
+  "occurred_at": "2026-04-29T12:28:57.627126Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-94da",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement Claude Code approval support",
+    "type": "work",
+    "updated_at": "2026-04-29T12:28:57.627126Z",
+    "workflow_id": "work_sdlc"
+  }
+}

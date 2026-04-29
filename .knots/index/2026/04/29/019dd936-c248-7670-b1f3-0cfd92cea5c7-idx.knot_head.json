@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd936-c248-7670-b1f3-0cfd92cea5c7",
+  "occurred_at": "2026-04-29T12:28:57.800816Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c4db",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement OpenCode approval support",
+    "type": "work",
+    "updated_at": "2026-04-29T12:28:57.800816Z",
+    "workflow_id": "work_sdlc"
+  }
+}

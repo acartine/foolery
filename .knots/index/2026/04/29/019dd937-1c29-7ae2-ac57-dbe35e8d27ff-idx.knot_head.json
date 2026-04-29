@@ -1,0 +1,21 @@
+{
+  "event_id": "019dd937-1c29-7ae2-ac57-dbe35e8d27ff",
+  "occurred_at": "2026-04-29T12:29:20.796643Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-faf1",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Approval harness claude claude-1777464310191-732fd35572aab8",
+    "type": "work",
+    "updated_at": "2026-04-29T12:29:20.796643Z",
+    "workflow_id": "work_sdlc"
+  }
+}

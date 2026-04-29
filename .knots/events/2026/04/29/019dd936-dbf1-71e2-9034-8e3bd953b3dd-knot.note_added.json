@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd936-dbf1-71e2-9034-8e3bd953b3dd",
+  "occurred_at": "2026-04-29T12:29:04.369493Z",
+  "knot_id": "foolery-5800",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Correction cleanup after approvals merge: implementation landed on origin/main at 058120b1 (Wire OpenCode approval actions). Advancing stale review state after merge/config restoration per user instruction.",
+    "datetime": "2026-04-29T12:29:04.369493Z",
+    "entry_id": "019dd936-dbf1-71e2-9034-8e249a90863f",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

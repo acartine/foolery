@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd937-1cc0-73f1-898d-f4fade84a630",
+  "occurred_at": "2026-04-29T12:29:20.960312Z",
+  "knot_id": "foolery-5a5e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Cleanup: approval harness validation artifact shipped after OpenCode, Codex, and Claude approval validation completed and harness configs were restored. This bypasses SDLC gates intentionally for disposable validation knots per user cleanup instruction.",
+    "datetime": "2026-04-29T12:29:20.960312Z",
+    "entry_id": "019dd937-1cc0-73f1-898d-f4e8fb902c92",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
