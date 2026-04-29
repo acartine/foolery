@@ -4,7 +4,6 @@ import type {
   SessionRuntimeLifecycleEvent,
 } from "@/lib/agent-session-runtime";
 import {
-  buildPromptModeArgs,
   buildCodexInteractiveArgs,
   buildCopilotInteractiveArgs,
   buildOpenCodeInteractiveArgs,
@@ -38,6 +37,10 @@ import {
   captureChildCloseDiagnostics,
   formatDiagnosticsForLog,
 } from "@/lib/agent-session-close-diagnostics";
+import {
+  formatTakeSceneOneShotFailure,
+  type TerminalDispatchKind,
+} from "@/lib/terminal-dispatch-capabilities";
 
 export interface DeferredHttpRefs {
   childRef: ChildProcess | null;
@@ -118,11 +121,11 @@ export function createTakeTransportSessions(
 export function buildSpawnArgs(
   agent: CliAgentTarget,
   dialect: import("@/lib/agent-adapter").AgentDialect,
+  dispatchKind: TerminalDispatchKind,
   isInteractive: boolean,
   isJsonRpc: boolean,
   isHttpServer: boolean,
   isAcp: boolean,
-  takePrompt: string,
 ): { cmd: string; args: string[] } {
   let cmd: string;
   let args: string[];
@@ -150,12 +153,13 @@ export function buildSpawnArgs(
     cmd = built.command;
     args = built.args;
   } else {
-    const built = buildPromptModeArgs(
-      agent,
-      takePrompt,
+    throw new Error(
+      formatTakeSceneOneShotFailure(
+        dialect,
+        dispatchKind,
+        "cli-arg",
+      ),
     );
-    cmd = built.command;
-    args = built.args;
   }
   return { cmd: resolveAgentCommand(cmd), args };
 }

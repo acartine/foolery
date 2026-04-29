@@ -65,7 +65,9 @@ provider checks:
    supplied.
 3. Creates an approval-harness knot in the target repo, unless `--beat-id` is
    supplied.
-4. Calls `POST /api/terminal` with `{ beatId, _repo, prompt }`.
+4. Calls `POST /api/terminal` with `{ beatId, _repo, prompt }`; this is still
+   a take/scene terminal session and must use the provider interactive
+   transport, never `opencode run`, `codex exec`, or any other one-shot path.
 5. Reads `GET /api/terminal/{sessionId}` as SSE until the first approval
    banner is observed.
 6. Opens `/beats?view=finalcut&tab=approvals&repo=<repo>` with Playwright and

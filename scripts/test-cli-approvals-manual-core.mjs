@@ -321,16 +321,41 @@ export async function createHarnessBeat(provider, repo, token) {
     "Manual approval validation knot.",
     "Do not move this knot to a terminal state during harness execution.",
   ].join(" ");
-  const { stdout } = await execFile(
+  await execFile(
     "kno",
     ["-C", repo, "new", title, "-d", description, "--tag", "approval-harness"],
     { maxBuffer: 1024 * 1024 },
   );
-  const match = stdout.match(/[a-z][a-z0-9_-]*-[0-9a-f]{4,}/i);
-  if (!match) {
-    throw new Error(`Could not parse created knot id from kno output: ${stdout}`);
+  return await findHarnessBeat(repo, title);
+}
+
+async function findHarnessBeat(repo, title) {
+  const { stdout } = await execFile(
+    "kno",
+    [
+      "-C",
+      repo,
+      "ls",
+      "--tag",
+      "approval-harness",
+      "--query",
+      title,
+      "--limit",
+      "10",
+      "--json",
+    ],
+    { maxBuffer: 1024 * 1024 },
+  );
+  const parsed = JSON.parse(stdout);
+  const matches = Array.isArray(parsed.data)
+    ? parsed.data.filter((beat) => beat?.title === title)
+    : [];
+  if (matches.length === 0) {
+    throw new Error(
+      `Could not find created approval harness knot: ${title}`,
+    );
   }
-  return match[0];
+  return matches[0].id;
 }
 
 export function approvalPrompt(provider, token) {

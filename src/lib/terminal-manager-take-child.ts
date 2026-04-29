@@ -10,8 +10,7 @@ import {
   createLineNormalizer,
 } from "@/lib/agent-adapter";
 import {
-  resolveCapabilities,
-  supportsInteractive,
+  type AgentSessionCapabilities,
 } from "@/lib/agent-session-capabilities";
 import {
   resolveInteractiveSessionWatchdogTimeoutMs,
@@ -49,6 +48,9 @@ import {
   attachApprovalResponder,
   createApprovalRequestHandler,
 } from "@/lib/terminal-approval-session";
+import {
+  resolveTakeSceneCapabilities,
+} from "@/lib/terminal-dispatch-capabilities";
 
 // ─── spawnTakeChild (entry point) ────────────────────
 
@@ -87,10 +89,8 @@ export function spawnTakeChild(
   const effectiveDialect = resolveDialect(
     effectiveAgent.command,
   );
-  const preferInteractive =
-    supportsInteractive(effectiveDialect);
-  const capabilities = resolveCapabilities(
-    effectiveDialect, preferInteractive,
+  const capabilities = resolveTakeSceneCapabilities(
+    effectiveDialect, "take",
   );
   const isInteractive = capabilities.interactive;
   const watchdogTimeoutMs =
@@ -104,8 +104,8 @@ export function spawnTakeChild(
   const isAcp = pt === "acp-stdio";
   const { cmd, args } = buildSpawnArgs(
     effectiveAgent, effectiveDialect,
-    isInteractive, isJsonRpc, isHttpServer, isAcp,
-    takePrompt,
+    "take", isInteractive, isJsonRpc,
+    isHttpServer, isAcp,
   );
   const {
     runtime,
@@ -177,7 +177,7 @@ export function createTakeRuntimeBundle(
   ctx: TakeLoopContext,
   beatState: string | undefined,
   effectiveDialect: import("@/lib/agent-adapter").AgentDialect,
-  capabilities: ReturnType<typeof resolveCapabilities>,
+  capabilities: AgentSessionCapabilities,
   watchdogTimeoutMs: number | null,
   isJsonRpc: boolean,
   isHttpServer: boolean,

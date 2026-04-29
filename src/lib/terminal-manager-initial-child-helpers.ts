@@ -2,7 +2,6 @@ import type { ChildProcess } from "node:child_process";
 import type { EventEmitter } from "node:events";
 import type { InteractionLog } from "@/lib/interaction-logger";
 import {
-  buildPromptModeArgs,
   buildCodexInteractiveArgs,
   buildCopilotInteractiveArgs,
   buildOpenCodeInteractiveArgs,
@@ -59,6 +58,10 @@ import {
 import {
   createPromptDispatchHooks,
 } from "@/lib/terminal-manager-runtime-lifecycle";
+import {
+  formatTakeSceneOneShotFailure,
+  type TerminalDispatchKind,
+} from "@/lib/terminal-dispatch-capabilities";
 
 type InitialChildState = import(
   "@/lib/terminal-manager-initial-io"
@@ -216,11 +219,11 @@ export function buildAutoShipPrompt(
 export function buildAgentArgs(
   agent: CliAgentTarget,
   dialect: import("@/lib/agent-adapter").AgentDialect,
+  dispatchKind: TerminalDispatchKind,
   isInteractive: boolean,
   isJsonRpc: boolean,
   isHttpServer: boolean,
   isAcp: boolean,
-  prompt: string,
 ): { agentCmd: string; args: string[] } {
   let agentCmd: string;
   let args: string[];
@@ -248,9 +251,13 @@ export function buildAgentArgs(
     agentCmd = built.command;
     args = built.args;
   } else {
-    const built = buildPromptModeArgs(agent, prompt);
-    agentCmd = built.command;
-    args = built.args;
+    throw new Error(
+      formatTakeSceneOneShotFailure(
+        dialect,
+        dispatchKind,
+        "cli-arg",
+      ),
+    );
   }
   return {
     agentCmd: resolveAgentCommand(agentCmd),

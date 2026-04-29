@@ -238,11 +238,11 @@ function findLoggedPrompt(
   )?.[0] as string | undefined;
 }
 
-describe("take-loop: logs prompts for one-shot agents", () => {
+describe("take-loop: logs prompts for interactive agents", () => {
   beforeEach(async () => { await setupTakeLoopMocks(); });
   afterEach(() => { clearTakeLoopSessions(); });
 
-  it("logs take-loop prompts for one-shot agents", async () => {
+  it("logs take-loop prompts for interactive Codex agents", async () => {
     backend.get.mockResolvedValue({
       ok: true,
       data: {

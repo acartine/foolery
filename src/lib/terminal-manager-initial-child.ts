@@ -10,17 +10,15 @@ import {
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
-import {
-  resolveCapabilities,
-  supportsInteractive,
+import type {
+  AgentSessionCapabilities,
 } from "@/lib/agent-session-capabilities";
 import {
-  resolveInteractiveSessionWatchdogTimeoutMs,
-} from "@/lib/interactive-session-timeout";
-import {
-  TerminalSession,
-  TerminalEvent,
-} from "@/lib/types";
+  emitTerminalDispatchFailure,
+  resolveTakeSceneRuntimeSelection,
+  terminalDispatchKind,
+} from "@/lib/terminal-dispatch-capabilities";
+import { TerminalSession, TerminalEvent } from "@/lib/types";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
   toExecutionAgentInfo,
@@ -33,12 +31,8 @@ import {
   recordSessionFinishLifecycle,
 } from "@/lib/terminal-manager-take-lifecycle";
 import type { TakeLoopContext } from "@/lib/terminal-manager-take-loop";
-import {
-  type SessionEntry,
-} from "@/lib/terminal-manager-types";
-import type {
-  PreparedTargets,
-} from "@/lib/terminal-manager-session-prep";
+import type { SessionEntry } from "@/lib/terminal-manager-types";
+import type { PreparedTargets } from "@/lib/terminal-manager-session-prep";
 import {
   wireStdout,
   wireStderr,
@@ -164,7 +158,6 @@ export function spawnInitialChild(
     emitter,
     interactionLog,
     pushEvent,
-    prompt,
     customPrompt,
     finishSession,
     sessionAborted,
@@ -210,31 +203,10 @@ export function spawnInitialChild(
   return session;
 }
 
-function resolveInitialRuntimeSelection(
-  dialect: import("@/lib/agent-adapter").AgentDialect,
-  isTakeLoop: boolean,
-  interactiveSessionTimeoutMinutes: number,
-) {
-  const capabilities = resolveCapabilities(
-    dialect,
-    isTakeLoop && supportsInteractive(dialect),
-  );
-  return {
-    capabilities,
-    isInteractive: capabilities.interactive,
-    transport: capabilities.promptTransport,
-    watchdogTimeoutMs:
-      resolveInteractiveSessionWatchdogTimeoutMs(
-        capabilities.interactive,
-        interactiveSessionTimeoutMinutes,
-      ),
-  };
-}
-
 function buildInitialRuntimeContext(
   id: string,
   dialect: import("@/lib/agent-adapter").AgentDialect,
-  capabilities: ReturnType<typeof resolveCapabilities>,
+  capabilities: AgentSessionCapabilities,
   watchdogTimeoutMs: number | null,
   normalizeEvent: ReturnType<typeof createLineNormalizer>,
   pushEvent: (evt: TerminalEvent) => void,
@@ -285,6 +257,27 @@ function buildInitialTakeLoopContext(
   );
 }
 
+function resolveInitialRuntimeSelectionOrEmit(
+  dialect: import("@/lib/agent-adapter").AgentDialect,
+  dispatchKind: ReturnType<typeof terminalDispatchKind>,
+  interactiveSessionTimeoutMinutes: number,
+  pushEvent: (evt: TerminalEvent) => void,
+) {
+  try {
+    return resolveTakeSceneRuntimeSelection(
+      dialect,
+      dispatchKind,
+      interactiveSessionTimeoutMinutes,
+    );
+  } catch (error) {
+    const message = error instanceof Error
+      ? error.message
+      : "Unknown terminal dispatch failure";
+    emitTerminalDispatchFailure(pushEvent, message);
+    throw error;
+  }
+}
+
 function prepareInitialRuntimeBundle(
   id: string,
   beatId: string,
@@ -297,7 +290,6 @@ function prepareInitialRuntimeBundle(
   emitter: EventEmitter,
   interactionLog: InteractionLog,
   pushEvent: (evt: TerminalEvent) => void,
-  prompt: string,
   customPrompt: string | undefined,
   finishSession: (code: number) => void,
   sessionAborted: () => boolean,
@@ -305,21 +297,26 @@ function prepareInitialRuntimeBundle(
 ) {
   const isTakeLoop = !prepared.effectiveParent &&
     !customPrompt;
+  const dispatchKind =
+    terminalDispatchKind(prepared.effectiveParent);
+  const runtimeSelection =
+    resolveInitialRuntimeSelectionOrEmit(
+      dialect,
+      dispatchKind,
+      interactiveSessionTimeoutMinutes,
+      pushEvent,
+    );
   const {
     capabilities,
     isInteractive,
     transport,
     watchdogTimeoutMs,
-  } = resolveInitialRuntimeSelection(
-    dialect,
-    isTakeLoop,
-    interactiveSessionTimeoutMinutes,
-  );
+  } = runtimeSelection;
   const { agentCmd, args } = buildAgentArgs(
-    agent, dialect, isInteractive,
+    agent, dialect, dispatchKind, isInteractive,
     transport === "jsonrpc-stdio",
     transport === "http-server",
-    transport === "acp-stdio", prompt,
+    transport === "acp-stdio",
   );
   const normalizeEvent = createLineNormalizer(dialect);
   const takeLoopCtx = buildInitialTakeLoopContext(

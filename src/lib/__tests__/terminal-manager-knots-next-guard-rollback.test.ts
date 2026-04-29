@@ -292,11 +292,11 @@ function setupPromptLoggingBackend(
   backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
 }
 
-describe("nextKnot guard: prompt logging (one-shot)", () => {
+describe("nextKnot guard: prompt logging", () => {
   beforeEach(async () => { await setupRollbackMocks(); });
   afterEach(() => { clearRollbackSessions(); });
 
-  it("logs initial prompt for one-shot agents", async () => {
+  it("logs initial custom prompts", async () => {
     setupPromptLoggingBackend("foolery-1000", "Record prompt history");
     backend.list.mockResolvedValue({ ok: true, data: [] });
 
