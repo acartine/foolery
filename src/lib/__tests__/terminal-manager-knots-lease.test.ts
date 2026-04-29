@@ -273,3 +273,74 @@ describe("terminal-manager Knots lease integration", () => {
   });
 
 });
+
+describe("terminal-manager: canonical lease metadata", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    spawnedChildren.length = 0;
+    resolveMemoryManagerTypeMock.mockReturnValue("knots");
+    validateCwdMock.mockResolvedValue(null);
+    createLeaseMock.mockResolvedValue({
+      ok: true, data: { id: "lease-k1" },
+    });
+    terminateLeaseMock.mockResolvedValue({ ok: true });
+    backend.get.mockReset();
+    backend.list.mockReset();
+    backend.listWorkflows.mockReset();
+    backend.buildTakePrompt.mockReset();
+    backend.update.mockReset();
+
+    type GS = {
+      __terminalSessions?: Map<string, unknown>;
+    };
+    const sessions =
+      (globalThis as GS).__terminalSessions;
+    sessions?.clear();
+  });
+
+  afterEach(() => {
+    type GS = {
+      __terminalSessions?: Map<string, unknown>;
+    };
+    const sessions =
+      (globalThis as GS).__terminalSessions;
+    sessions?.clear();
+  });
+
+  it("passes canonical agent metadata to lease creation", async () => {
+    backend.get.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "beat-3",
+        title: "Canonical test",
+        state: "ready_for_implementation",
+        isAgentClaimable: true,
+        labels: [],
+      },
+    });
+    backend.listWorkflows.mockResolvedValue({
+      ok: true, data: [],
+    });
+    backend.list.mockResolvedValue({
+      ok: true, data: [],
+    });
+    backend.buildTakePrompt.mockResolvedValue({
+      ok: true, data: { prompt: "test prompt" },
+    });
+
+    await createSession("beat-3", "/tmp/repo");
+
+    expect(createLeaseMock).toHaveBeenCalledOnce();
+    const leaseOpts = createLeaseMock.mock.calls[0][0];
+    // The mock agent is { command: "codex", label: "Codex",
+    //   model: "gpt-5.4-codex" }. Canonical identity drops
+    // the display label and derives `agent_name` from the
+    // command — so leaseOpts.agentName is "Codex" (from
+    // displayCommandLabel("codex")), not from the label
+    // field. Both happen to render "Codex" here, but the
+    // value comes from canonical resolution.
+    expect(leaseOpts.agentName).toBe("Codex");
+    expect(leaseOpts.agentType).toBe("cli");
+    expect(leaseOpts.provider).toBe("Codex");
+  });
+});

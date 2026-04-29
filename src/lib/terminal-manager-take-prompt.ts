@@ -13,7 +13,7 @@ import type {
   MemoryWorkflowDescriptor,
 } from "@/lib/types";
 import {
-  toExecutionAgentInfo,
+  formatAgentDisplayLabel,
 } from "@/lib/agent-identity";
 import {
   markBeatShipped,
@@ -326,7 +326,7 @@ async function rollbackStepFailure(
     return null;
   }
   const failedAgent =
-    toExecutionAgentInfo(ctx.agent).agentName;
+    formatAgentDisplayLabel(ctx.agent);
   announceStepFailureRollback(
     ctx,
     current,

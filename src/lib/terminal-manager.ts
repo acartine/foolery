@@ -20,6 +20,7 @@ import {
 } from "@/lib/interactive-session-timeout";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
+  formatAgentDisplayLabel,
   normalizeAgentIdentity,
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
@@ -254,7 +255,7 @@ function buildSession(
     beatId: prepared.beat.id,
     beatTitle: prepared.beat.title,
     repoPath: prepared.resolvedRepoPath,
-    agentName: toExecutionAgentInfo(agent).agentName,
+    agentName: formatAgentDisplayLabel(agent),
     agentModel: agent.model,
     agentVersion: agent.version,
     ...(agent.kind === "cli"
@@ -278,7 +279,7 @@ async function startSessionLog(
     beatIds: prepared.effectiveParent
       ? prepared.waveBeatIds
       : [prepared.beat.id],
-    agentName: toExecutionAgentInfo(agent).agentName,
+    agentName: formatAgentDisplayLabel(agent),
     agentProvider: normalizeAgentIdentity(agent).provider,
     agentModel: agent.model,
     agentVersion: agent.version,

@@ -468,9 +468,7 @@ export function toCanonicalLeaseIdentity(
       ? detectAgentProviderId(explicitCommand)
       : undefined);
   const provider = cleanValue(agent.provider) ?? n.provider;
-  const explicitLabel = cleanValue(agent.label);
   const agentName = cleanValue(agent.agent_name)
-    ?? explicitLabel
     ?? displayCommandLabel(explicitCommand)
     ?? provider
     ?? explicitCommand

@@ -195,3 +195,64 @@ describe("LocalWorkerService: take and scene", () => {
     expect(result.data?.lease.knotsLeaseId).toBe("lease-k1");
   });
 });
+
+describe("LocalWorkerService: canonical metadata", () => {
+  beforeEach(setupLocalWorkerMocks);
+
+  it("passes canonical metadata to lease and poll", async () => {
+    mockResolveMemoryManagerType.mockReturnValue("knots");
+    mockPollKnot.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "knot-2",
+        title: "Canonical Test",
+        state: "implementation",
+        profile_id: "autopilot",
+        prompt: "test prompt",
+      },
+    });
+    mockGet.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "knot-2",
+        title: "Canonical Test",
+        state: "implementation",
+        isAgentClaimable: false,
+        type: "task",
+        priority: 2,
+        labels: [],
+        created: "2026-03-05T00:00:00Z",
+        updated: "2026-03-05T00:00:00Z",
+      },
+    });
+    mockListWorkflows.mockResolvedValue({
+      ok: true, data: [],
+    });
+    mockListDeps.mockResolvedValue({
+      ok: true, data: [],
+    });
+    mockList.mockResolvedValue({
+      ok: true, data: [],
+    });
+
+    const worker = new LocalWorkerService();
+    const result = await worker.preparePoll(
+      "/tmp/repo",
+      {
+        agentName: "Claude",
+        agentModel: "opus/claude",
+        agentVersion: "4.6",
+        agentProvider: "Claude",
+        agentType: "cli",
+      },
+    );
+
+    expect(result.ok).toBe(true);
+    const leaseOpts = mockCreateLease.mock.calls[0][0];
+    expect(leaseOpts.agentName).toBe("Claude");
+    expect(leaseOpts.model).toBe("opus/claude");
+    expect(leaseOpts.modelVersion).toBe("4.6");
+    expect(leaseOpts.provider).toBe("Claude");
+    expect(leaseOpts.agentType).toBe("cli");
+  });
+});

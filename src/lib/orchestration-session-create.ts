@@ -14,7 +14,6 @@ import {
 } from "@/lib/interaction-logger";
 import {
   formatAgentDisplayLabel,
-  toExecutionAgentInfo,
 } from "@/lib/agent-identity";
 import type { OrchestrationSession } from "@/lib/types";
 import {
@@ -244,7 +243,7 @@ async function initSessionEntry(
     interactionType: "direct",
     repoPath,
     beatIds: beats.map((b) => b.id),
-    agentName: toExecutionAgentInfo(agent).agentName,
+    agentName: formatAgentDisplayLabel(agent),
     agentModel: agent.model,
     agentVersion: agent.version,
   }).catch((err) => {
@@ -508,7 +507,7 @@ function handleCloseEvent(
     }
   }
 
-  const agentName = toExecutionAgentInfo(agent).agentName;
+  const agentName = formatAgentDisplayLabel(agent);
   const isSuccess = code === 0 && signal == null;
   const message = isSuccess
     ? `${agentName} orchestration complete`

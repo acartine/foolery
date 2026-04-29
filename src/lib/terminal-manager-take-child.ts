@@ -21,6 +21,7 @@ import {
 } from "@/lib/agent-session-runtime";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
+  formatAgentDisplayLabel,
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
 import type {
@@ -62,7 +63,7 @@ function applyEffectiveAgent(
   ctx.agentInfo =
     toExecutionAgentInfo(effectiveAgent);
   ctx.session.agentName =
-    ctx.agentInfo.agentName;
+    formatAgentDisplayLabel(effectiveAgent);
   ctx.session.agentModel = effectiveAgent.model;
   ctx.session.agentVersion =
     effectiveAgent.version;
