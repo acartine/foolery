@@ -28,9 +28,14 @@ function strip(text: string): string {
   );
 }
 
+interface InputPart {
+  type: string;
+  [key: string]: unknown;
+}
+
 interface Pipeline {
   feed(event: Record<string, unknown>): void;
-  feedPart(part: Record<string, unknown>): void;
+  feedPart(part: InputPart): void;
   rendered(): string;
 }
 
