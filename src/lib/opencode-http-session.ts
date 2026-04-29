@@ -22,6 +22,7 @@ import {
 
 interface OpenCodePart {
   type: string;
+  [key: string]: unknown;
   text?: string;
   reason?: string;
   snapshot?: string;
@@ -36,6 +37,9 @@ interface OpenCodePart {
 interface OpenCodeMessageResponse {
   info?: Record<string, unknown>;
   parts?: OpenCodePart[];
+  events?: unknown[];
+  stream?: unknown[];
+  items?: unknown[];
 }
 
 interface SessionCreateResponse {
@@ -165,6 +169,37 @@ async function postControlRequest(
 
 // ── Part → JSONL translation ─────────────────────────
 
+function toObject(
+  value: unknown,
+): Record<string, unknown> | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+  return value as Record<string, unknown>;
+}
+
+function asString(
+  value: unknown,
+): string | null {
+  return typeof value === "string" && value.length > 0
+    ? value
+    : null;
+}
+
+function translateEvent(
+  value: unknown,
+): Record<string, unknown> | null {
+  const event = toObject(value);
+  if (!event) return null;
+  const type = asString(event.type);
+  if (type === "permission.asked") return event;
+  const name = asString(event.event)
+    ?? asString(event.name);
+  return name === "permission.asked"
+    ? { ...event, type: name }
+    : null;
+}
+
 /**
  * Translate an HTTP response part into the JSONL
  * format that `opencode run --format json` emits,
@@ -193,9 +228,50 @@ function translatePart(
     };
   }
 
+  const event = translateEvent(part);
+  if (event) return event;
+
   // tool-use and tool-result parts can be
   // forwarded as-is; normalizer skips unknowns
   return null;
+}
+
+function eventCollections(
+  resp: OpenCodeMessageResponse,
+): unknown[][] {
+  return [
+    resp.events,
+    resp.stream,
+    resp.items,
+  ].filter((value): value is unknown[] =>
+    Array.isArray(value));
+}
+
+function hasMessagePayload(
+  resp: OpenCodeMessageResponse,
+): boolean {
+  return Array.isArray(resp.parts)
+    || eventCollections(resp).length > 0
+    || translateEvent(resp) !== null;
+}
+
+function translateResponse(
+  resp: OpenCodeMessageResponse,
+): Array<Record<string, unknown>> {
+  const events: Array<Record<string, unknown>> = [];
+  for (const part of resp.parts ?? []) {
+    const translated = translatePart(part);
+    if (translated) events.push(translated);
+  }
+  for (const collection of eventCollections(resp)) {
+    for (const event of collection) {
+      const translated = translateEvent(event);
+      if (translated) events.push(translated);
+    }
+  }
+  const direct = translateEvent(resp);
+  if (direct) events.push(direct);
+  return events;
 }
 
 // ── Session lifecycle helpers ─────────────────────────
@@ -256,7 +332,7 @@ async function doTurn(
     const resp = await sendMessage(
       s.serverUrl, s.sessionId, prompt,
     );
-    if (!resp || !resp.parts) {
+    if (!resp || !hasMessagePayload(resp)) {
       hooks.onFailed?.("http_message_request_failed");
       cb.onError(
         "OpenCode HTTP message request failed.",
@@ -265,11 +341,8 @@ async function doTurn(
       return;
     }
     hooks.onSucceeded?.();
-    for (const part of resp.parts) {
-      const translated = translatePart(part);
-      if (translated) {
-        cb.onEvent(JSON.stringify(translated));
-      }
+    for (const event of translateResponse(resp)) {
+      cb.onEvent(JSON.stringify(event));
     }
   } catch (err) {
     hooks.onFailed?.("http_turn_threw");
