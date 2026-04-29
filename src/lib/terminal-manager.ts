@@ -95,9 +95,16 @@ export function getSession(
 }
 
 export function listSessions(): TerminalSession[] {
-  return Array.from(sessions.values()).map(
-    (e) => e.session,
-  );
+  return Array.from(sessions.values()).map((entry) => {
+    const pendingApprovals = entry.pendingApprovals
+      ? Array.from(entry.pendingApprovals.values())
+      : [];
+    if (pendingApprovals.length === 0) return entry.session;
+    return {
+      ...entry.session,
+      pendingApprovals,
+    };
+  });
 }
 
 // ─── createSession ───────────────────────────────────

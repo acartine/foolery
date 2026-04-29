@@ -68,9 +68,17 @@ export function recordPendingApproval(
       existing.supportedActions = record.supportedActions;
       existing.replyTarget = record.replyTarget;
     }
+    logApprovalEscalation(
+      "approval.pending_duplicate_refreshed",
+      logContext(existing),
+    );
     return existing;
   }
   entry.pendingApprovals.set(record.approvalId, record);
+  logApprovalEscalation(
+    "approval.pending_recorded",
+    logContext(record),
+  );
   return record;
 }
 
@@ -160,11 +168,19 @@ function pendingRecordFromApproval(
     repoPath: approval.repoPath,
     adapter: approval.adapter,
     source: approval.source,
+    message: approval.message,
+    question: approval.question,
     serverName: approval.serverName,
     toolName: approval.toolName,
+    toolParamsDisplay: approval.toolParamsDisplay,
+    parameterSummary: approval.parameterSummary,
+    toolUseId: approval.toolUseId,
     nativeSessionId: approval.nativeSessionId,
     requestId: approval.requestId,
     permissionId: approval.permissionId,
+    permissionName: approval.permissionName,
+    patterns: approval.patterns ?? [],
+    options: approval.options,
     replyTarget: approval.replyTarget,
     supportedActions: normalizeSupportedActions(
       approval.supportedActions,

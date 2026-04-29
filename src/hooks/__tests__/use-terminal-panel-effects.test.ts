@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const listSessionsMock = vi.fn();
 const rehydrateFromBackendMock = vi.fn();
+const hydrateApprovalEscalationsFromSessionsMock = vi.fn();
 
 vi.mock("react", () => ({
   useEffect: (callback: () => void | (() => void)) => {
@@ -23,11 +24,17 @@ vi.mock("@/stores/terminal-store", () => ({
   },
 }));
 
+vi.mock("@/lib/session-approval-hydration", () => ({
+  hydrateApprovalEscalationsFromSessions:
+    hydrateApprovalEscalationsFromSessionsMock,
+}));
+
 describe("useRehydrateTerminals", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     listSessionsMock.mockReset();
     rehydrateFromBackendMock.mockReset();
+    hydrateApprovalEscalationsFromSessionsMock.mockReset();
   });
 
   afterEach(() => {
@@ -55,6 +62,9 @@ describe("useRehydrateTerminals", () => {
 
     expect(listSessionsMock).toHaveBeenCalledTimes(1);
     expect(rehydrateFromBackendMock).toHaveBeenCalledWith(sessions);
+    expect(
+      hydrateApprovalEscalationsFromSessionsMock,
+    ).toHaveBeenCalledWith(sessions);
     expect(setEnabled).toHaveBeenCalledWith(true);
   });
 
@@ -87,6 +97,12 @@ describe("useRehydrateTerminals", () => {
     expect(listSessionsMock).toHaveBeenCalledTimes(2);
     expect(rehydrateFromBackendMock).toHaveBeenNthCalledWith(1, initialSessions);
     expect(rehydrateFromBackendMock).toHaveBeenNthCalledWith(2, nextSessions);
+    expect(
+      hydrateApprovalEscalationsFromSessionsMock,
+    ).toHaveBeenNthCalledWith(1, initialSessions);
+    expect(
+      hydrateApprovalEscalationsFromSessionsMock,
+    ).toHaveBeenNthCalledWith(2, nextSessions);
     expect(setEnabled).toHaveBeenCalledTimes(1);
   });
 });

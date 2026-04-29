@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Megaphone } from "lucide-react";
@@ -46,7 +46,13 @@ export function FinalCutView() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectionVersion] = useState(0);
-  const approvals = useApprovalEscalationStore(selectPendingApprovals);
+  const allApprovals = useApprovalEscalationStore(
+    (s) => s.approvals,
+  );
+  const approvals = useMemo(
+    () => selectPendingApprovals({ approvals: allApprovals }),
+    [allApprovals],
+  );
   const dismissApproval = useApprovalEscalationStore(
     (s) => s.dismissApproval,
   );

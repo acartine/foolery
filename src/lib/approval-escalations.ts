@@ -7,6 +7,7 @@ import {
   normalizeSupportedActions,
   type ApprovalAction,
   type ApprovalEscalationStatus,
+  type PendingApprovalRecord,
 } from "@/lib/approval-actions";
 
 export type {
@@ -197,6 +198,40 @@ export function approvalEscalationFromRequest(
     repoPath: context.repoPath,
     createdAt: now,
     updatedAt: now,
+  };
+}
+
+export function approvalEscalationFromPendingRecord(
+  record: PendingApprovalRecord,
+): ApprovalEscalation {
+  return {
+    id: record.approvalId,
+    notificationKey: record.notificationKey,
+    status: record.status,
+    sessionId: record.terminalSessionId,
+    beatId: record.beatId,
+    repoPath: record.repoPath,
+    adapter: record.adapter,
+    source: record.source,
+    message: record.message,
+    question: record.question,
+    options: record.options,
+    serverName: record.serverName,
+    toolName: record.toolName,
+    toolParamsDisplay: record.toolParamsDisplay,
+    parameterSummary: record.parameterSummary,
+    toolUseId: record.toolUseId,
+    nativeSessionId: record.nativeSessionId,
+    requestId: record.requestId,
+    permissionId: record.permissionId,
+    permissionName: record.permissionName,
+    patterns: record.patterns,
+    supportedActions: normalizeSupportedActions(
+      record.supportedActions,
+    ),
+    replyTarget: record.replyTarget,
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt,
   };
 }
 

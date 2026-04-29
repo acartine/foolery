@@ -2,18 +2,14 @@ import { connectToSession } from "./terminal-api";
 import { invalidateBeatListQueries } from "@/lib/beat-query-cache";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { useNotificationStore } from "@/stores/notification-store";
-import { useApprovalEscalationStore } from "@/stores/approval-escalation-store";
 import {
   approvalEscalationFromBanner,
-  buildApprovalsHref,
-  formatApprovalDetailText,
-  formatApprovalPrimaryText,
-  logApprovalEscalation,
-  type ApprovalEscalation,
 } from "@/lib/approval-escalations";
+import {
+  enqueueApprovalEscalation,
+} from "@/lib/approval-escalation-client";
 import type { TerminalEvent } from "./types";
 import type { QueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 export interface BufferedEvent {
   type: TerminalEvent["type"];
@@ -226,61 +222,8 @@ function handleApprovalEvent(
     },
   );
   if (!approval) return false;
-  logApprovalEscalation("approval.detected", {
-    approvalId: approval.id,
-    notificationKey: approval.notificationKey,
-    sessionId: approval.sessionId,
-    beatId: approval.beatId,
-    repoPath: approval.repoPath,
-    adapter: approval.adapter,
-    source: approval.source,
-    serverName: approval.serverName,
-    toolName: approval.toolName,
-    status: approval.status,
-  });
-  const created = useApprovalEscalationStore
-    .getState()
-    .upsertPendingApproval(approval);
-  if (!created) return true;
-  fireApprovalNotification(approval);
+  enqueueApprovalEscalation(approval);
   return true;
-}
-
-function fireApprovalNotification(
-  approval: ApprovalEscalation,
-): void {
-  const href = buildApprovalsHref(approval.repoPath);
-  const detail = formatApprovalDetailText(approval);
-  useNotificationStore.getState().addNotification({
-    kind: "approval",
-    message:
-      `Approval required: ${formatApprovalPrimaryText(approval)}`,
-    beatId: approval.beatId,
-    repoPath: approval.repoPath,
-    href,
-    dedupeKey: approval.notificationKey,
-  });
-  toast.warning("Approval required", {
-    description: detail,
-    action: {
-      label: "Open approvals",
-      onClick: () => {
-        window.location.href = href;
-      },
-    },
-  });
-  logApprovalEscalation("approval.notification_emitted", {
-    approvalId: approval.id,
-    notificationKey: approval.notificationKey,
-    sessionId: approval.sessionId,
-    beatId: approval.beatId,
-    repoPath: approval.repoPath,
-    adapter: approval.adapter,
-    source: approval.source,
-    serverName: approval.serverName,
-    toolName: approval.toolName,
-    status: approval.status,
-  });
 }
 
 function handleExitEvent(

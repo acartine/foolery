@@ -3,6 +3,9 @@
 import { useEffect, useRef } from "react";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { listSessions } from "@/lib/terminal-api";
+import {
+  hydrateApprovalEscalationsFromSessions,
+} from "@/lib/session-approval-hydration";
 import type { FitAddon as XtermFitAddon }
   from "@xterm/addon-fit";
 
@@ -23,6 +26,7 @@ export function useRehydrateTerminals(
       useTerminalStore
         .getState()
         .rehydrateFromBackend(sessions);
+      hydrateApprovalEscalationsFromSessions(sessions);
     };
 
     void syncSessions().finally(() => {

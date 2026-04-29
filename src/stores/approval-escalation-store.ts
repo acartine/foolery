@@ -106,7 +106,7 @@ export const useApprovalEscalationStore =
   }));
 
 export function selectPendingApprovals(
-  state: ApprovalEscalationState,
+  state: Pick<ApprovalEscalationState, "approvals">,
 ): ApprovalEscalation[] {
   return state.approvals.filter(
     (approval) => isActiveApprovalStatus(approval.status),

@@ -1,26 +1,27 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   approvalEscalationFromBanner,
+  approvalEscalationFromPendingRecord,
   buildApprovalConsoleHref,
   buildApprovalsHref,
   logApprovalEscalation,
   parseApprovalBanner,
 } from "@/lib/approval-escalations";
 
-describe("approval escalations", () => {
-  const banner = [
-    "\u001b[1;31mFOOLERY APPROVAL REQUIRED\u001b[0m",
-    "adapter=codex",
-    "source=mcpServer/elicitation/request",
-    "serverName=playwright",
-    "toolName=browser_evaluate",
-    "supportedActions=approve | reject",
-    "nativeSessionId=native-session-1",
-    "requestId=request-1",
-    "message=Allow browser_evaluate?",
-    "toolParamsDisplay=pageFunction=document.title()",
-  ].join("\n");
+const banner = [
+  "\u001b[1;31mFOOLERY APPROVAL REQUIRED\u001b[0m",
+  "adapter=codex",
+  "source=mcpServer/elicitation/request",
+  "serverName=playwright",
+  "toolName=browser_evaluate",
+  "supportedActions=approve | reject",
+  "nativeSessionId=native-session-1",
+  "requestId=request-1",
+  "message=Allow browser_evaluate?",
+  "toolParamsDisplay=pageFunction=document.title()",
+].join("\n");
 
+describe("approval escalations", () => {
   it("parses formatted approval banners into request fields", () => {
     const request = parseApprovalBanner(banner);
 
@@ -84,5 +85,43 @@ describe("approval escalations", () => {
       sessionId: "sess-1",
     });
     spy.mockRestore();
+  });
+});
+
+describe("approval escalation hydration", () => {
+  it("hydrates pending approval records back into escalations", () => {
+    const approval = approvalEscalationFromPendingRecord({
+      approvalId: "approval-1",
+      notificationKey: "key-1",
+      terminalSessionId: "term-1",
+      beatId: "beat-1",
+      repoPath: "/repo",
+      adapter: "opencode",
+      source: "permission.asked",
+      message: "Allow bash?",
+      toolName: "bash",
+      nativeSessionId: "ses_1",
+      requestId: "perm_1",
+      permissionId: "perm_1",
+      patterns: ["mkdir -p .approval-validation"],
+      options: [],
+      supportedActions: ["approve", "reject"],
+      status: "pending",
+      createdAt: 10,
+      updatedAt: 20,
+    });
+
+    expect(approval).toMatchObject({
+      id: "approval-1",
+      notificationKey: "key-1",
+      sessionId: "term-1",
+      adapter: "opencode",
+      source: "permission.asked",
+      message: "Allow bash?",
+      toolName: "bash",
+      supportedActions: ["approve", "reject"],
+      createdAt: 10,
+      updatedAt: 20,
+    });
   });
 });

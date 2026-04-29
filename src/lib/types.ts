@@ -1,4 +1,7 @@
 import type { MemoryManagerType } from "@/lib/memory-managers";
+import type {
+  PendingApprovalRecord,
+} from "@/lib/approval-actions";
 import type { FoolerySettings } from "@/lib/schemas";
 
 // ── Beat types ──────────────────────────────────────────────
@@ -152,6 +155,7 @@ export interface TerminalSession {
   status: TerminalSessionStatus;
   startedAt: string;
   exitCode?: number;
+  pendingApprovals?: PendingApprovalRecord[];
 }
 
 export interface TerminalEvent {

@@ -19,6 +19,7 @@ import {
   verifyContinuation,
 } from "./test-cli-approvals-manual-core.mjs";
 import {
+  activeApprovalIds,
   spawnDevServer,
   startTerminalSession,
   terminateSession,
@@ -26,6 +27,8 @@ import {
   waitForServer,
   waitForSessionEvent,
 } from "./test-cli-approvals-manual-runtime.mjs";
+
+const MAX_APPROVAL_ROUNDS = 5;
 
 function runDryHelperChecks() {
   const settings = {
@@ -86,7 +89,7 @@ async function runProvider(provider, options) {
     );
     log(provider, `Started terminal session ${sessionId}.`);
 
-    await waitForSessionEvent(
+    const firstApprovalEvent = await waitForSessionEvent(
       server.baseUrl,
       sessionId,
       options.timeoutMs,
@@ -97,19 +100,54 @@ async function runProvider(provider, options) {
     if (options.skipBrowser) {
       throw new BlockedError("Browser/UI approval step was skipped.");
     }
-    await verifyAndApproveInBrowser(server.baseUrl, repo, sessionId, provider);
-    log(provider, "Approved first request through Foolery UI.");
+    let cursor = Number(firstApprovalEvent.timestamp ?? Date.now());
+    for (let round = 1; round <= MAX_APPROVAL_ROUNDS; round += 1) {
+      await verifyAndApproveInBrowser(
+        server.baseUrl, repo, sessionId, provider,
+      );
+      log(
+        provider,
+        round === 1
+          ? "Approved first request through Foolery UI."
+          : `Approved follow-up request ${round} through Foolery UI.`,
+      );
 
-    await waitForSessionEvent(
-      server.baseUrl,
-      sessionId,
-      options.timeoutMs,
-      (event) => String(event.data ?? "").includes(providers[provider].marker) &&
-        String(event.data ?? "").includes(run.token),
+      while (true) {
+        const progressEvent = await waitForSessionEvent(
+          server.baseUrl,
+          sessionId,
+          options.timeoutMs,
+          (event) => {
+            if (Number(event.timestamp ?? 0) <= cursor) return false;
+            const data = String(event.data ?? "");
+            return data.includes(providers[provider].marker) ||
+              data.includes(approvalMarker);
+          },
+        );
+        cursor = Number(progressEvent.timestamp ?? Date.now());
+        const data = String(progressEvent.data ?? "");
+        if (
+          data.includes(providers[provider].marker) &&
+          data.includes(run.token)
+        ) {
+          await verifyContinuation(repo, provider, run.token);
+          log(provider, "Agent continued after approval.");
+          return {
+            provider,
+            status: "PASS",
+            message: "approval round trip passed",
+          };
+        }
+        if ((await activeApprovalIds(server.baseUrl, sessionId)).length > 0) {
+          log(provider, "Follow-up approval request surfaced.");
+          break;
+        }
+        log(provider, "Ignored replayed approval marker.");
+      }
+    }
+    throw new Error(
+      `Exceeded ${MAX_APPROVAL_ROUNDS} approval rounds without continuation.`,
     );
-    await verifyContinuation(repo, provider, run.token);
-    log(provider, "Agent continued after approval.");
-    return { provider, status: "PASS", message: "approval round trip passed" };
   } catch (error) {
     if (error instanceof BlockedError) {
       return { provider, status: "BLOCKED", message: error.message };

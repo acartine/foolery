@@ -177,29 +177,102 @@ async function waitForApprovalContext(page, sessionId, provider) {
   );
 }
 
+async function approvalUiDiagnostics(
+  baseUrl,
+  page,
+  sessionId,
+  browserErrors,
+) {
+  const body = await page.locator("body").innerText()
+    .catch(() => "");
+  const sessions = await fetch(`${baseUrl}/api/terminal`)
+    .then((response) => response.json())
+    .then((json) => json.data ?? [])
+    .catch(() => []);
+  const session = sessions.find((item) => item.id === sessionId);
+  const approvals = (session?.pendingApprovals ?? []).map((approval) => ({
+    id: approval.approvalId,
+    adapter: approval.adapter,
+    source: approval.source,
+    status: approval.status,
+    supportedActions: approval.supportedActions,
+  }));
+  return JSON.stringify({
+    body: body.replace(/\s+/g, " ").slice(0, 700),
+    browserErrors,
+    terminalFound: Boolean(session),
+    pendingApprovals: approvals,
+  });
+}
+
+export async function activeApprovalIds(baseUrl, sessionId) {
+  const response = await fetch(`${baseUrl}/api/terminal`);
+  const json = await response.json().catch(() => ({}));
+  const sessions = json.data ?? [];
+  const session = sessions.find((item) => item.id === sessionId);
+  return (session?.pendingApprovals ?? [])
+    .filter((approval) =>
+      !["approved", "always_approved", "rejected", "dismissed"]
+        .includes(approval.status),
+    )
+    .map((approval) => approval.approvalId);
+}
+
 export async function verifyAndApproveInBrowser(baseUrl, repo, sessionId, provider) {
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
   try {
     const page = await browser.newPage();
+    const browserErrors = [];
+    page.on("pageerror", (error) => {
+      browserErrors.push(error.message);
+    });
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        browserErrors.push(message.text());
+      }
+    });
+    await page.addInitScript(() => {
+      localStorage.setItem("foolery-hotkey-help", "false");
+    });
     const url = `${baseUrl}/beats?view=finalcut&tab=approvals&repo=${
       encodeURIComponent(repo)
     }`;
-    await page.goto(url, { waitUntil: "networkidle" });
+    await page.goto(url, { waitUntil: "domcontentloaded" });
     try {
       await waitForApprovalContext(page, sessionId, provider);
     } catch {
+      const diagnostics = await approvalUiDiagnostics(
+        baseUrl, page, sessionId, browserErrors.slice(-8),
+      );
       throw new Error(
-        `Approvals tab did not show provider/session context for ${provider}.`,
+        `Approvals tab did not show provider/session context ` +
+          `for ${provider}. Diagnostics: ${diagnostics}`,
       );
     }
-    const approve = page
+    const [approvalId] = await activeApprovalIds(baseUrl, sessionId);
+    const approvalRoot = approvalId
+      ? page.locator(`[data-approval-id="${approvalId}"]`)
+      : page;
+    const approve = approvalRoot
       .getByRole("button", { name: /^(Approve once|Allow once|Approve)$/i })
       .first();
     if ((await approve.count()) === 0) {
       throw new BlockedError("Foolery approval action UI is not wired.");
     }
+    const approvalPost = page.waitForResponse((response) =>
+      response.request().method() === "POST" &&
+      response.url().includes(
+        `/api/terminal/${encodeURIComponent(sessionId)}/approvals/`,
+      ),
+    );
     await approve.click();
+    const approvalResponse = await approvalPost;
+    if (!approvalResponse.ok()) {
+      throw new Error(
+        `Approval POST failed: ${approvalResponse.status()}`,
+      );
+    }
   } finally {
     await browser.close();
   }

@@ -67,7 +67,10 @@ function ApprovalEscalationRow(props: {
   const canUseActions = approval.status !== "unsupported";
   const isResponding = approval.status === "responding";
   return (
-    <article className="rounded-md border bg-card px-4 py-3 text-sm shadow-sm">
+    <article
+      className="rounded-md border bg-card px-4 py-3 text-sm shadow-sm"
+      data-approval-id={approval.id}
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -162,6 +165,7 @@ function ApprovalActionButton(props: {
       variant={props.action === "reject" ? "ghost" : "default"}
       disabled={props.disabled}
       onClick={() => props.onClick(props.action)}
+      data-approval-action={props.action}
     >
       <Icon className="size-4" />
       {approvalActionLabel(props.action)}
