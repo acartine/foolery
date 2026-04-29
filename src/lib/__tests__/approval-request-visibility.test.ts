@@ -95,16 +95,101 @@ describe("approval request fixtures", () => {
     expect(request?.serverName).toBe("playwright");
     expect(request?.options).toEqual(["allow_once"]);
   });
+});
 
-  it("documents that OpenCode exposes no approval fixture in the current adapter", () => {
-    // OpenCode's current HTTP adapter only forwards text and step-finish
-    // parts. There is no approval/request event shape to surface today.
+describe("OpenCode permission.asked extraction", () => {
+  it("extracts an OpenCode bash permission.asked fixture", () => {
     const request = extractApprovalRequest({
-      type: "text",
-      part: { text: "working" },
+      type: "permission.asked",
+      id: "perm-bash-1",
+      sessionID: "ses_opencode_1",
+      permission: "bash",
+      patterns: ["Bash(git status:*)"],
+      metadata: {
+        command: "git status --short",
+      },
+      tool: {
+        messageID: "msg_1",
+        callID: "call_bash_1",
+        name: "bash",
+      },
     });
 
-    expect(request).toBeNull();
+    expect(request).not.toBeNull();
+    expect(request?.adapter).toBe("opencode");
+    expect(request?.source).toBe("permission.asked");
+    expect(request?.sessionId).toBe("ses_opencode_1");
+    expect(request?.requestId).toBe("perm-bash-1");
+    expect(request?.permissionName).toBe("bash");
+    expect(request?.patterns).toEqual([
+      "Bash(git status:*)",
+    ]);
+    expect(request?.toolName).toBe("bash");
+    expect(request?.toolUseId).toBe("call_bash_1");
+    expect(request?.parameterSummary).toContain(
+      "git status --short",
+    );
+  });
+
+  it("extracts an OpenCode shemcp permission.asked fixture", () => {
+    const request = extractApprovalRequest({
+      type: "permission.asked",
+      properties: {
+        id: "perm-mcp-1",
+        sessionID: "ses_opencode_2",
+        permission: "mcp",
+        patterns: ["shemcp:slack_send_message"],
+        metadata: {
+          serverName: "shemcp",
+          toolName: "slack_send_message",
+          params: {
+            channel: "C123",
+            text: "Release is ready",
+          },
+        },
+        tool: {
+          messageID: "msg_2",
+          callID: "call_mcp_1",
+        },
+      },
+    });
+
+    expect(request).not.toBeNull();
+    expect(request?.adapter).toBe("opencode");
+    expect(request?.serverName).toBe("shemcp");
+    expect(request?.toolName).toBe("slack_send_message");
+    expect(request?.requestId).toBe("perm-mcp-1");
+    expect(request?.toolUseId).toBe("call_mcp_1");
+    expect(request?.patterns).toEqual([
+      "shemcp:slack_send_message",
+    ]);
+  });
+});
+
+describe("OpenCode wrapped permission.asked extraction", () => {
+  it("extracts fields from a permission request nested in part", () => {
+    const request = extractApprovalRequest({
+      type: "event",
+      part: {
+        type: "permission.asked",
+        id: "perm-wrapped-1",
+        sessionID: "ses_opencode_3",
+        permission: "bash",
+        patterns: ["Bash(rm:*)"],
+        metadata: { command: "rm temp.txt" },
+        tool: { callID: "call_wrapped_1" },
+      },
+    });
+
+    expect(request).not.toBeNull();
+    expect(request?.sessionId).toBe("ses_opencode_3");
+    expect(request?.requestId).toBe("perm-wrapped-1");
+    expect(request?.permissionName).toBe("bash");
+    expect(request?.patterns).toEqual(["Bash(rm:*)"]);
+    expect(request?.toolUseId).toBe("call_wrapped_1");
+    expect(request?.parameterSummary).toContain(
+      "rm temp.txt",
+    );
   });
 });
 
@@ -131,6 +216,38 @@ describe("formatApprovalRequestBanner", () => {
     );
     expect(banner).toContain(
       "toolParamsDisplay=pageFunction=document.title()",
+    );
+  });
+
+  it("includes OpenCode routing fields", () => {
+    const banner = formatApprovalRequestBanner({
+      adapter: "opencode",
+      source: "permission.asked",
+      permissionName: "bash",
+      patterns: ["Bash(git status:*)"],
+      sessionId: "ses_opencode_1",
+      requestId: "perm-bash-1",
+      toolName: "bash",
+      toolUseId: "call_bash_1",
+      parameterSummary:
+        '{"command":"git status --short"}',
+      options: [],
+    });
+
+    expect(banner).toContain(
+      "permissionName=bash",
+    );
+    expect(banner).toContain(
+      "patterns=Bash(git status:*)",
+    );
+    expect(banner).toContain(
+      "sessionId=ses_opencode_1",
+    );
+    expect(banner).toContain(
+      "requestId=perm-bash-1",
+    );
+    expect(banner).toContain(
+      "toolUseId=call_bash_1",
     );
   });
 });

@@ -1,3 +1,7 @@
+import {
+  extractOpenCodePermissionAsked,
+} from "@/lib/opencode-approval-request";
+
 const MAX_VALUE_CHARS = 320;
 
 export const APPROVAL_REQUIRED_MARKER =
@@ -14,6 +18,10 @@ export interface ApprovalRequest {
   toolParamsDisplay?: string;
   parameterSummary?: string;
   toolUseId?: string;
+  sessionId?: string;
+  requestId?: string;
+  permissionName?: string;
+  patterns?: string[];
 }
 
 function toObject(
@@ -304,7 +312,8 @@ function extractGeminiPermissionRequest(
 export function extractApprovalRequest(
   value: unknown,
 ): ApprovalRequest | null {
-  return extractCodexApprovalRequest(value)
+  return extractOpenCodePermissionAsked(value)
+    ?? extractCodexApprovalRequest(value)
     ?? extractGeminiPermissionRequest(value)
     ?? extractCopilotUserInput(value)
     ?? extractAskUserQuestion(value);
@@ -341,6 +350,18 @@ export function formatApprovalRequestBanner(
   }
   if (request.toolName) {
     lines.push(`toolName=${request.toolName}`);
+  }
+  if (request.permissionName) {
+    lines.push(`permissionName=${request.permissionName}`);
+  }
+  if (request.patterns && request.patterns.length > 0) {
+    lines.push(`patterns=${request.patterns.join(" | ")}`);
+  }
+  if (request.sessionId) {
+    lines.push(`sessionId=${request.sessionId}`);
+  }
+  if (request.requestId) {
+    lines.push(`requestId=${request.requestId}`);
   }
   if (request.message) {
     lines.push(`message=${request.message}`);
