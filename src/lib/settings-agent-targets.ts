@@ -39,6 +39,9 @@ export function toCliTarget(
     ...(normalized.version
       ? { version: normalized.version }
       : {}),
+    ...(agent.approvalMode
+      ? { approvalMode: agent.approvalMode }
+      : {}),
     ...((agent.label ?? formatAgentDisplayLabel(agent))
       ? {
         label:

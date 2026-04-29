@@ -29,6 +29,9 @@ describe("approval request fixtures", () => {
     });
 
     expect(request).not.toBeNull();
+    expect(request?.adapter).toBe("ask-user");
+    expect(request?.source).toBe("AskUserQuestion");
+    expect(request?.toolUseId).toBe("tool-claude-1");
     expect(request?.question).toBe(
       "Continue with migration?",
     );

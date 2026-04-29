@@ -95,6 +95,7 @@ Non-alphanumerics in the model portion are lowercased and replaced with `-`.
 | `model`        | string | no       | Concrete model identifier passed to the CLI (e.g. `claude-opus-4-7`, `gpt-5.4`, `openrouter/z-ai/glm-5`). |
 | `flavor`       | string | no       | Free-form variant tag (e.g. `mini`, `spark`). Surfaces in the agent picker UI. |
 | `version`      | string | no       | Marketing version string (e.g. `4.7`, `5.4`). Informational. |
+| `approvalMode` | enum   | no       | Claude Code permission launch mode. Omit or set `"bypass"` to keep autonomous sessions using `--dangerously-skip-permissions`; set `"prompt"` on approval-test Claude agents to omit that flag. |
 | `label`        | string | no       | Human-friendly override for the agent's display label; otherwise falls back to `provider`/`agent_name`. |
 
 ### Example
@@ -109,6 +110,19 @@ agent_name = "Claude"
 lease_model = "opus/claude"
 model = "claude-opus-4-7"
 version = "4.7"
+```
+
+For a Claude Code approval-test agent that should surface Claude permission
+prompts, opt into prompt mode explicitly:
+
+```toml
+[agents.claude-approval-test]
+command = "/Applications/cmux.app/Contents/Resources/bin/claude"
+agent_type = "cli"
+vendor = "claude"
+provider = "Claude"
+model = "claude-opus-4-7"
+approvalMode = "prompt"
 ```
 
 ## `[actions]`

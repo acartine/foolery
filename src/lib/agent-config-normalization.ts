@@ -96,6 +96,9 @@ export function normalizeRegisteredAgentConfig(
     ...(canonical.version
       ? { version: canonical.version }
       : {}),
+    ...(agent.approvalMode
+      ? { approvalMode: agent.approvalMode }
+      : {}),
   };
 }
 

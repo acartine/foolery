@@ -28,6 +28,7 @@ const addAgentBody = z.object({
   model: z.string().optional(),
   flavor: z.string().optional(),
   version: z.string().optional(),
+  approvalMode: z.enum(["bypass", "prompt"]).optional(),
   label: z.string().optional(),
 });
 
@@ -44,6 +45,7 @@ export async function POST(request: NextRequest) {
       model: body.model,
       flavor: body.flavor,
       version: body.version,
+      approvalMode: body.approvalMode,
       label: body.label,
     });
     const updated = await addRegisteredAgent(body.id, agent);

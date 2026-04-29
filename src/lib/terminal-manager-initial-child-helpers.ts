@@ -7,6 +7,7 @@ import {
   buildCopilotInteractiveArgs,
   buildOpenCodeInteractiveArgs,
   buildGeminiInteractiveArgs,
+  buildClaudeInteractiveArgs,
 } from "@/lib/agent-adapter";
 import type {
   SessionRuntimeConfig,
@@ -243,19 +244,9 @@ export function buildAgentArgs(
     agentCmd = built.command;
     args = built.args;
   } else if (isInteractive) {
-    agentCmd = agent.command;
-    args = [
-      "-p",
-      "--input-format",
-      "stream-json",
-      "--verbose",
-      "--output-format",
-      "stream-json",
-      "--dangerously-skip-permissions",
-    ];
-    if (agent.model) {
-      args.push("--model", agent.model);
-    }
+    const built = buildClaudeInteractiveArgs(agent);
+    agentCmd = built.command;
+    args = built.args;
   } else {
     const built = buildPromptModeArgs(agent, prompt);
     agentCmd = built.command;

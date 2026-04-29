@@ -31,6 +31,8 @@ export interface PromptModeArgs {
   args: string[];
 }
 
+type PermissionModeAgent = RegisteredAgent | AgentTarget;
+
 // ── 1) Dialect resolution ───────────────────────────────────
 
 /**
@@ -137,6 +139,61 @@ export function buildGeminiInteractiveArgs(
   return { command, args };
 }
 
+export function shouldBypassClaudePermissions(
+  agent: PermissionModeAgent,
+): boolean {
+  return agent.approvalMode !== "prompt";
+}
+
+export function buildClaudeInteractiveArgs(
+  agent: PermissionModeAgent,
+): PromptModeArgs {
+  const command =
+    "command" in agent &&
+    typeof agent.command === "string"
+      ? agent.command
+      : "claude";
+  const args = [
+    "-p",
+    "--input-format",
+    "stream-json",
+    "--verbose",
+    "--output-format",
+    "stream-json",
+  ];
+  if (shouldBypassClaudePermissions(agent)) {
+    args.push("--dangerously-skip-permissions");
+  }
+  if (agent.model) args.push("--model", agent.model);
+  return { command, args };
+}
+
+export function buildClaudePromptModeArgs(
+  agent: PermissionModeAgent,
+  prompt: string,
+): PromptModeArgs {
+  const command =
+    "command" in agent &&
+    typeof agent.command === "string"
+      ? agent.command
+      : "claude";
+  const args = [
+    "-p",
+    prompt,
+    "--input-format",
+    "text",
+    "--output-format",
+    "stream-json",
+    "--include-partial-messages",
+    "--verbose",
+  ];
+  if (shouldBypassClaudePermissions(agent)) {
+    args.push("--dangerously-skip-permissions");
+  }
+  if (agent.model) args.push("--model", agent.model);
+  return { command, args };
+}
+
 /**
  * Build CLI args for a one-shot prompt invocation (orchestration).
  *
@@ -199,20 +256,7 @@ export function buildPromptModeArgs(
     return { command, args };
   }
 
-  // claude dialect
-  const args = [
-    "-p",
-    prompt,
-    "--input-format",
-    "text",
-    "--output-format",
-    "stream-json",
-    "--include-partial-messages",
-    "--verbose",
-    "--dangerously-skip-permissions",
-  ];
-  if (agent.model) args.push("--model", agent.model);
-  return { command, args };
+  return buildClaudePromptModeArgs(agent, prompt);
 }
 
 // ── 3) Event normalization ──────────────────────────────────

@@ -293,6 +293,10 @@ const coreSchemas = {
       model: { type: "string" },
       flavor: { type: "string" },
       version: { type: "string" },
+      approvalMode: {
+        type: "string",
+        enum: ["bypass", "prompt"],
+      },
       label: { type: "string" },
       agentId: { type: "string" },
     },
