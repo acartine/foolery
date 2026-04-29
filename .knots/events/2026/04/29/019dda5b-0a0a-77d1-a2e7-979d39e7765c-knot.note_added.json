@@ -1,0 +1,15 @@
+{
+  "event_id": "019dda5b-0a0a-77d1-a2e7-979d39e7765c",
+  "occurred_at": "2026-04-29T17:48:12.682131Z",
+  "knot_id": "foolery-e780",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Rewind correction (fat-finger recovery)",
+    "datetime": "2026-04-29T17:48:12.682131Z",
+    "entry_id": "019dda5b-0a0a-77d1-a2e7-97865927f946",
+    "model": "openrouter/moonshotai/kimi-k2.6",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}
