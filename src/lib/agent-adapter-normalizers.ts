@@ -71,47 +71,132 @@ export function createGeminiNormalizer(
 
 // ── OpenCode normalizer ────────────────────────────────
 
+interface OpenCodeNormalizerState {
+  accumulatedText: string;
+}
+
+function normalizeOpenCodeText(
+  obj: Record<string, unknown>,
+  state: OpenCodeNormalizerState,
+): Record<string, unknown> {
+  const part = obj.part as Record<string, unknown> | undefined;
+  const text = typeof part?.text === "string" ? part.text : "";
+  state.accumulatedText +=
+    (state.accumulatedText ? "\n" : "") + text;
+  return {
+    type: "assistant",
+    message: { content: [{ type: "text", text }] },
+  };
+}
+
+function normalizeOpenCodeStepFinish(
+  obj: Record<string, unknown>,
+  state: OpenCodeNormalizerState,
+): Record<string, unknown> {
+  const part = obj.part as Record<string, unknown> | undefined;
+  const reason = typeof part?.reason === "string" ? part.reason : "";
+  return {
+    type: "result",
+    result: state.accumulatedText,
+    is_error: reason === "error",
+  };
+}
+
+function normalizeOpenCodeToolUse(
+  obj: Record<string, unknown>,
+): Record<string, unknown> {
+  const id = typeof obj.id === "string" ? obj.id : undefined;
+  const name = typeof obj.name === "string" ? obj.name : "tool";
+  const input = toObject(obj.input) ?? {};
+  return {
+    type: "assistant",
+    message: {
+      content: [{
+        type: "tool_use",
+        ...(id ? { id } : {}),
+        name,
+        input,
+      }],
+    },
+  };
+}
+
+function normalizeOpenCodeToolResult(
+  obj: Record<string, unknown>,
+): Record<string, unknown> {
+  const toolUseId = typeof obj.tool_use_id === "string"
+    ? obj.tool_use_id : undefined;
+  const raw = obj.content;
+  const content = typeof raw === "string"
+    ? raw
+    : (raw === undefined || raw === null
+      ? "" : JSON.stringify(raw));
+  return {
+    type: "user",
+    message: {
+      content: [{
+        type: "tool_result",
+        ...(toolUseId ? { tool_use_id: toolUseId } : {}),
+        content,
+      }],
+    },
+  };
+}
+
+function normalizeOpenCodeReasoning(
+  obj: Record<string, unknown>,
+): Record<string, unknown> | null {
+  const text = typeof obj.text === "string" ? obj.text : "";
+  if (!text) return null;
+  return {
+    type: "stream_event",
+    event: {
+      type: "content_block_delta",
+      delta: { type: "text_delta", text },
+    },
+  };
+}
+
+function normalizeOpenCodeSessionError(
+  obj: Record<string, unknown>,
+  state: OpenCodeNormalizerState,
+): Record<string, unknown> {
+  const message = typeof obj.message === "string"
+    ? obj.message
+    : "OpenCode session error";
+  return {
+    type: "result",
+    result: state.accumulatedText || message,
+    is_error: true,
+  };
+}
+
 export function createOpenCodeNormalizer(
 ): (parsed: unknown) => Record<string, unknown> | null {
-  let accumulatedText = "";
+  const state: OpenCodeNormalizerState = {
+    accumulatedText: "",
+  };
 
   return (parsed) => {
-    if (!parsed || typeof parsed !== "object") {
-      return null;
-    }
-    const obj = parsed as Record<string, unknown>;
+    const obj = toObject(parsed);
+    if (!obj) return null;
     const type = obj.type;
 
     if (type === "step_start") return null;
-
-    if (type === "text") {
-      const part =
-        obj.part as Record<string, unknown> | undefined;
-      const text =
-        typeof part?.text === "string" ? part.text : "";
-      accumulatedText +=
-        (accumulatedText ? "\n" : "") + text;
-      return {
-        type: "assistant",
-        message: {
-          content: [{ type: "text", text }],
-        },
-      };
-    }
-
+    if (type === "text") return normalizeOpenCodeText(obj, state);
     if (type === "step_finish") {
-      const part =
-        obj.part as Record<string, unknown> | undefined;
-      const reason =
-        typeof part?.reason === "string"
-          ? part.reason : "";
-      return {
-        type: "result",
-        result: accumulatedText,
-        is_error: reason === "error",
-      };
+      return normalizeOpenCodeStepFinish(obj, state);
     }
-
+    if (type === "tool_use") return normalizeOpenCodeToolUse(obj);
+    if (type === "tool_result") {
+      return normalizeOpenCodeToolResult(obj);
+    }
+    if (type === "reasoning") {
+      return normalizeOpenCodeReasoning(obj);
+    }
+    if (type === "session_error") {
+      return normalizeOpenCodeSessionError(obj, state);
+    }
     return null;
   };
 }

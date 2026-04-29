@@ -4,6 +4,7 @@ import {
   formatApprovalRequestBanner,
 } from "@/lib/approval-request-visibility";
 import { formatCodexEvent } from "@/lib/codex-event-format";
+import { formatOpenCodeEvent } from "@/lib/opencode-event-format";
 
 export type JsonObject = Record<string, unknown>;
 
@@ -225,6 +226,13 @@ export function formatStreamEvent(
   // a useless "(no text)" line.
   const codex = formatCodexEvent(obj);
   if (codex) return codex;
+  // OpenCode-native lifecycle events (reasoning,
+  // step_updated, session_idle, session_error, file,
+  // snapshot, message_updated) are also rendered
+  // explicitly. tool_use / tool_result already flow
+  // through Claude-shape formatters below.
+  const opencode = formatOpenCodeEvent(obj);
+  if (opencode) return opencode;
   return formatAssistantEvent(obj)
     ?? formatStreamDelta(obj)
     ?? formatToolResult(obj)

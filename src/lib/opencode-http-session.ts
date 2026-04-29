@@ -15,28 +15,12 @@ import type {
 } from "@/lib/approval-actions";
 import { startOpenCodeEventStream } from "@/lib/opencode-event-stream";
 import { parseOpenCodeModelSelection } from "@/lib/opencode-model-selection";
-
-interface OpenCodePart {
-  type: string;
-  [key: string]: unknown;
-  text?: string;
-  reason?: string;
-  snapshot?: string;
-  tokens?: Record<string, unknown>;
-  cost?: number;
-  id?: string;
-  sessionID?: string;
-  messageID?: string;
-  time?: Record<string, unknown>;
-}
-
-interface OpenCodeMessageResponse {
-  info?: Record<string, unknown>;
-  parts?: OpenCodePart[];
-  events?: unknown[];
-  stream?: unknown[];
-  items?: unknown[];
-}
+import {
+  hasOpenCodeMessagePayload,
+  translateOpenCodeEvent,
+  translateOpenCodeResponse,
+  type OpenCodeMessageResponse,
+} from "@/lib/opencode-event-translate";
 
 interface SessionCreateResponse {
   id: string;
@@ -73,6 +57,8 @@ interface SessionState {
   pendingTurn: {
     child: ChildProcess; prompt: string;
   } | null;
+  emittedToolUseIds: Set<string>;
+  emittedToolResultIds: Set<string>;
 }
 
 const SERVER_URL_PATTERN =
@@ -160,125 +146,54 @@ async function postControlRequest(
   }
 }
 
-function toObject(
-  value: unknown,
-): Record<string, unknown> | null {
-  if (!value || typeof value !== "object") {
-    return null;
-  }
-  return value as Record<string, unknown>;
-}
-
-function asString(
-  value: unknown,
-): string | null {
-  return typeof value === "string" && value.length > 0
-    ? value
-    : null;
-}
-
-function translateEvent(
-  value: unknown,
-): Record<string, unknown> | null {
-  const event = toObject(value);
-  if (!event) return null;
-  const type = asString(event.type);
-  if (
-    type === "permission.asked" ||
-    type === "permission.updated"
-  ) return event;
-  const name = asString(event.event)
-    ?? asString(event.name);
-  if (
-    name === "permission.asked" ||
-    name === "permission.updated"
-  ) {
-    return { ...event, type: name };
-  }
-  const part = toObject(event.part);
-  const partType = asString(part?.type)
-    ?? asString(part?.event)
-    ?? asString(part?.name);
-  return (
-    partType === "permission.asked" ||
-    partType === "permission.updated"
-  )
-    ? { ...event, type: partType }
-    : null;
-}
-
-function translatePart(
-  part: OpenCodePart,
-): Record<string, unknown> | null {
-  const type = part.type;
-
-  if (type === "step-start") {
-    return { type: "step_start" };
-  }
-
-  if (type === "text") {
-    return {
-      type: "text",
-      part: { text: part.text ?? "" },
-    };
-  }
-
-  if (type === "step-finish") {
-    return {
-      type: "step_finish",
-      part: { reason: part.reason ?? "stop" },
-    };
-  }
-
-  const event = translateEvent(part);
-  if (event) return event;
-
-  // tool-use and tool-result parts can be
-  // forwarded as-is; normalizer skips unknowns
-  return null;
-}
-
-function eventCollections(
-  resp: OpenCodeMessageResponse,
-): unknown[][] {
-  return [
-    resp.events,
-    resp.stream,
-    resp.items,
-  ].filter((value): value is unknown[] =>
-    Array.isArray(value));
-}
-
-function hasMessagePayload(
-  resp: OpenCodeMessageResponse,
-): boolean {
-  return Array.isArray(resp.parts)
-    || eventCollections(resp).length > 0
-    || translateEvent(resp) !== null;
-}
-
-function translateResponse(
-  resp: OpenCodeMessageResponse,
-): Array<Record<string, unknown>> {
-  const events: Array<Record<string, unknown>> = [];
-  for (const part of resp.parts ?? []) {
-    const translated = translatePart(part);
-    if (translated) events.push(translated);
-  }
-  for (const collection of eventCollections(resp)) {
-    for (const event of collection) {
-      const translated = translateEvent(event);
-      if (translated) events.push(translated);
-    }
-  }
-  const direct = translateEvent(resp);
-  if (direct) events.push(direct);
-  return events;
-}
-
 interface SessionCallbacks {
   onEvent: (jsonLine: string) => void;
   onError: (message: string) => void;
+}
+
+/**
+ * Filter translated events to dedupe streaming
+ * tool_use / tool_result emissions. The same OpenCode
+ * tool part can arrive several times (pending → running
+ * → completed); we want exactly one tool_use line per
+ * call id, plus exactly one tool_result line once the
+ * call has terminal output.
+ */
+function dedupeStreamedEvent(
+  s: SessionState,
+  event: Record<string, unknown>,
+): Record<string, unknown> | null {
+  const type = event.type;
+  if (type === "tool_use") {
+    const id = typeof event.id === "string" ? event.id : "";
+    if (id) {
+      if (s.emittedToolUseIds.has(id)) return null;
+      s.emittedToolUseIds.add(id);
+    }
+    return event;
+  }
+  if (type === "tool_result") {
+    const id = typeof event.tool_use_id === "string"
+      ? event.tool_use_id
+      : "";
+    if (id) {
+      if (s.emittedToolResultIds.has(id)) return null;
+      s.emittedToolResultIds.add(id);
+    }
+    return event;
+  }
+  return event;
+}
+
+function emitTranslated(
+  s: SessionState,
+  cb: SessionCallbacks,
+  events: Array<Record<string, unknown>>,
+): void {
+  for (const event of events) {
+    const filtered = dedupeStreamedEvent(s, event);
+    if (filtered) cb.onEvent(JSON.stringify(filtered));
+  }
 }
 
 async function ensureSession(
@@ -316,8 +231,7 @@ function startEventStream(
   s.eventStreamAbort = startOpenCodeEventStream(
     s.serverUrl,
     (value) => {
-      const event = translateEvent(value);
-      if (event) cb.onEvent(JSON.stringify(event));
+      emitTranslated(s, cb, translateOpenCodeEvent(value));
     },
     cb.onError,
   );
@@ -348,7 +262,7 @@ async function doTurn(
     const resp = await sendMessage(
       s.serverUrl, s.sessionId, prompt, s.model,
     );
-    if (!resp || !hasMessagePayload(resp)) {
+    if (!resp || !hasOpenCodeMessagePayload(resp)) {
       hooks.onFailed?.("http_message_request_failed");
       cb.onError(
         "OpenCode HTTP message request failed.",
@@ -357,9 +271,7 @@ async function doTurn(
       return;
     }
     hooks.onSucceeded?.();
-    for (const event of translateResponse(resp)) {
-      cb.onEvent(JSON.stringify(event));
-    }
+    emitTranslated(s, cb, translateOpenCodeResponse(resp));
   } catch (err) {
     hooks.onFailed?.("http_turn_threw");
     const msg = err instanceof Error
@@ -433,6 +345,8 @@ export function createOpenCodeHttpSession(
     eventStreamAbort: null,
     shutdownInFlight: null,
     pendingTurn: null,
+    emittedToolUseIds: new Set<string>(),
+    emittedToolResultIds: new Set<string>(),
   };
   const cb: SessionCallbacks = {
     onEvent, onError,
