@@ -48,9 +48,12 @@ is not complete.
 - prints a red restore-failure banner and exits non-zero if restore fails.
 
 The Node driver may rewrite Foolery settings during a run so only one provider
-is eligible for dispatch. Original settings are restored by the shell trap. For
-OpenCode, the preferred path is a temporary `OPENCODE_CONFIG` file inherited by
-the script-managed dev server, rather than modifying global OpenCode config.
+is eligible for dispatch. When it selects Claude Code, it also temporarily sets
+that selected agent to `approvalMode = "prompt"` so omitted/default settings do
+not keep the harness in autonomous bypass mode. Original settings are restored
+by the shell trap. For OpenCode, the preferred path is a temporary
+`OPENCODE_CONFIG` file inherited by the script-managed dev server, rather than
+modifying global OpenCode config.
 
 ## Harness Flow
 
@@ -76,6 +79,11 @@ provider checks:
 Set `FOOLERY_APPROVAL_SKIP_BROWSER=1` or pass `--skip-browser` to skip the
 Playwright UI assertion while debugging API behavior. A skipped browser check
 should not be treated as release-quality validation.
+
+Use `node scripts/test-cli-approvals-manual.mjs --dry-helper-checks` for the
+offline harness self-check. It verifies the Claude `approvalMode = "prompt"`
+temporary mutation and the OpenCode split-extractor blocker heuristic without
+launching provider CLIs or touching host config.
 
 ## Provider Matrix
 
@@ -108,6 +116,8 @@ approval entry, toast, global banner, and inbox notification.
 Important files:
 
 - `src/lib/approval-request-visibility.ts` extracts supported request shapes.
+- `src/lib/opencode-approval-request.ts` may hold split-out OpenCode
+  `permission.asked` extraction.
 - `src/lib/agent-session-runtime-events.ts` emits approval banners.
 - `src/lib/session-connection-manager.ts` stores approvals and notifications.
 - `src/components/final-cut-view.tsx` renders the Escalations tabs.

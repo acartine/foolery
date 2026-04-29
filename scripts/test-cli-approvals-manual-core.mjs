@@ -56,6 +56,7 @@ Options:
   --allow-known-blockers                  Try the run despite source blockers
   --keep-test-dir                         Keep .test-cli-approvals-manual
   --timeout-ms <number>                   Per-wait timeout (default: 180000)
+  --dry-helper-checks                     Exercise pure harness checks only
   --help                                  Show this help`;
 }
 
@@ -73,6 +74,7 @@ export function parseArgs(argv) {
     allowKnownBlockers:
       process.env.FOOLERY_APPROVAL_ALLOW_KNOWN_BLOCKERS === "1",
     keepTestDir: process.env.FOOLERY_KEEP_APPROVAL_TEST_DIR === "1",
+    dryHelperChecks: process.env.FOOLERY_APPROVAL_DRY_HELPER_CHECKS === "1",
     timeoutMs: Number(process.env.FOOLERY_APPROVAL_TIMEOUT_MS ?? 180_000),
     settingsPath:
       process.env.FOOLERY_APPROVAL_SETTINGS_PATH ??
@@ -101,6 +103,8 @@ export function parseArgs(argv) {
       options.allowKnownBlockers = true;
     } else if (arg === "--keep-test-dir") {
       options.keepTestDir = true;
+    } else if (arg === "--dry-helper-checks") {
+      options.dryHelperChecks = true;
     } else if (arg === "--help" || arg === "-h") {
       console.log(usage());
       process.exit(0);
@@ -163,10 +167,13 @@ export async function detectKnownBlocker(provider, options) {
     }
   }
   if (provider === "opencode") {
-    const source = await readTextIfExists(
+    const visibilitySource = await readTextIfExists(
       path.join(rootDir, "src/lib/approval-request-visibility.ts"),
     );
-    if (!source.includes("permission.asked")) {
+    const extractorSource = await readTextIfExists(
+      path.join(rootDir, "src/lib/opencode-approval-request.ts"),
+    );
+    if (!hasOpenCodePermissionExtraction(visibilitySource, extractorSource)) {
       throw new BlockedError(
         "OpenCode permission.asked extraction is not implemented.",
       );
@@ -189,6 +196,16 @@ function providerMatches(provider, id, agent) {
   return haystack.includes(provider);
 }
 
+export function hasOpenCodePermissionExtraction(
+  visibilitySource,
+  extractorSource,
+) {
+  if (visibilitySource.includes("permission.asked")) return true;
+  const extractsPermissionAsked = extractorSource.includes("permission.asked");
+  const exportsExtractor = /\bexport\b/.test(extractorSource);
+  return extractsPermissionAsked && exportsExtractor;
+}
+
 export async function mutateFoolerySettings(provider, options) {
   if (!options.mutateConfig) {
     log(provider, "Skipping Foolery settings mutation by request.");
@@ -205,19 +222,34 @@ export async function mutateFoolerySettings(provider, options) {
   const settings = parse(raw);
   const agents = isObject(settings.agents) ? settings.agents : {};
   const agentId = resolveAgentId(provider, options, agents);
-  settings.maxConcurrentSessions = 1;
-  if (settings.dispatchMode === "advanced") {
-    settings.pools = isObject(settings.pools) ? settings.pools : {};
-    settings.pools[options.poolStep] = [{ agentId, weight: 1 }];
-  } else {
-    settings.actions = isObject(settings.actions) ? settings.actions : {};
-    settings.actions.take = agentId;
-  }
+  forceProviderInSettings(settings, provider, agentId, options.poolStep);
 
   await fs.writeFile(options.settingsPath, stringify(settings));
   await validateFoolerySettings(options.settingsPath);
   log(provider, `Selected Foolery agent ${agentId}.`);
   return agentId;
+}
+
+export function forceProviderInSettings(settings, provider, agentId, poolStep) {
+  settings.agents = isObject(settings.agents) ? settings.agents : {};
+  settings.maxConcurrentSessions = 1;
+  if (provider === "claude") {
+    const agent = settings.agents[agentId];
+    if (!isObject(agent)) {
+      throw new BlockedError(
+        `Selected Claude agent is not an object in settings: ${agentId}`,
+      );
+    }
+    agent.approvalMode = "prompt";
+  }
+  if (settings.dispatchMode === "advanced") {
+    settings.pools = isObject(settings.pools) ? settings.pools : {};
+    settings.pools[poolStep] = [{ agentId, weight: 1 }];
+  } else {
+    settings.actions = isObject(settings.actions) ? settings.actions : {};
+    settings.actions.take = agentId;
+  }
+  return settings;
 }
 
 function resolveAgentId(provider, options, agents) {

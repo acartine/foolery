@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
@@ -7,6 +8,8 @@ import {
   BlockedError,
   createHarnessBeat,
   detectKnownBlocker,
+  forceProviderInSettings,
+  hasOpenCodePermissionExtraction,
   log,
   mutateFoolerySettings,
   parseArgs,
@@ -23,6 +26,42 @@ import {
   waitForServer,
   waitForSessionEvent,
 } from "./test-cli-approvals-manual-runtime.mjs";
+
+function runDryHelperChecks() {
+  const settings = {
+    dispatchMode: "advanced",
+    agents: {
+      "claude-validation": {
+        command: "claude",
+        approvalMode: "bypass",
+      },
+    },
+    pools: {
+      planning: [{ agentId: "other", weight: 1 }],
+    },
+  };
+  forceProviderInSettings(
+    settings,
+    "claude",
+    "claude-validation",
+    "planning",
+  );
+  assert.equal(settings.agents["claude-validation"].approvalMode, "prompt");
+  assert.deepEqual(settings.pools.planning, [
+    { agentId: "claude-validation", weight: 1 },
+  ]);
+
+  const visibilitySource =
+    'import { extractOpenCodeApproval } from "@/lib/opencode-approval-request";';
+  const extractorSource =
+    'export function extractOpenCodeApproval() { return "permission.asked"; }';
+  assert.equal(
+    hasOpenCodePermissionExtraction(visibilitySource, extractorSource),
+    true,
+  );
+  assert.equal(hasOpenCodePermissionExtraction("", ""), false);
+  console.log("[approvals] Dry helper checks passed.");
+}
 
 async function runProvider(provider, options) {
   let run = null;
@@ -97,6 +136,10 @@ function printSummary(results) {
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
+  if (options.dryHelperChecks) {
+    runDryHelperChecks();
+    return;
+  }
   const results = [];
   for (const provider of providerList(options.provider)) {
     log(provider, `Starting ${providers[provider].label} approval validation.`);

@@ -49,7 +49,8 @@ Shell drivers with matching `.mjs` implementations for interactive/browser paths
 - **`test-cli-approvals-manual.{sh,mjs}`** — Manual-only real CLI approval
   validation for Codex, Claude Code, and OpenCode. This backs up and restores
   user config, launches real providers, and is intentionally excluded from
-  default tests and CI. See [docs/APPROVALS.md](../docs/APPROVALS.md).
+  default tests and CI. The Node driver also supports `--dry-helper-checks`
+  for offline helper coverage. See [docs/APPROVALS.md](../docs/APPROVALS.md).
 
 ## Subdirectories
 
