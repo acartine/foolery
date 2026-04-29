@@ -1,3 +1,7 @@
+import {
+  extractOpenCodePermissionAsked,
+} from "@/lib/opencode-approval-request";
+
 const MAX_VALUE_CHARS = 320;
 
 export const APPROVAL_REQUIRED_MARKER =
@@ -62,28 +66,6 @@ function collectOptions(
       "text",
       "title",
       "kind",
-      "id",
-      "value",
-    ]);
-    return label ? [label] : [];
-  });
-}
-
-function collectStrings(
-  value: unknown,
-): string[] {
-  const direct = asString(value);
-  if (direct) return [direct];
-  if (!Array.isArray(value)) return [];
-  return value.flatMap((entry) => {
-    const entryDirect = asString(entry);
-    if (entryDirect) return [entryDirect];
-    const obj = toObject(entry);
-    const label = pickString(obj, [
-      "pattern",
-      "glob",
-      "label",
-      "text",
       "id",
       "value",
     ]);
@@ -176,25 +158,15 @@ function requestCandidates(
 ): Array<Record<string, unknown>> {
   if (!params) return [];
   const candidates = [params];
-  const keys = [
+  for (const key of [
     "request",
     "permission",
     "details",
     "tool",
     "payload",
-    "properties",
-    "data",
-    "params",
-    "metadata",
-  ];
-  for (let index = 0; index < candidates.length; index += 1) {
-    const source = candidates[index];
-    for (const key of keys) {
-      const candidate = toObject(source[key]);
-      if (candidate && !candidates.includes(candidate)) {
-        candidates.push(candidate);
-      }
-    }
+  ]) {
+    const candidate = toObject(params[key]);
+    if (candidate) candidates.push(candidate);
   }
   return candidates;
 }
@@ -223,34 +195,6 @@ function pickRequestSummary(
   return null;
 }
 
-function pickRequestStrings(
-  candidates: Array<Record<string, unknown>>,
-  keys: string[],
-): string[] {
-  for (const candidate of candidates) {
-    for (const key of keys) {
-      const value = collectStrings(candidate[key]);
-      if (value.length > 0) return value;
-    }
-  }
-  return [];
-}
-
-function extractRequestNestedString(
-  candidates: Array<Record<string, unknown>>,
-  parentKeys: string[],
-  keys: string[],
-): string | null {
-  for (const candidate of candidates) {
-    for (const parentKey of parentKeys) {
-      const parent = toObject(candidate[parentKey]);
-      const value = pickString(parent, keys);
-      if (value) return value;
-    }
-  }
-  return null;
-}
-
 function extractRequestToolName(
   candidates: Array<Record<string, unknown>>,
 ): string | null {
@@ -270,26 +214,6 @@ function extractRequestToolName(
   return null;
 }
 
-function extractRequestToolUseId(
-  candidates: Array<Record<string, unknown>>,
-): string | null {
-  return pickRequestString(candidates, [
-    "toolUseId",
-    "tool_use_id",
-    "callID",
-    "callId",
-    "toolCallId",
-  ]) ?? extractRequestNestedString(candidates, [
-    "tool",
-    "metadata",
-  ], [
-    "callID",
-    "callId",
-    "toolCallId",
-    "id",
-  ]);
-}
-
 function extractRequestServerName(
   candidates: Array<Record<string, unknown>>,
 ): string | null {
@@ -304,66 +228,6 @@ function extractRequestServerName(
     if (nested) return nested;
   }
   return null;
-}
-
-function extractOpenCodePermissionAsked(
-  value: unknown,
-): ApprovalRequest | null {
-  const obj = toObject(value);
-  const eventName = asString(obj?.type)
-    ?? asString(obj?.event)
-    ?? asString(obj?.name);
-  if (!obj || eventName !== "permission.asked") {
-    return null;
-  }
-  const candidates = requestCandidates(obj);
-  const metadata = pickRequestSummary(candidates, [
-    "metadata",
-  ]);
-  const params = pickRequestSummary(candidates, [
-    "params",
-    "arguments",
-    "input",
-    "toolArgs",
-    "tool_args",
-  ]);
-  return {
-    adapter: "opencode",
-    source: "permission.asked",
-    sessionId: pickRequestString(candidates, [
-      "sessionID",
-      "sessionId",
-    ]) ?? undefined,
-    requestId: pickRequestString(candidates, [
-      "requestID",
-      "requestId",
-      "permissionID",
-      "permissionId",
-      "id",
-    ]) ?? undefined,
-    permissionName: pickRequestString(candidates, [
-      "permission",
-      "permissionName",
-      "permission_name",
-    ]) ?? undefined,
-    patterns: pickRequestStrings(candidates, [
-      "patterns",
-      "pattern",
-    ]),
-    serverName:
-      extractRequestServerName(candidates) ?? undefined,
-    toolName:
-      extractRequestToolName(candidates) ?? undefined,
-    toolUseId:
-      extractRequestToolUseId(candidates) ?? undefined,
-    toolParamsDisplay: pickRequestSummary(candidates, [
-      "tool_params_display",
-      "toolParamsDisplay",
-      "toolArgumentsDisplay",
-    ]) ?? undefined,
-    parameterSummary: params ?? metadata ?? undefined,
-    options: [],
-  };
 }
 
 function extractCodexApprovalRequest(
