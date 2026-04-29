@@ -13,6 +13,7 @@ function toObject(
   if (!value || typeof value !== "object") {
     return null;
   }
+  if (Array.isArray(value)) return null;
   return value as Record<string, unknown>;
 }
 
@@ -36,9 +37,20 @@ function pickString(
   return null;
 }
 
+function isEmptyValue(value: unknown): boolean {
+  if (value === null || value === undefined) return true;
+  if (typeof value === "string") return value.trim().length === 0;
+  if (Array.isArray(value)) return value.length === 0;
+  if (typeof value === "object") {
+    return Object.keys(value as Record<string, unknown>).length === 0;
+  }
+  return false;
+}
+
 function renderCompact(
   value: unknown,
 ): string | null {
+  if (isEmptyValue(value)) return null;
   const rendered = typeof value === "string"
     ? value.trim()
     : JSON.stringify(value);
@@ -203,6 +215,43 @@ function extractToolUseId(
   ]);
 }
 
+function deriveCommandDisplay(
+  candidates: Array<Record<string, unknown>>,
+  patterns: string[],
+): string | null {
+  const commandString = pickRequestString(candidates, [
+    "command",
+    "cmd",
+    "commandLine",
+    "command_line",
+  ]);
+  if (commandString) return commandString;
+  const nestedCommand = extractNestedString(candidates, [
+    "metadata",
+    "params",
+    "input",
+    "arguments",
+    "toolArgs",
+    "tool_args",
+    "tool",
+  ], [
+    "command",
+    "cmd",
+    "commandLine",
+    "command_line",
+  ]);
+  if (nestedCommand) return nestedCommand;
+  const argsSummary = pickRequestSummary(candidates, [
+    "arguments",
+    "input",
+    "toolArgs",
+    "tool_args",
+  ]);
+  if (argsSummary) return argsSummary;
+  const meaningfulPattern = patterns.find((pattern) => pattern.trim());
+  return meaningfulPattern ?? null;
+}
+
 export function extractOpenCodePermissionAsked(
   value: unknown,
 ): ApprovalRequest | null {
@@ -222,16 +271,6 @@ export function extractOpenCodePermissionAsked(
     return null;
   }
   const candidates = requestCandidates(obj);
-  const metadata = pickRequestSummary(candidates, [
-    "metadata",
-  ]);
-  const params = pickRequestSummary(candidates, [
-    "params",
-    "arguments",
-    "input",
-    "toolArgs",
-    "tool_args",
-  ]);
   const nativeSessionId = pickRequestString(candidates, [
     "sessionID",
     "sessionId",
@@ -255,6 +294,26 @@ export function extractOpenCodePermissionAsked(
   ]);
   const toolName = extractToolName(candidates)
     ?? permissionName;
+  const patterns = pickRequestStrings(candidates, [
+    "patterns",
+    "pattern",
+  ]);
+  const commandDisplay = deriveCommandDisplay(candidates, patterns);
+  const toolParamsDisplay = pickRequestSummary(candidates, [
+    "tool_params_display",
+    "toolParamsDisplay",
+    "toolArgumentsDisplay",
+  ]) ?? commandDisplay ?? undefined;
+  const parameterSummary = commandDisplay
+    ?? pickRequestSummary(candidates, [
+      "params",
+      "arguments",
+      "input",
+      "toolArgs",
+      "tool_args",
+    ])
+    ?? pickRequestSummary(candidates, ["metadata"])
+    ?? undefined;
   return {
     adapter: "opencode",
     source,
@@ -263,19 +322,12 @@ export function extractOpenCodePermissionAsked(
     requestId: permissionId,
     permissionId,
     permissionName: permissionName ?? undefined,
-    patterns: pickRequestStrings(candidates, [
-      "patterns",
-      "pattern",
-    ]),
+    patterns,
     serverName: extractServerName(candidates) ?? undefined,
     toolName: toolName ?? undefined,
     toolUseId: extractToolUseId(candidates) ?? undefined,
-    toolParamsDisplay: pickRequestSummary(candidates, [
-      "tool_params_display",
-      "toolParamsDisplay",
-      "toolArgumentsDisplay",
-    ]) ?? undefined,
-    parameterSummary: params ?? metadata ?? undefined,
+    toolParamsDisplay,
+    parameterSummary,
     supportedActions,
     replyTarget: supportedActions
       ? {

@@ -28,6 +28,10 @@ import {
   selectPendingApprovals,
   useApprovalEscalationStore,
 } from "@/stores/approval-escalation-store";
+import {
+  annotateApprovalsForRepo,
+  type ScopedApproval,
+} from "@/lib/approval-repo-scope";
 import type { ApprovalEscalation } from "@/lib/approval-escalations";
 import type { ApprovalAction } from "@/lib/approval-actions";
 import type { Beat } from "@/lib/types";
@@ -50,8 +54,11 @@ export function FinalCutView() {
     (s) => s.approvals,
   );
   const approvals = useMemo(
-    () => selectPendingApprovals({ approvals: allApprovals }),
-    [allApprovals],
+    () => annotateApprovalsForRepo(
+      selectPendingApprovals({ approvals: allApprovals }),
+      activeRepo,
+    ),
+    [allApprovals, activeRepo],
   );
   const dismissApproval = useApprovalEscalationStore(
     (s) => s.dismissApproval,
@@ -234,7 +241,7 @@ function EscalationsTabs(props: {
   activeTab: EscalationsTab;
   onTabChange: (value: string) => void;
   beats: Beat[];
-  approvals: ApprovalEscalation[];
+  approvals: ScopedApproval[];
   isLoading: boolean;
   showRepoColumn: boolean;
   selectionVersion: number;

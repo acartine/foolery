@@ -57,6 +57,10 @@ export function recordPendingApproval(
       beatId: entry.session.beatId,
       beatTitle: entry.session.beatTitle,
       repoPath: entry.session.repoPath,
+      agentName: entry.session.agentName,
+      agentModel: entry.session.agentModel,
+      agentVersion: entry.session.agentVersion,
+      agentCommand: entry.session.agentCommand,
     },
   );
   const record = pendingRecordFromApproval(approval);
@@ -67,6 +71,25 @@ export function recordPendingApproval(
     if (!isTerminalApprovalStatus(existing.status)) {
       existing.supportedActions = record.supportedActions;
       existing.replyTarget = record.replyTarget;
+      existing.requestId = record.requestId ?? existing.requestId;
+      existing.permissionId =
+        record.permissionId ?? existing.permissionId;
+      if (record.parameterSummary) {
+        existing.parameterSummary = record.parameterSummary;
+      }
+      if (record.toolParamsDisplay) {
+        existing.toolParamsDisplay = record.toolParamsDisplay;
+      }
+      if (record.patterns.length > 0) {
+        existing.patterns = record.patterns;
+      }
+      existing.agentName = record.agentName ?? existing.agentName;
+      existing.agentModel =
+        record.agentModel ?? existing.agentModel;
+      existing.agentVersion =
+        record.agentVersion ?? existing.agentVersion;
+      existing.agentCommand =
+        record.agentCommand ?? existing.agentCommand;
     }
     logApprovalEscalation(
       "approval.pending_duplicate_refreshed",
@@ -185,6 +208,7 @@ function pendingRecordFromApproval(
     notificationKey: approval.notificationKey,
     terminalSessionId: approval.sessionId,
     beatId: approval.beatId,
+    beatTitle: approval.beatTitle,
     repoPath: approval.repoPath,
     adapter: approval.adapter,
     source: approval.source,
@@ -206,6 +230,10 @@ function pendingRecordFromApproval(
       approval.supportedActions,
     ),
     status: approval.status,
+    agentName: approval.agentName,
+    agentModel: approval.agentModel,
+    agentVersion: approval.agentVersion,
+    agentCommand: approval.agentCommand,
     createdAt: approval.createdAt,
     updatedAt: approval.updatedAt,
   };
