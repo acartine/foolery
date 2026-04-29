@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd916-8539-7b61-9c46-6b7bfb0d1151",
+  "occurred_at": "2026-04-29T11:53:45.017665Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment verified for commit a84527b3. origin/main and origin/codex/foolery-a7a1-no-oneshot-take both point at a84527b3ed7a476baaea952324319aa9d4b5a64f. GitHub main push checks are green: CI run 25107204117 succeeded and Coverage Badge run 25107204102 succeeded. CI emitted coverage-regression warnings but exited success.",
+    "datetime": "2026-04-29T11:53:45.017665Z",
+    "entry_id": "019dd916-8539-7b61-9c46-6b6d100d93e2",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd846-7c3b-7d11-9fa7-da64eb278cfb",
+  "occurred_at": "2026-04-29T08:06:31.215951Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Normal take and scene dispatch cannot select cli-arg one-shot transport for providers that support interactive sessions. 2. Custom prompt execution for a take/scene beat still uses the provider interactive transport when available. 3. If an agent lacks interactive support for take/scene, Foolery fails loudly with a clear error instead of falling back to one-shot. 4. Automated tests cover OpenCode and Codex custom-prompt take/scene selection plus the loud failure branch. 5. Approval harness no longer depends on a one-shot take path. 6. Lint, typecheck, tests, and build pass."
+  }
+}

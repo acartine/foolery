@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd847-163e-70f3-ba0d-eb0af32845a6",
+  "occurred_at": "2026-04-29T08:07:10.654892Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review: approved. The plan targets the correct invariant: classify take/scene by terminal dispatch context, not by custom prompt presence, and fail loudly before any cli-arg one-shot transport can run for a take/scene. Test coverage should pin both supported interactive providers and the unsupported-agent failure behavior.",
+    "datetime": "2026-04-29T08:07:10.654892Z",
+    "entry_id": "019dd847-163e-70f3-ba0d-eaf3e6a78ea9",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

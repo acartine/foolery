@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd846-ec7b-7393-91f0-38bdefcfeb0a",
+  "occurred_at": "2026-04-29T08:06:59.963689Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: enforce that terminal sessions for knot take/scene dispatch always use an interactive provider transport when the selected dialect supports one. The current selector treats any customPrompt as non-take and falls through to cli-arg, which permits opencode run/codex exec inside a take-like API call. Fix by deriving the execution kind from the prepared target (single beat take or parent scene) rather than the presence of prompt override; keep one-shot buildPromptModeArgs only for non-take/non-scene agent/model interactions outside terminal take dispatch. Add a loud error if a take/scene dispatch would otherwise select cli-arg. Update the manual approval harness to create or use a validation knot in a claimable state and start terminal sessions without depending on prompt override one-shot behavior. Tests: capability/runtime selection tests for OpenCode and Codex custom-prompt take dispatch, parent scene dispatch where practical, and the failure branch for unsupported cli-arg take/scene. Run full gates before commit/push.",
+    "datetime": "2026-04-29T08:06:59.963689Z",
+    "entry_id": "019dd846-ec7b-7393-91f0-38a86812d503",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

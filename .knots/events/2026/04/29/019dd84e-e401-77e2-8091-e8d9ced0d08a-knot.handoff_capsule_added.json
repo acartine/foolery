@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd84e-e401-77e2-8091-e8d9ced0d08a",
+  "occurred_at": "2026-04-29T08:15:42.081228Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete and pushed. Commit 3a125bb1 (branch codex/foolery-a7a1-no-oneshot-take; also pushed to origin/main) forbids one-shot cli-arg transports for take/scene terminal dispatch. Added src/lib/terminal-dispatch-capabilities.ts to resolve take/scene capabilities through interactive transports and fail with FOOLERY DISPATCH FAILURE if cli-arg would be used. Updated initial and follow-up take paths to remove buildPromptModeArgs fallbacks. Fixed approval harness knot-id lookup so timestamp tokens are not parsed as knot ids, and documented that approval harness terminal calls remain take/scene interactive sessions. Verification passed: bun run lint; bunx tsc --noEmit --pretty false; node scripts/test-cli-approvals-manual.mjs --dry-helper-checks; git diff --check; bun run test; bun run build.",
+    "datetime": "2026-04-29T08:15:42.081228Z",
+    "entry_id": "019dd84e-e401-77e2-8091-e8c4e727575d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

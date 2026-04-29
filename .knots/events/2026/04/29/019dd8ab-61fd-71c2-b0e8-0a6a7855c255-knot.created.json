@@ -1,0 +1,17 @@
+{
+  "event_id": "019dd8ab-61fd-71c2-b0e8-0a6a7855c255",
+  "occurred_at": "2026-04-29T09:56:43.645775Z",
+  "knot_id": "foolery-6691",
+  "type": "knot.created",
+  "data": {
+    "body": "Manual approval validation knot. Do not move this knot to a terminal state during harness execution.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Approval harness opencode opencode-1777456601856-d2ed0c83475858",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

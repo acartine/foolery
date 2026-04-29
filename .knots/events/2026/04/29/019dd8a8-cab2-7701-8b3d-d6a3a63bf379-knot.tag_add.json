@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd8a8-cab2-7701-8b3d-d6a3a63bf379",
+  "occurred_at": "2026-04-29T09:53:53.829545Z",
+  "knot_id": "foolery-b9e0",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "approval-harness"
+  }
+}

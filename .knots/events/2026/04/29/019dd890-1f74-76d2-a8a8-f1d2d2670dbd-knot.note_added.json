@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd890-1f74-76d2-a8a8-f1d2d2670dbd",
+  "occurred_at": "2026-04-29T09:26:57.140625Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Second OpenCode harness follow-up: OpenCode HTTP message model payload must be an object, not a string. Added parseOpenCodeModelSelection so openrouter/z-ai/glm-5.1 is sent as { providerID: openrouter, modelID: z-ai/glm-5.1 }. Commit 7ec5b3bf pushed to origin/main and branch. Re-verified lint, typecheck, unit tests, build, dry approval helper checks, and git diff --check.",
+    "datetime": "2026-04-29T09:26:57.140625Z",
+    "entry_id": "019dd890-1f74-76d2-a8a8-f1c273b67758",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

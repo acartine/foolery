@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd8ba-7145-7a10-bcd5-15c746c04393",
+  "occurred_at": "2026-04-29T10:13:10.597297Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "OpenCode harness follow-up complete: approval records now hydrate from the terminal backend into the approvals tab, the approval UI avoids the unstable pending-approval selector crash, and the manual harness now disables the hotkey overlay, waits for approval POST completion, scopes clicks to the active approval id, and handles bounded follow-up approvals/replayed markers. Live harness passed for opencode-openrouter-z-ai-glm-5-1: first request approved, two follow-up approvals approved, continuation marker observed, validation file verified. Full gates passed: bun run lint; bunx tsc --noEmit --pretty false; bun run test; bun run build.",
+    "datetime": "2026-04-29T10:13:10.597297Z",
+    "entry_id": "019dd8ba-7145-7a10-bcd5-15be189b8770",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

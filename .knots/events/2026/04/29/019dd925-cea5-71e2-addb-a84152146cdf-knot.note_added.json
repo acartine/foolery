@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd925-cea5-71e2-addb-a84152146cdf",
+  "occurred_at": "2026-04-29T12:10:26.853118Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment updated for Claude approval bridge commit 279e1661. origin/main and origin/codex/foolery-a7a1-no-oneshot-take both point at 279e1661637e35fafb0baa9dfc0a87ff01751b17. Live Claude approval harness passed, and GitHub main checks are green: CI run 25107905784 succeeded and Coverage Badge run 25107905814 succeeded. CI emitted coverage-regression annotations but exited success.",
+    "datetime": "2026-04-29T12:10:26.853118Z",
+    "entry_id": "019dd925-cea5-71e2-addb-a83ea3348cb1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

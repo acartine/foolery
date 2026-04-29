@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd896-768e-7131-83f2-5d2b3dc1c2de",
+  "occurred_at": "2026-04-29T09:33:52.65414Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Third OpenCode harness follow-up: OpenCode emits permission.asked on /event while /session/:id/message is blocked waiting for approval. Added OpenCode event stream forwarding into the terminal session so approvals surface before the message request returns. Commit 949dc7a8 pushed to origin/main and branch. Verified lint, typecheck, unit tests, build, dry approval helper checks, and git diff --check.",
+    "datetime": "2026-04-29T09:33:52.65414Z",
+    "entry_id": "019dd896-768e-7131-83f2-5d1f422d99cb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

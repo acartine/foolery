@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd846-ec7b-7393-91f0-38d9e863c713",
+  "occurred_at": "2026-04-29T08:06:59.963689Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete for foolery-a7a1. Implementation should patch terminal-manager initial runtime selection so custom prompts cannot force take/scene dispatch into cli-arg one-shot mode, update the approval harness accordingly, add focused regression tests, and run lint/typecheck/test/build.",
+    "datetime": "2026-04-29T08:06:59.963689Z",
+    "entry_id": "019dd846-ec7b-7393-91f0-38c77242bf5e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

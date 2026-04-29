@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd88b-783b-78a2-a917-88fdd7dae4a1",
+  "occurred_at": "2026-04-29T09:21:52.187909Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Follow-up fix from live OpenCode approval harness: removed model flags from opencode serve and now sends the configured model on OpenCode HTTP message turns. Commit daba2b84 pushed to origin/main and codex/foolery-a7a1-no-oneshot-take. Verified lint, typecheck, unit tests, build, dry approval helper checks, and git diff --check.",
+    "datetime": "2026-04-29T09:21:52.187909Z",
+    "entry_id": "019dd88b-783b-78a2-a917-88e0e1f8be85",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

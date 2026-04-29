@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd847-163e-70f3-ba0d-eb2bc1114ff5",
+  "occurred_at": "2026-04-29T08:07:10.654892Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approved for foolery-a7a1. Proceed with implementation in a fresh worktree. Primary risks: preserving legitimate non-take one-shot helper uses and avoiding false positives for parent scene dispatch.",
+    "datetime": "2026-04-29T08:07:10.654892Z",
+    "entry_id": "019dd847-163e-70f3-ba0d-eb1c7cb87cd8",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

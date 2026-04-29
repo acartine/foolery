@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd899-ca6a-7123-936b-bf3d9eccdb68",
+  "occurred_at": "2026-04-29T09:37:30.73051Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Fourth OpenCode harness follow-up: approval UI context check was racing the terminal rehydration/SSE replay after browser navigation. Updated the harness to wait up to 30s for provider/session context before reading the approval tab. Commit 9910eb0d pushed to origin/main and branch. Re-verified lint, typecheck, unit tests, build, dry approval helper checks, and git diff --check.",
+    "datetime": "2026-04-29T09:37:30.73051Z",
+    "entry_id": "019dd899-ca6a-7123-936b-bf2c9ac97d09",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

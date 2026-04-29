@@ -1,0 +1,15 @@
+{
+  "event_id": "019dd914-c6d9-72e1-b2aa-48024e032a3b",
+  "occurred_at": "2026-04-29T11:51:50.74544Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Codex approvals review/test follow-up complete. Root cause for failed Codex harness was twofold: Codex prompt-mode settings were not preserved when selecting agents from dispatch pools, and prompt-mode Codex app-server/JSON-RPC sessions did not force untrusted/read-only approval settings end to end. Commit a84527b3 pushed to origin/main and codex/foolery-a7a1-no-oneshot-take. Live Codex harness passed for codex-gpt-5-4-mini with safe python3 trigger: approval request surfaced in terminal SSE, first request approved through Foolery UI, and agent continued after approval. Full verification passed: bun run lint; bunx tsc --noEmit --pretty false; bun run test; bun run build; git diff --check.",
+    "datetime": "2026-04-29T11:51:50.74544Z",
+    "entry_id": "019dd914-c6d9-72e1-b2aa-47fceb21af89",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd90f-d25e-7f51-831d-4a393d11068e",
+  "occurred_at": "2026-04-29T11:46:26.007651Z",
+  "knot_id": "foolery-1017",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Manual approval validation knot. Do not move this knot to a terminal state during harness execution."
+  }
+}

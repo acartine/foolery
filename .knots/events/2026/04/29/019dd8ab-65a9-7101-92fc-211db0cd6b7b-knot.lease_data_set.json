@@ -1,0 +1,20 @@
+{
+  "event_id": "019dd8ab-65a9-7101-92fc-211db0cd6b7b",
+  "occurred_at": "2026-04-29T09:56:44.585116Z",
+  "knot_id": "foolery-387c",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "OpenCode",
+        "agent_type": "cli",
+        "model": "openrouter/z-ai/glm-5.1",
+        "model_version": "",
+        "provider": "OpenCode"
+      },
+      "lease_type": "agent",
+      "nickname": "foolery:terminal_manager_take:term-1777456604565-7mhmh9",
+      "timeout_seconds": 600
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019dd846-7c2f-7e12-8507-ed4134bf9be1",
+  "occurred_at": "2026-04-29T08:06:31.215951Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.created",
+  "data": {
+    "body": "Take and scene terminal sessions must never use one-shot cli-arg agent execution. Remove or guard any branch where a normal knot take or scene dispatch with a supported interactive CLI can fall back to one-shot mode, including custom prompt harness paths. Fail loudly if a take/scene target resolves to a non-interactive prompt transport instead of silently running opencode run or codex exec.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Forbid one-shot take and scene dispatch",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

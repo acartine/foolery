@@ -1,0 +1,9 @@
+{
+  "event_id": "019dd84e-e401-77e2-8091-e8aae5a214a2",
+  "occurred_at": "2026-04-29T08:15:42.081228Z",
+  "knot_id": "foolery-a7a1",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/foolery-a7a1-no-oneshot-take"
+  }
+}
