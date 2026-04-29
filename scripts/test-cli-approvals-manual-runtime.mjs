@@ -164,6 +164,19 @@ function summarize(events) {
     .join(" | ");
 }
 
+async function waitForApprovalContext(page, sessionId, provider) {
+  const lowerProvider = provider.toLowerCase();
+  await page.waitForFunction(
+    ({ sessionId: expectedSessionId, lowerProvider: expectedProvider }) => {
+      const body = document.body.innerText;
+      return body.includes(expectedSessionId) &&
+        body.toLowerCase().includes(expectedProvider);
+    },
+    { sessionId, lowerProvider },
+    { timeout: 30_000 },
+  );
+}
+
 export async function verifyAndApproveInBrowser(baseUrl, repo, sessionId, provider) {
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
@@ -173,8 +186,9 @@ export async function verifyAndApproveInBrowser(baseUrl, repo, sessionId, provid
       encodeURIComponent(repo)
     }`;
     await page.goto(url, { waitUntil: "networkidle" });
-    const body = await page.locator("body").innerText({ timeout: 15_000 });
-    if (!body.includes(sessionId) || !body.toLowerCase().includes(provider)) {
+    try {
+      await waitForApprovalContext(page, sessionId, provider);
+    } catch {
       throw new Error(
         `Approvals tab did not show provider/session context for ${provider}.`,
       );
