@@ -47,6 +47,68 @@ function startReadySession(
   return session;
 }
 
+function jsonResponse(value: unknown) {
+  return {
+    ok: true,
+    json: async () => value,
+  };
+}
+
+function eventStreamResponse(value?: unknown) {
+  const encoded = value
+    ? new TextEncoder().encode(
+      `data: ${JSON.stringify(value)}\n\n`,
+    )
+    : null;
+  return {
+    ok: true,
+    body: new ReadableStream({
+      start(controller) {
+        if (encoded) controller.enqueue(encoded);
+        controller.close();
+      },
+    }),
+  };
+}
+
+function turnFetchMock(
+  sessionId: string,
+  response: unknown,
+) {
+  return vi.fn((url: string | URL) => {
+    const target = String(url);
+    if (target.endsWith("/session")) {
+      return Promise.resolve(jsonResponse({ id: sessionId }));
+    }
+    if (target.endsWith("/event")) {
+      return Promise.resolve(eventStreamResponse());
+    }
+    if (target.endsWith("/message")) {
+      return Promise.resolve(jsonResponse(response));
+    }
+    return Promise.reject(new Error(`Unexpected fetch ${target}`));
+  });
+}
+
+function blockedTurnFetchMock(
+  sessionId: string,
+  event: unknown,
+) {
+  return vi.fn((url: string | URL) => {
+    const target = String(url);
+    if (target.endsWith("/session")) {
+      return Promise.resolve(jsonResponse({ id: sessionId }));
+    }
+    if (target.endsWith("/event")) {
+      return Promise.resolve(eventStreamResponse(event));
+    }
+    if (target.endsWith("/message")) {
+      return new Promise(() => {});
+    }
+    return Promise.reject(new Error(`Unexpected fetch ${target}`));
+  });
+}
+
 describe("OpenCodeHttpSession approval replies", () => {
   it("responds to permission requests through OpenCode HTTP", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
@@ -83,17 +145,9 @@ describe("OpenCodeHttpSession approval replies", () => {
 
 describe("OpenCodeHttpSession model selection", () => {
   it("sends configured model with message turns", async () => {
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ id: "ses_123" }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          parts: [{ type: "step-finish" }],
-        }),
-      });
+    const fetchMock = turnFetchMock("ses_123", {
+      parts: [{ type: "step-finish" }],
+    });
     vi.stubGlobal("fetch", fetchMock);
 
     const session = startReadySession(
@@ -102,7 +156,7 @@ describe("OpenCodeHttpSession model selection", () => {
     session.startTurn(makeChild(), "hello");
 
     await vi.waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(fetchMock).toHaveBeenCalledTimes(3);
     });
     expect(fetchMock).toHaveBeenLastCalledWith(
       "http://127.0.0.1:9999/session/ses_123/message",
@@ -123,29 +177,21 @@ describe("OpenCodeHttpSession model selection", () => {
 describe("OpenCodeHttpSession approvals", () => {
   it("forwards permission.asked response parts", async () => {
     const onEvent = vi.fn();
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ id: "ses_123" }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          parts: [{
-            type: "permission.asked",
-            id: "perm-bash-1",
-            sessionID: "ses_123",
-            permission: "bash",
-            patterns: ["Bash(git status:*)"],
-            metadata: {
-              command: "git status --short",
-            },
-            tool: {
-              callID: "call_bash_1",
-            },
-          }],
-        }),
-      });
+    const fetchMock = turnFetchMock("ses_123", {
+      parts: [{
+        type: "permission.asked",
+        id: "perm-bash-1",
+        sessionID: "ses_123",
+        permission: "bash",
+        patterns: ["Bash(git status:*)"],
+        metadata: {
+          command: "git status --short",
+        },
+        tool: {
+          callID: "call_bash_1",
+        },
+      }],
+    });
     vi.stubGlobal("fetch", fetchMock);
 
     const session = startReadySession(onEvent);
@@ -167,32 +213,24 @@ describe("OpenCodeHttpSession approvals", () => {
 
   it("forwards permission.asked stream events", async () => {
     const onEvent = vi.fn();
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ id: "ses_456" }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          events: [{
-            event: "permission.asked",
-            properties: {
-              id: "perm-mcp-1",
-              sessionID: "ses_456",
-              permission: "mcp",
-              patterns: ["shemcp:slack_send_message"],
-              metadata: {
-                serverName: "shemcp",
-                toolName: "slack_send_message",
-              },
-              tool: {
-                callID: "call_mcp_1",
-              },
-            },
-          }],
-        }),
-      });
+    const fetchMock = turnFetchMock("ses_456", {
+      events: [{
+        event: "permission.asked",
+        properties: {
+          id: "perm-mcp-1",
+          sessionID: "ses_456",
+          permission: "mcp",
+          patterns: ["shemcp:slack_send_message"],
+          metadata: {
+            serverName: "shemcp",
+            toolName: "slack_send_message",
+          },
+          tool: {
+            callID: "call_mcp_1",
+          },
+        },
+      }],
+    });
     vi.stubGlobal("fetch", fetchMock);
 
     const session = startReadySession(onEvent);
@@ -218,28 +256,20 @@ describe("OpenCodeHttpSession approvals", () => {
 describe("OpenCodeHttpSession wrapped approvals", () => {
   it("forwards wrapped permission.asked parts", async () => {
     const onEvent = vi.fn();
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ id: "ses_789" }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          events: [{
-            type: "event",
-            part: {
-              type: "permission.asked",
-              id: "perm-wrapped-1",
-              sessionID: "ses_789",
-              permission: "bash",
-              patterns: ["Bash(rm:*)"],
-              metadata: { command: "rm temp.txt" },
-              tool: { callID: "call_wrapped_1" },
-            },
-          }],
-        }),
-      });
+    const fetchMock = turnFetchMock("ses_789", {
+      events: [{
+        type: "event",
+        part: {
+          type: "permission.asked",
+          id: "perm-wrapped-1",
+          sessionID: "ses_789",
+          permission: "bash",
+          patterns: ["Bash(rm:*)"],
+          metadata: { command: "rm temp.txt" },
+          tool: { callID: "call_wrapped_1" },
+        },
+      }],
+    });
     vi.stubGlobal("fetch", fetchMock);
 
     const session = startReadySession(onEvent);
@@ -257,6 +287,42 @@ describe("OpenCodeHttpSession wrapped approvals", () => {
         id: "perm-wrapped-1",
         sessionID: "ses_789",
         permission: "bash",
+      },
+    });
+  });
+});
+
+describe("OpenCodeHttpSession event stream approvals", () => {
+  it("forwards permission.asked before message returns", async () => {
+    const onEvent = vi.fn();
+    const fetchMock = blockedTurnFetchMock("ses_live", {
+      type: "permission.asked",
+      properties: {
+        id: "perm-live-1",
+        sessionID: "ses_live",
+        permission: "bash",
+        patterns: [
+          "mkdir -p .approval-validation",
+          "echo token > .approval-validation/opencode.txt",
+        ],
+      },
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const session = startReadySession(onEvent);
+    expect(session.startTurn(makeChild(), "hello")).toBe(true);
+    await vi.waitFor(() => {
+      expect(onEvent).toHaveBeenCalledOnce();
+    });
+
+    const forwarded = JSON.parse(
+      onEvent.mock.calls[0]?.[0] as string,
+    ) as Record<string, unknown>;
+    expect(forwarded).toMatchObject({
+      type: "permission.asked",
+      properties: {
+        id: "perm-live-1",
+        sessionID: "ses_live",
       },
     });
   });

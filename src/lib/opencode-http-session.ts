@@ -13,9 +13,8 @@ import type {
   ApprovalReplyResult,
   ApprovalReplyTarget,
 } from "@/lib/approval-actions";
+import { startOpenCodeEventStream } from "@/lib/opencode-event-stream";
 import { parseOpenCodeModelSelection } from "@/lib/opencode-model-selection";
-
-// ── Types ─────────────────────────────────────────────
 
 interface OpenCodePart {
   type: string;
@@ -48,23 +47,10 @@ export interface OpenCodeHttpSession {
   readonly serverUrl: string | null;
   readonly sessionId: string | null;
   readonly ready: boolean;
-  /**
-   * Parse a stdout line for server URL.
-   * Returns true if the line was the URL announcement.
-   */
   processStdoutLine(line: string): boolean;
-  /**
-   * Send a turn via HTTP. Events are injected into
-   * the runtime via the onEvent callback.
-   * Returns true if the turn was initiated.
-   */
   startTurn(
     child: ChildProcess, prompt: string,
   ): boolean;
-  /**
-   * Interrupt the current session by killing the
-   * server process.
-   */
   interruptTurn(child: ChildProcess): boolean;
   respondToApproval(
     target: ApprovalReplyTarget,
@@ -76,27 +62,22 @@ export interface OpenCodeHttpSessionOptions {
   model?: string;
 }
 
-// ── Internal state ────────────────────────────────────
-
 interface SessionState {
   serverUrl: string | null;
   sessionId: string | null;
   ready: boolean;
   turnInFlight: boolean;
   model?: string;
+  eventStreamAbort: AbortController | null;
   shutdownInFlight: Promise<void> | null;
   pendingTurn: {
     child: ChildProcess; prompt: string;
   } | null;
 }
 
-// ── Constants ─────────────────────────────────────────
-
 const SERVER_URL_PATTERN =
   /server listening on (https?:\/\/\S+)/;
 const CONTROL_REQUEST_TIMEOUT_MS = 1_500;
-
-// ── HTTP helpers ──────────────────────────────────────
 
 async function createSession(
   baseUrl: string,
@@ -179,8 +160,6 @@ async function postControlRequest(
   }
 }
 
-// ── Part → JSONL translation ─────────────────────────
-
 function toObject(
   value: unknown,
 ): Record<string, unknown> | null {
@@ -228,11 +207,6 @@ function translateEvent(
     : null;
 }
 
-/**
- * Translate an HTTP response part into the JSONL
- * format that `opencode run --format json` emits,
- * so the existing OpenCode normalizer can process it.
- */
 function translatePart(
   part: OpenCodePart,
 ): Record<string, unknown> | null {
@@ -302,8 +276,6 @@ function translateResponse(
   return events;
 }
 
-// ── Session lifecycle helpers ─────────────────────────
-
 interface SessionCallbacks {
   onEvent: (jsonLine: string) => void;
   onError: (message: string) => void;
@@ -336,6 +308,21 @@ function emitErrorResult(
   }));
 }
 
+function startEventStream(
+  s: SessionState,
+  cb: SessionCallbacks,
+): void {
+  if (!s.serverUrl || s.eventStreamAbort) return;
+  s.eventStreamAbort = startOpenCodeEventStream(
+    s.serverUrl,
+    (value) => {
+      const event = translateEvent(value);
+      if (event) cb.onEvent(JSON.stringify(event));
+    },
+    cb.onError,
+  );
+}
+
 async function doTurn(
   s: SessionState,
   cb: SessionCallbacks,
@@ -357,6 +344,7 @@ async function doTurn(
       emitErrorResult(cb);
       return;
     }
+    startEventStream(s, cb);
     const resp = await sendMessage(
       s.serverUrl, s.sessionId, prompt, s.model,
     );
@@ -400,6 +388,8 @@ async function disposeServer(
   s: SessionState,
   child: ChildProcess,
 ): Promise<void> {
+  s.eventStreamAbort?.abort();
+  s.eventStreamAbort = null;
   const baseUrl = s.serverUrl;
   if (!baseUrl) {
     terminateProcessGroup(
@@ -428,8 +418,6 @@ async function disposeServer(
   );
 }
 
-// ── Factory ───────────────────────────────────────────
-
 export function createOpenCodeHttpSession(
   onEvent: (jsonLine: string) => void,
   onError: (message: string) => void,
@@ -442,6 +430,7 @@ export function createOpenCodeHttpSession(
     ready: false,
     turnInFlight: false,
     model: options.model,
+    eventStreamAbort: null,
     shutdownInFlight: null,
     pendingTurn: null,
   };

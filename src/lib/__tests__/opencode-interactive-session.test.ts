@@ -483,8 +483,6 @@ describe("opencode interactive: abort", () => {
   });
 });
 
-// ── OpenCodeHttpSession unit tests ──────────────────
-
 describe("OpenCodeHttpSession", () => {
   it("queues turn before server URL discovered", () => {
     const onEvent = vi.fn();
@@ -539,24 +537,41 @@ describe("OpenCodeHttpSession", () => {
     );
     expect(sent).toBe(true);
   });
+});
 
+describe("OpenCodeHttpSession disposal", () => {
   it("interruptTurn disposes a ready server", async () => {
-    const onEvent = vi.fn();
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ id: "ses_123" }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ parts: [] }),
-      })
-      .mockResolvedValueOnce({ ok: true });
+    const fetchMock = vi.fn((url: string | URL) => {
+      const target = String(url);
+      if (target.endsWith("/session")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ id: "ses_123" }),
+        });
+      }
+      if (target.endsWith("/event")) {
+        return Promise.resolve({
+          ok: true,
+          body: new ReadableStream({
+            start(controller) {
+              controller.close();
+            },
+          }),
+        });
+      }
+      if (target.endsWith("/message")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ parts: [] }),
+        });
+      }
+      return Promise.resolve({ ok: true });
+    });
     const killSpy = vi.spyOn(process, "kill")
       .mockImplementation(() => true);
     vi.stubGlobal("fetch", fetchMock);
     const session = createOpenCodeHttpSession(
-      onEvent, vi.fn(),
+      vi.fn(), vi.fn(),
     );
 
     session.processStdoutLine(
@@ -567,7 +582,7 @@ describe("OpenCodeHttpSession", () => {
     const child = makeChild();
     expect(session.startTurn(child, "hello")).toBe(true);
     await vi.waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(fetchMock).toHaveBeenCalledTimes(3);
     });
 
     const interrupted = session.interruptTurn(child);
