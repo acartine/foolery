@@ -109,7 +109,10 @@ describe("OpenCodeHttpSession model selection", () => {
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({
-          model: "openrouter/z-ai/glm-5.1",
+          model: {
+            providerID: "openrouter",
+            modelID: "z-ai/glm-5.1",
+          },
           parts: [{ type: "text", text: "hello" }],
         }),
       }),

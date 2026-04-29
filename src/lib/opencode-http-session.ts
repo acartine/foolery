@@ -1,9 +1,3 @@
-/**
- * OpenCode HTTP session client.
- *
- * Wraps `opencode serve` to provide multi-turn
- * interactive sessions via the OpenCode HTTP API.
- */
 import type { ChildProcess } from "node:child_process";
 import type {
   PromptDispatchHooks,
@@ -19,6 +13,7 @@ import type {
   ApprovalReplyResult,
   ApprovalReplyTarget,
 } from "@/lib/approval-actions";
+import { parseOpenCodeModelSelection } from "@/lib/opencode-model-selection";
 
 // ── Types ─────────────────────────────────────────────
 
@@ -134,6 +129,8 @@ async function sendMessage(
   prompt: string,
   model?: string,
 ): Promise<OpenCodeMessageResponse | null> {
+  const modelSelection =
+    parseOpenCodeModelSelection(model);
   try {
     const resp = await fetch(
       `${baseUrl}/session/${sessionId}/message`,
@@ -143,7 +140,9 @@ async function sendMessage(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...(model ? { model } : {}),
+          ...(modelSelection
+            ? { model: modelSelection }
+            : {}),
           parts: [{ type: "text", text: prompt }],
         }),
       },
