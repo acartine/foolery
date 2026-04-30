@@ -1,0 +1,15 @@
+{
+  "event_id": "019dda9d-f706-7821-ae5b-154d38dfa2f4",
+  "occurred_at": "2026-04-29T19:01:18.726022Z",
+  "knot_id": "foolery-e55a",
+  "type": "knot.state_set",
+  "data": {
+    "agent_model": "openrouter/moonshotai/kimi-k2.6",
+    "agent_name": "OpenCode",
+    "force": false,
+    "from": "implementation",
+    "profile_id": "autopilot",
+    "to": "ready_for_implementation",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019ddab5-0d78-72d3-9a1f-13eb23ec8025",
+  "occurred_at": "2026-04-29T19:26:31.800436Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e55a",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add approval escalation API",
+    "type": "work",
+    "updated_at": "2026-04-29T19:26:31.800436Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019ddaa6-7cb4-7470-ade7-89e5862cc883",
+  "occurred_at": "2026-04-29T19:10:37.236804Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e780",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix OpenCode approval details",
+    "type": "work",
+    "updated_at": "2026-04-29T19:10:37.236804Z",
+    "workflow_id": "work_sdlc"
+  }
+}

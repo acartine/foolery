@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddaac-b540-79b0-94b7-40858207c738",
+  "occurred_at": "2026-04-29T19:17:24.928548Z",
+  "knot_id": "foolery-e55a",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-e55a-approvals-api"
+  }
+}

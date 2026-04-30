@@ -1,0 +1,9 @@
+{
+  "event_id": "019dda73-1eb6-7c80-931f-d495bf2e7a8b",
+  "occurred_at": "2026-04-29T18:14:30.838563Z",
+  "knot_id": "foolery-e780",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:feat/foolery-e780-opencode-approvals"
+  }
+}
