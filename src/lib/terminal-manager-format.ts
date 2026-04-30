@@ -262,8 +262,12 @@ function formatAssistantEvent(
           summary = ` ${String(input.command).slice(0, 120)}`;
         } else if (input.file_path) {
           summary = ` ${input.file_path}`;
+        } else if (input.filePath) {
+          summary = ` ${input.filePath}`;
         } else if (input.pattern) {
           summary = ` ${input.pattern}`;
+        } else if (input.path) {
+          summary = ` ${input.path}`;
         }
       }
       parts.push(`\x1b[36m▶ ${name}${summary}\x1b[0m\n`);

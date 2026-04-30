@@ -158,6 +158,13 @@ interface SessionCallbacks {
  * → completed); we want exactly one tool_use line per
  * call id, plus exactly one tool_result line once the
  * call has terminal output.
+ *
+ * For tool_use we wait for the first event whose `input`
+ * is populated. The pending part arrives before the model
+ * commits the tool input, so its translated `input` is
+ * `{}`. Emitting that one would freeze the rendered
+ * "▶ tool" line with no args because the populated
+ * running/completed update is then deduped.
  */
 function dedupeStreamedEvent(
   s: SessionState,
@@ -168,6 +175,12 @@ function dedupeStreamedEvent(
     const id = typeof event.id === "string" ? event.id : "";
     if (id) {
       if (s.emittedToolUseIds.has(id)) return null;
+      const input = event.input;
+      const hasInput =
+        !!input
+        && typeof input === "object"
+        && Object.keys(input as Record<string, unknown>).length > 0;
+      if (!hasInput) return null;
       s.emittedToolUseIds.add(id);
     }
     return event;

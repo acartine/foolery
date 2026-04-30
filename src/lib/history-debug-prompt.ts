@@ -62,7 +62,13 @@ function summarizeAssistantPayload(payload: Record<string, unknown>): string | n
             ? input.description
             : typeof input?.file_path === "string"
               ? input.file_path
-              : "";
+              : typeof input?.filePath === "string"
+                ? input.filePath
+                : typeof input?.pattern === "string"
+                  ? input.pattern
+                  : typeof input?.path === "string"
+                    ? input.path
+                    : "";
       parts.push(detail ? `tool:${name} ${detail}` : `tool:${name}`);
     }
   }

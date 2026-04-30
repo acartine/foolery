@@ -252,6 +252,18 @@ function summarizeAssistant(
         typeof input?.file_path === "string"
       ) {
         summary = ` ${input.file_path}`;
+      } else if (
+        typeof input?.filePath === "string"
+      ) {
+        summary = ` ${input.filePath}`;
+      } else if (
+        typeof input?.pattern === "string"
+      ) {
+        summary = ` ${input.pattern}`;
+      } else if (
+        typeof input?.path === "string"
+      ) {
+        summary = ` ${input.path}`;
       }
       parts.push(
         `▶ ${name}${summary}`.trim(),
