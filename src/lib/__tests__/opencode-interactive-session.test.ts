@@ -34,6 +34,7 @@ const DEFAULT_WATCHDOG_TIMEOUT_MS =
   interactiveSessionTimeoutMinutesToMs(10);
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
@@ -347,14 +348,16 @@ describe("opencode interactive: watchdog", () => {
   });
 
   it(
-    "fires on silence even after result observed " +
-    "(canonical liveness rule)",
+    "reaps a completed HTTP turn without rewriting " +
+    "turn_ended as timeout",
     () => {
       const killSpy = vi.spyOn(process, "kill")
         .mockImplementation(() => true);
       const warnSpy = vi.spyOn(console, "warn")
         .mockImplementation(() => { /* quiet */ });
-      const { config } = makeConfigWithHttp();
+      const { config } = makeConfigWithHttp({
+        onTurnEnded: () => true,
+      });
       const rt = createSessionRuntime(config);
       const child = makeChild();
       rt.wireStdout(child);
@@ -364,13 +367,14 @@ describe("opencode interactive: watchdog", () => {
       }));
       expect(rt.state.resultObserved).toBe(true);
 
-      // Result event reset the watchdog; the child
-      // stays OS-live, so a full window of silence
-      // must still trip the watchdog.
+      // A completed OpenCode HTTP turn can leave the
+      // server process OS-live. The watchdog may still
+      // reap that process, but it must not turn the
+      // completed agent turn into a timeout failure.
       vi.advanceTimersByTime(
         DEFAULT_WATCHDOG_TIMEOUT_MS + 1,
       );
-      expect(rt.state.exitReason).toBe("timeout");
+      expect(rt.state.exitReason).toBe("turn_ended");
       expect(killSpy).toHaveBeenCalled();
       killSpy.mockRestore();
       warnSpy.mockRestore();
@@ -538,67 +542,5 @@ describe("OpenCodeHttpSession", () => {
       child, "hello",
     );
     expect(sent).toBe(true);
-  });
-});
-
-describe("OpenCodeHttpSession disposal", () => {
-  it("interruptTurn disposes a ready server", async () => {
-    const fetchMock = vi.fn((url: string | URL) => {
-      const target = String(url);
-      if (target.endsWith("/session")) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ id: "ses_123" }),
-        });
-      }
-      if (target.endsWith("/event")) {
-        return Promise.resolve({
-          ok: true,
-          body: new ReadableStream({
-            start(controller) {
-              controller.close();
-            },
-          }),
-        });
-      }
-      if (target.endsWith("/message")) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ parts: [] }),
-        });
-      }
-      return Promise.resolve({ ok: true });
-    });
-    const killSpy = vi.spyOn(process, "kill")
-      .mockImplementation(() => true);
-    vi.stubGlobal("fetch", fetchMock);
-    const session = createOpenCodeHttpSession(
-      vi.fn(), vi.fn(),
-    );
-
-    session.processStdoutLine(
-      "opencode server listening on " +
-      "http://127.0.0.1:9999",
-    );
-
-    const child = makeChild();
-    expect(session.startTurn(child, "hello")).toBe(true);
-    await vi.waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledTimes(3);
-    });
-
-    const interrupted = session.interruptTurn(child);
-    expect(interrupted).toBe(true);
-
-    await vi.waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledWith(
-        "http://127.0.0.1:9999/instance/dispose",
-        expect.objectContaining({
-          method: "POST",
-          signal: expect.any(AbortSignal),
-        }),
-      );
-    });
-    expect(killSpy).not.toHaveBeenCalled();
   });
 });

@@ -28,6 +28,15 @@ export interface ChildCloseDiagnostics {
   turnError: { eventType?: string } | null;
 }
 
+export function shouldTreatTurnEndedSignalAsClean(
+  code: number | null,
+  diag: ChildCloseDiagnostics,
+): boolean {
+  return code === null &&
+    diag.exitReason === "turn_ended" &&
+    !diag.turnError;
+}
+
 function extractLastEventType(
   state: SessionRuntimeState | null | undefined,
 ): string | null {

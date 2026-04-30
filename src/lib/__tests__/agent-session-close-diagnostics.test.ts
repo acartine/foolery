@@ -30,6 +30,7 @@ import {
 import {
   captureChildCloseDiagnostics,
   formatDiagnosticsForLog,
+  shouldTreatTurnEndedSignalAsClean,
 } from "@/lib/agent-session-close-diagnostics";
 
 function makeInteractionLog() {
@@ -266,4 +267,30 @@ describe("captureChildCloseDiagnostics: turnError", () => {
       });
     },
   );
+});
+
+describe("shouldTreatTurnEndedSignalAsClean", () => {
+  it("accepts signal-only close after clean turn end", () => {
+    expect(shouldTreatTurnEndedSignalAsClean(null, {
+      exitReason: "turn_ended",
+      msSinceLastStdout: null,
+      lastEventType: "result",
+      turnError: null,
+    })).toBe(true);
+  });
+
+  it("does not hide failed turns or real exit codes", () => {
+    expect(shouldTreatTurnEndedSignalAsClean(1, {
+      exitReason: "turn_ended",
+      msSinceLastStdout: null,
+      lastEventType: "result",
+      turnError: null,
+    })).toBe(false);
+    expect(shouldTreatTurnEndedSignalAsClean(null, {
+      exitReason: "turn_ended",
+      msSinceLastStdout: null,
+      lastEventType: "turn.failed",
+      turnError: { eventType: "turn.failed" },
+    })).toBe(false);
+  });
 });

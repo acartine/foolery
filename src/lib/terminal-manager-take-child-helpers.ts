@@ -37,6 +37,7 @@ import {
 import {
   captureChildCloseDiagnostics,
   formatDiagnosticsForLog,
+  shouldTreatTurnEndedSignalAsClean,
 } from "@/lib/agent-session-close-diagnostics";
 import {
   formatTakeSceneOneShotFailure,
@@ -196,8 +197,20 @@ export function wireTakeChildClose(
     // as a success, doesn't progress or roll back the
     // beat, and then dies on the next dispatch when
     // cross-agent review exclusion empties the pool.
-    const effectiveCode =
-      takeCode === 0 && diag.turnError ? 1 : takeCode;
+    const cleanTurnEndedSignal =
+      shouldTreatTurnEndedSignalAsClean(
+        takeCode, diag,
+      );
+    const effectiveCode = cleanTurnEndedSignal
+      ? 0
+      : takeCode === 0 && diag.turnError ? 1 : takeCode;
+    if (cleanTurnEndedSignal) {
+      console.log(
+        `[terminal-manager] [${ctx.id}] [take-loop] ` +
+        `child closed by cleanup after turn_ended - ` +
+        `treating as clean exit`,
+      );
+    }
     if (takeCode === 0 && diag.turnError) {
       const agentLabel =
         effectiveAgent.label ??

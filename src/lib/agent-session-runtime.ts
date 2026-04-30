@@ -69,6 +69,7 @@ function handleTurnEnded(
   config: SessionRuntimeConfig,
   info: TurnEndedInfo,
 ): void {
+  if (state.resultObserved) return;
   state.resultObserved = true;
   state.exitReason = "turn_ended";
   state.lastTurnError = info.isError

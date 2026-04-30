@@ -22,6 +22,13 @@
  * is_error:true, triggering a take-loop "advance or
  * rollback" follow-up while the real turn was still
  * in flight via the SSE stream.
+ *
+ * Bug C (the false timeout): after session.idle fired a
+ * real turn_ended, OpenCode kept emitting post-idle bus
+ * noise and/or stayed alive after /instance/dispose.
+ * The shared watchdog treated that cleanup lifecycle as
+ * turn liveness, then later overwrote exitReason with
+ * timeout and made a completed turn look failed.
  */
 import {
   describe, it, expect, vi,
@@ -231,6 +238,83 @@ describe(
       // With resultObserved=false again,
       // cancellation re-engages.
       expect(rt.state.closeInputTimer).toBeNull();
+    });
+  },
+);
+
+// ── Bug C: post-idle cleanup is not turn liveness ───
+
+describe(
+  "foolery-c6e8 Bug C: OpenCode post-idle cleanup",
+  () => {
+    beforeEach(() => { vi.useFakeTimers(); });
+    afterEach(() => { vi.useRealTimers(); });
+
+    it("post-idle events do not re-arm the watchdog", () => {
+      const killSpy = vi.spyOn(process, "kill")
+        .mockImplementation(() => true);
+      const warnSpy = vi.spyOn(console, "warn")
+        .mockImplementation(() => { /* quiet */ });
+      const { config } = makeOpenCodeConfig({
+        watchdogTimeoutMs: 5_000,
+        onTurnEnded: () => true,
+      });
+      const rt = createSessionRuntime(config);
+      const child = makeChild();
+      rt.wireStdout(child);
+
+      rt.injectLine(child, JSON.stringify({
+        type: "session_idle",
+      }));
+      expect(rt.state.exitReason).toBe("turn_ended");
+
+      vi.advanceTimersByTime(4_000);
+      rt.injectLine(child, JSON.stringify({
+        type: "message_updated",
+        info: { id: "post-idle-noise" },
+      }));
+
+      vi.advanceTimersByTime(1_001);
+      expect(killSpy).toHaveBeenCalled();
+      expect(rt.state.exitReason).toBe("turn_ended");
+      killSpy.mockRestore();
+      warnSpy.mockRestore();
+    });
+
+    it("post-idle stderr does not re-arm the watchdog", () => {
+      const killSpy = vi.spyOn(process, "kill")
+        .mockImplementation(() => true);
+      const warnSpy = vi.spyOn(console, "warn")
+        .mockImplementation(() => { /* quiet */ });
+      const logSpy = vi.spyOn(console, "log")
+        .mockImplementation(() => { /* quiet */ });
+      const { config } = makeOpenCodeConfig({
+        watchdogTimeoutMs: 5_000,
+        onTurnEnded: () => true,
+      });
+      const rt = createSessionRuntime(config);
+      const child = makeChild();
+      rt.wireStdout(child);
+      rt.wireStderr(child);
+
+      rt.injectLine(child, JSON.stringify({
+        type: "session_idle",
+      }));
+
+      vi.advanceTimersByTime(4_000);
+      child.stderr!.emit(
+        "data",
+        Buffer.from(
+          "INFO service=bus type=message.updated\n",
+        ),
+      );
+
+      vi.advanceTimersByTime(1_001);
+      expect(killSpy).toHaveBeenCalled();
+      expect(rt.state.exitReason).toBe("turn_ended");
+      killSpy.mockRestore();
+      warnSpy.mockRestore();
+      logSpy.mockRestore();
     });
   },
 );

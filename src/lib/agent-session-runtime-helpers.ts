@@ -279,15 +279,18 @@ function fireWatchdogTimeout(
   ms: number,
 ): void {
   state.watchdogTimer = null;
-  // Canonical liveness: the only authority on whether the
-  // session is open is the child process itself. If the
-  // OS has already delivered exit/close, `dispose` will
-  // have nulled the timer before we got here. We do NOT
-  // consult `resultObserved` or any payload-derived state
-  // — a turn ending is not a licence to stop watchdogging
-  // a live process. If the child emits no stdout/stderr
-  // for `ms` while still alive, kill it.
-  state.exitReason = "timeout";
+  // Canonical liveness is still process liveness: if a
+  // child stays open and silent, reap it. The exception is
+  // OpenCode HTTP after a completed turn. Its server can
+  // outlive `session.idle`, so cleanup reaping must not
+  // rewrite the successful turn boundary as a timeout.
+  const completedOpenCodeTurn =
+    Boolean(config.httpSession) &&
+    state.resultObserved &&
+    state.exitReason === "turn_ended";
+  if (!completedOpenCodeTurn) {
+    state.exitReason = "timeout";
+  }
   const armedAt = state.watchdogArmedAt;
   const msSinceLastEvent =
     armedAt != null ? Date.now() - armedAt : 0;
@@ -308,7 +311,12 @@ function fireWatchdogTimeout(
     msSinceLastEvent,
     lastEventType,
   });
-  terminateProcessGroup(child, "watchdog_timeout");
+  terminateProcessGroup(
+    child,
+    completedOpenCodeTurn
+      ? "opencode_post_turn_cleanup_timeout"
+      : "watchdog_timeout",
+  );
 }
 
 export function doResetWatchdog(
@@ -318,6 +326,9 @@ export function doResetWatchdog(
 ): void {
   const ms = config.watchdogTimeoutMs;
   if (ms == null) return;
+  if (config.httpSession && state.resultObserved) {
+    return;
+  }
   if (state.watchdogTimer) {
     clearTimeout(state.watchdogTimer);
   }
