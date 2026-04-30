@@ -172,6 +172,70 @@ function normalizeGeminiModel(
   };
 }
 
+/**
+ * Canonical OpenCode model extractor.
+ *
+ * Input is the raw model id string only — never the OpenCode binary
+ * version, an env var, or any runtime hint. The OpenCode model id is a
+ * slash-separated path of the form:
+ *
+ *   `<router>/<vendor>/<model-with-version>` (canonical 3-segment shape)
+ *   `<vendor>/<model-with-version>`           (no router)
+ *   `<bare-model>`                            (single token)
+ *
+ * Returns:
+ *   model:   the full input (preserved verbatim — OpenCode addresses
+ *            models by their full path).
+ *   flavor:  the router (first token) when 3+ segments are present;
+ *            otherwise undefined.
+ *   version: the trailing numeric tail of the last token's last
+ *            hyphen-separated segment, matched by `/(\d+(?:\.\d+)*)$/`.
+ *            Examples:
+ *              `kimi-k2.6`           -> "2.6"  (k prefix is not numeric)
+ *              `claude-sonnet-4-5`   -> "4.5"  (consecutive trailing
+ *                                              numeric segments joined)
+ *              `glm-5.1`             -> "5.1"
+ *              `devstral-2512`       -> "2512"
+ *              `kimi`                -> undefined (no numeric tail)
+ */
+function normalizeOpenCodeModel(
+  rawModel?: string,
+): { model?: string; flavor?: string; version?: string } {
+  const cleaned = cleanValue(rawModel);
+  if (!cleaned) return {};
+  const tokens = cleaned.split("/").filter(Boolean);
+  if (tokens.length === 0) return {};
+  const flavor = tokens.length >= 3 ? tokens[0] : undefined;
+  const version = extractOpenCodeTrailingVersion(tokens[tokens.length - 1]!);
+  return {
+    model: cleaned,
+    ...(flavor ? { flavor } : {}),
+    ...(version ? { version } : {}),
+  };
+}
+
+/**
+ * Extracts the trailing numeric version from the last segment of an
+ * OpenCode model token. Joins consecutive trailing hyphen-separated
+ * numeric segments with dots so `claude-sonnet-4-5` -> `"4.5"`.
+ */
+function extractOpenCodeTrailingVersion(token: string): string | undefined {
+  const tail = token.match(/(\d+(?:\.\d+)*)$/)?.[1];
+  if (!tail) return undefined;
+  // Walk backward through hyphen-separated segments to capture
+  // `claude-sonnet-4-5` -> ["4","5"] -> "4.5".
+  const segments = token.split("-");
+  const trailingNumeric: string[] = [];
+  for (let i = segments.length - 1; i >= 0; i -= 1) {
+    if (/^\d+(?:\.\d+)*$/.test(segments[i]!)) {
+      trailingNumeric.unshift(segments[i]!);
+    } else {
+      break;
+    }
+  }
+  return trailingNumeric.length > 0 ? trailingNumeric.join(".") : tail;
+}
+
 function normalizeCopilotModel(
   rawModel?: string,
 ): {
@@ -241,11 +305,24 @@ export function normalizeAgentIdentity(agent: AgentIdentityLike): {
   const flavor = cleanValue(agent.flavor);
   const rawModel = cleanValue(agent.model);
   if (provider === "OpenCode") {
+    const normalized = normalizeOpenCodeModel(rawModel);
+    // For OpenCode, the parsed path version wins over agent.version.
+    // Per the canonical contract, agent.version on the input may carry
+    // the OpenCode binary version (a runtime hint, not a model
+    // version) — letting it override would re-introduce the leak this
+    // extractor exists to prevent. The path-derived version is the
+    // only authoritative source.
     return {
       provider,
-      ...(rawModel ? { model: rawModel } : {}),
-      ...(flavor ? { flavor } : {}),
-      ...(version ? { version } : {}),
+      ...(normalized.model ?? rawModel
+        ? { model: normalized.model ?? rawModel }
+        : {}),
+      ...(flavor ?? normalized.flavor
+        ? { flavor: flavor ?? normalized.flavor }
+        : {}),
+      ...(normalized.version ?? version
+        ? { version: normalized.version ?? version }
+        : {}),
     };
   }
   if (provider === "Copilot") {
@@ -473,9 +550,16 @@ export function toCanonicalLeaseIdentity(
     ?? provider
     ?? explicitCommand
     ?? "Unknown";
-  const derivedLeaseModel =
-    [n.flavor, n.model].filter(Boolean).join("/")
-    || cleanValue(agent.model);
+  // OpenCode model strings are already canonical paths
+  // (e.g. "openrouter/moonshotai/kimi-k2.6"); the flavor (router) is
+  // encoded inside the path. Prepending flavor here would double-stamp
+  // it (e.g. "openrouter/openrouter/moonshotai/kimi-k2.6"). Other
+  // providers' model strings are short tokens ("claude", "gpt") where
+  // flavor disambiguates, so the flavor/model join is correct.
+  const derivedLeaseModel = n.provider === "OpenCode"
+    ? (n.model ?? cleanValue(agent.model))
+    : [n.flavor, n.model].filter(Boolean).join("/")
+      || cleanValue(agent.model);
   const leaseModel = cleanValue(agent.lease_model)
     ?? derivedLeaseModel;
 
