@@ -58,11 +58,13 @@ afterEach(() => {
   execFileCallbacks.length = 0;
 });
 
+// Realistic settings.toml agent shapes — one per non-`unknown`
+// provider in `AgentProviderId`. Drawn from typical foolery configs.
 const agents = {
   claude: {
     command: "claude",
-    model: "claude-opus-4.6",
-    version: "4.6",
+    model: "claude-opus-4-7",
+    version: "4.7",
     kind: "cli" as const,
   },
   codex: {
@@ -72,11 +74,22 @@ const agents = {
     label: "GPT Codex 5.4",
     kind: "cli" as const,
   },
+  gemini: {
+    command: "gemini",
+    model: "gemini-2.5-pro",
+    version: "2.5",
+    kind: "cli" as const,
+  },
+  copilot: {
+    command: "copilot",
+    model: "claude-sonnet-4-5",
+    version: "4.5",
+    kind: "cli" as const,
+  },
   openCode: {
     command: "opencode",
     provider: "OpenCode",
-    model: "copilot/anthropic/claude-sonnet-4",
-    version: "4",
+    model: "openrouter/moonshotai/kimi-k2.6",
     kind: "cli" as const,
   },
 };
@@ -106,79 +119,149 @@ describe("toCanonicalLeaseIdentity: label is display-only", () => {
   });
 });
 
-describe("createLease: canonical fields go to CLI", () => {
-  it("passes Claude canonical metadata as CLI flags", async () => {
-    const info = toExecutionAgentInfo(agents.claude);
-    const promise = createLease({
-      nickname: "foolery:test",
-      type: "agent",
-      agentName: info.agentName,
-      model: info.agentModel,
-      modelVersion: info.agentVersion,
-      provider: info.agentProvider,
-      agentType: info.agentType,
-    }, "/repo");
-    await vi.waitFor(
-      () => expect(execFileCallbacks).toHaveLength(1),
+// Helper that pipes a settings.toml-shaped agent through
+// `toExecutionAgentInfo` and into `createLease`, captures the
+// argv that would be sent to `kno`, and resolves the mocked
+// `execFile` callback. Returns the captured argv for assertion.
+async function captureCreateLeaseArgs(
+  agent: Parameters<typeof toExecutionAgentInfo>[0],
+  nickname: string,
+  leaseId: string,
+): Promise<string[]> {
+  const info = toExecutionAgentInfo(agent);
+  const promise = createLease({
+    nickname,
+    type: "agent",
+    agentName: info.agentName,
+    model: info.agentModel,
+    modelVersion: info.agentVersion,
+    provider: info.agentProvider,
+    agentType: info.agentType,
+  }, "/repo");
+  await vi.waitFor(
+    () => expect(execFileCallbacks).toHaveLength(1),
+  );
+  const args = execFileCallbacks[0].args;
+  resolveNext(JSON.stringify({ id: leaseId }));
+  await promise;
+  return args;
+}
+
+/**
+ * Asserts that the captured `kno lease create` argv contains
+ * the standard envelope (`lease create --nickname <n> --type
+ * agent --agent-type cli --json`) plus the per-provider
+ * agent-name / provider / model / model-version values.
+ */
+function assertCanonicalLeaseArgs(
+  args: string[],
+  expected: {
+    nickname: string;
+    agentName: string;
+    provider: string;
+    model: string;
+    version: string;
+  },
+): void {
+  expect(args).toContain("lease");
+  expect(args).toContain("create");
+  expect(args).toContain("--nickname");
+  expect(args).toContain(expected.nickname);
+  expect(args).toContain("--type");
+  expect(args).toContain("agent");
+  expect(args).toContain("--agent-name");
+  expect(args).toContain(expected.agentName);
+  expect(args).toContain("--provider");
+  expect(args).toContain(expected.provider);
+  expect(args).toContain("--model");
+  expect(args).toContain(expected.model);
+  expect(args).toContain("--model-version");
+  expect(args).toContain(expected.version);
+  expect(args).toContain("--agent-type");
+  expect(args).toContain("cli");
+  expect(args).toContain("--json");
+}
+
+describe("createLease canonical fields", () => {
+  it("Claude: passes canonical metadata as CLI flags", async () => {
+    const args = await captureCreateLeaseArgs(
+      agents.claude, "foolery:claude", "lease-claude",
     );
-    const args = execFileCallbacks[0].args;
-    expect(args).toContain("--agent-name");
-    expect(args).toContain("Claude");
-    expect(args).toContain("--model");
-    expect(args).toContain("opus/claude");
-    expect(args).toContain("--model-version");
-    expect(args).toContain("4.6");
-    expect(args).toContain("--provider");
-    expect(args).toContain("--agent-type");
-    resolveNext(JSON.stringify({ id: "lease-1" }));
-    await promise;
+    assertCanonicalLeaseArgs(args, {
+      nickname: "foolery:claude",
+      agentName: "Claude",
+      provider: "Claude",
+      model: "opus/claude",
+      version: "4.7",
+    });
+    // No identity flags other than canonical ones.
+    expect(args).not.toContain("--label");
+    expect(args).not.toContain("--flavor");
   });
 
-  it("uses canonical name (Codex), not display label", async () => {
+  it("Codex: uses canonical name (Codex), not display label", async () => {
     const info = toExecutionAgentInfo(agents.codex);
     expect(info.agentName).toBe("Codex");
-    const promise = createLease({
-      nickname: "foolery:codex",
-      type: "agent",
-      agentName: info.agentName,
-      model: info.agentModel,
-      modelVersion: info.agentVersion,
-      provider: info.agentProvider,
-      agentType: info.agentType,
-    }, "/repo");
-    await vi.waitFor(
-      () => expect(execFileCallbacks).toHaveLength(1),
+    const args = await captureCreateLeaseArgs(
+      agents.codex, "foolery:codex", "lease-codex",
     );
-    const args = execFileCallbacks[0].args;
+    // Codex with `gpt-5.4-codex` -> flavor=codex, model=gpt
+    // -> lease_model joins to "codex/gpt".
+    assertCanonicalLeaseArgs(args, {
+      nickname: "foolery:codex",
+      agentName: "Codex",
+      provider: "Codex",
+      model: "codex/gpt",
+      version: "5.4",
+    });
     // canonical name, NOT "GPT Codex 5.4"
-    expect(args).toContain("Codex");
     expect(args).not.toContain("GPT Codex 5.4");
-    resolveNext(JSON.stringify({ id: "lease-2" }));
-    await promise;
   });
 
-  it("passes OpenCode canonical metadata as CLI flags", async () => {
-    const info = toExecutionAgentInfo(agents.openCode);
-    const promise = createLease({
+  it("Gemini: passes canonical metadata as CLI flags", async () => {
+    const args = await captureCreateLeaseArgs(
+      agents.gemini, "foolery:gemini", "lease-gemini",
+    );
+    assertCanonicalLeaseArgs(args, {
+      nickname: "foolery:gemini",
+      agentName: "Gemini",
+      provider: "Gemini",
+      model: "pro/gemini",
+      version: "2.5",
+    });
+  });
+
+  it("Copilot: passes canonical metadata as CLI flags", async () => {
+    const args = await captureCreateLeaseArgs(
+      agents.copilot, "foolery:copilot", "lease-copilot",
+    );
+    // Copilot routing a Claude-family model surfaces
+    // provider=Claude (per normalizeCopilotModel) — agent_name
+    // stays "Copilot" from displayCommandLabel("copilot"), so
+    // both labels appear in argv.
+    assertCanonicalLeaseArgs(args, {
+      nickname: "foolery:copilot",
+      agentName: "Copilot",
+      provider: "Claude",
+      model: "sonnet/claude",
+      version: "4.5",
+    });
+  });
+
+  it("OpenCode: passes canonical metadata as CLI flags", async () => {
+    const args = await captureCreateLeaseArgs(
+      agents.openCode, "foolery:opencode", "lease-opencode",
+    );
+    // OpenCode model strings are canonical paths — flavor is
+    // encoded in-path, never doubled by the canonicalizer.
+    // Path-derived version (2.6) wins for OpenCode.
+    assertCanonicalLeaseArgs(args, {
       nickname: "foolery:opencode",
-      type: "agent",
-      agentName: info.agentName,
-      model: info.agentModel,
-      modelVersion: info.agentVersion,
-      provider: info.agentProvider,
-      agentType: info.agentType,
-    }, "/repo");
-    await vi.waitFor(
-      () => expect(execFileCallbacks).toHaveLength(1),
-    );
-    const args = execFileCallbacks[0].args;
-    expect(args).toContain("OpenCode");
-    expect(args).toContain(
-      "copilot/anthropic/claude-sonnet-4",
-    );
-    expect(args).toContain("4");
-    resolveNext(JSON.stringify({ id: "lease-3" }));
-    await promise;
+      agentName: "OpenCode",
+      provider: "OpenCode",
+      model: "openrouter/moonshotai/kimi-k2.6",
+      version: "2.6",
+    });
   });
 });
 
