@@ -1,0 +1,47 @@
+{
+  "event_id": "019dde12-b0ed-7c62-b0c2-61816b82a0e0",
+  "occurred_at": "2026-04-30T11:07:40.14176Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-70fb",
+    "next_step_metadata": {
+      "action_kind": "gate",
+      "action_state": "implementation_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_implementation_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "implementation_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Fix OpenCode take-loop hang: gate close-timer cancel post-idle; drop synthetic POST-timeout error",
+    "type": "work",
+    "updated_at": "2026-04-30T11:07:40.14176Z",
+    "workflow_id": "work_sdlc"
+  }
+}

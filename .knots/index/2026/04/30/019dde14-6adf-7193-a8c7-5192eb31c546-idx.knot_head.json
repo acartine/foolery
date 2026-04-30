@@ -1,0 +1,21 @@
+{
+  "event_id": "019dde14-6adf-7193-a8c7-5192eb31c546",
+  "occurred_at": "2026-04-30T11:09:33.27934Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-70fb",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix OpenCode take-loop hang: gate close-timer cancel post-idle; drop synthetic POST-timeout error",
+    "type": "work",
+    "updated_at": "2026-04-30T11:09:33.27934Z",
+    "workflow_id": "work_sdlc"
+  }
+}

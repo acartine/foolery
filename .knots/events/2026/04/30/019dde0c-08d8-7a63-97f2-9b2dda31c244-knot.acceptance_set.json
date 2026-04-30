@@ -1,0 +1,9 @@
+{
+  "event_id": "019dde0c-08d8-7a63-97f2-9b2dda31c244",
+  "occurred_at": "2026-04-30T11:00:23.884948Z",
+  "knot_id": "foolery-70fb",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. processNormalizedEvent in src/lib/agent-session-runtime-events.ts cancels the input-close timer ONLY\n   when state.resultObserved is false. Comment names this knot ID and the failure mode.\n\n2. doTurn in src/lib/opencode-http-session.ts does NOT call emitErrorResult on the\n   \\\"http_message_request_failed\\\" path. emitErrorResult is preserved on the \\\"http_session_not_ready\\\"\n   path (we genuinely never sent the prompt; SSE will never deliver completion).\n\n3. Six hermetic unit tests pass:\n   a. processNormalizedEvent skips doCancelInputClose when resultObserved=true\n   b. processNormalizedEvent calls doCancelInputClose when resultObserved=false\n   c. resetForNewTurn restores resultObserved=false (cancellation re-engages)\n   d. Regression: session.idle turn_ended + post-idle event within 2s → close timer still active\n   e. doTurn HTTP-POST-returns-null path does NOT emit step_finish reason=error\n   f. doTurn http_session_not_ready path DOES emit step_finish reason=error\n\n4. \\`bun run lint\\` passes with zero errors and zero new warnings.\n\n5. \\`bunx tsc --noEmit\\` passes with zero errors.\n\n6. \\`bun run test\\` passes (new tests + existing suite).\n\n7. \\`bun run build\\` succeeds.\n\n8. Changed files respect CLAUDE.md limits: 500 lines/file, 100 lines/function, 100 cols/line.\n\n9. No new uses of state-name string-pattern matching, no silent fallbacks (\\`?? \\\"default\\\"\\`), no\n   workflow post-processing in TS — per the standing CLAUDE.md rules."
+  }
+}
