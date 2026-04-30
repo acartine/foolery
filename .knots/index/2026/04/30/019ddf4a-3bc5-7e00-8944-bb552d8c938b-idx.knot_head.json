@@ -1,0 +1,21 @@
+{
+  "event_id": "019ddf4a-3bc5-7e00-8944-bb552d8c938b",
+  "occurred_at": "2026-04-30T16:47:57.381435Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ccb8",
+    "profile_id": "lease",
+    "state": "lease_terminated",
+    "terminal": true,
+    "title": "Lease: ship-cd2e-plan-review",
+    "type": "lease",
+    "updated_at": "2026-04-30T16:47:57.381435Z",
+    "workflow_id": "lease_sdlc"
+  }
+}

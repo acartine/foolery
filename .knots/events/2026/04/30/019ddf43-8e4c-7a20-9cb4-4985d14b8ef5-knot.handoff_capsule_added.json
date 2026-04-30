@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf43-8e4c-7a20-9cb4-4985d14b8ef5",
+  "occurred_at": "2026-04-30T16:40:39.756794Z",
+  "knot_id": "foolery-988b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment complete. Merged worktree-agent-a9439a49934c0832d into main and pushed to origin.\n\nMERGE COMMIT: c8bae23c\nPARENT COMMITS: c1bf08f6 (sibling shipped just before; 'drop multi-key fallbacks in beat-table-metadata reader'), b6084fe3 (the foolery-988b implementation commit)\n\nARTIFACT (per autopilot profile): remote_main is now at c8bae23cc27e806b68cd6429060c10068f8a3987.\ngit ls-remote origin main confirms remote and local main match.\n\nFiles changed in this knot's commit:\n- src/lib/agent-identity.ts (+96 / -6)\n- src/lib/__tests__/agent-identity-opencode.test.ts (+200 new)",
+    "datetime": "2026-04-30T16:40:39.756794Z",
+    "entry_id": "019ddf43-8e4c-7a20-9cb4-497f8c988417",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

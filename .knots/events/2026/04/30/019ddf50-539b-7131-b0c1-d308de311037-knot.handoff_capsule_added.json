@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf50-539b-7131-b0c1-d308de311037",
+  "occurred_at": "2026-04-30T16:54:36.699493Z",
+  "knot_id": "foolery-cd2e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment review: verified merge commit 9c92feb5 is on origin/main (`git log origin/main`); merged delta is two-file test-only addition matching plan. Quality gates green on merged main. Knot-cd2e acceptance criteria 1-5 all satisfied. Approved for ship-completion.",
+    "datetime": "2026-04-30T16:54:36.699493Z",
+    "entry_id": "019ddf50-539b-7131-b0c1-d2f9a47dc591",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

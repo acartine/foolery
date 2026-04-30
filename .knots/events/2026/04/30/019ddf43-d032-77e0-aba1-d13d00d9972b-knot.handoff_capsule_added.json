@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf43-d032-77e0-aba1-d13d00d9972b",
+  "occurred_at": "2026-04-30T16:40:56.626266Z",
+  "knot_id": "foolery-988b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment review: VERIFIED.\n\nREMOTE STATE:\n- git ls-remote origin main: c8bae23cc27e806b68cd6429060c10068f8a3987\n- git show origin/main:src/lib/agent-identity.ts | grep normalizeOpenCodeModel:\n  - line 201: function normalizeOpenCodeModel(\n  - line 308: const normalized = normalizeOpenCodeModel(rawModel)\n\nImplementation is on origin/main. Acceptance criteria met:\n- normalizeOpenCodeModel exists alongside other per-provider normalisers\n- Parses canonical 3-segment shape per AC examples\n- NEVER reads runtime hints (rawModel only)\n- normalizeAgentIdentity calls normalizeOpenCodeModel for OpenCode branch\n- New test file covers all AC shapes plus edges\n- Quality gates green on the post-merge main: lint, typecheck, test (3109), build",
+    "datetime": "2026-04-30T16:40:56.626266Z",
+    "entry_id": "019ddf43-d032-77e0-aba1-d122e73efbd1",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

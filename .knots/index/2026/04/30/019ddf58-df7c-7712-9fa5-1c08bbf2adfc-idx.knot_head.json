@@ -1,0 +1,21 @@
+{
+  "event_id": "019ddf58-df7c-7712-9fa5-1c08bbf2adfc",
+  "occurred_at": "2026-04-30T17:03:56.796598Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b7d6",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Replace terminal-store raw agent fields with lease-id resolver",
+    "type": "work",
+    "updated_at": "2026-04-30T17:03:56.796598Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019ddf4b-9326-7ad0-b092-e8d172805434",
+  "occurred_at": "2026-04-30T16:49:25.286485Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d68c",
+    "profile_id": "lease",
+    "state": "lease_terminated",
+    "terminal": true,
+    "title": "Lease: ship-b7d6-planning",
+    "type": "lease",
+    "updated_at": "2026-04-30T16:49:25.286485Z",
+    "workflow_id": "lease_sdlc"
+  }
+}

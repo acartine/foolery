@@ -1,0 +1,21 @@
+{
+  "event_id": "019ddf42-ddf5-7252-8695-3a1820bce1eb",
+  "occurred_at": "2026-04-30T16:39:54.613206Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5ddc",
+    "profile_id": "lease",
+    "state": "lease_terminated",
+    "terminal": true,
+    "title": "Lease: ship-988b-implementation_review",
+    "type": "lease",
+    "updated_at": "2026-04-30T16:39:54.613206Z",
+    "workflow_id": "lease_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf46-788e-77b3-96e7-6b37953fe918",
+  "occurred_at": "2026-04-30T16:43:50.798515Z",
+  "knot_id": "foolery-96ba",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment review:\n\nConfirmed:\n- origin/main HEAD = 91bebcfa (Merge worktree-agent-a2e7fc59f8d388624: consolidate buildAgentLabel into canonical formatter (foolery-96ba)).\n- ls-remote confirms remote SHA: 91bebcfaaa9c7e46f00c618751f391af9fbcfa6d.\n- Underlying refactor commit: 8c3aee8a.\n- grep \"function buildAgentLabel|const buildAgentLabel\" returns zero hits in src/.\n\nFinal quality gates on main (post-merge):\n- bun run lint: PASS\n- bunx tsc --noEmit: PASS\n- bun run test: PASS (311 files / 3109 tests)\n- bun run build: PASS\n\nAll four acceptance criteria met. Ready to mark shipped.",
+    "datetime": "2026-04-30T16:43:50.798515Z",
+    "entry_id": "019ddf46-788e-77b3-96e7-6b27bd78d70f",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

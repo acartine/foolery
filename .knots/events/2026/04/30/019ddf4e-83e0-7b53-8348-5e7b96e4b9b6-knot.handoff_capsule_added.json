@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf4e-83e0-7b53-8348-5e7b96e4b9b6",
+  "occurred_at": "2026-04-30T16:52:37.983993Z",
+  "knot_id": "foolery-cd2e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation: extended src/lib/__tests__/knots-canonical-metadata.test.ts createLease describe block from 3 cases to 5 (one per non-unknown AgentProviderId provider: Claude, Codex, Gemini, Copilot, OpenCode); each asserts the exact kno lease create argv via a shared assertCanonicalLeaseArgs helper. Added src/lib/__tests__/knots-lease-roundtrip.test.ts with per-provider round-trip: createLease (mocked execFile) -> synthesized kno lease show JSON -> ExecutionAgentInfo derivation -> deep-equal vs input. Hermetic — mocks node:child_process. Quality gates: lint, tsc --noEmit, full test suite (3117 pass), build all green.",
+    "datetime": "2026-04-30T16:52:37.983993Z",
+    "entry_id": "019ddf4e-83e0-7b53-8348-5e63fd01e0b8",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

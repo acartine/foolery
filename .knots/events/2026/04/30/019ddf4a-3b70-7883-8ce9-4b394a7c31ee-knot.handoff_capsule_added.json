@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf4a-3b70-7883-8ce9-4b394a7c31ee",
+  "occurred_at": "2026-04-30T16:47:57.296886Z",
+  "knot_id": "foolery-cd2e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan reviewed and approved: scope is purely test additions, hermetic per policy, no production code changes. Acceptance criteria 1-5 will be met by the two-file change. Approved to proceed.",
+    "datetime": "2026-04-30T16:47:57.296886Z",
+    "entry_id": "019ddf4a-3b70-7883-8ce9-4b2bc56681f8",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

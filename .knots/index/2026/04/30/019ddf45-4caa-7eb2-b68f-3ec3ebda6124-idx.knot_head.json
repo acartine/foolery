@@ -1,0 +1,37 @@
+{
+  "event_id": "019ddf45-4caa-7eb2-b68f-3ec3ebda6124",
+  "occurred_at": "2026-04-30T16:42:34.026943Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-96ba",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Consolidate agent-history buildAgentLabel into canonical formatter",
+    "type": "work",
+    "updated_at": "2026-04-30T16:42:34.026943Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019ddf45-25c2-7be1-9785-75db734f6421"
+  }
+}

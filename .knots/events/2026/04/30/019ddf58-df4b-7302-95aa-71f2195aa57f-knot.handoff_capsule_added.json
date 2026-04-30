@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf58-df4b-7302-95aa-71f2195aa57f",
+  "occurred_at": "2026-04-30T17:03:56.74791Z",
+  "knot_id": "foolery-b7d6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment reviewed: code is on origin/main at bf521457. All acceptance criteria verified. ActiveTerminal/TerminalSession types updated, useTerminalAgentInfo hook added with 6 hermetic tests, syncSessionLeaseInfo helper added with 4 hermetic tests. lint/tsc/test/build all green.",
+    "datetime": "2026-04-30T17:03:56.74791Z",
+    "entry_id": "019ddf58-df4b-7302-95aa-71e7bcc92d89",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019ddf46-78ca-7712-bbed-1511fe7b0c62",
+  "occurred_at": "2026-04-30T16:43:50.858289Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-96ba",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Consolidate agent-history buildAgentLabel into canonical formatter",
+    "type": "work",
+    "updated_at": "2026-04-30T16:43:50.858289Z",
+    "workflow_id": "work_sdlc"
+  }
+}

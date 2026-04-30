@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf43-9de0-7950-be6c-7e77b26cf47f",
+  "occurred_at": "2026-04-30T16:40:43.744815Z",
+  "knot_id": "foolery-c257",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment complete. Worktree commit f7eec7a1 merged into main as merge commit c1bf08f6 and pushed to origin/main. origin/main now at c8bae23c (sibling foolery-988b merged on top). The c1bf08f6 merge contains the beat-table-metadata.tsx refactor; clean push, no rebase needed.",
+    "datetime": "2026-04-30T16:40:43.744815Z",
+    "entry_id": "019ddf43-9de0-7950-be6c-7e6b4dfbfdee",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

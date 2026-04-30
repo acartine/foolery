@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf45-2581-71d3-b5d6-7d9e03a6dd71",
+  "occurred_at": "2026-04-30T16:42:24.001761Z",
+  "knot_id": "foolery-96ba",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment complete.\n\n- Worktree branch rebased on latest origin/main (which had picked up sibling foolery-988b and foolery-c257 merges).\n- Quality gates re-run after rebase: lint, tsc --noEmit, test (311 files / 3109 tests), build — all green.\n- Merge commit on origin/main: 91bebcfa (Merge worktree-agent-a2e7fc59f8d388624: consolidate buildAgentLabel into canonical formatter).\n- Push origin main: c8bae23c..91bebcfa fast-forward.",
+    "datetime": "2026-04-30T16:42:24.001761Z",
+    "entry_id": "019ddf45-2581-71d3-b5d6-7d8f823bf988",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

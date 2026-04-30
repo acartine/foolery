@@ -1,0 +1,34 @@
+{
+  "event_id": "019ddf3e-5c69-7973-a055-4268f7c2d878",
+  "occurred_at": "2026-04-30T16:34:59.305455Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-0345",
+    "profile_id": "lease",
+    "state": "lease_active",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "lease_active",
+      "output": {
+        "artifact_type": ""
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Lease: ship-c257-implementation",
+    "type": "lease",
+    "updated_at": "2026-04-30T16:34:59.305455Z",
+    "workflow_id": "lease_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf4a-1efe-7683-a422-06e8f44de399",
+  "occurred_at": "2026-04-30T16:47:50.014235Z",
+  "knot_id": "foolery-cd2e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan: (1) Extend src/lib/__tests__/knots-canonical-metadata.test.ts createLease describe block: add it() per provider (Claude, Codex, Gemini, Copilot, OpenCode) with realistic settings.toml shapes, asserting exact kno lease create argv. Add Gemini and Copilot fixtures (existing has Claude, Codex, OpenCode). (2) Create src/lib/__tests__/knots-lease-roundtrip.test.ts: per-provider round-trip — createLease (mocked execFile capturing argv), then re-parse the captured lease show JSON shape ({lease:{agent_info:{agent_type,provider,agent_name,model,model_version}}}) into ExecutionAgentInfo, asserting input == output. Hermetic — mocks node:child_process execFile. (3) Run lint+tsc+test+build; fix only minimal trivial issues; file follow-up knots if substantive bugs surface.",
+    "datetime": "2026-04-30T16:47:50.014235Z",
+    "entry_id": "019ddf4a-1efe-7683-a422-06df0b8cd21d",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

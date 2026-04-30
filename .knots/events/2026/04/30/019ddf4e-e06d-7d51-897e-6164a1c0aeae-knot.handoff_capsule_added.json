@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf4e-e06d-7d51-897e-6164a1c0aeae",
+  "occurred_at": "2026-04-30T16:53:01.677244Z",
+  "knot_id": "foolery-cd2e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review: tests are hermetic (mock node:child_process.execFile per Hermetic Test Policy in docs/DEVELOPING.md), exercise the full canonical pipeline (settings.toml shape -> toCanonicalLeaseIdentity -> toExecutionAgentInfo -> createLease argv), and the round-trip file additionally synthesizes the kno lease show JSON shape (per AgentInfo struct in knots/src/domain/lease.rs) and asserts deep-equal back to the original ExecutionAgentInfo. All 5 providers covered. Quality gates remain green (lint, tsc, 3117 tests, build). Approved.",
+    "datetime": "2026-04-30T16:53:01.677244Z",
+    "entry_id": "019ddf4e-e06d-7d51-897e-6153df8e1057",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

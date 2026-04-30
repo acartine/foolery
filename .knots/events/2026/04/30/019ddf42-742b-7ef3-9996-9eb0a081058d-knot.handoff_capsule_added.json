@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf42-742b-7ef3-9996-9eb0a081058d",
+  "occurred_at": "2026-04-30T16:39:27.53108Z",
+  "knot_id": "foolery-96ba",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation complete on worktree branch.\n\nCommit: 29c4d824d80cea227e97fd3640b2cd6f75bfbe1d\nFiles:\n- src/components/agent-history-session-card.tsx — replaced buildAgentLabel with formatAgentDisplayLabel; preserves undefined-when-empty UX via explicit guard.\n- src/components/agent-history-utils.tsx — deleted buildAgentLabel and dropped now-unused formatModelDisplay import from @/hooks/use-agent-info.\n\nAcceptance:\n1. agent-history-utils.tsx no longer contains a parallel implementation. PASS.\n2. Caller migrated to formatAgentDisplayLabel from @/lib/agent-identity. PASS.\n3. grep for buildAgentLabel returns zero hits across src/. PASS (verified).\n4. Existing tests pass. PASS (310 files / 3095 tests green).\n\nOutput format note: buildAgentLabel produced 'Claude · Opus 4.7' (· separator). formatAgentDisplayLabel produces 'Claude Opus 4.7' (space separator). This is the canonical format per the contract; no test asserted on the dot separator.",
+    "datetime": "2026-04-30T16:39:27.53108Z",
+    "entry_id": "019ddf42-742b-7ef3-9996-9ea129ff7b81",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

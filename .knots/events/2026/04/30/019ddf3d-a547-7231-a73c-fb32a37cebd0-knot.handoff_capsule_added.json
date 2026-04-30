@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf3d-a547-7231-a73c-fb32a37cebd0",
+  "occurred_at": "2026-04-30T16:34:12.423774Z",
+  "knot_id": "foolery-988b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan review: APPROVED.\n\nThe plan correctly identifies:\n1. Mirroring the existing per-provider normaliser shape.\n2. The /-split + trailing numeric regex rule, with clear examples for all AC shapes.\n3. The wiring into normalizeAgentIdentity (replacing 7-line passthrough).\n4. The new test file plus expected adjustment to existing OpenCode test in agent-identity.test.ts.\n5. The version-precedence inversion for OpenCode (parsed wins over caller-supplied) which is the actual bug fix and is consistent with the AC ('NEVER pulls a version from runtime hint').\n\nRisks: LOW. Pure addition + wired replacement. No callers outside agent-identity.ts and tests.\n\nTrailing-numeric rule documented as comment per AC.",
+    "datetime": "2026-04-30T16:34:12.423774Z",
+    "entry_id": "019ddf3d-a547-7231-a73c-fb25513bb69e",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

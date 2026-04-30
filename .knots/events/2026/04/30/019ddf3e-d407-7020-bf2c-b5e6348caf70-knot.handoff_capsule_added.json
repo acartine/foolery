@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf3e-d407-7020-bf2c-b5e6348caf70",
+  "occurred_at": "2026-04-30T16:35:29.927516Z",
+  "knot_id": "foolery-96ba",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan review:\n\n- Plan correctly identifies the single caller and the canonical formatter to use.\n- Output format change (· → space) is documented and acceptable per the contract.\n- Empty-input guard preserves callsite UX (no \"Unknown\" badge appears when agent fields are absent).\n- Out-of-scope guardrails respected (no edits to agent-identity.ts or beat-table-metadata.tsx).\n- formatAgentDisplayLabel is the documented canonical display function (contract table row \"Display label (UI)\").\n- Plan approved.",
+    "datetime": "2026-04-30T16:35:29.927516Z",
+    "entry_id": "019ddf3e-d407-7020-bf2c-b5d221a6a6f2",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

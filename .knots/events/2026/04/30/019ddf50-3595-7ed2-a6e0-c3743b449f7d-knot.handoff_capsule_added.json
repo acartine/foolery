@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf50-3595-7ed2-a6e0-c3743b449f7d",
+  "occurred_at": "2026-04-30T16:54:29.013699Z",
+  "knot_id": "foolery-cd2e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipped to origin/main as merge commit 9c92feb5 (parent of d964a63c). Quality gates green on merged main: lint, tsc --noEmit, bun run test (3117 pass / 11 skipped / 42 todo), bun run build. No production code touched, no follow-up bugs surfaced — the existing canonical pipeline correctly handles all five providers.",
+    "datetime": "2026-04-30T16:54:29.013699Z",
+    "entry_id": "019ddf50-3595-7ed2-a6e0-c3696a54f5d2",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

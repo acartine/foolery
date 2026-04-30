@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf46-997b-71d3-b588-8e5c2ace5f93",
+  "occurred_at": "2026-04-30T16:43:59.227229Z",
+  "knot_id": "foolery-c257",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment review complete. Verified merge commit c1bf08f6 is on origin/main (final main HEAD c8bae23c includes both this knot and sibling foolery-988b). All four quality gates pass on final origin/main: lint clean, tsc clean, test 311 files / 3109 passed, build clean. Acceptance #1-#4 met: single canonical 'agentname' key on line 121, no fallback chains, omits missing fields. Ready to ship.",
+    "datetime": "2026-04-30T16:43:59.227229Z",
+    "entry_id": "019ddf46-997b-71d3-b588-8e4e4cd400be",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

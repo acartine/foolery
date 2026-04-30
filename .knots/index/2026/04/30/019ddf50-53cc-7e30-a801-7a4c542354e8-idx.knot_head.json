@@ -1,0 +1,21 @@
+{
+  "event_id": "019ddf50-53cc-7e30-a801-7a4c542354e8",
+  "occurred_at": "2026-04-30T16:54:36.748698Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-cd2e",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add per-provider createLease + lease round-trip tests",
+    "type": "work",
+    "updated_at": "2026-04-30T16:54:36.748698Z",
+    "workflow_id": "work_sdlc"
+  }
+}

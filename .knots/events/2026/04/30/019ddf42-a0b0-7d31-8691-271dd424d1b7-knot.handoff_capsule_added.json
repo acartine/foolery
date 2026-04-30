@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf42-a0b0-7d31-8691-271dd424d1b7",
+  "occurred_at": "2026-04-30T16:39:38.92877Z",
+  "knot_id": "foolery-c257",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review complete. All 4 acceptance criteria met. Quality gates re-verified post-commit: lint (clean), tsc (clean), test (310 files / 3095 pass), build (clean). Diff: 26+/130-, 156-line shrink. Commit f7eec7a1 ready for shipment.",
+    "datetime": "2026-04-30T16:39:38.92877Z",
+    "entry_id": "019ddf42-a0b0-7d31-8691-2704f17b12b3",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

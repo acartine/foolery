@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf3d-f780-7ea1-b00a-897ebbee6b93",
+  "occurred_at": "2026-04-30T16:34:33.472538Z",
+  "knot_id": "foolery-c257",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan for foolery-c257 — drop multi-key fallbacks in beat-table-metadata.tsx.\n\nScope verified: beat-table-metadata.tsx's exported readers are consumed only by capsuleMeta (called on handoff capsules) and renderedHandoffCapsules (which reads handoff_capsules arrays). Per ~/knots/docs/leases.md, handoff capsules stamp ONLY `agentname`, `model`, `version` (and `username`). Steps stamp `agent_name`/`agent_model`/`agent_version` — but this file does not read steps, so step keys do not belong here at all.\n\nRefactor:\n1. resolveAgentName/Model/Version/Username/Datetime currently try [agentname, agentName, agent_name] etc. Drop the alternates. For handoff capsules, the canonical key for agent name is `agentname` (one constant), for model is `model`, for version is `version`. No camelCase, no snake_case alternates.\n2. Drop the `agent`/`metadata`/`actor` nested-object lookups for agent fields — capsules don't nest agent_info under those keys in Knots' stamping. Keep the top-level read only. (Username may still legitimately come from a nested `user` object in legacy fixtures — keep that path narrowly until tests prove otherwise; if the legacy fixtures don't exist in tests, drop those too.)\n3. Remove imports/keys that become unused (e.g. helper-function `agent` / `actor` parameters where they're no longer consulted).\n4. Update beat-table-summary.test.ts only if it asserts the old fallback behavior — current test asserts label ordering, not key fallbacks, so no change expected.\n5. Verify with grep: `grep -n '\"agentName\"\\|\"agentname\"\\|\"agent_name\"' src/components/beat-table-metadata.tsx` shows exactly one `\"agentname\"` constant and zero of the other two.\n\nRisk: low. The reader is a pure function over a passed entry. No callers depend on specific fallback shapes. Sibling knots foolery-988b (agent-identity.ts) and foolery-96ba (agent-history-utils.tsx) own untouched files.\n\nTest strategy: existing `beat-table-summary.test.ts` and `beat-metadata-details.test.tsx` cover render flow. Will run lint + tsc + test + build. No new tests required for this knot — the contract enforcement is at the read site, and downstream renderers don't care about the omission of optional metadata.",
+    "datetime": "2026-04-30T16:34:33.472538Z",
+    "entry_id": "019ddf3d-f780-7ea1-b00a-89675d50f695",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

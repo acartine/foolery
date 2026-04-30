@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf41-b0d1-7d62-b682-8e76c6662b36",
+  "occurred_at": "2026-04-30T16:38:37.521224Z",
+  "knot_id": "foolery-c257",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation complete. Refactored beat-table-metadata.tsx to read one canonical key per concept on handoff capsules: agentname/model/version/username. Dropped 130 lines of nested-object scaffolding and multi-key fallback chains. Grep gate passes (single \"agentname\" constant on line 121). Commit f7eec7a1 on worktree branch. lint, tsc, test (310 files, 3095 pass), build all green pre-commit.",
+    "datetime": "2026-04-30T16:38:37.521224Z",
+    "entry_id": "019ddf41-b0d1-7d62-b682-8e678a70792a",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

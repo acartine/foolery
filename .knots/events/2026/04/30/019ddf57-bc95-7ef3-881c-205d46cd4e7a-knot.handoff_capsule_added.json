@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf57-bc95-7ef3-881c-205d46cd4e7a",
+  "occurred_at": "2026-04-30T17:02:42.325128Z",
+  "knot_id": "foolery-b7d6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review: 4 acceptance criteria from knot are all met. (1) ActiveTerminal: no agent fields (2) ActiveTerminal carries knotsLeaseId (3) useTerminalAgentInfo hook resolves canonical agent_info via TerminalSession.knotsAgentInfo (autostamped from lease) (4) useAgentInfoMap migrated, plus useTerminalPanelState (5) terminal-store types updated, callers updated (use-ship-beat, use-scene-manager, use-terminal-xterm, retake-view-helpers, terminal-approval-session, terminal-manager-take-child), tests updated. (6) grep for the 4 fields in terminal-store.ts: empty. Quality gates pass. Sibling foolery-8fc3: to-active-agent-info.ts is no longer called by useAgentInfoMap.overrideFromTerminals — it remains used only by populateFromCapsules (handoff-capsule path), which is a separate concern. So 8fc3 is partially redundant but not fully — the capsule path still uses it.",
+    "datetime": "2026-04-30T17:02:42.325128Z",
+    "entry_id": "019ddf57-bc95-7ef3-881c-204c46a5463e",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

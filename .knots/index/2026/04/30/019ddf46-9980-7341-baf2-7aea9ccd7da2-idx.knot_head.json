@@ -1,0 +1,34 @@
+{
+  "event_id": "019ddf46-9980-7341-baf2-7aea9ccd7da2",
+  "occurred_at": "2026-04-30T16:43:59.227229Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c257",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Drop multi-key fallbacks in beat-table-metadata reader",
+    "type": "work",
+    "updated_at": "2026-04-30T16:43:59.227229Z",
+    "workflow_id": "work_sdlc"
+  }
+}

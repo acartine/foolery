@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf4b-92bf-7ad0-b83d-19eec453290f",
+  "occurred_at": "2026-04-30T16:49:25.183784Z",
+  "knot_id": "foolery-b7d6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan: (1) Add knotsLeaseId to ActiveTerminal+TerminalSession alongside existing 4 fields. (2) Server populates knotsLeaseId on session after acquireKnotsLease, plus optional knotsAgentInfo from lease's autostamped agent_info. (3) Add useTerminalAgentInfo hook that maps sessionId/leaseId to canonical agent identity by reading TerminalSession[] from existing backend poll. (4) Migrate useAgentInfoMap.overrideFromTerminals to consume hook. (5) Drop the 4 fields from ActiveTerminal+TerminalSession+writers. (6) Update tests. Spawn sites: use-ship-beat, use-scene-manager. Hook resolves from server response since lease info is already round-tripped through rehydrateFromBackend. Approvals stay separate (different store).",
+    "datetime": "2026-04-30T16:49:25.183784Z",
+    "entry_id": "019ddf4b-92bf-7ad0-b83d-19daed4aad77",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf41-ca08-73a0-8720-74a6767a71ba",
+  "occurred_at": "2026-04-30T16:38:43.976131Z",
+  "knot_id": "foolery-988b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation complete (commit b6084fe3 on worktree-agent-a9439a49934c0832d).\n\nDELIVERED:\n1. normalizeOpenCodeModel(rawModel) added to src/lib/agent-identity.ts (lines 175-242). Documented with header comment explaining the rule (split on /, take trailing numeric tail of last token, flavor is first token only when 3+ segments).\n2. Helper extractOpenCodeTrailingVersion handles consecutive hyphen-separated trailing numeric segments (claude-sonnet-4-5 -> '4.5').\n3. Wired into normalizeAgentIdentity OpenCode branch (replaced 7-line passthrough at agent-identity.ts:243-250 with new branch using normalizeOpenCodeModel; parsed version wins over caller-supplied version per anti-leak rule).\n4. toCanonicalLeaseIdentity special-cased for OpenCode: model is already a full path, so we skip the flavor/model join (otherwise we'd double-stamp openrouter).\n5. New test file src/lib/__tests__/agent-identity-opencode.test.ts with 14 test cases across 3 describe blocks (canonical 3-segment paths, shorter/edge shapes, anti-leak regressions).\n\nREGRESSION TESTING:\n- src/lib/__tests__/agent-identity.test.ts existing 9 tests pass (incl. 'normalizes OpenCode agent identity' which still expects copilot/anthropic/claude-sonnet-4 -> agentModel='copilot/anthropic/claude-sonnet-4', agentVersion='4').\n- src/lib/__tests__/agent-identity-display-parts.test.ts 11 tests pass.\n- src/lib/__tests__/knots-canonical-metadata.test.ts 8 tests pass.\n\nThe screenshot bug is fixed: input { model: 'openrouter/moonshotai/kimi-k2.6', version: '4.7' (leaked) } now produces { provider: 'OpenCode', model: 'openrouter/moonshotai/kimi-k2.6', flavor: 'openrouter', version: '2.6' }.",
+    "datetime": "2026-04-30T16:38:43.976131Z",
+    "entry_id": "019ddf41-ca08-73a0-8720-7498a28d3105",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

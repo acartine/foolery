@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf57-3bf2-79a3-8546-49fb27152eb0",
+  "occurred_at": "2026-04-30T17:02:09.39416Z",
+  "knot_id": "foolery-b7d6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented: TerminalSession now carries knotsLeaseId+knotsAgentInfo (mirrored from entry.knotsLeaseAgentInfo via syncSessionLeaseInfo on acquire/rotate/release). ActiveTerminal carries only knotsLeaseId. New hook useTerminalAgentInfoMap joins terminals with /api/terminal snapshot. Migrated useAgentInfoMap, useTerminalPanelState. Spawn sites in use-ship-beat/use-scene-manager/use-terminal-xterm/retake-view-helpers updated. Removed updateAgent action; agent_switch event triggers lease refetch. terminal-approval-session reads from entry.knotsLeaseAgentInfo. Quality gates: lint clean, tsc clean, 3119 tests passing, build succeeds. New tests: use-terminal-agent-info (6 cases) and sync-session-lease-info (4 cases). Storybook beat-status-badge.stories.tsx fails because the component file does not exist on origin/main; pre-existing, unrelated. Approvals store kept separate per knot scope. Commit: e5cce7b6.",
+    "datetime": "2026-04-30T17:02:09.39416Z",
+    "entry_id": "019ddf57-3bf2-79a3-8546-49e1121ec556",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

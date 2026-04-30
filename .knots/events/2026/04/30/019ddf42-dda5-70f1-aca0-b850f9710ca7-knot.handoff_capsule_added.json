@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf42-dda5-70f1-aca0-b850f9710ca7",
+  "occurred_at": "2026-04-30T16:39:54.53382Z",
+  "knot_id": "foolery-988b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review: APPROVED.\n\nQUALITY GATES (all green):\n- bun run lint: PASS (no errors)\n- bunx tsc --noEmit: PASS (no errors)\n- bun run test: PASS (311 files, 3109 tests, 11 skipped, 42 todo)\n- bun run build: PASS (Next.js production build succeeded)\n\nDIFF REVIEW: clean, focused, well-commented.\n- Adds normalizeOpenCodeModel + helper extractOpenCodeTrailingVersion (~58 lines, both well-documented)\n- Replaces 7-line passthrough in normalizeAgentIdentity with new branch using parser\n- Special-cases toCanonicalLeaseIdentity for OpenCode to skip flavor/model join (avoids router double-stamp)\n- 14 new test cases covering all AC shapes plus regression for the leaked-4.7 bug\n\nNO REGRESSIONS:\n- All existing agent-identity tests pass unchanged.\n- No changes to display path (parseAgentDisplayParts at line 459 already had its own parseOpenCodeModelPath helper unchanged).\n\nReady to advance to ready_for_shipment.",
+    "datetime": "2026-04-30T16:39:54.53382Z",
+    "entry_id": "019ddf42-dda5-70f1-aca0-b84984fbf611",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

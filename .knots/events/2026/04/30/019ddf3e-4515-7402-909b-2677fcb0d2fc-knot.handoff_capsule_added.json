@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf3e-4515-7402-909b-2677fcb0d2fc",
+  "occurred_at": "2026-04-30T16:34:53.333855Z",
+  "knot_id": "foolery-c257",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan reviewed. Scope is one file (beat-table-metadata.tsx); reader is consumed only by capsule rendering; canonical keys for capsules per leases.md are agentname/model/version. Refactor + grep gate; no new tests needed. Approved — proceed to implementation.",
+    "datetime": "2026-04-30T16:34:53.333855Z",
+    "entry_id": "019ddf3e-4515-7402-909b-2662a0629703",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

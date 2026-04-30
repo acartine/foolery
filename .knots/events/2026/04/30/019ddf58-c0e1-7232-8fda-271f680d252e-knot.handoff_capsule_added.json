@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf58-c0e1-7232-8fda-271f680d252e",
+  "occurred_at": "2026-04-30T17:03:48.961588Z",
+  "knot_id": "foolery-b7d6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipped to origin/main: bf521457. Refactor of terminal-store/TerminalSession to read agent identity exclusively from the bound Knots lease via the new useTerminalAgentInfo hook. All 4 gates green on final main.",
+    "datetime": "2026-04-30T17:03:48.961588Z",
+    "entry_id": "019ddf58-c0e1-7232-8fda-270a26ede9ab",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

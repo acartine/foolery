@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf43-5fa6-74e1-8200-76821fff3846",
+  "occurred_at": "2026-04-30T16:40:27.814964Z",
+  "knot_id": "foolery-96ba",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review:\n\nDiff inspection (29c4d824):\n- agent-history-session-card.tsx: clean replacement of buildAgentLabel call with formatAgentDisplayLabel from @/lib/agent-identity. The empty-input guard preserves the prior callsite UX (label rendered conditionally as `agentLabel ? ... : null`).\n- agent-history-utils.tsx: clean deletion of buildAgentLabel and the now-unused formatModelDisplay import. No other code in this file referenced buildAgentLabel.\n\nAcceptance criteria:\n1. agent-history-utils.tsx no longer contains a parallel formatter — VERIFIED.\n2. Caller uses formatAgentDisplayLabel from @/lib/agent-identity — VERIFIED.\n3. grep shows zero hits for buildAgentLabel — VERIFIED.\n4. Tests pass — VERIFIED (310 files / 3095 tests green).\n\nQuality gates: lint, tsc --noEmit, test, build — all green.\n\nOut-of-scope guardrails honored: no edits to src/lib/agent-identity.ts (988b territory) or src/components/beat-table-metadata.tsx (c257 territory).\n\nApproved for shipment.",
+    "datetime": "2026-04-30T16:40:27.814964Z",
+    "entry_id": "019ddf43-5fa6-74e1-8200-76740fe08cf6",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

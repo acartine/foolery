@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddf3e-ae1d-7523-b39b-b785da9fd4cb",
+  "occurred_at": "2026-04-30T16:35:20.221291Z",
+  "knot_id": "foolery-96ba",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan for foolery-96ba (Consolidate buildAgentLabel into canonical formatter):\n\nInvestigation (already done):\n- buildAgentLabel is defined in src/components/agent-history-utils.tsx:403, exported.\n- One caller: src/components/agent-history-session-card.tsx:50 (via useMemo, passes session.agentName, session.agentModel, session.agentVersion).\n- Canonical formatter lives in src/lib/agent-identity.ts: formatAgentDisplayLabel(AgentIdentityLike) and parseAgentDisplayParts(AgentIdentityLike).\n- Tests: no tests assert on the string output of buildAgentLabel. Tests touching agent-history (agent-history-summaries.test.ts, etc.) use a separate agentLabel field on the token-usage summary structure, unrelated to the session card formatter.\n\nImplementation:\n1. Update src/components/agent-history-session-card.tsx to import formatAgentDisplayLabel from @/lib/agent-identity and call it directly with { command: session.agentName, model: session.agentModel, version: session.agentVersion } instead of buildAgentLabel.\n2. Handle the empty-input case: formatAgentDisplayLabel always returns at least \"Unknown\", so guard with a check on whether any of the fields are present, returning undefined when none are (preserves current callsite behavior of conditional rendering when agentLabel is undefined).\n3. Delete buildAgentLabel from src/components/agent-history-utils.tsx along with the now-unused formatModelDisplay import from @/hooks/use-agent-info.\n4. Re-run lint, typecheck, test, build to verify nothing broke.\n\nOutput format change: buildAgentLabel produced \"Claude · Opus 4.7\" with a \"·\" separator. formatAgentDisplayLabel produces \"Claude Opus 4.7\" with spaces. Per knot description and contract rule 6, this is acceptable — the canonical formatter is authoritative.\n\nOut of scope (siblings):\n- foolery-988b is editing src/lib/agent-identity.ts (OpenCode normaliser). Will not touch.\n- foolery-c257 is editing src/components/beat-table-metadata.tsx. Will not touch.\n\nRisk: low. One caller, no test fixtures asserting the dot separator.",
+    "datetime": "2026-04-30T16:35:20.221291Z",
+    "entry_id": "019ddf3e-ae1d-7523-b39b-b77af2a4b274",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}
