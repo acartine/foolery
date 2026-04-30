@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { type MutableRefObject, useEffect, useRef } from "react";
 import {
   useTerminalStore,
   type ActiveTerminal,
@@ -73,8 +73,21 @@ export function useTerminalXterm(
   const cleanupRef =
     useRef<(() => void) | null>(null);
 
+  // Stash the latest params so callbacks see
+  // fresh values without forcing the effect to
+  // tear down and rebuild the terminal on every
+  // parent re-render. The parent re-renders on
+  // every store update (5s session rehydrate,
+  // 15s beat refetch, status changes); rebuilding
+  // the terminal each time replays the buffer and
+  // yanks the user back to the bottom.
+  const paramsRef = useRef(params);
+  useEffect(() => {
+    paramsRef.current = params;
+  });
+
   useXtermEffect(
-    params, containerRef,
+    params, paramsRef, containerRef,
     termRef, fitRef, cleanupRef,
   );
 
@@ -106,6 +119,7 @@ export function useTerminalXterm(
 
 function useXtermEffect(
   p: XtermHookParams,
+  paramsRef: MutableRefObject<XtermHookParams>,
   containerRef: React.RefObject<
     HTMLDivElement | null
   >,
@@ -119,24 +133,29 @@ function useXtermEffect(
     (() => void) | null
   >,
 ) {
+  const {
+    panelOpen, activeSessionKey,
+    activeBeatId, activeBeatTitle, lightTheme,
+  } = p;
+
   useEffect(() => {
     if (
-      !p.panelOpen
-      || !p.activeSessionKey
-      || !p.activeBeatId
-      || !p.activeBeatTitle
+      !panelOpen
+      || !activeSessionKey
+      || !activeBeatId
+      || !activeBeatTitle
       || !containerRef.current
     ) return;
 
-    const sid = p.activeSessionKey;
-    const beatId = p.activeBeatId;
-    const beatTitle = p.activeBeatTitle;
+    const sid = activeSessionKey;
+    const beatId = activeBeatId;
+    const beatTitle = activeBeatTitle;
     let term: XtermTerminal | null = null;
     const disposed = { value: false };
 
     const init = async () => {
       term = await createAndMount(
-        containerRef, disposed, p.lightTheme,
+        containerRef, disposed, lightTheme,
       );
       if (!term) return;
       termRef.current = term;
@@ -146,7 +165,7 @@ function useXtermEffect(
 
       writeBanner(term, beatId, beatTitle);
       const unsub = connectSession(
-        term, sid, beatId, disposed, p,
+        term, sid, beatId, disposed, paramsRef,
       );
       cleanupRef.current = unsub;
     };
@@ -163,7 +182,10 @@ function useXtermEffect(
       }
     };
   }, [
-    p, containerRef, termRef, fitRef, cleanupRef,
+    panelOpen, activeSessionKey,
+    activeBeatId, activeBeatTitle, lightTheme,
+    paramsRef,
+    containerRef, termRef, fitRef, cleanupRef,
   ]);
 }
 
@@ -226,25 +248,25 @@ function connectSession(
   sessionId: string,
   beatId: string,
   disposed: { value: boolean },
-  p: XtermHookParams,
+  paramsRef: MutableRefObject<XtermHookParams>,
 ): () => void {
   const recoveryFlag = { inFlight: false };
   const doRecovery = (
     prev: string | null,
-  ) => void launchRecovery(
-    beatId, sessionId,
-    p.activeRepoPath, liveTerm,
-    disposed, p.upsertTerminal,
-    p.removeTerminal, recoveryFlag, prev,
-  );
+  ) => {
+    const p = paramsRef.current;
+    void launchRecovery(
+      beatId, sessionId,
+      p.activeRepoPath, liveTerm,
+      disposed, p.upsertTerminal,
+      p.removeTerminal, recoveryFlag, prev,
+    );
+  };
 
   const write = (type: string, data: string) =>
     writeTerminalEvent(
       liveTerm, type, data, sessionId,
-      p.thinkingDetailVisible,
-      p.recentOutputBySession,
-      p.failureHintBySession,
-      p.agentCommand, doRecovery,
+      paramsRef, doRecovery,
     );
 
   const buf =
@@ -258,6 +280,7 @@ function connectSession(
     const code =
       sessionConnections.getExitCode(sessionId)
       ?? 0;
+    const p = paramsRef.current;
     writeExitMessage(
       liveTerm, code, sessionId,
       p.recentOutputBySession,
@@ -295,32 +318,33 @@ function writeTerminalEvent(
   type: string,
   data: string,
   sid: string,
-  detailVisible: boolean,
-  outputRef: React.RefObject<
-    Map<string, string>
-  >,
-  hintRef: React.RefObject<
-    Map<string, TerminalFailureGuidance>
-  >,
-  agentCmd: string | undefined,
+  paramsRef: MutableRefObject<XtermHookParams>,
   recovery: (prev: string | null) => void,
 ): void {
+  const p = paramsRef.current;
   if (type === "stdout") {
-    appendRecentOutput(outputRef, sid, data);
+    appendRecentOutput(
+      p.recentOutputBySession, sid, data,
+    );
     term.write(data);
   } else if (type === "stdout_detail") {
-    appendRecentOutput(outputRef, sid, data);
-    if (detailVisible) term.write(data);
+    appendRecentOutput(
+      p.recentOutputBySession, sid, data,
+    );
+    if (p.thinkingDetailVisible) term.write(data);
   } else if (type === "stderr") {
-    appendRecentOutput(outputRef, sid, data);
-    if (detailVisible) {
+    appendRecentOutput(
+      p.recentOutputBySession, sid, data,
+    );
+    if (p.thinkingDetailVisible) {
       term.write(`\x1b[31m${data}\x1b[0m`);
     }
   } else if (type === "exit") {
     writeExitMessage(
       term, parseInt(data, 10), sid,
-      outputRef, hintRef,
-      agentCmd, recovery,
+      p.recentOutputBySession,
+      p.failureHintBySession,
+      p.agentCommand, recovery,
     );
   }
 }
