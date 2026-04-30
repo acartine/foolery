@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddce9-f433-71d0-ae1d-5c05dff14885",
+  "occurred_at": "2026-04-30T05:43:33.171883Z",
+  "knot_id": "foolery-2dd7",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[shipment] Merged and pushed.\n\n- commit: 60f56799 (feat) + ea903547 (lint nit)\n- pushed: 7301a997..ea903547 (origin/main)\n- CI: gh run 25149428931 → success",
+    "datetime": "2026-04-30T05:43:33.171883Z",
+    "entry_id": "019ddce9-f433-71d0-ae1d-5bff1f3dde23",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

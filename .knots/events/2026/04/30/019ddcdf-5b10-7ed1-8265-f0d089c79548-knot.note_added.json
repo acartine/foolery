@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddcdf-5b10-7ed1-8265-f0d089c79548",
+  "occurred_at": "2026-04-30T05:31:58.608743Z",
+  "knot_id": "foolery-2dd7",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[plan-review] Approved.\n\n- Plan respects the user's \"we cannot fix what we don't understand\"\n  constraint: this knot does pure containment (skip dead follow-up,\n  emit banner) without auto-recovery.\n- Reuses dispatch-pool-resolver's banner machinery — no duplicated\n  ANSI / box-drawing.\n- Adds a new dispatch-failure kind 'lease_dead' so the schema stays\n  honest (vs overloading 'agent' or 'backend').\n- Fail-closed on lease-state-fetch failures is consistent with\n  CLAUDE.md's \"Fail Loudly, Never Silently\" rule.\n- Hermetic test path is straightforward (inject listLeases stub).\n- Out of scope is explicit: does NOT auto-recover, does NOT touch\n  kno semantics, does NOT diagnose the upstream cause.\n\nApprove and advance.",
+    "datetime": "2026-04-30T05:31:58.608743Z",
+    "entry_id": "019ddcdf-5b10-7ed1-8265-f0c5da789daf",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

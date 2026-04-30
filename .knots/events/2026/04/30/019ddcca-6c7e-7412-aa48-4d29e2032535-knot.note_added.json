@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddcca-6c7e-7412-aa48-4d29e2032535",
+  "occurred_at": "2026-04-30T05:09:06.814462Z",
+  "knot_id": "foolery-dd9c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[plan-review] Approved.\n\n- All 10 boundaries from knot acceptance are covered.\n- All 5 classifier categories from knot acceptance are covered with\n  unit tests.\n- Hermetic Test Policy respected: unit tests use injected stubs (no\n  real fs/exec), integration test goes in __manual_tests__/.\n- File-size limit (500 LOC) respected: split into 4 small modules\n  (dispatch-forensics-types.ts, dispatch-forensics-storage.ts,\n  dispatch-forensics-classify.ts, dispatch-forensics.ts).\n- Function-size limit (100 LOC) respected: each public function is\n  small; classifier is rule-based diff, not one mega-function.\n- Wiring is additive (no behavior change). Snapshot writes are\n  fire-and-forget so they cannot block the take loop.\n- Reuses existing red-banner machinery from dispatch-pool-resolver.ts\n  (adds one exported helper) — no duplicated ANSI codes.\n- New lease-audit event names are clearly distinct from existing\n  events (prefix `beat_snapshot_`).\n- Greppable marker phrase `FOOLERY DISPATCH FORENSIC` distinct from\n  the existing `FOOLERY DISPATCH FAILURE`.\n- Out-of-scope is explicit: no behavior fixes, no take-loop\n  follow-up changes (those are foolery-2dd7).\n\nRisk note for implementation: snapshot exec calls (showKnot, listLeases)\nmust use a 5s timeout to avoid blocking the take loop if kno hangs.\n\nApprove and advance to implementation.",
+    "datetime": "2026-04-30T05:09:06.814462Z",
+    "entry_id": "019ddcca-6c7e-7412-aa48-4d10358e723c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "event_id": "019ddcbf-8c1d-7d91-af60-b3a3e6b3ec7d",
+  "occurred_at": "2026-04-30T04:57:14.013333Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b71c",
+    "next_step_metadata": {
+      "action_kind": "gate",
+      "action_state": "plan_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot",
+    "state": "planning",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "planning",
+      "output": {
+        "access_hint": "kno show",
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Document 'result' event in TAXONOMY.md with exact semantics and exact app-behavior contract",
+    "type": "work",
+    "updated_at": "2026-04-30T04:57:14.013333Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019ddcb1-6774-7443-bac7-e51a887608b6"
+  }
+}

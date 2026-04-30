@@ -1,0 +1,51 @@
+{
+  "event_id": "019ddcc8-179e-7bb0-8a5d-a3f5446cecaa",
+  "occurred_at": "2026-04-30T05:06:34.014717Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-dd9c",
+    "next_step_metadata": {
+      "action_kind": "gate",
+      "action_state": "plan_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot",
+    "state": "planning",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "planning",
+      "output": {
+        "access_hint": "kno show",
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Capture exhaustive knot+lease forensic logs at every dispatch boundary so we can reconstruct any failure (incl. concurrent-claim, double-claim, half-transition) without guessing",
+    "type": "work",
+    "updated_at": "2026-04-30T05:06:34.014717Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019ddcbd-6863-7011-af8b-3efacc0dce06"
+  }
+}

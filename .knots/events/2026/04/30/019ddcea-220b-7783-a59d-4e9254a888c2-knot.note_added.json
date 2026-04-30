@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddcea-220b-7783-a59d-4e9254a888c2",
+  "occurred_at": "2026-04-30T05:43:44.907172Z",
+  "knot_id": "foolery-2dd7",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[shipment-review] Approved. Two commits visible on origin/main, CI green, all acceptance items met. Advance to shipped.",
+    "datetime": "2026-04-30T05:43:44.907172Z",
+    "entry_id": "019ddcea-220b-7783-a59d-4e821e097764",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

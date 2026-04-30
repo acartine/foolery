@@ -1,0 +1,10 @@
+{
+  "event_id": "019ddcbd-683f-7e32-aec6-8e9391446613",
+  "occurred_at": "2026-04-30T04:54:53.759404Z",
+  "knot_id": "foolery-dd9c",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Add forensic logging around kno claim transitions so half-transition vs concurrent-claim is provable from logs",
+    "to": "Capture exhaustive knot+lease forensic logs at every dispatch boundary so we can reconstruct any failure (incl. concurrent-claim, double-claim, half-transition) without guessing"
+  }
+}

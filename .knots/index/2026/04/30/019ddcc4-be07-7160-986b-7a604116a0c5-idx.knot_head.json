@@ -1,0 +1,47 @@
+{
+  "event_id": "019ddcc4-be07-7160-986b-7a604116a0c5",
+  "occurred_at": "2026-04-30T05:02:54.462315Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b71c",
+    "next_step_metadata": {
+      "action_kind": "produce",
+      "action_state": "shipment",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot",
+    "state": "implementation_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "implementation_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Document 'result' event in TAXONOMY.md with exact semantics and exact app-behavior contract",
+    "type": "work",
+    "updated_at": "2026-04-30T05:02:54.462315Z",
+    "workflow_id": "work_sdlc"
+  }
+}

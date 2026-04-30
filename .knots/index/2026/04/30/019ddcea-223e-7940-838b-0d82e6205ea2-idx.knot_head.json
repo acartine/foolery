@@ -1,0 +1,21 @@
+{
+  "event_id": "019ddcea-223e-7940-838b-0d82e6205ea2",
+  "occurred_at": "2026-04-30T05:43:44.958427Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2dd7",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Take-loop follow-up MUST verify lease is not terminated before re-prompting agent",
+    "type": "work",
+    "updated_at": "2026-04-30T05:43:44.958427Z",
+    "workflow_id": "work_sdlc"
+  }
+}

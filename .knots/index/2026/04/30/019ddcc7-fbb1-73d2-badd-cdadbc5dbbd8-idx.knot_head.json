@@ -1,0 +1,21 @@
+{
+  "event_id": "019ddcc7-fbb1-73d2-badd-cdadbc5dbbd8",
+  "occurred_at": "2026-04-30T05:06:26.865058Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b71c",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Document 'result' event in TAXONOMY.md with exact semantics and exact app-behavior contract",
+    "type": "work",
+    "updated_at": "2026-04-30T05:06:26.865058Z",
+    "workflow_id": "work_sdlc"
+  }
+}

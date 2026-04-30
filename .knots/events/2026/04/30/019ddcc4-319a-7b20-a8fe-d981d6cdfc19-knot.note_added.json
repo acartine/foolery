@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddcc4-319a-7b20-a8fe-d981d6cdfc19",
+  "occurred_at": "2026-04-30T05:02:18.522487Z",
+  "knot_id": "foolery-b71c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[implementation] TAXONOMY.md updated.\n\nChanges:\n- Added new `## Normalized events` section between `## Nouns` and\n  `## Workflow States` (TAXONOMY.md:307+).\n- Added `### \\`result\\` event` entry under it with the full contract\n  (definition, per-transport sources with file:line citations, DOES\n  authorize list, does NOT authorize list, anti-patterns to grep for).\n- Rewrote `### Turn` (TAXONOMY.md:287) to reference the new section\n  and drop the loose \"one result out\" wording. Marked the entry\n  `<!-- human -->` so /taxonomize preserves it.\n\nCitations verified at current line numbers:\n- src/lib/agent-adapter-normalizers.ts:92, 117\n- src/lib/opencode-event-translate.ts:264, 290\n- src/lib/agent-session-runtime-events.ts:170, 193, 246\n- src/lib/codex-jsonrpc-translate.ts:260\n- src/lib/agent-session-runtime-events.ts:1-27 (cross-ref docstring)\n- src/lib/terminal-manager-take-follow-up.ts (the DO NOT block is\n  cited via the anti-patterns section).\n\nQuality gates (in worktree epic-moore-b361a1, deps installed):\n- bun run lint → clean\n- bunx tsc --noEmit → clean\n- bun run test → 3041 passed, 11 skipped, 42 todo (all 306 files green)",
+    "datetime": "2026-04-30T05:02:18.522487Z",
+    "entry_id": "019ddcc4-319a-7b20-a8fe-d976fd003286",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

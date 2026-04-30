@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddcc7-fb73-7791-b69e-fc523b97d133",
+  "occurred_at": "2026-04-30T05:06:26.803165Z",
+  "knot_id": "foolery-b71c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[shipment-review] Approved.\n\nVerification:\n- TAXONOMY.md content on origin/main matches the implementation note.\n- Both `### \\`result\\` event` (under new ## Normalized events) and the\n  rewritten `### Turn` are present at the expected locations.\n- CI green on commit 8db1c9db.\n- Acceptance criteria all met (per implementation-review note).\n\nShipment outcome verified. Advance to shipped.",
+    "datetime": "2026-04-30T05:06:26.803165Z",
+    "entry_id": "019ddcc7-fb73-7791-b69e-fc4ec0acd459",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

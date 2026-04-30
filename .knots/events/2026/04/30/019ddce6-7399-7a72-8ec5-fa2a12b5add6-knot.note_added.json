@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddce6-7399-7a72-8ec5-fa2a12b5add6",
+  "occurred_at": "2026-04-30T05:39:43.641639Z",
+  "knot_id": "foolery-2dd7",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[implementation-review] Approved.\n\nDiff: 4 modified + 1 new test file. ~290 LOC added.\n\nCode review:\n- New LeaseDeadDispatchFailure type cleanly extends the existing\n  DispatchFailureInfo discriminated union; bannerBodyFor() router\n  is exhaustive across the 3 kinds.\n- evaluateLeaseHealth is pure (takes leaseId, repoPath, checker);\n  10 hermetic tests cover all reason branches + the\n  unrecognized-state defensive case.\n- sendFollowUpPrompt's signature change (now async, takes optional\n  leaseChecker) is non-breaking: the default checker is the real\n  listLeases. Callers get the new behavior automatically.\n- Old foolery-6881 tests adapted with a 2-line vi.mock + a\n  knotsLeaseId/knotsLeaseStep on the entry stub. The mock returns\n  a single lease in lease_active, which the existing tests'\n  dispatched agent context expects.\n- New lifecycle event take_loop_follow_up_skipped_dead_lease\n  follows the existing naming convention.\n- Banner reuse: emitDispatchFailureBanner from dispatch-pool-resolver\n  is used unchanged; no duplicate ANSI logic.\n- Audit event lease_dead_on_followup follows the existing\n  lease_* naming convention.\n\nAcceptance match (per knot description):\n- ✅ sendFollowUpPrompt acquires lease state immediately before send.\n- ✅ Refuses to send if not in {lease_ready, lease_active}.\n- ✅ Banner uses FOOLERY DISPATCH FAILURE marker.\n- ✅ Banner body includes sessionId, beatId, currentBeatState (as\n  beatState), iteration, leaseId, leaseState, expectedStep,\n  agentName, agentProvider, agentModel, agentVersion, followUpCount,\n  promptSource, plus reason and per-reason remediation hint.\n- ⚠️ leaseTerminatedAt is not in the banner — kno's listLeases JSON\n  doesn't surface that timestamp on the lease record. Could be\n  added by reading from the beat's step_history but adds complexity\n  for marginal value (the snapshot files written by foolery-dd9c\n  already carry this).\n- ✅ Hermetic unit test in src/lib/__tests__/.\n- ✅ lease_dead_on_followup audit event.\n\nOut of scope (per plan, not regressions): no maestro-ca91 manual\nrepro test (would require knots-stub that simulates rollback);\nhermetic tests cover the same code path.\n\nQuality gates: lint, tsc, test (3066 passed), build all green.\n\nApprove and ship.",
+    "datetime": "2026-04-30T05:39:43.641639Z",
+    "entry_id": "019ddce6-7399-7a72-8ec5-fa15577a2c73",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

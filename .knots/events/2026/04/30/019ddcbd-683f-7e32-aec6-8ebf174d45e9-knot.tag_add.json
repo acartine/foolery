@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddcbd-683f-7e32-aec6-8ebf174d45e9",
+  "occurred_at": "2026-04-30T04:54:53.759404Z",
+  "knot_id": "foolery-dd9c",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "concurrent-claim"
+  }
+}

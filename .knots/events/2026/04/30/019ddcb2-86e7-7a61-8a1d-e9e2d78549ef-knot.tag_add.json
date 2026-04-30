@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddcb2-86e7-7a61-8a1d-e9e2d78549ef",
+  "occurred_at": "2026-04-30T04:43:00.684656Z",
+  "knot_id": "foolery-2dd7",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "fail-loudly"
+  }
+}

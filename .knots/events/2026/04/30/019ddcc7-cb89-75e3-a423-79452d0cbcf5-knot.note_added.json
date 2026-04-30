@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddcc7-cb89-75e3-a423-79452d0cbcf5",
+  "occurred_at": "2026-04-30T05:06:14.537904Z",
+  "knot_id": "foolery-b71c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[shipment] Merged and pushed.\n\nBranch context: edits were made directly on main (commit 8db1c9db),\nnot in a worktree branch — TAXONOMY.md only.\n\n- commit: 8db1c9db333cc3fd93d6f90f61a24bf4d9aa090e on main\n- pushed: 7db18f0d..8db1c9db (origin/main)\n- CI: gh run 25148359530 (CI workflow) → success\n- CI: gh run 25148359528 (Coverage Badge) → success\n- soft warning noted but non-blocking: statement coverage 76.92→75.62%\n  (expected for a docs-only commit; no new code paths to cover)",
+    "datetime": "2026-04-30T05:06:14.537904Z",
+    "entry_id": "019ddcc7-cb89-75e3-a423-7933f39a9ff9",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

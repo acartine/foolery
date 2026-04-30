@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddcdd-c989-7cd3-80e9-ff225e7b3993",
+  "occurred_at": "2026-04-30T05:30:15.817767Z",
+  "knot_id": "foolery-dd9c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[shipment] Merged and pushed.\n\n- commit: 7301a99762f11243f3ad27eec74083dc0048855d on main\n- pushed: 2c5adcd4..7301a997 (origin/main)\n- CI: gh run 25149047144 → success\n- soft warning: statement coverage 76.92→76.02% (new tests cover the\n  forensics module fully; the regression comes from new wiring at 5\n  call sites in pre-existing files that aren't fully covered by\n  existing tests)",
+    "datetime": "2026-04-30T05:30:15.817767Z",
+    "entry_id": "019ddcdd-c989-7cd3-80e9-ff11557f81d0",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "event_id": "019ddcde-ffca-7b22-a8e7-35134b416420",
+  "occurred_at": "2026-04-30T05:31:35.236711Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2dd7",
+    "next_step_metadata": {
+      "action_kind": "gate",
+      "action_state": "plan_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot",
+    "state": "planning",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "planning",
+      "output": {
+        "access_hint": "kno show",
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Take-loop follow-up MUST verify lease is not terminated before re-prompting agent",
+    "type": "work",
+    "updated_at": "2026-04-30T05:31:35.236711Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddcdd-fba1-7f63-be75-a398eb94150c",
+  "occurred_at": "2026-04-30T05:30:28.641965Z",
+  "knot_id": "foolery-dd9c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[shipment-review] Approved.\n\nVerification:\n- Commit 7301a997 visible on origin/main with all 12 files (12 changed,\n  +1417 / -23).\n- CI green on the commit.\n- Snapshot capture is wired at the 5 documented boundaries; the\n  remaining 4 boundaries and the auto-classifier wire are\n  acknowledged as deferred follow-ups in the implementation note.\n- Acceptance items met match the implementation-review checklist.\n\nAdvance to shipped.",
+    "datetime": "2026-04-30T05:30:28.641965Z",
+    "entry_id": "019ddcdd-fba1-7f63-be75-a38946366eab",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

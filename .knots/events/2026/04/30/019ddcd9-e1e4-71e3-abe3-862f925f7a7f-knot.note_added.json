@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddcd9-e1e4-71e3-abe3-862f925f7a7f",
+  "occurred_at": "2026-04-30T05:25:59.908824Z",
+  "knot_id": "foolery-dd9c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[lease-rotation] Original implementation lease foolery-ec3d expired (work took longer than 10min). Re-claimed with lease foolery-46b6 to mark step complete; all implementation work persisted in the working tree (files written, tests green).",
+    "datetime": "2026-04-30T05:25:59.908824Z",
+    "entry_id": "019ddcd9-e1e4-71e3-abe3-8612522cba25",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

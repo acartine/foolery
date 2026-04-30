@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddcc4-bdfe-7b40-920e-294b29937577",
+  "occurred_at": "2026-04-30T05:02:54.462315Z",
+  "knot_id": "foolery-b71c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[implementation-review] Approved.\n\nDiff review:\n- TAXONOMY.md: +48 / -2, single file, no code paths touched.\n- All citations grep-verified at current line numbers.\n- Anti-pattern section is greppable (gives the literal patterns to\n  search for).\n- Cross-reference to agent-session-runtime-events.ts:1-27 keeps the\n  TAXONOMY entry and the source-of-truth docstring linked.\n- Fixed one nit: replaced placeholder anchor `[foolery-2dd7](#)`\n  with literal `\\`foolery-2dd7\\`` knot reference.\n- Markdown lints clean, tsc clean, 3041 tests green.\n- `<!-- human -->` markers ensure /taxonomize preserves the entries.\n\nAcceptance from knot description, all met:\n- ✅ TAXONOMY.md `result` entry present, matches contract verbatim\n  where verbatim was specified.\n- ✅ `Turn` entry rewritten without \"one result out\" loose phrasing,\n  links to new section.\n- ✅ Citations point to actual normalizer functions at current\n  line numbers.\n- ✅ Lint/typecheck/test green.\n\nApprove and advance to shipment.",
+    "datetime": "2026-04-30T05:02:54.462315Z",
+    "entry_id": "019ddcc4-bdfe-7b40-920e-293d40394fa2",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

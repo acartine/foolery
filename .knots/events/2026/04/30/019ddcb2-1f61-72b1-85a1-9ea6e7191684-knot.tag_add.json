@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddcb2-1f61-72b1-85a1-9ea6e7191684",
+  "occurred_at": "2026-04-30T04:42:34.186365Z",
+  "knot_id": "foolery-dd9c",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "take-loop"
+  }
+}
