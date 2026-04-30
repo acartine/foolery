@@ -18,6 +18,7 @@ import type { AppUpdateStatus } from "@/lib/app-update-types";
 import {
   NotificationBell,
 } from "@/components/notification-bell";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -267,16 +268,16 @@ function ViewTab(props: {
     <Button
       size="lg"
       variant={current === view ? "default" : "ghost"}
-      className="relative h-8 gap-1.5 px-2.5"
+      className="h-8 gap-1.5 px-2.5"
       title={title}
       onClick={() => setView(view)}
     >
       {icon}
       {label}
       {badge != null && badge > 0 && (
-        <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+        <Badge variant="secondary" className="ml-1">
           {badge > 9 ? "9+" : badge}
-        </span>
+        </Badge>
       )}
     </Button>
   );
