@@ -99,59 +99,30 @@ function safeRelativeTime(
   return Number.isNaN(parsed) ? value : relativeTime(value);
 }
 
-/** Build display meta line for a handoff capsule. */
+/**
+ * Build display meta line for a handoff capsule.
+ *
+ * Knots stamps handoff capsules with a flat, canonical set of fields
+ * (per ~/knots/docs/leases.md "What Knots stamps from the lease"):
+ *   - `agentname`   (agent identity)
+ *   - `model`       (agent model)
+ *   - `version`     (agent model version)
+ *   - `username`    (human user, when applicable)
+ *
+ * Per docs/knots-agent-identity-contract.md "Forbidden patterns" #4,
+ * this reader uses ONE canonical key per concept — no multi-key
+ * fallback chains, no nested `agent` object lookups. If a capsule is
+ * missing a canonical field, the meta line simply omits it (the
+ * absence of identity is itself information).
+ */
 export function capsuleMeta(
   entry: MetadataEntry,
 ): string | undefined {
-  const metadata = pickObject(
-    entry,
-    ["metadata", "meta", "details"],
-  );
-  const agent =
-    pickObject(entry, ["agent", "executor", "worker"]) ??
-    (metadata
-      ? pickObject(
-        metadata,
-        ["agent", "executor", "worker"],
-      )
-      : null);
-  const user =
-    pickObject(
-      entry,
-      ["user", "author", "created_by", "createdBy"],
-    ) ??
-    (metadata
-      ? pickObject(
-        metadata,
-        ["user", "author", "created_by", "createdBy"],
-      )
-      : null);
-  const actor =
-    pickObject(
-      entry,
-      ["actor", "updated_by", "updatedBy", "by"],
-    ) ??
-    (metadata
-      ? pickObject(
-        metadata,
-        ["actor", "updated_by", "updatedBy", "by"],
-      )
-      : null);
-
-  const agentName = resolveAgentName(
-    entry,
-    metadata,
-    agent,
-  );
-  const model = resolveModel(entry, metadata, agent);
-  const version = resolveVersion(entry, metadata, agent);
-  const username = resolveUsername(
-    entry,
-    metadata,
-    user,
-    actor,
-  );
-  const datetime = resolveDatetime(entry, metadata);
+  const agentName = pickString(entry, ["agentname"]);
+  const model = pickString(entry, ["model"]);
+  const version = pickString(entry, ["version"]);
+  const username = pickString(entry, ["username"]);
+  const datetime = resolveDatetime(entry);
 
   return (
     [agentName, model, version, username, datetime]
@@ -160,93 +131,18 @@ export function capsuleMeta(
   );
 }
 
-function resolveAgentName(
-  entry: MetadataEntry,
-  metadata: MetadataEntry | null,
-  agent: MetadataEntry | null,
-): string | undefined {
-  const keys = ["agentname", "agentName", "agent_name"];
-  return (
-    pickString(entry, keys) ??
-    (metadata ? pickString(metadata, keys) : undefined) ??
-    (agent
-      ? pickString(
-        agent,
-        ["name", ...keys],
-      )
-      : undefined)
-  );
-}
-
-function resolveModel(
-  entry: MetadataEntry,
-  metadata: MetadataEntry | null,
-  agent: MetadataEntry | null,
-): string | undefined {
-  const keys = ["model", "agentModel", "agent_model"];
-  return (
-    pickString(entry, keys) ??
-    (metadata ? pickString(metadata, keys) : undefined) ??
-    (agent ? pickString(agent, keys) : undefined)
-  );
-}
-
-function resolveVersion(
-  entry: MetadataEntry,
-  metadata: MetadataEntry | null,
-  agent: MetadataEntry | null,
-): string | undefined {
-  const keys = [
-    "version",
-    "agentVersion",
-    "agent_version",
-  ];
-  return (
-    pickString(entry, keys) ??
-    (metadata ? pickString(metadata, keys) : undefined) ??
-    (agent ? pickString(agent, keys) : undefined)
-  );
-}
-
-function resolveUsername(
-  entry: MetadataEntry,
-  metadata: MetadataEntry | null,
-  user: MetadataEntry | null,
-  actor: MetadataEntry | null,
-): string | undefined {
-  const entryKeys = [
-    "username", "user", "user_name",
-    "actor", "actor_name",
-  ];
-  const nameKeys = ["name", "username", "login"];
-  return (
-    pickString(entry, entryKeys) ??
-    (metadata
-      ? pickString(metadata, entryKeys)
-      : undefined) ??
-    (user ? pickString(user, nameKeys) : undefined) ??
-    (actor ? pickString(actor, nameKeys) : undefined)
-  );
-}
-
 function resolveDatetime(
   entry: MetadataEntry,
-  metadata: MetadataEntry | null,
 ): string | undefined {
-  const entryKeys = [
+  // Datetime is not part of the agent-identity contract; capsules may
+  // legitimately surface a few stamping conventions. Keep this tight:
+  // a single canonical key plus its widely-used legacy aliases.
+  const keys = [
     "datetime", "timestamp", "ts",
     "created_at", "createdAt",
     "updated_at", "updatedAt", "time",
   ];
-  const metaKeys = [
-    ...entryKeys, "at", "occurred_at",
-  ];
-  return safeRelativeTime(
-    pickString(entry, entryKeys) ??
-      (metadata
-        ? pickString(metadata, metaKeys)
-        : undefined),
-  );
+  return safeRelativeTime(pickString(entry, keys));
 }
 
 export function renderedHandoffCapsules(
