@@ -53,4 +53,12 @@ describe("FinalCutView approvals tabs contract", () => {
     expect(approvalsPanel).toContain("formatAgentDisplayLabel");
     expect(approvalsPanel).toContain("formatRelativeTimestamp");
   });
+
+  it("surfaces the failure reason and friendly hint on failed approvals", () => {
+    expect(approvalsPanel).toContain("approval-failure-block");
+    expect(approvalsPanel).toContain("approval-failure-friendly");
+    expect(approvalsPanel).toContain("approval-failure-reason");
+    expect(approvalsPanel).toContain("explainApprovalFailureReason");
+    expect(approvalsPanel).toContain("approval.failureReason");
+  });
 });

@@ -106,6 +106,14 @@ export const approvalComponentSchemas = {
       agent: {
         $ref: "#/components/schemas/ApprovalAgentInfo",
       },
+      failureReason: {
+        type: "string",
+        description:
+          "Raw reason returned by the responder when the " +
+          "last reply attempt produced reply_failed or " +
+          "unsupported. Cleared when a fresh attempt is " +
+          "sent or the approval reaches a terminal status.",
+      },
       createdAt: { type: "number" },
       updatedAt: { type: "number" },
       actionable: { type: "boolean" },

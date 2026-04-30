@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import {
   buildApprovalConsoleHref,
+  explainApprovalFailureReason,
   formatApprovalDetailText,
   formatApprovalPrimaryText,
   type ApprovalEscalation,
@@ -263,17 +264,55 @@ function ApprovalStatusMessage(props: {
     (approval.supportedActions ?? []).length === 0
   ) {
     return (
-      <p className="mt-3 rounded-md border border-destructive/25 bg-destructive/10 px-3 py-2 text-xs text-destructive">
-        Programmatic approval is not available for this request.
-        Handle it in the linked terminal context, then dismiss it here.
-      </p>
+      <ApprovalFailureBlock
+        headline={
+          "Programmatic approval is not available for this " +
+          "request. Handle it in the linked terminal context, " +
+          "then dismiss it here."
+        }
+        rawReason={approval.failureReason}
+      />
     );
   }
   if (approval.status !== "reply_failed") return null;
   return (
-    <p className="mt-3 rounded-md border border-destructive/25 bg-destructive/10 px-3 py-2 text-xs text-destructive">
-      Approval reply failed. Try again or handle it in the terminal.
-    </p>
+    <ApprovalFailureBlock
+      headline="Approval reply failed. Try again or handle it in the terminal."
+      rawReason={approval.failureReason}
+    />
+  );
+}
+
+function ApprovalFailureBlock(props: {
+  headline: string;
+  rawReason: string | undefined;
+}) {
+  const { headline, rawReason } = props;
+  const friendly = explainApprovalFailureReason(rawReason);
+  const trimmedRaw = rawReason?.trim() ? rawReason.trim() : null;
+  return (
+    <div
+      className="mt-3 rounded-md border border-destructive/25 bg-destructive/10 px-3 py-2 text-xs text-destructive"
+      data-testid="approval-failure-block"
+    >
+      <p>{headline}</p>
+      {friendly ? (
+        <p
+          className="mt-1 text-destructive/90"
+          data-testid="approval-failure-friendly"
+        >
+          {friendly}
+        </p>
+      ) : null}
+      {trimmedRaw ? (
+        <p
+          className="mt-1 break-all font-mono text-[11px] text-destructive/80"
+          data-testid="approval-failure-reason"
+        >
+          {`Reason: ${trimmedRaw}`}
+        </p>
+      ) : null}
+    </div>
   );
 }
 

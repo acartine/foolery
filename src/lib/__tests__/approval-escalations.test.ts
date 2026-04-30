@@ -4,6 +4,7 @@ import {
   approvalEscalationFromPendingRecord,
   buildApprovalConsoleHref,
   buildApprovalsHref,
+  explainApprovalFailureReason,
   logApprovalEscalation,
   parseApprovalBanner,
 } from "@/lib/approval-escalations";
@@ -106,7 +107,8 @@ describe("approval escalation hydration", () => {
       patterns: ["mkdir -p .approval-validation"],
       options: [],
       supportedActions: ["approve", "reject"],
-      status: "pending",
+      status: "reply_failed",
+      failureReason: "opencode_http_404",
       createdAt: 10,
       updatedAt: 20,
     });
@@ -120,8 +122,37 @@ describe("approval escalation hydration", () => {
       message: "Allow bash?",
       toolName: "bash",
       supportedActions: ["approve", "reject"],
+      failureReason: "opencode_http_404",
       createdAt: 10,
       updatedAt: 20,
     });
+  });
+});
+
+describe("explainApprovalFailureReason", () => {
+  it.each([
+    ["missing_reply_target", "no longer connected"],
+    ["missing_opencode_reply_target", "no longer connected"],
+    ["opencode_http_404", "no longer recognises"],
+    ["opencode_http_410", "no longer recognises"],
+    ["opencode_http_502", "server error"],
+    ["opencode_returned_false", "rejected the reply"],
+    ["The user aborted a request.", "did not respond"],
+    ["fetch failed", "Could not reach"],
+    ["ECONNREFUSED 127.0.0.1:7711", "Could not reach"],
+    ["unsupported_adapter:claude-bridge", "claude-bridge"],
+  ])("maps %s to a friendly hint", (input, fragment) => {
+    const out = explainApprovalFailureReason(input);
+    expect(out).toBeTruthy();
+    expect(out!.toLowerCase())
+      .toContain(fragment.toLowerCase());
+  });
+
+  it("returns null for unknown or empty reasons", () => {
+    expect(explainApprovalFailureReason(undefined)).toBeNull();
+    expect(explainApprovalFailureReason("")).toBeNull();
+    expect(explainApprovalFailureReason("   ")).toBeNull();
+    expect(explainApprovalFailureReason("brand new error"))
+      .toBeNull();
   });
 });

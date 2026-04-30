@@ -206,6 +206,7 @@ async function executeApprovalAction(
     };
   }
   record.status = "responding";
+  record.failureReason = undefined;
   record.updatedAt = Date.now();
   logApprovalEscalation(
     "approval.action_sent",
@@ -336,6 +337,7 @@ function markUnsupported(
   reason: string,
 ): void {
   record.status = "unsupported";
+  record.failureReason = reason;
   record.updatedAt = Date.now();
   logApprovalEscalation(
     "approval.action_unsupported",
@@ -358,6 +360,7 @@ function finishApprovalReply(
       : "reply_failed";
     record.updatedAt = Date.now();
     const reason = result.reason ?? result.message;
+    record.failureReason = reason;
     const eventName = record.status === "unsupported"
       ? "approval.action_unsupported"
       : "approval.reply_failed";
@@ -379,6 +382,7 @@ function finishApprovalReply(
     };
   }
   record.status = approvalStatusForAction(action);
+  record.failureReason = undefined;
   record.updatedAt = Date.now();
   logApprovalEscalation(
     "approval.action_resolved",
