@@ -27,6 +27,7 @@ import type { TakeLoopContext } from "@/lib/terminal-manager-take-loop";
 import {
   recordTakeLoopLifecycle,
 } from "@/lib/terminal-manager-take-lifecycle";
+import { captureBeatSnapshot } from "@/lib/dispatch-forensics";
 
 // ── Constants ──────────────────────────────────────────
 
@@ -124,6 +125,17 @@ function sendFollowUpPrompt(
   child: ChildProcess,
   state: string,
 ): boolean {
+  void captureBeatSnapshot("pre_followup", {
+    sessionId: ctx.id,
+    beatId: ctx.beatId,
+    repoPath: ctx.resolvedRepoPath,
+    leaseId: ctx.entry.knotsLeaseId,
+    iteration: ctx.takeIteration.value,
+    observedState: state,
+    expectedStep: ctx.entry.knotsLeaseStep,
+    agentInfo: ctx.agentInfo,
+    childPid: typeof child.pid === "number" ? child.pid : undefined,
+  });
   const prompt = buildTakeLoopFollowUpPrompt(
     ctx.beatId, state,
   );

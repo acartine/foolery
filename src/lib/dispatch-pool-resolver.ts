@@ -38,12 +38,10 @@ import {
 } from "@/lib/workflows-runtime";
 import { StepPhase } from "@/lib/workflows";
 
+import { buildAnsiRedBanner } from "@/lib/ansi-red-banner";
+
 /** Greppable marker phrase for any dispatch failure. */
 export const DISPATCH_FAILURE_MARKER = "FOOLERY DISPATCH FAILURE";
-
-/** ANSI SGR colors used for the unmissable banner. */
-const ANSI_RED_BG_WHITE = "\x1b[41;37;1m";
-const ANSI_RESET = "\x1b[0m";
 
 export type AgentDispatchFailureReason =
   | "no_pool_key"
@@ -97,12 +95,10 @@ export function emitDispatchFailureBanner(
   const plain = info.kind === "backend"
     ? backendBannerBody(info)
     : agentBannerBody(info);
-  const banner = buildBanner(plain);
+  const banner = buildAnsiRedBanner(plain);
 
-  console.error(
-    `\n${ANSI_RED_BG_WHITE}${banner}${ANSI_RESET}\n`,
-  );
-  return `\n${ANSI_RED_BG_WHITE}${banner}${ANSI_RESET}\n`;
+  console.error(`\n${banner}\n`);
+  return `\n${banner}\n`;
 }
 
 function agentBannerBody(info: AgentDispatchFailure): string {
@@ -140,20 +136,6 @@ function backendBannerBody(info: BackendDispatchFailure): string {
   return [heading, body].join("\n");
 }
 
-function buildBanner(inner: string): string {
-  const lines = inner.split("\n");
-  const width = Math.min(
-    120,
-    Math.max(...lines.map((l) => l.length), 40),
-  );
-  const edge = "═".repeat(width + 4);
-  const top = `╔${edge}╗`;
-  const bottom = `╚${edge}╝`;
-  const middle = lines
-    .map((l) => `║  ${l.padEnd(width)}  ║`)
-    .join("\n");
-  return [top, middle, bottom].join("\n");
-}
 
 function agentRemediationFor(info: AgentDispatchFailure): string {
   const base = `  remediation  =`;

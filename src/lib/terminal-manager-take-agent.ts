@@ -49,6 +49,7 @@ import {
   enforceQueueTerminalInvariant,
 } from "@/lib/terminal-manager-take-loop";
 import { runDispatch } from "@/lib/terminal-manager-take-dispatch";
+import { captureBeatSnapshot } from "@/lib/dispatch-forensics";
 
 // ─── selectStepAgent ─────────────────────────────────
 
@@ -324,6 +325,16 @@ export async function finalizeClaim(
   logLeaseBindingState(ctx, queueType, claimAgent);
 
   const claimAgentInfo = toExecutionAgentInfo(claimAgent);
+  void captureBeatSnapshot("pre_prompt_send", {
+    sessionId: ctx.id,
+    beatId: ctx.beatId,
+    repoPath: ctx.resolvedRepoPath,
+    leaseId: ctx.entry.knotsLeaseId,
+    iteration: ctx.takeIteration.value + 1,
+    observedState: current.state,
+    expectedStep: queueType,
+    agentInfo: claimAgentInfo,
+  });
   void logLeaseAudit({
     event: "prompt_delivered",
     repoPath: ctx.resolvedRepoPath,

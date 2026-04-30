@@ -1,6 +1,7 @@
 import type { ExecutionAgentInfo } from "@/lib/execution-port";
 import { createLease, terminateLease } from "@/lib/knots";
 import { logLeaseAudit } from "@/lib/lease-audit";
+import { captureBeatSnapshot } from "@/lib/dispatch-forensics";
 
 export type KnotsLeaseRuntimeSource =
   | "terminal_manager_take"
@@ -58,6 +59,14 @@ export async function ensureKnotsLease(
   input: EnsureKnotsLeaseInput,
 ): Promise<string> {
   const auditBase = baseAuditData(input);
+  if (input.beatId) {
+    void captureBeatSnapshot("pre_lease", {
+      sessionId: input.sessionId ?? input.executionLeaseId ?? "unknown",
+      beatId: input.beatId,
+      repoPath: input.repoPath,
+      agentInfo: input.agentInfo,
+    });
+  }
   void logLeaseAudit({
     event: "lease_create_requested",
     repoPath: input.repoPath,
@@ -136,6 +145,16 @@ export async function ensureKnotsLease(
       lease: result.data.lease ?? null,
     },
   });
+
+  if (input.beatId) {
+    void captureBeatSnapshot("post_lease", {
+      sessionId: input.sessionId ?? input.executionLeaseId ?? "unknown",
+      beatId: input.beatId,
+      repoPath: input.repoPath,
+      leaseId: result.data.id,
+      agentInfo: input.agentInfo,
+    });
+  }
 
   return result.data.id;
 }

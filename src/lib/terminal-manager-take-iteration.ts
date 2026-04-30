@@ -41,6 +41,7 @@ import {
 import {
   spawnTakeChild,
 } from "@/lib/terminal-manager-take-child";
+import { captureBeatSnapshot } from "@/lib/dispatch-forensics";
 
 export async function handleTakeIterationClose(
   ctx: TakeLoopContext,
@@ -57,6 +58,20 @@ export async function handleTakeIterationClose(
     ctx.finishSession(code);
     return;
   }
+
+  void captureBeatSnapshot(
+    code === 0 ? "post_turn_success" : "post_turn_failure",
+    {
+      sessionId: ctx.id,
+      beatId: ctx.beatId,
+      repoPath: ctx.resolvedRepoPath,
+      leaseId: ctx.entry.knotsLeaseId,
+      iteration: ctx.takeIteration.value,
+      observedState: claimedState,
+      expectedStep: ctx.entry.knotsLeaseStep,
+      agentInfo: ctx.agentInfo,
+    },
+  );
 
   const postExitState = await fetchPostExitState(ctx);
 
