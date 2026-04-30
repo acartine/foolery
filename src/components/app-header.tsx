@@ -142,7 +142,7 @@ export function AppHeader() {
     <ViewSwitcher
       beatsView={s.beatsView}
       setView={s.setView}
-      humanActionCount={s.humanCount}
+      escalationsCount={s.humanCount + s.approvalCount}
       canCreate={s.create.canCreate}
       showAction={showAction}
       actionButton={

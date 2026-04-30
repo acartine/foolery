@@ -340,14 +340,14 @@ export function HeaderToolbar(props: {
 export function ViewSwitcher(props: {
   beatsView: string;
   setView: (v: BeatsViewId) => void;
-  humanActionCount: number;
+  escalationsCount: number;
   canCreate: boolean;
   showAction: boolean;
   actionButton: React.ReactNode;
   openSettingsToRepos: () => void;
 }) {
   const {
-    beatsView, setView, humanActionCount,
+    beatsView, setView, escalationsCount,
     canCreate, showAction, actionButton,
     openSettingsToRepos,
   } = props;
@@ -381,7 +381,7 @@ export function ViewSwitcher(props: {
           label="Escalations"
           title="Escalations queue"
           setView={setView}
-          badge={humanActionCount}
+          badge={escalationsCount}
         />
         <ViewTab
           view="retakes" current={beatsView}
