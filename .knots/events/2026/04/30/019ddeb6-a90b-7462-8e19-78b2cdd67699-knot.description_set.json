@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb6-a90b-7462-8e19-78b2cdd67699",
+  "occurred_at": "2026-04-30T14:06:46.022193Z",
+  "knot_id": "foolery-cd2e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Two test gaps that catch silent drift between Foolery and Knots. (1) `src/lib/__tests__/knots-canonical-metadata.test.ts` should have one `it()` per provider in the `createLease` describe block (Claude, Codex, Gemini, Copilot, OpenCode) — currently only some are covered. (2) No round-trip test exists that creates a lease for each provider, fetches it back via `kno lease show --json`, and asserts the canonical fields survive — this would catch shape drift between Foolery `CanonicalLeaseIdentity` and Knots `AgentInfo`. See parent foolery-2e97 AC-7 and AC-9."
+  }
+}

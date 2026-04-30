@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddebc-0c36-7231-a9de-c9c3ecb325ff",
+  "occurred_at": "2026-04-30T14:12:39.094032Z",
+  "knot_id": "foolery-c6e8",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/foolery-c6e8-opencode-idle-watchdog"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddebf-ca0e-7082-82a3-ba5441b882d2",
+  "occurred_at": "2026-04-30T14:16:44.302007Z",
+  "knot_id": "foolery-c6e8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment artifact: origin/main now points to 9a2c2eeda0b3dcbbafb48e7f6c83332acec97b5f, merge commit for codex/foolery-c6e8-opencode-idle-watchdog. Local final gates on merged main passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build. Remote GitHub Actions for the pushed main commit passed: CI run 25170387855 success, Coverage Badge run 25170387842 success. CI had coverage-regression annotations but the workflow conclusion was success.",
+    "datetime": "2026-04-30T14:16:44.302007Z",
+    "entry_id": "019ddebf-ca0e-7082-82a3-ba4273228c10",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

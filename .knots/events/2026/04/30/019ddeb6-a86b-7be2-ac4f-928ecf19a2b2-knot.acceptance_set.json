@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb6-a86b-7be2-ac4f-928ecf19a2b2",
+  "occurred_at": "2026-04-30T14:06:45.856623Z",
+  "knot_id": "foolery-c257",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- `beat-table-metadata.tsx` reads agent fields using one canonical key per artifact type (note → `agentname`, step → `agent_name`, etc.).\n- The `[\"agentname\", \"agentName\", \"agent_name\"]` style fallback chains are gone.\n- If a record is missing the canonical field, the renderer either shows nothing or fails loudly (no inventing).\n- `grep -n \"\\\"agentName\\\"\\|\\\"agentname\\\"\\|\\\"agent_name\\\"\" src/components/beat-table-metadata.tsx` shows at most one constant string per artifact type."
+  }
+}

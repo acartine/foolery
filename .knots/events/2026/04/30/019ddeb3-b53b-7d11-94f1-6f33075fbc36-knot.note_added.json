@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddeb3-b53b-7d11-94f1-6f33075fbc36",
+  "occurred_at": "2026-04-30T14:03:32.539477Z",
+  "knot_id": "foolery-c6e8",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: (1) isolate implementation in a dedicated worktree from current main and bootstrap dependencies with bun install --frozen-lockfile; (2) update the shared session runtime so OpenCode HTTP post-idle output does not re-arm turn liveness and cleanup reaping cannot overwrite exitReason=turn_ended; (3) preserve pre-idle watchdog behavior for stdio/jsonrpc/acp and for active OpenCode turns; (4) add focused regression coverage proving session_idle freezes the completed turn, post-idle stderr/normalized events do not convert it to timeout, and active-turn silence still times out; (5) run bun run lint, bunx tsc --noEmit, bun run test, and bun run build before integrating to main. Complexity: small-to-medium, localized runtime/watchdog change with high regression risk because watchdog behavior is shared. Risk: avoid weakening true active-turn timeout detection; keep change gated to completed OpenCode HTTP turns or cleanup phase.",
+    "datetime": "2026-04-30T14:03:32.539477Z",
+    "entry_id": "019ddeb3-b53b-7d11-94f1-6f27d9028c12",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

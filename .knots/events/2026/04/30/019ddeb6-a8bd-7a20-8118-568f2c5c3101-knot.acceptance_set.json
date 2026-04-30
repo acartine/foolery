@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb6-a8bd-7a20-8118-568f2c5c3101",
+  "occurred_at": "2026-04-30T14:06:45.93959Z",
+  "knot_id": "foolery-96ba",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- `src/components/agent-history-utils.tsx` no longer contains a parallel implementation of agent label formatting.\n- All callers use `formatAgentDisplayLabel` and/or `parseAgentDisplayParts` from `src/lib/agent-identity.ts`.\n- `grep -rn \"function buildAgentLabel\\|const buildAgentLabel\" src/` returns zero hits OR the function is a one-line passthrough.\n- Existing tests for the agent history view still pass."
+  }
+}

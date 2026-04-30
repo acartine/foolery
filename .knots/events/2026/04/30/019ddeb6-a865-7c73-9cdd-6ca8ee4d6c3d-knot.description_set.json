@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb6-a865-7c73-9cdd-6ca8ee4d6c3d",
+  "occurred_at": "2026-04-30T14:06:45.856623Z",
+  "knot_id": "foolery-c257",
+  "type": "knot.description_set",
+  "data": {
+    "description": "`src/components/beat-table-metadata.tsx:168-201` resolves agent fields by trying `agentname` then `agentName` then `agent_name` (and same for model and version). This is a symptom of inconsistent stamping at the source. Knots stamps notes/handoffs with `agentname` and steps with `agent_name` — each artifact type uses ONE key. The fix is at the read site: pick the right canonical key for the artifact being read. See parent foolery-2e97 rule 6 (one function per task, no duplicate branches)."
+  }
+}

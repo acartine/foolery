@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddeb3-edd0-7fc0-8880-2d3d4b6cfbd2",
+  "occurred_at": "2026-04-30T14:03:47.024758Z",
+  "knot_id": "foolery-c6e8",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review: approved. The plan is scoped to the observed OpenCode HTTP lifecycle failure: session.idle is already the canonical turn boundary, while watchdog/process cleanup currently overwrites the completed turn. Test strategy is sufficient if it includes both post-idle cleanup noise preservation and active-turn timeout preservation. No invariants found that conflict with the approach.",
+    "datetime": "2026-04-30T14:03:47.024758Z",
+    "entry_id": "019ddeb3-edd0-7fc0-8880-2d2c40095713",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

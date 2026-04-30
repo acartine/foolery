@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb6-a7c7-7182-b9f6-0ffe015ca450",
+  "occurred_at": "2026-04-30T14:06:45.693703Z",
+  "knot_id": "foolery-8fc3",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- `src/app/beats/to-active-agent-info.ts` no longer calls `normalizeAgentIdentity` (or any per-provider normaliser).\n- Either: (a) the file is deleted and `useAgentInfoMap` reads canonical fields directly off the stamped capsule / step-history entry, OR (b) it is reduced to a pure label formatter taking already-canonical `{ agentName, model, version }`.\n- `grep -rn \"normalizeAgentIdentity\\|normalize.*Model\" src/app/` returns zero hits.\n- `useAgentInfoMap` `populateFromCapsules` and `overrideFromTerminals` paths read canonical keys, not pre-normalisation hints.\n- Existing tests under `src/app/beats/__tests__/page-active-agent-info.test.ts` updated to reflect read-only behaviour."
+  }
+}

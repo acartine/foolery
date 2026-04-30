@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb6-a819-7010-8454-6cc7c44daf68",
+  "occurred_at": "2026-04-30T14:06:45.776015Z",
+  "knot_id": "foolery-b7d6",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- `ActiveTerminal` no longer carries `agentName` / `agentModel` / `agentVersion` / `agentCommand` as persisted fields.\n- `ActiveTerminal` carries `knotsLeaseId` (and/or `claimedKnotId`).\n- A hook (e.g. `useTerminalAgentInfo(leaseId)`) returns canonical `{ agentName, agentModel, agentVersion, agentProvider }` from `kno lease show --json` or the bound knot’s most recent step.\n- `useAgentInfoMap` and any other consumer of terminal-store agent fields are migrated to that hook.\n- `terminal-store.ts` exports/types updated; downstream callers updated; tests updated.\n- `grep -n \"agentName\\|agentModel\\|agentVersion\\|agentCommand\" src/stores/terminal-store.ts` shows no field declarations."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019ddeb6-a810-78d2-9e7e-24eeb8fe5719",
+  "occurred_at": "2026-04-30T14:06:45.776015Z",
+  "knot_id": "foolery-b7d6",
+  "type": "knot.created",
+  "data": {
+    "body": "`src/stores/terminal-store.ts:11-14` defines `agentName`, `agentModel`, `agentVersion`, `agentCommand` as separate persisted fields on `ActiveTerminal`. These are duplicate runtime state that can drift from the lease — the user has reported them being inconsistent for months. Replace with a `knotsLeaseId` reference plus a hook that resolves agent identity from the lease (or from the bound knot’s most recent step) on demand. See parent foolery-2e97 rule 5.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Replace terminal-store raw agent fields with lease-id resolver",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

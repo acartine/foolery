@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb6-a788-7721-9ba3-86ad9a7e03e8",
+  "occurred_at": "2026-04-30T14:06:45.606582Z",
+  "knot_id": "foolery-988b",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "opencode"
+  }
+}

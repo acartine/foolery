@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb6-a771-7e41-91ef-5c1928947e8f",
+  "occurred_at": "2026-04-30T14:06:45.606582Z",
+  "knot_id": "foolery-988b",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- `normalizeOpenCodeModel(rawModel)` exists in `src/lib/agent-identity.ts` next to the other per-provider normalisers.\n- Parses `<router>/<vendor>/<model-with-version>` (e.g. `openrouter/moonshotai/kimi-k2.6` → `{ model: \"openrouter/moonshotai/kimi-k2.6\", flavor: \"openrouter\", version: \"2.6\" }`).\n- Handles `openrouter/anthropic/claude-sonnet-4-5`, `openrouter/z-ai/glm-5.1`, `openrouter/mistral/devstral-2512`, and bare `kimi`.\n- NEVER pulls a version from the OpenCode binary version, an env var, or any runtime hint.\n- `normalizeAgentIdentity` calls `normalizeOpenCodeModel` for the OpenCode branch (replaces passthrough at agent-identity.ts:243-250).\n- New test file `src/lib/__tests__/agent-identity-opencode.test.ts` covers all shapes above.\n- The screenshot symptom \"OpenCode … 4.7\" is gone after this change lands."
+  }
+}

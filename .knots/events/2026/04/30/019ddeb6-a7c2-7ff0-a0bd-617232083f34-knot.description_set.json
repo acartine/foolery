@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb6-a7c2-7ff0-a0bd-617232083f34",
+  "occurred_at": "2026-04-30T14:06:45.693703Z",
+  "knot_id": "foolery-8fc3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "`src/app/beats/to-active-agent-info.ts:8-44` calls `normalizeAgentIdentity` at display time on raw fields, and `src/app/beats/use-agent-info-map.ts:33,60` then runs the result through it AGAIN on already-canonical capsule fields that Knots already stamped from the lease. This is duplicate normalisation. The display layer must read what is already on the artifact, not re-derive. See parent foolery-2e97 contract rule 5 (runtime/session metadata is autostamp-derived) and rule 8 (Foolery only extracts at lease setup)."
+  }
+}

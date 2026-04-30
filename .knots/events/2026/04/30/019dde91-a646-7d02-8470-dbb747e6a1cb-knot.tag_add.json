@@ -1,0 +1,9 @@
+{
+  "event_id": "019dde91-a646-7d02-8470-dbb747e6a1cb",
+  "occurred_at": "2026-04-30T13:26:20.460756Z",
+  "knot_id": "foolery-2e97",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "contract"
+  }
+}

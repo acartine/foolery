@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb6-a82d-7ec0-aa9e-6708b5b81997",
+  "occurred_at": "2026-04-30T14:06:45.776015Z",
+  "knot_id": "foolery-b7d6",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "terminal-store"
+  }
+}

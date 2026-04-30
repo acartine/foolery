@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddeb3-b53b-7d11-94f1-6f55010013de",
+  "occurred_at": "2026-04-30T14:03:32.539477Z",
+  "knot_id": "foolery-c6e8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning handoff for foolery-c6e8: implement a focused fix for OpenCode HTTP session.idle handling. Evidence from kimi-k2.6 logs shows turn_ended at session.idle, then watchdog later kills the still-live server and overwrites success as timeout. Proposed fix: split active turn liveness from post-turn cleanup for OpenCode HTTP; do not let post-idle bus/server chatter reset turn watchdog or let cleanup kill change exitReason from turn_ended. Validate with regression tests plus standard gates.",
+    "datetime": "2026-04-30T14:03:32.539477Z",
+    "entry_id": "019ddeb3-b53b-7d11-94f1-6f4980416686",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

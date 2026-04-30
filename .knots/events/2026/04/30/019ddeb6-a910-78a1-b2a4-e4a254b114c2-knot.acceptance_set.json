@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb6-a910-78a1-b2a4-e4a254b114c2",
+  "occurred_at": "2026-04-30T14:06:46.022193Z",
+  "knot_id": "foolery-cd2e",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- `knots-canonical-metadata.test.ts` `describe(\"createLease canonical fields\", ...)` has one `it()` per provider in `AgentProviderId` (minus `unknown`).\n- Each `it()` starts from a realistic `settings.toml` agent shape, runs through `toCanonicalLeaseIdentity` → `toExecutionAgentInfo` → `createLease`, and asserts the exact `kno lease create` argv.\n- New test file `src/lib/__tests__/knots-lease-roundtrip.test.ts` (or named per planner choice) covers create → `kno lease show --json` → assert canonical fields per provider.\n- The round-trip test is in the unit suite (mock `execFile`) — per hermetic test policy it does NOT shell out to a real `kno` binary.\n- `bun run test` is green."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddec0-090e-7933-8c50-cbaa470b6d9c",
+  "occurred_at": "2026-04-30T14:17:00.430097Z",
+  "knot_id": "foolery-c6e8",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review: approved. origin/main is 9a2c2eeda0b3dcbbafb48e7f6c83332acec97b5f and local main matches origin/main. The implementation commit d3db9c26bf7ece5d279f5b75a1e355f8d78465fa and merge commit 9a2c2eeda0b3dcbbafb48e7f6c83332acec97b5f are tagged on the knot. Remote CI/CD completed successfully for the shipped commit: CI 25170387855 success, Coverage Badge 25170387842 success. Local gates on shipped main passed. No shipped-code invariant issues found.",
+    "datetime": "2026-04-30T14:17:00.430097Z",
+    "entry_id": "019ddec0-090e-7933-8c50-cb9870fbc4b1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

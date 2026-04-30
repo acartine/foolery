@@ -1,0 +1,21 @@
+{
+  "event_id": "019ddec0-13d7-71e3-abb2-9dbb4839119e",
+  "occurred_at": "2026-04-30T14:17:03.191103Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c6e8",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix OpenCode HTTP idle cleanup watchdog",
+    "type": "work",
+    "updated_at": "2026-04-30T14:17:03.191103Z",
+    "workflow_id": "work_sdlc"
+  }
+}

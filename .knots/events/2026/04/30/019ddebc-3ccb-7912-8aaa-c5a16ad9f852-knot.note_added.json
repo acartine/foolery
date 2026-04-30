@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddebc-3ccb-7912-8aaa-c5a16ad9f852",
+  "occurred_at": "2026-04-30T14:12:51.531495Z",
+  "knot_id": "foolery-c6e8",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review: approved. Reviewed branch codex/foolery-c6e8-opencode-idle-watchdog at d3db9c26bf7ece5d279f5b75a1e355f8d78465fa against main. The change directly addresses the kimi-k2.6 log failure mode: session.idle remains terminal, duplicate idle is deduped, post-idle OpenCode cleanup noise cannot refresh the watchdog, completed-turn cleanup cannot overwrite exitReason=turn_ended, and disposed OpenCode HTTP servers are reaped so the take loop can close. Tests cover post-idle normalized events, post-idle stderr, disposal without /abort after idle, duplicate idle, signal-only cleanup close classification, and active-turn timeout preservation. Sanity gates passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build. No regressions or invariant issues found.",
+    "datetime": "2026-04-30T14:12:51.531495Z",
+    "entry_id": "019ddebc-3ccb-7912-8aaa-c59e676923ae",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

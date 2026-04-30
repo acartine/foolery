@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb3-734f-71a1-890b-2b9b81554d86",
+  "occurred_at": "2026-04-30T14:03:15.653034Z",
+  "knot_id": "foolery-c6e8",
+  "type": "knot.description_set",
+  "data": {
+    "description": "OpenCode HTTP turns using openrouter/moonshotai/kimi-k2.6 correctly emit session.idle, but Foolery keeps the process watchdog active after turn_ended and later overwrites the successful turn with timeout when the OpenCode server stays alive or emits post-idle bus noise. Implement a fix so session.idle/session.status idle remains the turn boundary, post-idle OpenCode cleanup noise cannot re-arm turn liveness, and cleanup/reaping cannot reclassify a completed turn as failure. Validate with focused regression tests plus lint/typecheck/test/build."
+  }
+}

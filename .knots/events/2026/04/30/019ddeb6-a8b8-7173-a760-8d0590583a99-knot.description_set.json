@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb6-a8b8-7173-a760-8d0590583a99",
+  "occurred_at": "2026-04-30T14:06:45.93959Z",
+  "knot_id": "foolery-96ba",
+  "type": "knot.description_set",
+  "data": {
+    "description": "`src/components/agent-history-utils.tsx:391` defines its own `buildAgentLabel` — yet another formatter parallel to `formatAgentDisplayLabel`/`parseAgentDisplayParts` in `src/lib/agent-identity.ts`. Per parent foolery-2e97 rule 6, display formatting lives in one function. Either delete `buildAgentLabel` or reduce it to a one-line passthrough."
+  }
+}

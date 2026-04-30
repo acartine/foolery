@@ -1,0 +1,9 @@
+{
+  "event_id": "019ddeb6-a76c-7ae2-bf79-dbe2e958cbae",
+  "occurred_at": "2026-04-30T14:06:45.606582Z",
+  "knot_id": "foolery-988b",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add a canonical `normalizeOpenCodeModel` extractor to `src/lib/agent-identity.ts` so OpenCode is no longer a passthrough in `normalizeAgentIdentity`. This is the root cause of the \"OpenCode openrouter/moonshotai/kimi-k2.6 4.7\" leak in the beat table — the OpenCode binary version is bleeding into the model-version slot because there is no dedicated parser. See parent knot foolery-2e97 for full contract."
+  }
+}

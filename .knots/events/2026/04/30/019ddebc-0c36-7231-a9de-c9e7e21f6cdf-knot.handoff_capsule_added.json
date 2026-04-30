@@ -1,0 +1,15 @@
+{
+  "event_id": "019ddebc-0c36-7231-a9de-c9e7e21f6cdf",
+  "occurred_at": "2026-04-30T14:12:39.094032Z",
+  "knot_id": "foolery-c6e8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation artifact: branch codex/foolery-c6e8-opencode-idle-watchdog pushed to origin at commit d3db9c26bf7ece5d279f5b75a1e355f8d78465fa. Summary: OpenCode HTTP session_idle/session.status idle remains the turn boundary; duplicate turn-ended signals are ignored; post-idle OpenCode events/stderr no longer re-arm the turn watchdog; cleanup watchdogs preserve exitReason=turn_ended; /instance/dispose now reaps the server process; signal-only cleanup after a clean turn is classified as a clean exit for take-loop close handling. Validation: bun run lint, bunx tsc --noEmit, bun run test, bun run build all passed.",
+    "datetime": "2026-04-30T14:12:39.094032Z",
+    "entry_id": "019ddebc-0c36-7231-a9de-c9dc50c4875d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
