@@ -2,9 +2,6 @@
 
 import { Loader2 } from "lucide-react";
 import {
-  formatModelDisplay,
-} from "@/hooks/use-agent-info";
-import {
   extractApprovalRequest,
   formatApprovalRequestBanner,
 } from "@/lib/approval-request-visibility";
@@ -398,28 +395,4 @@ export function interactionTypeLabel(
   if (iType === "scene") return "Scene!";
   if (iType === "direct") return "Planning";
   return "Take!";
-}
-
-export function buildAgentLabel(
-  agentName?: string,
-  agentModel?: string,
-  agentVersion?: string,
-): string | undefined {
-  const parts: string[] = [];
-  if (agentName) parts.push(agentName);
-  const modelDisplay = formatModelDisplay(
-    agentModel,
-  );
-  if (modelDisplay) {
-    parts.push(
-      agentVersion
-        ? `${modelDisplay} ${agentVersion}`
-        : modelDisplay,
-    );
-  } else if (agentVersion) {
-    parts.push(agentVersion);
-  }
-  return parts.length > 0
-    ? parts.join(" · ")
-    : undefined;
 }

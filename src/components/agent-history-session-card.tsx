@@ -11,8 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import type {
   ConversationLogTheme,
 } from "@/components/agent-history-conversation-log-theme";
+import { formatAgentDisplayLabel } from "@/lib/agent-identity";
 import {
-  buildAgentLabel,
   formatTime,
   promptSourceLabel,
   workflowStateBadgeLabel,
@@ -46,18 +46,28 @@ export function SessionCard({
   ) => boolean;
   theme: ConversationLogTheme;
 }) {
-  const agentLabel = useMemo(
-    () => buildAgentLabel(
-      session.agentName,
-      session.agentModel,
-      session.agentVersion,
-    ),
-    [
-      session.agentName,
-      session.agentModel,
-      session.agentVersion,
-    ],
-  );
+  const agentLabel = useMemo(() => {
+    const hasAny =
+      session.agentName
+      || session.agentModel
+      || session.agentVersion;
+    if (!hasAny) return undefined;
+    return formatAgentDisplayLabel({
+      ...(session.agentName
+        ? { command: session.agentName }
+        : {}),
+      ...(session.agentModel
+        ? { model: session.agentModel }
+        : {}),
+      ...(session.agentVersion
+        ? { version: session.agentVersion }
+        : {}),
+    });
+  }, [
+    session.agentName,
+    session.agentModel,
+    session.agentVersion,
+  ]);
 
   const enrichedEntries = useMemo(() => {
     const result: Array<{
