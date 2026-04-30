@@ -35,6 +35,7 @@ import type {
 import {
   captureChildCloseDiagnostics,
   formatDiagnosticsForLog,
+  shouldTreatTurnEndedSignalAsClean,
   type ChildCloseDiagnostics,
 } from "@/lib/agent-session-close-diagnostics";
 
@@ -191,6 +192,10 @@ export function wireClose(
     child.stderr?.removeAllListeners();
     entry.process = null;
     state.child = null;
+    const effectiveCode =
+      shouldTreatTurnEndedSignalAsClean(code, diag)
+        ? 0
+        : code;
 
     if (isTakeLoop) {
       recordTakeLoopLifecycle(
@@ -207,7 +212,7 @@ export function wireClose(
         },
       );
       handleTakeIterationClose(
-        takeLoopCtx, code, agent,
+        takeLoopCtx, effectiveCode, agent,
         prepared.beat.state ?? "unknown",
       ).catch((err) => {
         console.error(
@@ -216,7 +221,7 @@ export function wireClose(
           `handleTakeIterationClose error:`,
           err,
         );
-        finishSession(code ?? 1);
+        finishSession(effectiveCode ?? 1);
       });
       return;
     }
@@ -232,7 +237,7 @@ export function wireClose(
       await enforceQueueTerminalInvariant(
         takeLoopCtx,
       );
-      finishSession(code ?? 1);
+      finishSession(effectiveCode ?? 1);
     })();
   });
 }

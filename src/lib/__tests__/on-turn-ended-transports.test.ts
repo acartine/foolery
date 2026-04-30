@@ -277,6 +277,28 @@ describe("onTurnEnded: http (OpenCode)", () => {
     expect(rt.state.exitReason).toBe("turn_ended");
   });
 
+  it("dedupes repeated OpenCode idle signals", () => {
+    const onTurnEnded = vi.fn(() => true);
+    const httpSession = createOpenCodeHttpSession(
+      vi.fn(), vi.fn(),
+    );
+    const rt = createSessionRuntime(baseConfig("opencode", {
+      httpSession,
+      onTurnEnded,
+    }));
+    const child = makeChild();
+
+    rt.injectLine(child, JSON.stringify({
+      type: "session_idle",
+    }));
+    rt.injectLine(child, JSON.stringify({
+      type: "session_idle",
+    }));
+
+    expect(onTurnEnded).toHaveBeenCalledOnce();
+    expect(rt.state.exitReason).toBe("turn_ended");
+  });
+
   it(
     "still fires on synthesised step_finish reason=error",
     () => {

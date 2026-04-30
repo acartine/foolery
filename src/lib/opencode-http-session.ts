@@ -204,6 +204,12 @@ function emitTranslated(
   events: Array<Record<string, unknown>>,
 ): void {
   for (const event of events) {
+    if (
+      event.type === "session_idle" ||
+      event.type === "session_error"
+    ) {
+      s.turnInFlight = false;
+    }
     const filtered = dedupeStreamedEvent(s, event);
     if (filtered) cb.onEvent(JSON.stringify(filtered));
   }
@@ -347,7 +353,13 @@ async function disposeServer(
     baseUrl,
     "/instance/dispose",
   );
-  if (disposed) return;
+  if (disposed) {
+    terminateProcessGroup(
+      child,
+      "opencode_dispose_completed",
+    );
+    return;
+  }
 
   terminateProcessGroup(
     child,
