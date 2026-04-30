@@ -74,9 +74,40 @@ export interface BackendDispatchFailure {
   reason: BackendDispatchFailureReason;
 }
 
+export type LeaseDeadDispatchFailureReason =
+  | "lease_terminated"
+  | "lease_state_unknown"
+  | "lease_missing";
+
+/**
+ * Failure kind raised when the take-loop is about to send a follow-up
+ * prompt to an agent but the bound lease is no longer valid (e.g.,
+ * the agent ran `kno rollback` which kno terminates the action
+ * step's lease as a side effect — see foolery-2dd7).
+ */
+export interface LeaseDeadDispatchFailure {
+  kind: "lease_dead";
+  beatId: string;
+  sessionId: string;
+  iteration?: number;
+  leaseId?: string;
+  leaseState?: string;
+  beatState?: string;
+  expectedStep?: string;
+  agentName?: string;
+  agentProvider?: string;
+  agentModel?: string;
+  agentVersion?: string;
+  followUpCount?: number;
+  promptSource?: string;
+  reason: LeaseDeadDispatchFailureReason;
+  detail?: string;
+}
+
 export type DispatchFailureInfo =
   | AgentDispatchFailure
-  | BackendDispatchFailure;
+  | BackendDispatchFailure
+  | LeaseDeadDispatchFailure;
 
 /**
  * Back-compat alias for the legacy agent-only dispatch-failure shape. New code
@@ -92,13 +123,17 @@ export type AgentDispatchFailureInfo = AgentDispatchFailure;
 export function emitDispatchFailureBanner(
   info: DispatchFailureInfo,
 ): string {
-  const plain = info.kind === "backend"
-    ? backendBannerBody(info)
-    : agentBannerBody(info);
+  const plain = bannerBodyFor(info);
   const banner = buildAnsiRedBanner(plain);
 
   console.error(`\n${banner}\n`);
   return `\n${banner}\n`;
+}
+
+function bannerBodyFor(info: DispatchFailureInfo): string {
+  if (info.kind === "backend") return backendBannerBody(info);
+  if (info.kind === "lease_dead") return leaseDeadBannerBody(info);
+  return agentBannerBody(info);
 }
 
 function agentBannerBody(info: AgentDispatchFailure): string {
@@ -117,6 +152,47 @@ function agentBannerBody(info: AgentDispatchFailure): string {
     .filter(Boolean)
     .join("\n");
   return [heading, body].join("\n");
+}
+
+function leaseDeadBannerBody(info: LeaseDeadDispatchFailure): string {
+  const heading =
+    `${DISPATCH_FAILURE_MARKER}: cannot send take-loop follow-up — ` +
+    `bound lease is dead for beat ${info.beatId}`;
+  const body = [
+    `  session       = ${info.sessionId}`,
+    `  beat          = ${info.beatId}`,
+    `  beatState     = ${info.beatState ?? "?"}`,
+    `  iteration     = ${info.iteration ?? "?"}`,
+    `  lease         = ${info.leaseId ?? "<missing>"}`,
+    `  leaseState    = ${info.leaseState ?? "?"}`,
+    `  expectedStep  = ${info.expectedStep ?? "?"}`,
+    `  agentName     = ${info.agentName ?? "?"}`,
+    `  agentProvider = ${info.agentProvider ?? "?"}`,
+    `  agentModel    = ${info.agentModel ?? "?"}`,
+    `  agentVersion  = ${info.agentVersion ?? "?"}`,
+    `  followUpCount = ${info.followUpCount ?? "?"}`,
+    `  promptSource  = ${info.promptSource ?? "?"}`,
+    `  reason        = ${info.reason}`,
+    info.detail ? `  detail        = ${info.detail}` : "",
+    leaseDeadRemediationFor(info),
+  ]
+    .filter(Boolean)
+    .join("\n");
+  return [heading, body].join("\n");
+}
+
+function leaseDeadRemediationFor(
+  info: LeaseDeadDispatchFailure,
+): string {
+  const base = `  remediation   =`;
+  switch (info.reason) {
+    case "lease_terminated":
+      return `${base} the agent ran \`kno rollback\` (or another path terminated the lease) — re-claiming with a fresh lease requires a new take-loop iteration. The take loop has stopped sending follow-ups for this lease to avoid an infinite \`kno claim\` failure loop. Investigate the cause via the dispatch-forensics snapshot pair (foolery-dd9c).`;
+    case "lease_state_unknown":
+      return `${base} \`kno lease list\` failed; cannot prove the lease is still active. Failing closed per Fail Loudly. Inspect kno health and retry the iteration.`;
+    case "lease_missing":
+      return `${base} the bound lease id is not present in \`kno lease list --all\`. Snapshot files written by foolery-dd9c will confirm whether it ever existed for this beat.`;
+  }
 }
 
 function backendBannerBody(info: BackendDispatchFailure): string {
@@ -166,6 +242,13 @@ function buildErrorMessage(info: DispatchFailureInfo): string {
     return (
       `${DISPATCH_FAILURE_MARKER}: method=${info.method} ` +
       `repoPath=${info.repoPath ?? "<missing>"} reason=${info.reason}`
+    );
+  }
+  if (info.kind === "lease_dead") {
+    return (
+      `${DISPATCH_FAILURE_MARKER}: lease_dead beat=${info.beatId} ` +
+      `lease=${info.leaseId ?? "<missing>"} ` +
+      `leaseState=${info.leaseState ?? "?"} reason=${info.reason}`
     );
   }
   return (

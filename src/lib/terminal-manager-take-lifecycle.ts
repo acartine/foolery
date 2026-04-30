@@ -20,6 +20,7 @@ export type TakeLoopLifecycleEvent =
   | "normalized_event_observed"
   | "turn_ended"
   | "take_loop_follow_up_sent"
+  | "take_loop_follow_up_skipped_dead_lease"
   | "child_close"
   | "spawn_error"
   | "post_exit_state_observed"

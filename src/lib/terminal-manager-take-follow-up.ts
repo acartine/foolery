@@ -19,6 +19,7 @@
 import type { ChildProcess } from "node:child_process";
 import type { AgentSessionRuntime } from "@/lib/agent-session-runtime";
 import { getBackend } from "@/lib/backend-instance";
+import { listLeases } from "@/lib/knots";
 import { isQueueOrTerminal } from "@/lib/workflows";
 import {
   resolveWorkflowForBeat,
@@ -28,6 +29,12 @@ import {
   recordTakeLoopLifecycle,
 } from "@/lib/terminal-manager-take-lifecycle";
 import { captureBeatSnapshot } from "@/lib/dispatch-forensics";
+import { logLeaseAudit } from "@/lib/lease-audit";
+import {
+  emitDispatchFailureBanner,
+  type LeaseDeadDispatchFailure,
+  type LeaseDeadDispatchFailureReason,
+} from "@/lib/dispatch-pool-resolver";
 
 // ── Constants ──────────────────────────────────────────
 
@@ -119,12 +126,167 @@ function resolveCtxWorkflow(
   return isQueueOrTerminal(state, workflow);
 }
 
-function sendFollowUpPrompt(
+/**
+ * Lease-state gate. Fails closed: if we cannot prove the lease is
+ * still in lease_ready / lease_active, we refuse to send the
+ * follow-up. The agent's prompt embeds the lease id, so prompting
+ * with a dead lease guarantees a `kno claim` failure loop
+ * (foolery-2dd7 / maestro-ca91 incident).
+ */
+const HEALTHY_LEASE_STATES = new Set(["lease_ready", "lease_active"]);
+
+export interface LeaseHealthChecker {
+  list(repoPath?: string): Promise<{
+    ok: boolean;
+    data?: Array<{ id?: string | null; state?: string }>;
+    error?: string;
+  }>;
+}
+
+function defaultLeaseHealthChecker(): LeaseHealthChecker {
+  return {
+    list: async (repoPath) => {
+      const r = await listLeases(repoPath, true);
+      if (!r.ok) {
+        return { ok: false, error: r.error ?? "listLeases failed" };
+      }
+      return {
+        ok: true,
+        data: (r.data ?? []) as Array<{ id?: string | null; state?: string }>,
+      };
+    },
+  };
+}
+
+interface LeaseHealthResult {
+  healthy: boolean;
+  reason?: LeaseDeadDispatchFailureReason;
+  leaseState?: string;
+  detail?: string;
+}
+
+export async function evaluateLeaseHealth(
+  leaseId: string | undefined,
+  repoPath: string | undefined,
+  checker: LeaseHealthChecker,
+): Promise<LeaseHealthResult> {
+  if (!leaseId) {
+    return {
+      healthy: false,
+      reason: "lease_missing",
+      detail: "ctx.entry.knotsLeaseId is undefined",
+    };
+  }
+  const list = await checker.list(repoPath);
+  if (!list.ok) {
+    return {
+      healthy: false,
+      reason: "lease_state_unknown",
+      detail: list.error,
+    };
+  }
+  const lease = (list.data ?? []).find((l) => l.id === leaseId);
+  if (!lease) {
+    return {
+      healthy: false,
+      reason: "lease_missing",
+      detail: `lease ${leaseId} not present in lease list`,
+    };
+  }
+  const state = typeof lease.state === "string" ? lease.state : undefined;
+  if (state && HEALTHY_LEASE_STATES.has(state)) {
+    return { healthy: true, leaseState: state };
+  }
+  return {
+    healthy: false,
+    reason: "lease_terminated",
+    leaseState: state,
+    detail: `lease state ${state ?? "<unknown>"} is not in {lease_ready, lease_active}`,
+  };
+}
+
+function buildLeaseDeadFailure(
+  ctx: TakeLoopContext,
+  state: string,
+  health: LeaseHealthResult,
+): LeaseDeadDispatchFailure {
+  return {
+    kind: "lease_dead",
+    beatId: ctx.beatId,
+    sessionId: ctx.id,
+    iteration: ctx.takeIteration.value,
+    leaseId: ctx.entry.knotsLeaseId,
+    leaseState: health.leaseState,
+    beatState: state,
+    expectedStep: ctx.entry.knotsLeaseStep,
+    agentName: ctx.agentInfo?.agentName,
+    agentProvider: ctx.agentInfo?.agentProvider,
+    agentModel: ctx.agentInfo?.agentModel,
+    agentVersion: ctx.agentInfo?.agentVersion,
+    followUpCount: ctx.followUpAttempts.count,
+    promptSource: FOLLOW_UP_SOURCE,
+    reason: health.reason ?? "lease_state_unknown",
+    detail: health.detail,
+  };
+}
+
+async function refuseFollowUpForDeadLease(
+  ctx: TakeLoopContext,
+  state: string,
+  health: LeaseHealthResult,
+): Promise<void> {
+  const failure = buildLeaseDeadFailure(ctx, state, health);
+  const banner = emitDispatchFailureBanner(failure);
+  ctx.pushEvent({
+    type: "stderr",
+    data: banner,
+    timestamp: Date.now(),
+  });
+  recordTakeLoopLifecycle(
+    ctx,
+    "take_loop_follow_up_skipped_dead_lease",
+    { claimedState: state, leaseId: ctx.entry.knotsLeaseId },
+  );
+  await logLeaseAudit({
+    event: "lease_dead_on_followup",
+    repoPath: ctx.resolvedRepoPath,
+    sessionId: ctx.id,
+    knotsLeaseId: ctx.entry.knotsLeaseId,
+    beatId: ctx.beatId,
+    interactionType: "take",
+    agentName: ctx.agentInfo?.agentName,
+    agentProvider: ctx.agentInfo?.agentProvider,
+    agentModel: ctx.agentInfo?.agentModel,
+    agentVersion: ctx.agentInfo?.agentVersion,
+    outcome: "error",
+    message:
+      `Refused to send take-loop follow-up — lease ` +
+      `${ctx.entry.knotsLeaseId ?? "<missing>"} is ${health.leaseState ?? "in unknown state"}.`,
+    data: {
+      reason: failure.reason,
+      detail: failure.detail,
+      leaseState: failure.leaseState,
+      beatState: state,
+      iteration: failure.iteration,
+      expectedStep: failure.expectedStep,
+      followUpCount: failure.followUpCount,
+      promptSource: failure.promptSource,
+    },
+  }).catch((err) => {
+    console.error(
+      `[terminal-manager] [${ctx.id}] [take-loop] ` +
+      `failed to write lease_dead_on_followup audit:`, err,
+    );
+  });
+}
+
+async function sendFollowUpPrompt(
   ctx: TakeLoopContext,
   runtime: AgentSessionRuntime,
   child: ChildProcess,
   state: string,
-): boolean {
+  leaseChecker: LeaseHealthChecker = defaultLeaseHealthChecker(),
+): Promise<boolean> {
   void captureBeatSnapshot("pre_followup", {
     sessionId: ctx.id,
     beatId: ctx.beatId,
@@ -136,6 +298,17 @@ function sendFollowUpPrompt(
     agentInfo: ctx.agentInfo,
     childPid: typeof child.pid === "number" ? child.pid : undefined,
   });
+
+  const health = await evaluateLeaseHealth(
+    ctx.entry.knotsLeaseId,
+    ctx.resolvedRepoPath,
+    leaseChecker,
+  );
+  if (!health.healthy) {
+    await refuseFollowUpForDeadLease(ctx, state, health);
+    return false;
+  }
+
   const prompt = buildTakeLoopFollowUpPrompt(
     ctx.beatId, state,
   );
@@ -214,5 +387,5 @@ export async function handleTakeLoopTurnEnded(
     emitFollowUpCapBanner(ctx, ctx.beatId, state, count);
     return false;
   }
-  return sendFollowUpPrompt(ctx, runtime, child, state);
+  return await sendFollowUpPrompt(ctx, runtime, child, state);
 }

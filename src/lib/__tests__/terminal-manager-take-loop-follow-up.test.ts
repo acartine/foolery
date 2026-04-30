@@ -45,6 +45,23 @@ vi.mock("@/lib/backend-instance", () => ({
   getBackend: () => ({ get: backendGet }),
 }));
 
+// Healthy-lease mock so the foolery-2dd7 dead-lease guard inside
+// sendFollowUpPrompt doesn't refuse the follow-up. These tests are
+// focused on the foolery-6881 onTurnEnded wiring; the dead-lease
+// guard is exercised in __tests__/take-loop-follow-up-dead-lease.
+vi.mock("@/lib/knots", async () => {
+  const actual = await vi.importActual<
+    typeof import("@/lib/knots")
+  >("@/lib/knots");
+  return {
+    ...actual,
+    listLeases: async () => ({
+      ok: true,
+      data: [{ id: "test-lease-active", state: "lease_active" }],
+    }),
+  };
+});
+
 // ── Fixtures ─────────────────────────────────────────
 
 function makeCtx(
@@ -83,6 +100,8 @@ function makeCtx(
     } as unknown as TakeLoopContext["agentInfo"],
     entry: {
       takeLoopLifecycle: new Map(),
+      knotsLeaseId: "test-lease-active",
+      knotsLeaseStep: "implementation",
     } as unknown as TakeLoopContext["entry"],
     session: {} as TakeLoopContext["session"],
     interactionLog: {
