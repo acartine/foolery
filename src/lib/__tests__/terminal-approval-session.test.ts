@@ -49,7 +49,8 @@ function makeEntry(): SessionEntry {
       beatId: "beat-1",
       beatTitle: "Approval beat",
       repoPath: "/repo",
-      agentName: "OpenCode",
+      knotsLeaseId: "lease-fix-1",
+      knotsAgentInfo: { agentName: "OpenCode" },
       status: "running",
       startedAt: "2026-04-29T12:00:00.000Z",
     },
@@ -65,6 +66,7 @@ function makeEntry(): SessionEntry {
       logBeatState: vi.fn(),
       filePath: null,
     } as unknown as SessionEntry["interactionLog"],
+    knotsLeaseAgentInfo: { agentName: "OpenCode" },
   };
 }
 

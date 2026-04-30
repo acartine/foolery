@@ -56,10 +56,9 @@ export function useShipBeat(
         beatTitle: beat.title,
         repoPath:
           result.data.repoPath ?? repoArg,
-        agentName: result.data.agentName,
-        agentModel: result.data.agentModel,
-        agentVersion: result.data.agentVersion,
-        agentCommand: result.data.agentCommand,
+        ...(result.data.knotsLeaseId
+          ? { knotsLeaseId: result.data.knotsLeaseId }
+          : {}),
         status: "running",
         startedAt: result.data.startedAt,
       });

@@ -61,10 +61,9 @@ export function useSceneManager(
           result.data.repoPath
           ?? item.repoPath
           ?? activeRepo ?? undefined,
-        agentName: result.data.agentName,
-        agentModel: result.data.agentModel,
-        agentVersion: result.data.agentVersion,
-        agentCommand: result.data.agentCommand,
+        ...(result.data.knotsLeaseId
+          ? { knotsLeaseId: result.data.knotsLeaseId }
+          : {}),
         status: "running",
         startedAt: result.data.startedAt,
       });

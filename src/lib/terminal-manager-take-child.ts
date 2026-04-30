@@ -21,7 +21,6 @@ import {
 } from "@/lib/agent-session-runtime";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
-  formatAgentDisplayLabel,
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
 import type {
@@ -62,13 +61,11 @@ function applyEffectiveAgent(
   ctx.agent = effectiveAgent;
   ctx.agentInfo =
     toExecutionAgentInfo(effectiveAgent);
-  ctx.session.agentName =
-    formatAgentDisplayLabel(effectiveAgent);
-  ctx.session.agentModel = effectiveAgent.model;
-  ctx.session.agentVersion =
-    effectiveAgent.version;
-  ctx.session.agentCommand =
-    effectiveAgent.command;
+  // Agent identity does NOT land on `ctx.session` here — the canonical
+  // source is the bound Knots lease.  `rotateKnotsLease` (called after
+  // this for any agent override) updates `entry.knotsLeaseAgentInfo` and
+  // mirrors it onto the session via `syncSessionLeaseInfo`.  See
+  // `docs/knots-agent-identity-contract.md` rule 5.
 }
 
 export function spawnTakeChild(

@@ -430,10 +430,9 @@ async function launchRecovery(
     beatId: r.data.beatId,
     beatTitle: r.data.beatTitle,
     repoPath: r.data.repoPath ?? repoPath,
-    agentName: r.data.agentName,
-    agentModel: r.data.agentModel,
-    agentVersion: r.data.agentVersion,
-    agentCommand: r.data.agentCommand,
+    ...(r.data.knotsLeaseId
+      ? { knotsLeaseId: r.data.knotsLeaseId }
+      : {}),
     status: "running",
     startedAt: r.data.startedAt,
   });

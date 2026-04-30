@@ -1,4 +1,4 @@
-import { connectToSession } from "./terminal-api";
+import { connectToSession, listSessions } from "./terminal-api";
 import { invalidateBeatListQueries } from "@/lib/beat-query-cache";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { useNotificationStore } from "@/stores/notification-store";
@@ -64,12 +64,11 @@ class SessionConnectionManager {
         }
 
         if (event.type === "agent_switch") {
-          try {
-            const agent = JSON.parse(event.data);
-            useTerminalStore.getState().updateAgent(sessionId, agent);
-          } catch {
-            // ignore malformed agent_switch data
-          }
+          // The lease has rotated server-side; refetch to pick up the new
+          // `knotsLeaseId` / `knotsAgentInfo` (autostamp-derived from the
+          // new lease's agent_info).  The event payload is intentionally
+          // ignored — `docs/knots-agent-identity-contract.md` rule 5.
+          void refreshLeaseFromBackend();
           return;
         }
 
@@ -200,6 +199,15 @@ class SessionConnectionManager {
 
 /** Singleton instance */
 export const sessionConnections = new SessionConnectionManager();
+
+async function refreshLeaseFromBackend(): Promise<void> {
+  try {
+    const sessions = await listSessions();
+    useTerminalStore.getState().rehydrateFromBackend(sessions);
+  } catch {
+    // best-effort; the next 5s rehydrate poll will pick up the change
+  }
+}
 
 function handleApprovalEvent(
   event: TerminalEvent,

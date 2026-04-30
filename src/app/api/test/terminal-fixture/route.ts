@@ -43,10 +43,11 @@ export async function POST(request: NextRequest) {
       beatId: body.beatId,
       beatTitle: body.beatTitle,
       repoPath: body.repoPath,
+      knotsLeaseId: body.knotsLeaseId,
       agentName: body.agentName,
       agentModel: body.agentModel,
       agentVersion: body.agentVersion,
-      agentCommand: body.agentCommand,
+      agentProvider: body.agentProvider,
       startedAt: body.startedAt,
     });
     return NextResponse.json({ data: session });

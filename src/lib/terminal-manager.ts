@@ -51,8 +51,9 @@ import {
 import {
   cleanupTerminalSessionResources,
 } from "@/lib/terminal-session-cleanup";
-import type {
-  SessionEntry,
+import {
+  type SessionEntry,
+  syncSessionLeaseInfo,
 } from "@/lib/terminal-manager-types";
 import {
   type PreparedTargets,
@@ -160,9 +161,7 @@ export async function createSession(
   }
 
   const id = generateId();
-  const session = buildSession(
-    id, prepared, agent,
-  );
+  const session = buildSession(id, prepared);
 
   const emitter = new EventEmitter();
   emitter.setMaxListeners(20);
@@ -251,19 +250,16 @@ async function resolveSessionAgent(
 function buildSession(
   id: string,
   prepared: PreparedTargets,
-  agent: CliAgentTarget,
 ): TerminalSession {
+  // Agent identity is intentionally NOT populated here; it lands on the
+  // session via `entry.knotsLeaseAgentInfo` once `acquireKnotsLease` resolves
+  // and is mirrored onto `session.knotsAgentInfo` by `syncSessionLeaseInfo`.
+  // See `docs/knots-agent-identity-contract.md` rules 4 and 5.
   return {
     id,
     beatId: prepared.beat.id,
     beatTitle: prepared.beat.title,
     repoPath: prepared.resolvedRepoPath,
-    agentName: formatAgentDisplayLabel(agent),
-    agentModel: agent.model,
-    agentVersion: agent.version,
-    ...(agent.kind === "cli"
-      ? { agentCommand: agent.command }
-      : {}),
     status: "running",
     startedAt: new Date().toISOString(),
   };
@@ -326,6 +322,7 @@ async function setupKnotsLease(
     entry.knotsLeaseId = undefined;
     entry.knotsLeaseStep = undefined;
     entry.knotsLeaseAgentInfo = undefined;
+    syncSessionLeaseInfo(entry);
     void terminateKnotsRuntimeLease({
       repoPath: prepared.resolvedRepoPath,
       source: "terminal_manager_take",
@@ -367,6 +364,7 @@ async function acquireKnotsLease(
   entry.knotsLeaseSeq = (entry.knotsLeaseSeq ?? 0) + 1;
   entry.knotsLeaseStep = poolKey ?? undefined;
   entry.knotsLeaseAgentInfo = agentInfo;
+  syncSessionLeaseInfo(entry);
   logAttachedKnotsLease({
     repoPath: prepared.resolvedRepoPath,
     source: "terminal_manager_take",

@@ -64,6 +64,12 @@ export function recordPendingApproval(
   entry: SessionEntry,
   request: ApprovalRequest,
 ): PendingApprovalRecord {
+  // Approval rows show "who is being asked for approval" — that's the
+  // agent currently running this session, which is the bound lease's
+  // agent_info.  We read it from `entry.knotsLeaseAgentInfo` (mirrored
+  // onto the session as `knotsAgentInfo` for HTTP consumers).  See
+  // `docs/knots-agent-identity-contract.md` rule 5.
+  const leaseInfo = entry.knotsLeaseAgentInfo;
   const approval = approvalEscalationFromRequest(
     request,
     {
@@ -71,10 +77,10 @@ export function recordPendingApproval(
       beatId: entry.session.beatId,
       beatTitle: entry.session.beatTitle,
       repoPath: entry.session.repoPath,
-      agentName: entry.session.agentName,
-      agentModel: entry.session.agentModel,
-      agentVersion: entry.session.agentVersion,
-      agentCommand: entry.session.agentCommand,
+      agentName: leaseInfo?.agentName,
+      agentModel: leaseInfo?.agentModel,
+      agentVersion: leaseInfo?.agentVersion,
+      agentCommand: leaseInfo?.agentName,
     },
   );
   const record = pendingRecordFromApproval(approval);
@@ -411,11 +417,16 @@ function pushApprovalFailureEvent(
 function agentInfoFromEntry(
   entry: SessionEntry,
 ): ExecutionAgentInfo | undefined {
-  const session = entry.session;
+  // Always read canonical agent identity from the bound lease — never
+  // from a parallel field on the session.  See contract rule 5.
+  const lease = entry.knotsLeaseAgentInfo;
+  if (!lease) return undefined;
   const info: ExecutionAgentInfo = {};
-  if (session.agentName) info.agentName = session.agentName;
-  if (session.agentModel) info.agentModel = session.agentModel;
-  if (session.agentVersion) info.agentVersion = session.agentVersion;
+  if (lease.agentName) info.agentName = lease.agentName;
+  if (lease.agentModel) info.agentModel = lease.agentModel;
+  if (lease.agentVersion) info.agentVersion = lease.agentVersion;
+  if (lease.agentProvider) info.agentProvider = lease.agentProvider;
+  if (lease.agentType) info.agentType = lease.agentType;
   return Object.keys(info).length > 0 ? info : undefined;
 }
 

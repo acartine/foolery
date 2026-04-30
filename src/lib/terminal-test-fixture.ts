@@ -20,10 +20,11 @@ type FixtureSessionInput = {
   beatId: string;
   beatTitle: string;
   repoPath?: string;
+  knotsLeaseId?: string;
   agentName?: string;
   agentModel?: string;
   agentVersion?: string;
-  agentCommand?: string;
+  agentProvider?: string;
   startedAt?: string;
 };
 
@@ -53,15 +54,23 @@ export function createFixtureSession(
     return existing.session;
   }
 
+  const knotsAgentInfo =
+    input.agentName || input.agentModel
+      || input.agentVersion || input.agentProvider
+      ? {
+          ...(input.agentName ? { agentName: input.agentName } : {}),
+          ...(input.agentModel ? { agentModel: input.agentModel } : {}),
+          ...(input.agentVersion ? { agentVersion: input.agentVersion } : {}),
+          ...(input.agentProvider ? { agentProvider: input.agentProvider } : {}),
+        }
+      : undefined;
   const session: TerminalSession = {
     id: input.id,
     beatId: input.beatId,
     beatTitle: input.beatTitle,
     repoPath: input.repoPath,
-    agentName: input.agentName,
-    agentModel: input.agentModel,
-    agentVersion: input.agentVersion,
-    agentCommand: input.agentCommand,
+    ...(input.knotsLeaseId ? { knotsLeaseId: input.knotsLeaseId } : {}),
+    ...(knotsAgentInfo ? { knotsAgentInfo } : {}),
     status: "running",
     startedAt: input.startedAt ?? new Date().toISOString(),
   };

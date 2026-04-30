@@ -45,6 +45,28 @@ export interface SessionEntry {
 export const INPUT_CLOSE_GRACE_MS = 2000;
 
 /**
+ * Mirror the entry's authoritative `knotsLeaseId` and `knotsLeaseAgentInfo`
+ * onto its `session` so HTTP responses (`listSessions`, `createSession`)
+ * carry the canonical, autostamp-derived agent identity.
+ *
+ * Called after `acquireKnotsLease`, after lease rotations in
+ * `terminal-manager-take-agent`, and on lease release.
+ *
+ * See `docs/knots-agent-identity-contract.md` rule 5.
+ */
+export function syncSessionLeaseInfo(entry: SessionEntry): void {
+  entry.session.knotsLeaseId = entry.knotsLeaseId;
+  entry.session.knotsAgentInfo = entry.knotsLeaseAgentInfo
+    ? {
+        agentName: entry.knotsLeaseAgentInfo.agentName,
+        agentModel: entry.knotsLeaseAgentInfo.agentModel,
+        agentVersion: entry.knotsLeaseAgentInfo.agentVersion,
+        agentProvider: entry.knotsLeaseAgentInfo.agentProvider,
+      }
+    : undefined;
+}
+
+/**
  * Resolve a CLI command that may not be on PATH.
  * Checks common locations (bun global bin).
  * Returns the original command if no alternative found.

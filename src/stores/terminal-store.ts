@@ -2,16 +2,28 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { TerminalSession, TerminalSessionStatus } from "@/lib/types";
 
+/**
+ * UI-side handle for a running/recent terminal session.
+ *
+ * Agent identity (name / model / version / provider) is intentionally NOT
+ * stored here.  The canonical source is the bound Knots lease; consumers
+ * read it via {@link useTerminalAgentInfo} which resolves from the
+ * autostamped lease `agent_info` carried back by the terminal API.
+ *
+ * See `docs/knots-agent-identity-contract.md` rule 5.
+ */
 export interface ActiveTerminal {
   sessionId: string;
   beatId: string;
   beatTitle: string;
   beatIds?: string[];
   repoPath?: string;
-  agentName?: string;
-  agentModel?: string;
-  agentVersion?: string;
-  agentCommand?: string;
+  /**
+   * Knots lease bound to this session.  Use as the key into the
+   * lease-derived agent-info resolver — never persist the resolved fields
+   * here, they belong on the lease.
+   */
+  knotsLeaseId?: string;
   status: TerminalSessionStatus;
   startedAt: string;
 }
@@ -41,7 +53,7 @@ interface TerminalState {
   removeTerminal: (sessionId: string) => void;
   setActiveSession: (sessionId: string) => void;
   updateStatus: (sessionId: string, status: TerminalSessionStatus) => void;
-  updateAgent: (sessionId: string, agent: Pick<ActiveTerminal, "agentName" | "agentModel" | "agentVersion" | "agentCommand">) => void;
+  updateLease: (sessionId: string, knotsLeaseId: string | undefined) => void;
   markPendingClose: (sessionId: string) => void;
   cancelPendingClose: (sessionId: string) => void;
   enqueueSceneBeats: (items: QueuedBeat[]) => void;
@@ -152,17 +164,22 @@ function computeRehydrate(
         ? { ...t, status: "disconnected" as const }
         : t;
     }
+    const next: ActiveTerminal = {
+      ...t,
+      status: backend.status,
+      startedAt: backend.startedAt,
+      ...(backend.knotsLeaseId !== undefined
+        ? { knotsLeaseId: backend.knotsLeaseId }
+        : {}),
+    };
     if (
-      backend.status !== t.status ||
-      backend.startedAt !== t.startedAt
+      backend.status === t.status &&
+      backend.startedAt === t.startedAt &&
+      backend.knotsLeaseId === t.knotsLeaseId
     ) {
-      return {
-        ...t,
-        status: backend.status,
-        startedAt: backend.startedAt,
-      };
+      return t;
     }
-    return t;
+    return next;
   });
   const knownIds = new Set(
     state.terminals.map((t) => t.sessionId),
@@ -175,10 +192,7 @@ function computeRehydrate(
       beatTitle: s.beatTitle,
       beatIds: s.beatIds,
       repoPath: s.repoPath,
-      agentName: s.agentName,
-      agentModel: s.agentModel,
-      ...(s.agentVersion ? { agentVersion: s.agentVersion } : {}),
-      agentCommand: s.agentCommand,
+      ...(s.knotsLeaseId ? { knotsLeaseId: s.knotsLeaseId } : {}),
       status: s.status,
       startedAt: s.startedAt,
     }));
@@ -235,11 +249,11 @@ export const useTerminalStore = create<TerminalState>()(
     set((state) => computeSetActiveSession(state, sessionId)),
   updateStatus: (sessionId, status) =>
     set((state) => computeUpdateStatus(state, sessionId, status)),
-  updateAgent: (sessionId, agent) =>
+  updateLease: (sessionId, knotsLeaseId) =>
     set((state) => ({
       terminals: state.terminals.map((item) =>
         item.sessionId === sessionId
-          ? { ...item, ...agent }
+          ? { ...item, knotsLeaseId }
           : item,
       ),
     })),

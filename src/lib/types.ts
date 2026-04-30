@@ -148,14 +148,35 @@ export interface TerminalSession {
   beatTitle: string;
   beatIds?: string[];
   repoPath?: string;
-  agentName?: string;
-  agentModel?: string;
-  agentVersion?: string;
-  agentCommand?: string;
+  /**
+   * Knots lease bound to this session.  The lease's `agent_info` is the
+   * autostamp-derived canonical source for who is working on this beat.
+   * See `docs/knots-agent-identity-contract.md` rule 5.
+   */
+  knotsLeaseId?: string;
+  /**
+   * Canonical agent identity derived from the bound lease's `agent_info`.
+   * Populated server-side from `entry.knotsLeaseAgentInfo` and read back by
+   * UI consumers via `useTerminalAgentInfo`.  Never re-extracted at display
+   * time — see `docs/knots-agent-identity-contract.md` rules 4 and 5.
+   */
+  knotsAgentInfo?: TerminalSessionAgentInfo;
   status: TerminalSessionStatus;
   startedAt: string;
   exitCode?: number;
   pendingApprovals?: PendingApprovalRecord[];
+}
+
+/**
+ * Subset of `ExecutionAgentInfo` propagated to UI consumers as the canonical
+ * source of agent identity for the active terminal.  All fields originate
+ * from the bound Knots lease's autostamped `agent_info`.
+ */
+export interface TerminalSessionAgentInfo {
+  agentName?: string;
+  agentModel?: string;
+  agentVersion?: string;
+  agentProvider?: string;
 }
 
 export interface TerminalEvent {

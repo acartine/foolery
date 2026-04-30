@@ -17,6 +17,9 @@ import {
   useAgentInfo,
   type ResolvedAgentInfo,
 } from "@/hooks/use-agent-info";
+import {
+  useTerminalAgentInfoMap,
+} from "@/app/beats/use-terminal-agent-info";
 import type {
   BeatInfoForBar,
 } from "@/components/agent-info-bar";
@@ -290,24 +293,25 @@ function useAgentInfoFor(
   >,
 ): ResolvedAgentInfo | null {
   const fallback = useAgentInfo("take");
+  // Lease-derived agent identity for the active terminal.  See
+  // `docs/knots-agent-identity-contract.md` rule 5 — runtime/session
+  // metadata always comes from the autostamped lease, never from
+  // duplicate fields on the terminal store.
+  const leaseAgentInfoMap = useTerminalAgentInfoMap();
   const session = useMemo<
     ResolvedAgentInfo | null
   >(() => {
-    if (!activeTerminal?.agentCommand) {
-      return null;
-    }
+    if (!activeTerminal) return null;
+    const info = leaseAgentInfoMap.get(activeTerminal.sessionId);
+    if (!info?.agentName) return null;
     return {
-      name:
-        activeTerminal.agentName
-        || activeTerminal.agentCommand,
-      model: activeTerminal.agentModel,
-      version: activeTerminal.agentVersion,
-      command: activeTerminal.agentCommand,
-      vendor: detectVendor(
-        activeTerminal.agentCommand,
-      ),
+      name: info.agentName,
+      model: info.agentModel,
+      version: info.agentVersion,
+      command: info.agentName,
+      vendor: detectVendor(info.agentName),
     };
-  }, [activeTerminal]);
+  }, [activeTerminal, leaseAgentInfoMap]);
   return session ?? fallback;
 }
 

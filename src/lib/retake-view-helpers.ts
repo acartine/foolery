@@ -205,10 +205,9 @@ export async function executeRetakeNow(
     beatTitle: beat.title,
     repoPath: d.repoPath
       ?? repo ?? activeRepo ?? undefined,
-    agentName: d.agentName,
-    agentModel: d.agentModel,
-    agentVersion: d.agentVersion,
-    agentCommand: d.agentCommand,
+    ...(d.knotsLeaseId
+      ? { knotsLeaseId: d.knotsLeaseId }
+      : {}),
     status: "running",
     startedAt: d.startedAt,
   });

@@ -24,6 +24,9 @@ import {
   ensureKnotsLease,
 } from "@/lib/knots-lease-runtime";
 import {
+  syncSessionLeaseInfo,
+} from "@/lib/terminal-manager-types";
+import {
   recordTakeLoopLifecycle,
   recordLeaseReleaseLifecycle,
 } from "@/lib/terminal-manager-take-lifecycle";
@@ -196,6 +199,7 @@ export async function rotateKnotsLease(
     (ctx.entry.knotsLeaseSeq ?? 0) + 1;
   ctx.entry.knotsLeaseAgentInfo = nextAgentInfo;
   ctx.agentInfo = nextAgentInfo;
+  syncSessionLeaseInfo(ctx.entry);
 
   ctx.knotsLeaseTerminationStarted.value = false;
   const { terminateKnotsRuntimeLease } =
@@ -223,6 +227,7 @@ export async function rotateKnotsLease(
     ctx.entry.knotsLeaseId = undefined;
     ctx.entry.knotsLeaseStep = undefined;
     ctx.entry.knotsLeaseAgentInfo = undefined;
+    syncSessionLeaseInfo(ctx.entry);
     void terminateKnotsRuntimeLease({
       repoPath: ctx.resolvedRepoPath,
       source: "terminal_manager_take",
