@@ -284,8 +284,8 @@ An interactive agent session rendered via xterm.js — one per Take or Scene lau
 `idle` | `running` | `completed` | `error` | `aborted` | `disconnected`.
 - `src/lib/types.ts:136`
 
-### Turn <!-- auto -->
-A single agent response cycle within an interactive session (one prompt in, one result out).
+### Turn <!-- human -->
+A single agent response cycle within an interactive session — one prompt sent in, one transport-defined turn-end signal out. The turn boundary is per-transport (see [Normalized events](#normalized-events) → `result` event); "one result out" is shorthand for "one transport terminator", not a payload-shape promise.
 - `docs/interactive-agent-session-protocol.md:19`
 
 ### Wave <!-- auto --> ⚠ ambiguous
@@ -303,6 +303,52 @@ Top-level output of the wave-planner: ordered waves, unschedulable beats, summar
 ### WorkflowStep <!-- auto -->
 The six-state spine: `Planning`, `PlanReview`, `Implementation`, `ImplementationReview`, `Shipment`, `ShipmentReview`.
 - `src/lib/workflows.ts:23`
+
+---
+
+## Normalized events
+
+Foolery normalizes per-transport agent output into a small, stable event shape so the take-loop and watchdog can treat every CLI dialect uniformly. The contract for one of these events — `result` — is load-bearing and has been the focus of at least 5 prior fixes (commits `79bf3c15`, `41e10089`, `1e32e0d4`, `5063357b`, `49a17082`). Investigators keep mis-deriving its meaning. This entry is the normative contract.
+
+### `result` event <!-- human -->
+
+The canonical "this prompt-to-agent turn is over" signal emitted by transport adapters into the agent session runtime. **Not** a generic "something happened" or "model produced output" signal. Each transport names its own terminator and the payload check lives in the transport adapter, not in the generic runtime core.
+
+**Sources per transport (verified at the cited lines):**
+
+- **OpenCode** (HTTP SSE): translator filters `session.status` to `status.type === "idle"` and emits `session_idle`; the normalizer turns `session_idle` into `{type: "result", is_error: false}`. A synthetic `step_finish` from the HTTP error path also emits `{type: "result", is_error: true}` — but **only** when `reason === "error"`. Per-message OpenCode `step-finish` parts (one per model response inside a single user turn) are explicitly mapped to `null`.
+  - `src/lib/opencode-event-translate.ts:264` — `translateSessionIdle`
+  - `src/lib/opencode-event-translate.ts:290` — `translateSessionStatus` (filters to `status.type === "idle"`)
+  - `src/lib/agent-adapter-normalizers.ts:117` — `normalizeOpenCodeSessionIdle`
+  - `src/lib/agent-adapter-normalizers.ts:92` — `normalizeOpenCodeStepFinish` (returns `null` unless `reason === "error"`, per `49a17082`)
+- **Codex** (JSON-RPC stdio): adapter emits `{type: "turn.completed"}` (or `turn.failed`) at the JSON-RPC turn boundary; the runtime fires `onTurnEnded` only on those payload types.
+  - `src/lib/agent-session-runtime-events.ts:170` — `handleJsonRpcLine` payload-gates on `turn.completed` / `turn.failed`
+  - `src/lib/codex-jsonrpc-translate.ts:260` — translator emits `{type: "turn.completed"}`
+- **Claude / Copilot** (stdio stream-json): adapter emits `{type: "result"}` directly; the stdio transport fires `onTurnEnded` on that exact payload type.
+  - `src/lib/agent-session-runtime-events.ts:246` — `processStdioLine` payload-gates on `obj.type === "result"`
+- **Gemini** (ACP): the ACP translator emits `{type: "result"}` and the adapter fires `onTurnEnded` on it.
+  - `src/lib/agent-session-runtime-events.ts:193` — `handleAcpLine` payload-gates on `t.type === "result"`
+
+The module-level docstring at `src/lib/agent-session-runtime-events.ts:1-27` is the source-of-truth mirror of this list — keep both in sync when transports change.
+
+**What `result` DOES authorize the application to do:**
+
+- The take-loop may evaluate the post-turn beat state and decide to advance the iteration, send a follow-up prompt, or stop.
+- The silence watchdog may reset its timer.
+- Lifecycle observers may emit a `turn_ended` lifecycle event for logging.
+
+**What `result` does NOT authorize the application to do:**
+
+- It does **NOT** mean the agent failed. The agent may have stopped intentionally per its boundary instructions, or finished its work normally. Read `is_error` if you need to distinguish.
+- It does **NOT** mean the lease should be terminated. Lease lifecycle is owned by `kno` — see [ExecutionLease](#executionlease).
+- It does **NOT** mean the beat state should change. Beat state changes only via `kno claim` / `kno next` / `kno rollback` invoked by the agent (or, in correction paths, by Foolery via `force: true`).
+- It does **NOT** mean a follow-up prompt MUST be sent. Sending a follow-up requires additional checks — at minimum the bound lease state (see knot `foolery-2dd7`) and the current beat state.
+
+**Anti-patterns to grep for during review:**
+
+- Any new code path that maps a per-message OpenCode `step-finish` to a `result` event without the `reason === "error"` gate. This is the `49a17082` regression class. Greppable: `step.?finish` near `type:.*result`.
+- Any code path that conditions a destructive action (terminate lease, force a state change, kill the child process) on a `result` event without further state checks.
+- Any payload-shape gate of the form `if (obj.type === "result") { signal() }` outside the per-transport handlers in `src/lib/agent-session-runtime-events.ts`. Per the "DO NOT" list at that file's lines 11–17, this gate belongs nowhere else in the pipeline.
 
 ---
 
