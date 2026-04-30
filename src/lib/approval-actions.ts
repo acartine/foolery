@@ -64,6 +64,7 @@ export interface PendingApprovalRecord {
   replyTarget?: ApprovalReplyTarget;
   supportedActions: ApprovalAction[];
   status: ApprovalEscalationStatus;
+  failureReason?: string;
   agentName?: string;
   agentModel?: string;
   agentVersion?: string;

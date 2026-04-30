@@ -262,6 +262,9 @@ describe("terminal approval session failure paths", () => {
     );
     expect(unsupported.ok).toBe(false);
     expect(record.status).toBe("unsupported");
+    expect(record.failureReason).toBe(
+      "approval_action_not_supported",
+    );
 
     record.supportedActions = ["approve"];
     record.replyTarget = {
@@ -283,6 +286,50 @@ describe("terminal approval session failure paths", () => {
     );
     expect(failed.ok).toBe(false);
     expect(record.status).toBe("reply_failed");
+    expect(record.failureReason).toBe("network_down");
     expect(entry.buffer[0]?.data).toContain("network_down");
+  });
+
+  it("clears the failureReason on a successful retry", async () => {
+    const entry = makeEntry();
+    const record = recordPendingApproval(entry, {
+      adapter: "opencode",
+      source: "permission.asked",
+      options: [],
+      nativeSessionId: "ses_1",
+      requestId: "perm_1",
+      permissionId: "perm_1",
+      supportedActions: ["approve"],
+      replyTarget: {
+        adapter: "opencode",
+        transport: "http",
+        nativeSessionId: "ses_1",
+        permissionId: "perm_1",
+      },
+    });
+    const responder = vi.fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        reason: "opencode_http_404",
+      })
+      .mockResolvedValueOnce({ ok: true });
+    entry.approvalResponder = responder;
+
+    const failed = await performApprovalAction(
+      entry,
+      record.approvalId,
+      "approve",
+    );
+    expect(failed.ok).toBe(false);
+    expect(record.failureReason).toBe("opencode_http_404");
+
+    const ok = await performApprovalAction(
+      entry,
+      record.approvalId,
+      "approve",
+    );
+    expect(ok.ok).toBe(true);
+    expect(record.status).toBe("approved");
+    expect(record.failureReason).toBeUndefined();
   });
 });

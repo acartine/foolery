@@ -228,6 +228,7 @@ function updateApprovalStatus(
         ...approval,
         status,
         updatedAt: Date.now(),
+        failureReason: failureReasonForStatus(status, reason),
       };
       logApprovalEscalation(
         eventName,
@@ -236,6 +237,19 @@ function updateApprovalStatus(
       return next;
     }),
   }));
+}
+
+function failureReasonForStatus(
+  status: ApprovalEscalationStatus,
+  reason: string | undefined,
+): string | undefined {
+  if (status === "reply_failed" || status === "unsupported") {
+    return reason;
+  }
+  // Anything else (responding, approved, dismissed, ...)
+  // means a fresh attempt or terminal outcome — drop any
+  // stale failure text so the UI does not keep showing it.
+  return undefined;
 }
 
 function approvalLogContext(

@@ -44,6 +44,7 @@ export interface ApprovalEscalation
   beatId?: string;
   beatTitle?: string;
   repoPath?: string;
+  failureReason?: string;
   createdAt: number;
   updatedAt: number;
 }
@@ -146,6 +147,58 @@ export function formatApprovalDetailText(
     return `Awaiting approval for ${identityParts.join(" / ")}`;
   }
   return "Manual approval is required.";
+}
+
+/**
+ * Translate a raw reply-failure reason from a responder
+ * (e.g. `opencode_http_404`, `fetch failed`,
+ * `The user aborted a request.`) into a short hint
+ * suitable for showing to the user. Returns null if the
+ * reason has no canonical mapping; callers should fall
+ * back to the raw reason text.
+ */
+export function explainApprovalFailureReason(
+  reason: string | undefined,
+): string | null {
+  if (!reason) return null;
+  const trimmed = reason.trim();
+  if (!trimmed) return null;
+  if (trimmed === "missing_reply_target"
+    || trimmed === "missing_opencode_reply_target"
+    || trimmed === "missing_http_session"
+    || trimmed === "missing_jsonrpc_session") {
+    return "The agent session is no longer connected. " +
+      "Handle this approval in the terminal.";
+  }
+  if (/^opencode_http_(401|403|404|410)$/.test(trimmed)) {
+    return "OpenCode no longer recognises this " +
+      "permission request (it may have expired or been " +
+      "answered already). Handle it in the terminal.";
+  }
+  if (/^opencode_http_5\d\d$/.test(trimmed)) {
+    return "OpenCode returned a server error " +
+      `(${trimmed.replace("opencode_http_", "HTTP ")}). ` +
+      "Try again, or handle it in the terminal.";
+  }
+  if (trimmed === "opencode_returned_false") {
+    return "OpenCode rejected the reply. The session " +
+      "may have moved on; handle it in the terminal.";
+  }
+  if (/^unsupported_adapter:/.test(trimmed)) {
+    return `Approval reply is not supported for ${trimmed
+      .slice("unsupported_adapter:".length) || "this adapter"}.`;
+  }
+  if (trimmed.toLowerCase().includes("aborted")) {
+    return "OpenCode did not respond within 1.5 seconds. " +
+      "Try again, or handle it in the terminal.";
+  }
+  if (/fetch failed|econnrefused|connect (timed|reset)/i
+    .test(trimmed)) {
+    return "Could not reach the agent's HTTP server. " +
+      "The process may have exited; handle this " +
+      "approval in the terminal.";
+  }
+  return null;
 }
 
 export function parseApprovalBanner(
@@ -282,6 +335,7 @@ export function approvalEscalationFromPendingRecord(
       record.supportedActions,
     ),
     replyTarget: record.replyTarget,
+    failureReason: record.failureReason,
     agentName: record.agentName,
     agentModel: record.agentModel,
     agentVersion: record.agentVersion,

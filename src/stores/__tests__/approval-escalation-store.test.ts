@@ -101,4 +101,39 @@ describe("approval escalation store", () => {
       useApprovalEscalationStore.getState(),
     )[0]?.status).toBe("reply_failed");
   });
+
+  it("stores the failure reason for failed and unsupported approvals", () => {
+    const store = useApprovalEscalationStore.getState();
+    store.upsertPendingApproval(makeApproval("approval-1"));
+
+    store.markApprovalFailed("approval-1", "opencode_http_404");
+    expect(useApprovalEscalationStore.getState()
+      .approvals[0]?.failureReason).toBe("opencode_http_404");
+
+    store.markApprovalUnsupported("approval-1", "missing_responder");
+    expect(useApprovalEscalationStore.getState()
+      .approvals[0]?.failureReason).toBe("missing_responder");
+  });
+
+  it("clears the failure reason when a fresh attempt is sent or resolved", () => {
+    const store = useApprovalEscalationStore.getState();
+    store.upsertPendingApproval(
+      makeApproval("approval-1", "approval-1", {
+        failureReason: "opencode_http_404",
+        status: "reply_failed",
+      }),
+    );
+
+    store.markApprovalResponding("approval-1", "approve");
+    expect(useApprovalEscalationStore.getState()
+      .approvals[0]?.failureReason).toBeUndefined();
+
+    store.markApprovalFailed("approval-1", "fetch failed");
+    expect(useApprovalEscalationStore.getState()
+      .approvals[0]?.failureReason).toBe("fetch failed");
+
+    store.markApprovalResolved("approval-1", "approve");
+    expect(useApprovalEscalationStore.getState()
+      .approvals[0]?.failureReason).toBeUndefined();
+  });
 });
