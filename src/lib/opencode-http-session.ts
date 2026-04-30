@@ -263,11 +263,23 @@ async function doTurn(
       s.serverUrl, s.sessionId, prompt, s.model,
     );
     if (!resp || !hasOpenCodeMessagePayload(resp)) {
+      // foolery-70fb: do NOT synthesize a fake
+      // {type:"result", is_error:true} here. The SSE
+      // /event stream (started above) is the canonical
+      // turn-end signal — it delivers session.idle when
+      // the agent actually finishes. undici's default
+      // headersTimeout (300s) routinely fires while
+      // long agent turns are still running, and
+      // emitting an error result here triggers a
+      // spurious take-loop "advance or rollback"
+      // follow-up while the real turn is still in
+      // flight. Log and let SSE drive the boundary.
       hooks.onFailed?.("http_message_request_failed");
       cb.onError(
-        "OpenCode HTTP message request failed.",
+        "OpenCode HTTP message request failed " +
+        "(POST timed out or non-2xx). Waiting for " +
+        "session.idle from SSE stream.",
       );
-      emitErrorResult(cb);
       return;
     }
     hooks.onSucceeded?.();

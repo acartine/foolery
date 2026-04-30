@@ -72,7 +72,18 @@ export function processNormalizedEvent(
   // stdio triggers from `processStdioLine` when the
   // raw normalized object has type "result"; jsonrpc
   // and acp trigger in `dispatchTranslated`.
-  doCancelInputClose(state);
+  //
+  // foolery-70fb: only cancel a scheduled input-close
+  // when the turn has NOT already ended. After a real
+  // turn-end (resultObserved=true), the OpenCode HTTP
+  // transport keeps emitting post-idle SSE noise
+  // (file watchers, snapshot logs, message-updated
+  // flushes) — letting those events cancel the close
+  // timer leaves the child process alive forever and
+  // hangs the take loop. resetForNewTurn restores
+  // resultObserved=false on follow-up prompt send so
+  // legitimate new-turn cancellation still works.
+  if (!state.resultObserved) doCancelInputClose(state);
   const display = formatStreamEvent(obj);
   if (display) {
     pushFormattedEvent(display, config.pushEvent);
