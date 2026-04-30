@@ -105,6 +105,27 @@ describe("OpenCode pipeline smoke", () => {
     expect(out).toContain("The directory has 10 entries.");
   });
 
+  it("renders read tool with filePath arg", () => {
+    // OpenCode tools use camelCase keys (filePath) where Claude
+    // uses snake_case (file_path). The renderer recognizes both
+    // so OpenCode read/edit/write show the path, not just
+    // "▶ read".
+    const pipe = createPipeline();
+    pipe.feedPart({
+      type: "tool",
+      id: "call_read_x",
+      tool: "read",
+      state: {
+        status: "completed",
+        input: { filePath: "/tmp/notes.md" },
+        output: "hello",
+      },
+    });
+    const out = pipe.rendered();
+    expect(out).toContain("▶ read");
+    expect(out).toContain("/tmp/notes.md");
+  });
+
   it("renders session.error as a red banner", () => {
     const pipe = createPipeline();
     pipe.feed({

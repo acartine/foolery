@@ -292,6 +292,70 @@ describe("OpenCodeHttpSession wrapped approvals", () => {
   });
 });
 
+describe("OpenCodeHttpSession tool_use dedup", () => {
+  it(
+    "skips empty-input tool_use and emits the populated update",
+    async () => {
+      // OpenCode emits the same tool part multiple times as it
+      // moves pending → running → completed. The pending event
+      // arrives before `state.input` is committed, so its
+      // translated `input` is `{}`. With the original
+      // first-wins dedup, that empty placeholder pinned the
+      // rendered "▶ tool" line with no args. The fix waits
+      // for the first event whose `input` has at least one
+      // key before claiming the dedup slot.
+      const onEvent = vi.fn();
+      const fetchMock = turnFetchMock("ses_dedup", {
+        parts: [
+          {
+            type: "tool",
+            id: "call_read_1",
+            tool: "read",
+            state: { status: "pending" },
+          },
+          {
+            type: "tool",
+            id: "call_read_1",
+            tool: "read",
+            state: {
+              status: "running",
+              input: { filePath: "/tmp/notes.md" },
+            },
+          },
+        ],
+      });
+      vi.stubGlobal("fetch", fetchMock);
+
+      const session = startReadySession(onEvent);
+      expect(session.startTurn(makeChild(), "hello")).toBe(true);
+      await vi.waitFor(() => {
+        expect(onEvent).toHaveBeenCalled();
+      });
+
+      const toolUseLines = onEvent.mock.calls
+        .map((c) => c[0] as string)
+        .map((line) => {
+          try {
+            return JSON.parse(line) as Record<string, unknown>;
+          } catch {
+            return null;
+          }
+        })
+        .filter((e): e is Record<string, unknown> =>
+          !!e && e.type === "tool_use"
+            && e.id === "call_read_1");
+
+      expect(toolUseLines).toHaveLength(1);
+      expect(toolUseLines[0]).toMatchObject({
+        type: "tool_use",
+        id: "call_read_1",
+        name: "read",
+        input: { filePath: "/tmp/notes.md" },
+      });
+    },
+  );
+});
+
 describe("OpenCodeHttpSession event stream approvals", () => {
   it("forwards permission.asked before message returns", async () => {
     const onEvent = vi.fn();
