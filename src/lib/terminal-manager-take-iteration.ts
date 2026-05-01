@@ -19,9 +19,6 @@ import {
   appendLeaseAuditEvent,
 } from "@/lib/lease-audit";
 import {
-  normalizeAgentIdentity,
-} from "@/lib/agent-identity";
-import {
   recordTakeLoopLifecycle,
 } from "@/lib/terminal-manager-take-lifecycle";
 import {
@@ -216,7 +213,9 @@ function buildOutcomeRecord(
     agent: {
       agentId: iterationAgent.agentId,
       label: iterationAgent.label,
+      provider: iterationAgent.provider,
       model: iterationAgent.model,
+      flavor: iterationAgent.flavor,
       version: iterationAgent.version,
       command: iterationAgent.command,
     },
@@ -354,17 +353,16 @@ async function emitOutcomeAuditEvent(
     `[terminal-manager] [${ctx.id}] [take-loop]`;
   const outcome = record.success
     ? "success" as const : "fail" as const;
-  const normalized = normalizeAgentIdentity({
-    label: record.agent.label,
-    model: record.agent.model,
-    version: record.agent.version,
-    command: record.agent.command,
-  });
   await appendLeaseAuditEvent({
     timestamp: new Date().toISOString(),
     beatId: record.beatId,
     sessionId: record.sessionId,
-    agent: normalized,
+    agent: {
+      provider: record.agent.provider,
+      model: record.agent.model,
+      flavor: record.agent.flavor,
+      version: record.agent.version,
+    },
     queueType: record.claimedStep ?? "unknown",
     outcome,
     durationMs: record.durationMs,

@@ -10,7 +10,6 @@ import { loadSettings } from "@/lib/settings";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
   formatAgentDisplayLabel,
-  normalizeAgentIdentity,
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
 import {
@@ -313,13 +312,16 @@ export async function finalizeClaim(
   });
 
   ctx.claimedAt = Date.now();
-  const normalized =
-    normalizeAgentIdentity(claimAgent);
   await appendLeaseAuditEvent({
     timestamp: new Date().toISOString(),
     beatId: ctx.beatId,
     sessionId: ctx.id,
-    agent: normalized,
+    agent: {
+      provider: claimAgent.provider,
+      model: claimAgent.model,
+      flavor: claimAgent.flavor,
+      version: claimAgent.version,
+    },
     queueType, outcome: "claim",
   }).catch((err) => {
     console.error(
