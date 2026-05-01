@@ -1,0 +1,17 @@
+{
+  "event_id": "019de22f-2755-72a3-a54e-b5eab048bac3",
+  "occurred_at": "2026-05-01T06:17:14.325318Z",
+  "knot_id": "foolery-8adc",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "lease",
+    "state": "lease_ready",
+    "title": "Lease: ship-8fc3-implementation",
+    "type": "lease",
+    "workflow_id": "lease_sdlc"
+  }
+}

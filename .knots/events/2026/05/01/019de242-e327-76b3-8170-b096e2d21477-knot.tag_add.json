@@ -1,0 +1,9 @@
+{
+  "event_id": "019de242-e327-76b3-8170-b096e2d21477",
+  "occurred_at": "2026-05-01T06:38:47.56112Z",
+  "knot_id": "foolery-11b1",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "agent-normalizer-fucker"
+  }
+}

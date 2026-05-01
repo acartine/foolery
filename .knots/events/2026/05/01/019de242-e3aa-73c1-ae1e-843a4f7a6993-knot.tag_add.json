@@ -1,0 +1,9 @@
+{
+  "event_id": "019de242-e3aa-73c1-ae1e-843a4f7a6993",
+  "occurred_at": "2026-05-01T06:38:47.686534Z",
+  "knot_id": "foolery-c4a6",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "housekeeping"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019de242-e309-74f2-97ee-ddcf2f513a96",
+  "occurred_at": "2026-05-01T06:38:47.56112Z",
+  "knot_id": "foolery-11b1",
+  "type": "knot.created",
+  "data": {
+    "body": "# P0 — Eliminate `normalizeAgentIdentity` calls in the dispatch path\n\n## Why this is P0\n\nThis is a direct violation of the canonical agent metadata contract\n(rule 8: \"Foolery only extracts at lease setup. No other code path\nmay call the canonical extractor or its provider-specific helpers\").\n\nThe dispatch path runs every time a beat is taken, every time an\nagent is rotated, every time an iteration advances. Each time, it\nre-runs `normalizeAgentIdentity` on input that, per the contract,\nshould already be canonical. Result: drift, inconsistency, and the\nexact symptom the user has been complaining about for months.\n\nThis blocks the umbrella knot foolery-2e97 from shipping (AC-6 fails\non the self-audit grep until these calls are gone).\n\n## Sites in scope (3, all in `src/lib/terminal-manager-*.ts`)\n\n| File | Line | Pattern |\n|---|---|---|\n| `src/lib/terminal-manager.ts` | 282 | `agentProvider: normalizeAgentIdentity(agent).provider` |\n| `src/lib/terminal-manager-take-agent.ts` | 317 | `normalizeAgentIdentity(claimAgent);` (return value may be unused — investigate) |\n| `src/lib/terminal-manager-take-iteration.ts` | 357 | `const normalized = normalizeAgentIdentity({ ... })` |\n\n## The fix\n\nFor each site:\n\n1. **Trace the data source.** What `agent` / `claimAgent` is being\n   passed in? If it came from settings (registered config) or from\n   a knots lease, it is ALREADY canonical and the normalisation\n   call is at best wasted, at worst overwriting good data with\n   re-derived data.\n2. **If input is already canonical**, drop the call and read the\n   field directly off the input.\n3. **If input is raw** (e.g. coming straight from a CLI argv or env),\n   that is the deeper bug — it means dispatch is receiving raw input\n   in 2026 even though we have a canonical-extraction contract. Push\n   the canonicalisation up to the boundary where the input is created\n   (likely `settings-agent-scan` or `settings.ts:232`) and have\n   dispatch consume the already-canonical form.\n\nThe terminal-manager files have a 500-line cap and 100-line function\ncap (CLAUDE.md), so any restructuring must respect that.\n\n## Cross-references\n\n- Parent: foolery-2e97 (canonical agent metadata umbrella)\n- Sibling P4: filed alongside this knot, covers settings/hydration sites\n- Contract: `docs/knots-agent-identity-contract.md` § \"Canonical\n  Functions\" and § \"What Foolery Forbids Itself\"\n- Related shipped work that landed Wave 2/3:\n  - foolery-b7d6 (terminal-store refactor) — already migrated terminal\n    runtime state to lease-id reference\n  - foolery-8fc3 (drop toActiveAgentInfo) — already removed display\n    re-normalisation\n- Tag: `agent-normalizer-fucker` — for finding all related knots fast",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "P0: Eliminate normalizeAgentIdentity calls in dispatch path (terminal-manager-*)",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

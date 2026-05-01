@@ -1,0 +1,15 @@
+{
+  "event_id": "019de231-e7ba-7fb0-ba6b-23f8d62e29e6",
+  "occurred_at": "2026-05-01T06:20:14.650764Z",
+  "knot_id": "foolery-8fc3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipped. Merge commit b0885338 pushed to origin/main: 'Merge worktree-agent-a36b8803ff1611fe4: drop toActiveAgentInfo at display time (foolery-8fc3)'. Includes implementation commit 9152cf99 on top of foolery-b7d6's bf521457. Push range: bf521457..b0885338 main -> main.",
+    "datetime": "2026-05-01T06:20:14.650764Z",
+    "entry_id": "019de231-e7ba-7fb0-ba6b-23e43b0627e0",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

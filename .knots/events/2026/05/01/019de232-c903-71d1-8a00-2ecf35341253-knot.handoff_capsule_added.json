@@ -1,0 +1,15 @@
+{
+  "event_id": "019de232-c903-71d1-8a00-2ecf35341253",
+  "occurred_at": "2026-05-01T06:21:12.323917Z",
+  "knot_id": "foolery-8fc3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment review approved. Confirmed: (a) Merge commit b0885338 is HEAD of origin/main. (b) All four quality gates pass on origin/main: lint clean, tsc clean, 313 test files / 3122 tests pass, build succeeds. (c) Acceptance grep verified zero hits: normalizeAgentIdentity/normalize.*Model in src/app/, toActiveAgentInfo anywhere in src/. Closing knot.",
+    "datetime": "2026-05-01T06:21:12.323917Z",
+    "entry_id": "019de232-c903-71d1-8a00-2eb198c6c0d1",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

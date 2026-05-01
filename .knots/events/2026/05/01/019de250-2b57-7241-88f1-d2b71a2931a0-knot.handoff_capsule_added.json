@@ -1,0 +1,15 @@
+{
+  "event_id": "019de250-2b57-7241-88f1-d2b71a2931a0",
+  "occurred_at": "2026-05-01T06:53:18.039574Z",
+  "knot_id": "foolery-11b1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "## Plan\n\nInvestigated all 3 sites. Each receives data that should already be\ncanonical; the normalize call is wasted work that re-derives fields\nalready present on the input.\n\n### Site 1 — terminal-manager.ts:282 (startSessionLog)\nInput: `agent: CliAgentTarget`. Per `types-agent-target.ts`,\n`CliAgentTarget` extends `AgentTargetBase` which has explicit\n`provider` field (canonical, populated by settings hydration in\n`agent-config-normalization.ts`). Fix: `agentProvider: agent.provider`.\nOne-line change.\n\n### Site 2 — terminal-manager-take-agent.ts:317 (claim audit)\nInput: `claimAgent: CliAgentTarget`. The `normalized` value is used\nto populate `LeaseAuditAgent` ({ provider, model, flavor, version }).\nAll four fields are present on `CliAgentTarget`. Fix: build the\naudit-agent object directly from canonical fields. A few lines later\n(:332) `toExecutionAgentInfo(claimAgent)` runs anyway — that one is\nthe canonical conversion for ExecutionAgentInfo, not a violation, so\nleave it.\n\n### Site 3 — terminal-manager-take-iteration.ts:357 (outcome audit)\nInput: `record.agent` (type `AgentOutcomeRecord.agent` in\n`agent-outcome-stats.ts:16-22`) is currently NARROWER than\n`CliAgentTarget` — only `{ agentId?, label?, model?, version?, command }`.\nThat's why this site re-normalises: provider/flavor aren't on the\nrecord type. Fix:\n1. Widen `AgentOutcomeRecord.agent` to `{ ..., provider?, flavor? }`.\n2. At record-construction time (line 208), populate provider/flavor\n   from the source agent (which IS a CliAgentTarget per upstream).\n3. Drop the normalize call at line 357; build LeaseAuditAgent\n   directly from `record.agent.{provider,model,flavor,version}`.\n\n### Order of work\n\n1. Fresh worktree, `bun install --frozen-lockfile`.\n2. Site 1 fix — focused commit.\n3. Site 2 fix — focused commit.\n4. Site 3 fix (type widen + construction + read site) — focused commit.\n5. After all three: run `grep -rn \"normalizeAgentIdentity\" src/lib/terminal-manager*.ts` — must be zero.\n6. Quality gates: lint, tsc, test, build. Fix any breakage.\n7. Merge to main, push origin/main.\n\n### Risk and rollback\n\nLow risk — each change is local field substitution. If `record.agent`\nconstruction site (line 208) doesn't have access to canonical\nprovider/flavor (e.g. came from a non-CliAgentTarget source), I\nescalate by tracing back further or filing a follow-up to canonicalise\nthe upstream record builder.",
+    "datetime": "2026-05-01T06:53:18.039574Z",
+    "entry_id": "019de250-2b57-7241-88f1-d2a3201a0060",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019de250-6e1b-7343-aa7c-0de924554984",
+  "occurred_at": "2026-05-01T06:53:35.131497Z",
+  "knot_id": "foolery-11b1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan reviewed: three focused fixes, one type-widening on AgentOutcomeRecord.agent. Low risk — each change is local field substitution. Approved for implementation.",
+    "datetime": "2026-05-01T06:53:35.131497Z",
+    "entry_id": "019de250-6e1b-7343-aa7c-0ddd4b2dc4a3",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

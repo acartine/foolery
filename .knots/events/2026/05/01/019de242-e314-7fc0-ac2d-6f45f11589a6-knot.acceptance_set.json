@@ -1,0 +1,9 @@
+{
+  "event_id": "019de242-e314-7fc0-ac2d-6f45f11589a6",
+  "occurred_at": "2026-05-01T06:38:47.56112Z",
+  "knot_id": "foolery-11b1",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "# Acceptance criteria\n\n## AC-1 — All three call sites removed\n\n`grep -rn \"normalizeAgentIdentity\" src/lib/terminal-manager*.ts`\nreturns zero hits.\n\n## AC-2 — Per-site investigation captured in a handoff capsule\n\nFor each of the three sites, the handoff capsule on this knot records:\n\n- The data source feeding the input parameter\n- Whether it was already canonical (drop the call) or raw (push\n  canonicalisation upstream)\n- The chosen fix and rationale\n\n## AC-3 — Quality gates green\n\n- `bun run lint`\n- `bunx tsc --noEmit`\n- `bun run test`\n- `bun run build`\n\nAll four pass on the final main commit.\n\n## AC-4 — No regressions in agent display\n\nThe beat table in the running app still shows correct agent labels\n(Claude Opus 4.7, OpenCode openrouter/moonshotai/kimi-k2.6, etc.) —\nno blanks, no doubled labels, no leaked \"4.7\" version on non-Claude\nrows.\n\n## AC-5 — Umbrella self-audit grep #2 passes after this lands\n\nAfter this knot ships, running the foolery-2e97 contract self-audit:\n\n```bash\ngrep -rn \"toActiveAgentInfo\\|normalizeAgentIdentity\" src/ \\\n  | grep -v \"src/lib/agent-identity.ts\" \\\n  | grep -v \"src/app/beats/\" \\\n  | grep -v \"__tests__\"\n```\n\nShould return ONLY the sanctioned settings/hydration sites covered by\nthe P4 sibling knot — no terminal-manager hits. (If the P4 knot has\nalso shipped, the grep should be empty entirely.)\n\n## AC-6 — Contract doc reference\n\n`docs/knots-agent-identity-contract.md` § \"Self-Audit\" remains the\nsource of truth. If the existing grep filter needs to be tightened to\ncatch this class of regression, update the doc as part of this knot."
+  }
+}

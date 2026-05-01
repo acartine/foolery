@@ -1,0 +1,21 @@
+{
+  "event_id": "019de253-b4a8-70b0-8a42-6af8ff916f81",
+  "occurred_at": "2026-05-01T06:57:09.800425Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-11b1",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "P0: Eliminate normalizeAgentIdentity calls in dispatch path (terminal-manager-*)",
+    "type": "work",
+    "updated_at": "2026-05-01T06:57:09.800425Z",
+    "workflow_id": "work_sdlc"
+  }
+}

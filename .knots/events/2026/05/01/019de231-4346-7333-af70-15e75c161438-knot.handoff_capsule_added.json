@@ -1,0 +1,15 @@
+{
+  "event_id": "019de231-4346-7333-af70-15e75c161438",
+  "occurred_at": "2026-05-01T06:19:32.550359Z",
+  "knot_id": "foolery-8fc3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review approved. Diff is minimal (net -113 lines), changes are localised to src/app/beats/, and the new populateFromCapsules is a pure rename with no normalisation. Acceptance criteria all green: (1) to-active-agent-info.ts deleted, no longer calls normalizeAgentIdentity; (2) useAgentInfoMap reads canonical keys directly; (3) grep -rn 'normalizeAgentIdentity|normalize.*Model' src/app/ returns zero hits; (4) test file retired since the helper is deleted; (5) all four quality gates green (lint, tsc, 3122 tests, build). Ready for shipment.",
+    "datetime": "2026-05-01T06:19:32.550359Z",
+    "entry_id": "019de231-4346-7333-af70-15dfb809970d",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

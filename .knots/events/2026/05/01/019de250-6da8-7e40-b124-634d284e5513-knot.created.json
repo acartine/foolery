@@ -1,0 +1,17 @@
+{
+  "event_id": "019de250-6da8-7e40-b124-634d284e5513",
+  "occurred_at": "2026-05-01T06:53:35.016474Z",
+  "knot_id": "foolery-f95e",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "lease",
+    "state": "lease_ready",
+    "title": "Lease: ship-11b1-plan-review",
+    "type": "lease",
+    "workflow_id": "lease_sdlc"
+  }
+}

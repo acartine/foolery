@@ -1,0 +1,21 @@
+{
+  "event_id": "019de232-c937-7140-91f4-f98772cb689b",
+  "occurred_at": "2026-05-01T06:21:12.375608Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-8fc3",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Stop re-normalising agent identity at display time (beats)",
+    "type": "work",
+    "updated_at": "2026-05-01T06:21:12.375608Z",
+    "workflow_id": "work_sdlc"
+  }
+}

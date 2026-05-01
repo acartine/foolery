@@ -1,0 +1,15 @@
+{
+  "event_id": "019de253-29ab-75f1-b63f-7cf8017e3aa2",
+  "occurred_at": "2026-05-01T06:56:34.219353Z",
+  "knot_id": "foolery-11b1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation complete on ship-11b1 worktree branch (commit 061aed44). All 3 sites cleaned: terminal-manager.ts:282 reads agent.provider directly; take-agent.ts:317 builds LeaseAuditAgent from canonical fields; take-iteration.ts widens AgentOutcomeRecord.agent to carry provider/flavor and populates at construction. grep -rn normalizeAgentIdentity src/lib/terminal-manager*.ts returns zero hits. All 4 quality gates green (lint, tsc, 3122 tests pass, build).",
+    "datetime": "2026-05-01T06:56:34.219353Z",
+    "entry_id": "019de253-29ab-75f1-b63f-7ce506691010",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019de253-b477-7951-80af-5114bbf5d850",
+  "occurred_at": "2026-05-01T06:57:09.751532Z",
+  "knot_id": "foolery-11b1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment review: origin/main is at 6f321b41. Verified all three terminal-manager-*.ts files contain zero normalizeAgentIdentity references on origin/main. AC-1 satisfied. AC-3 already verified pre-merge. Approved for shipped.",
+    "datetime": "2026-05-01T06:57:09.751532Z",
+    "entry_id": "019de253-b477-7951-80af-510ed1eb72d2",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

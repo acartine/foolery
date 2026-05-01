@@ -1,0 +1,15 @@
+{
+  "event_id": "019de253-b36e-7201-ade6-a38a4a65cc61",
+  "occurred_at": "2026-05-01T06:57:09.486861Z",
+  "knot_id": "foolery-11b1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment complete: ship-11b1 merged into main, pushed to origin/main as 6f321b41 (range b0885338..6f321b41). Pre-push hook lint-staged-size.sh ran clean. The 'sync error: 1 active lease(s)' message is the same advisory hook seen on prior shipments — does not block push. The artifact (remote_main per autopilot profile) is now live.",
+    "datetime": "2026-05-01T06:57:09.486861Z",
+    "entry_id": "019de253-b36e-7201-ade6-a375fefa1f60",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

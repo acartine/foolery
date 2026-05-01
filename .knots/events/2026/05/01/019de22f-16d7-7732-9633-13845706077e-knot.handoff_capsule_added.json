@@ -1,0 +1,15 @@
+{
+  "event_id": "019de22f-16d7-7732-9633-13845706077e",
+  "occurred_at": "2026-05-01T06:17:10.103322Z",
+  "knot_id": "foolery-8fc3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan review: scope is minimal and correct. Capsule fields agentname/model/version are stamped by Knots per contract rule 4 (Knots stamps every artifact) and may be read directly per rule 5. The AgentInfo shape has matching {agentName, model, version} keys, so the rewrite is a pure rename — no formatting needed. Deleting to-active-agent-info.ts is preferred per knot acceptance criterion (a). The page.tsx re-export must come down with it. Approving plan.",
+    "datetime": "2026-05-01T06:17:10.103322Z",
+    "entry_id": "019de22f-16d7-7732-9633-137aa6d653ca",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

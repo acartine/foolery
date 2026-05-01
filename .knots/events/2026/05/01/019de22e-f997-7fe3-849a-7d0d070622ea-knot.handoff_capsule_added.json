@@ -1,0 +1,15 @@
+{
+  "event_id": "019de22e-f997-7fe3-849a-7d0d070622ea",
+  "occurred_at": "2026-05-01T06:17:02.61586Z",
+  "knot_id": "foolery-8fc3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan: (1) Rewrite populateFromCapsules in src/app/beats/use-agent-info-map.ts to read canonical capsule fields (last.agentname, last.model, last.version) directly into AgentInfo without calling toActiveAgentInfo. (2) Delete src/app/beats/to-active-agent-info.ts entirely (b7d6 already migrated the terminal path; this is the last caller). (3) Remove the re-export in src/app/beats/page.tsx (lines 47-49). (4) Delete src/app/beats/__tests__/page-active-agent-info.test.ts since the helper is gone. Verify acceptance: grep returns zero hits for normalizeAgentIdentity and toActiveAgentInfo in src/app/. Quality gates: lint, tsc, test, build.",
+    "datetime": "2026-05-01T06:17:02.61586Z",
+    "entry_id": "019de22e-f997-7fe3-849a-7cff9e25633c",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

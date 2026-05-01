@@ -1,0 +1,15 @@
+{
+  "event_id": "019de230-b6b1-7150-8290-d7b64fd447c1",
+  "occurred_at": "2026-05-01T06:18:56.561321Z",
+  "knot_id": "foolery-8fc3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation complete. Commit 9152cf99. Diff: 4 files, 26 insertions, 139 deletions. (1) populateFromCapsules now reads last.agentname/last.model/last.version directly into AgentInfo with no toActiveAgentInfo call. (2) to-active-agent-info.ts deleted entirely. (3) page-active-agent-info.test.ts deleted. (4) Re-export removed from page.tsx. Verification: grep -rn 'normalizeAgentIdentity|normalize.*Model' src/app/ returns zero hits; grep -rn 'toActiveAgentInfo|to-active-agent-info' src/ returns zero hits. Quality gates: lint pass, tsc clean, 313 test files / 3122 tests pass, build succeeds.",
+    "datetime": "2026-05-01T06:18:56.561321Z",
+    "entry_id": "019de230-b6b1-7150-8290-d7a25617a798",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

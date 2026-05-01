@@ -1,0 +1,48 @@
+{
+  "event_id": "019de250-2b5e-7883-9d69-9de2a3420867",
+  "occurred_at": "2026-05-01T06:53:18.039574Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-11b1",
+    "next_step_metadata": {
+      "action_kind": "gate",
+      "action_state": "plan_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot",
+    "state": "planning",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "planning",
+      "output": {
+        "access_hint": "kno show",
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "P0: Eliminate normalizeAgentIdentity calls in dispatch path (terminal-manager-*)",
+    "type": "work",
+    "updated_at": "2026-05-01T06:53:18.039574Z",
+    "workflow_id": "work_sdlc"
+  }
+}
