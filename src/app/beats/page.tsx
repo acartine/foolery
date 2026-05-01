@@ -44,10 +44,6 @@ import { useBeatActions } from "./use-beat-actions";
 import { useBeatDetail } from "./use-beat-detail";
 import { useBeatsScreenWarmup } from "@/hooks/use-beats-screen-warmup";
 
-export {
-  toActiveAgentInfo,
-} from "./to-active-agent-info";
-
 export default function BeatsPage() {
   return (
     <Suspense fallback={

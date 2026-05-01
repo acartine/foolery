@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import type { Beat, TerminalSessionAgentInfo } from "@/lib/types";
 import type { AgentInfo } from "@/components/beat-columns";
 import type { ActiveTerminal } from "@/stores/terminal-store";
-import { toActiveAgentInfo } from "./to-active-agent-info";
 import { useTerminalAgentInfoMap } from "./use-terminal-agent-info";
 
 export function useAgentInfoMap(
@@ -23,32 +22,42 @@ export function useAgentInfoMap(
   }, [isActiveView, beats, terminals, leaseAgentInfoMap]);
 }
 
+/**
+ * Read canonical agent identity off the latest handoff capsule.
+ *
+ * Per `docs/knots-agent-identity-contract.md` rule 4, Knots stamps
+ * `agentname` / `model` / `version` onto every handoff capsule from the
+ * bound lease's `agent_info`. Per rule 5, the display layer reads those
+ * stamped fields directly — it never re-extracts. Per rule 8, Foolery
+ * only extracts at lease setup, never at display time.
+ *
+ * This function is therefore a pure rename: capsule.agentname →
+ * AgentInfo.agentName, capsule.model → AgentInfo.model, capsule.version
+ * → AgentInfo.version. No parsing, no normalisation, no fallback
+ * literals.
+ */
 function populateFromCapsules(
   map: Record<string, AgentInfo>,
   beats: Beat[],
 ): void {
   for (const beat of beats) {
-    const capsules =
-      beat.metadata?.knotsHandoffCapsules;
+    const capsules = beat.metadata?.knotsHandoffCapsules;
     if (!Array.isArray(capsules) || capsules.length === 0) {
       continue;
     }
     const last = capsules[capsules.length - 1] as
       Record<string, unknown>;
-    map[beat.id] = toActiveAgentInfo({
-      agentCommand:
-        typeof last.agentname === "string"
-          ? last.agentname : undefined,
-      agentName:
-        typeof last.agentname === "string"
-          ? last.agentname : undefined,
-      model:
-        typeof last.model === "string"
-          ? last.model : undefined,
-      version:
-        typeof last.version === "string"
-          ? last.version : undefined,
-    });
+    const agentName =
+      typeof last.agentname === "string" ? last.agentname : undefined;
+    const model =
+      typeof last.model === "string" ? last.model : undefined;
+    const version =
+      typeof last.version === "string" ? last.version : undefined;
+    map[beat.id] = {
+      ...(agentName ? { agentName } : {}),
+      ...(model ? { model } : {}),
+      ...(version ? { version } : {}),
+    };
   }
 }
 
