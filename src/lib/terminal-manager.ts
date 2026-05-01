@@ -21,7 +21,6 @@ import {
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
   formatAgentDisplayLabel,
-  normalizeAgentIdentity,
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
 import { wrapExecutionPrompt } from "@/lib/agent-prompt-guardrails";
@@ -279,7 +278,7 @@ async function startSessionLog(
       ? prepared.waveBeatIds
       : [prepared.beat.id],
     agentName: formatAgentDisplayLabel(agent),
-    agentProvider: normalizeAgentIdentity(agent).provider,
+    agentProvider: agent.provider,
     agentModel: agent.model,
     agentVersion: agent.version,
   }).catch((err) => {

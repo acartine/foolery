@@ -12,11 +12,24 @@ export interface AgentOutcomeRecord {
   sessionId: string;
   /** 1-based iteration number within the take-loop. */
   iteration: number;
-  /** Identity of the agent that ran this iteration. */
+  /**
+   * Identity of the agent that ran this iteration. Populated from
+   * the canonical fields on `CliAgentTarget` at record-construction
+   * time (see `buildOutcomeRecord` in
+   * `terminal-manager-take-iteration.ts`). Per the agent-identity
+   * contract (`docs/knots-agent-identity-contract.md`), downstream
+   * readers MUST consume these fields directly and MUST NOT call
+   * `normalizeAgentIdentity` to re-derive them.
+   *
+   * `provider` / `flavor` are optional because older JSONL records
+   * persisted before this widening do not carry them.
+   */
   agent: {
     agentId?: string;
     label?: string;
+    provider?: string;
     model?: string;
+    flavor?: string;
     version?: string;
     command: string;
   };
