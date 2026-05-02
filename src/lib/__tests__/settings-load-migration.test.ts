@@ -47,7 +47,7 @@ describe("loadSettings auto-migration to canonical agent shape", () => {
       vendor: "claude",
       provider: "Claude",
       agent_name: "Claude",
-      lease_model: "Opus/Claude",
+      lease_model: "Opus",
       model: "claude-opus-4-6",
       flavor: "Opus",
       version: "4.6",
@@ -57,7 +57,7 @@ describe("loadSettings auto-migration to canonical agent shape", () => {
     const written = mockWriteFile.mock.calls[0][1] as string;
     expect(written).toContain('agent_type = "cli"');
     expect(written).toContain('provider = "Claude"');
-    expect(written).toContain('lease_model = "Opus/Claude"');
+    expect(written).toContain('lease_model = "Opus"');
     expect(written).toContain('flavor = "Opus"');
     expect(written).toContain('model = "claude-opus-4-6"');
     expect(written).toContain('version = "4.6"');
@@ -77,7 +77,7 @@ describe("loadSettings auto-migration to canonical agent shape", () => {
         'vendor = "claude"',
         'provider = "Claude"',
         'agent_name = "Claude"',
-        'lease_model = "Opus/Claude"',
+        'lease_model = "Opus"',
         'model = "claude-opus-4-6"',
         'flavor = "Opus"',
         'version = "4.6"',
@@ -149,14 +149,15 @@ describe("loadSettings: foolery-b42b machine-form -> display-form migration", ()
     );
     const settings = await loadSettings();
     expect(settings.agents["claude-opus"]).toMatchObject({
-      lease_model: "Opus/Claude",
+      lease_model: "Opus",
       flavor: "Opus",
     });
     expect(mockWriteFile).toHaveBeenCalledTimes(1);
     const written = mockWriteFile.mock.calls[0][1] as string;
-    expect(written).toContain('lease_model = "Opus/Claude"');
+    expect(written).toContain('lease_model = "Opus"');
     expect(written).toContain('flavor = "Opus"');
     expect(written).not.toContain('lease_model = "opus/claude"');
+    expect(written).not.toContain('lease_model = "Opus/Claude"');
     expect(written).not.toContain('flavor = "opus"');
   });
 });

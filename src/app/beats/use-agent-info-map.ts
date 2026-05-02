@@ -16,10 +16,48 @@ export function useAgentInfoMap(
   return useMemo<Record<string, AgentInfo>>(() => {
     if (!isActiveView) return {};
     const map: Record<string, AgentInfo> = {};
+    // For lease-type knots, the lease's own `agent_info` is the
+    // canonical source — no steps / notes / capsules exist on a
+    // fresh lease. Populate first so capsule + terminal overrides
+    // can still take precedence when more current data exists.
+    populateFromLeaseAgentInfo(map, beats);
     populateFromCapsules(map, beats);
     overrideFromTerminals(map, terminals, leaseAgentInfoMap);
     return map;
   }, [isActiveView, beats, terminals, leaseAgentInfoMap]);
+}
+
+/**
+ * Read canonical agent identity off a Lease knot's own `agent_info`.
+ *
+ * The mapper at `src/lib/backends/knots-backend-mappers.ts` surfaces
+ * `knot.lease.agent_info` as `metadata.knotsLeaseAgentInfo` for any knot
+ * that has a bound lease. For Lease-type knots specifically, this is the
+ * ONLY canonical source — there are no steps, notes, or handoff capsules
+ * to read from on a fresh lease. Per the agent-identity contract, this
+ * is a pure rename: lease.agent_info.{agent_name,model,model_version}
+ * → AgentInfo.{agentName,model,version}. No parsing, no normalisation.
+ */
+function populateFromLeaseAgentInfo(
+  map: Record<string, AgentInfo>,
+  beats: Beat[],
+): void {
+  for (const beat of beats) {
+    const info = beat.metadata?.knotsLeaseAgentInfo;
+    if (!info || typeof info !== "object") continue;
+    const ai = info as Record<string, unknown>;
+    const agentName =
+      typeof ai.agent_name === "string" ? ai.agent_name : undefined;
+    const model = typeof ai.model === "string" ? ai.model : undefined;
+    const version =
+      typeof ai.model_version === "string" ? ai.model_version : undefined;
+    if (!agentName && !model && !version) continue;
+    map[beat.id] = {
+      ...(agentName ? { agentName } : {}),
+      ...(model ? { model } : {}),
+      ...(version ? { version } : {}),
+    };
+  }
 }
 
 /**

@@ -18,7 +18,7 @@ describe("canonical lease identity", () => {
     // to displayCommandLabel("codex") → "Codex"
     expect(canonical.agent_name).toBe("Codex");
     expect(canonical.provider).toBe("Codex");
-    expect(canonical.lease_model).toBe("Codex Spark/GPT");
+    expect(canonical.lease_model).toBe("GPT Codex Spark");
     expect(canonical.version).toBe("5.3");
     expect(canonical.agent_type).toBe("cli");
   });
@@ -45,7 +45,9 @@ describe("canonical lease identity", () => {
     expect(info).toMatchObject({
       agentName: "Claude",
       agentProvider: "Claude",
-      agentModel: "Opus/Claude",
+      // model="Claude" dropped because it equals provider; flavor
+      // "Opus" kept. The Provider column already shows "Claude".
+      agentModel: "Opus",
       agentVersion: "4.6",
       agentType: "cli",
     });
@@ -61,7 +63,10 @@ describe("canonical lease identity", () => {
     expect(info).toMatchObject({
       agentName: "Codex",
       agentProvider: "Codex",
-      agentModel: "Codex/GPT",
+      // model="GPT" kept (not equal to provider); flavor "Codex"
+      // kept (flavor is always kept, even when it equals provider —
+      // user-accepted Codex variant doubling).
+      agentModel: "GPT Codex",
       agentVersion: "5.4",
       agentType: "cli",
     });
@@ -96,7 +101,7 @@ describe("canonical lease identity", () => {
     // agentName uses canonical identity, not label
     expect(info.agentName).toBe("Codex");
     expect(info.agentProvider).toBe("Codex");
-    expect(info.agentModel).toBe("Codex Spark/GPT");
+    expect(info.agentModel).toBe("GPT Codex Spark");
     expect(info.agentVersion).toBe("5.3");
   });
 });
@@ -119,7 +124,7 @@ describe("display label formatting", () => {
         command: "codex-cli",
         model: "gpt-5.4-codex",
       }),
-    ).toBe("Codex GPT 5.4");
+    ).toBe("Codex GPT Codex 5.4");
   });
 
   it("uses label as last resort for display", () => {
@@ -140,7 +145,7 @@ describe("Claude 1m / fast suffixes (Bug 2 regression)", () => {
       model: "claude-opus-4-7-1m",
     });
     expect(info.agentVersion).toBe("4.7");
-    expect(info.agentModel).toBe("Opus (1M context)/Claude");
+    expect(info.agentModel).toBe("Opus (1M context)");
   });
 
   it("sonnet-4-5-fast: version is 4.5 and flavor carries (Fast)", () => {
@@ -149,7 +154,7 @@ describe("Claude 1m / fast suffixes (Bug 2 regression)", () => {
       model: "claude-sonnet-4-5-fast",
     });
     expect(info.agentVersion).toBe("4.5");
-    expect(info.agentModel).toBe("Sonnet (Fast)/Claude");
+    expect(info.agentModel).toBe("Sonnet (Fast)");
   });
 
   it("haiku-4-5: plain version still parses correctly", () => {
@@ -158,7 +163,7 @@ describe("Claude 1m / fast suffixes (Bug 2 regression)", () => {
       model: "claude-haiku-4-5",
     });
     expect(info.agentVersion).toBe("4.5");
-    expect(info.agentModel).toBe("Haiku/Claude");
+    expect(info.agentModel).toBe("Haiku");
   });
 });
 

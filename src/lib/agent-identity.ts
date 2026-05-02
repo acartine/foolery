@@ -449,11 +449,37 @@ export function formatAgentFamily(option: AgentOptionSeed): string {
   const provider = cleanValue(option.provider);
   const model = cleanValue(option.model);
   const flavor = cleanValue(option.flavor);
+  // Drop `model` only when it equals the provider — `Claude/Claude` →
+  // just "Claude", `Gemini/Gemini` → just "Gemini". `flavor` is ALWAYS
+  // kept, even when it equals the provider — Codex variants
+  // ("Codex GPT Codex" / "Codex GPT Codex Spark") are explicitly
+  // accepted by user (the duplicate "Codex" is fine — flavor is the
+  // load-bearing distinguisher and dropping it loses information).
   const sameAsProvider = (s: string | undefined): boolean =>
     Boolean(s && provider && s.toLowerCase() === provider.toLowerCase());
   const modelOut = sameAsProvider(model) ? undefined : model;
-  const flavorOut = sameAsProvider(flavor) ? undefined : flavor;
-  return [provider, modelOut, flavorOut].filter(Boolean).join(" ");
+  return [provider, modelOut, flavor].filter(Boolean).join(" ");
+}
+
+/**
+ * Display-form for the `lease_model` field that gets stamped onto
+ * Knots leases. This is what the beat-table Model column shows
+ * verbatim, so it must read as a clean human-readable string. Same
+ * "drop model when it equals provider, always keep flavor" rule as
+ * `formatAgentFamily` but WITHOUT the leading provider — provider is
+ * stamped separately on the lease as `agent_info.provider` and shown
+ * in the Provider/Agent column already. Joining with space (not "/")
+ * — slash was a c4a6-era encoding leftover.
+ */
+export function formatLeaseModelDisplay(option: AgentOptionSeed): string | undefined {
+  const provider = cleanValue(option.provider);
+  const model = cleanValue(option.model);
+  const flavor = cleanValue(option.flavor);
+  const sameAsProvider = (s: string | undefined): boolean =>
+    Boolean(s && provider && s.toLowerCase() === provider.toLowerCase());
+  const modelOut = sameAsProvider(model) ? undefined : model;
+  const out = [modelOut, flavor].filter(Boolean).join(" ");
+  return out || undefined;
 }
 
 export function formatAgentOptionLabel(option: AgentOptionSeed): string {

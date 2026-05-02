@@ -187,13 +187,14 @@ describe("createLease canonical fields", () => {
     const args = await captureCreateLeaseArgs(
       agents.claude, "foolery:claude", "lease-claude",
     );
-    // Display-form: model="Claude", flavor="Opus" -> lease_model
-    // joins to "Opus/Claude" (single canonical form, foolery-b42b).
+    // Display-form: model="Claude" dropped (equals provider),
+    // flavor "Opus" kept. lease_model is just "Opus" — the
+    // Provider column shows "Claude" already so no need to repeat.
     assertCanonicalLeaseArgs(args, {
       nickname: "foolery:claude",
       agentName: "Claude",
       provider: "Claude",
-      model: "Opus/Claude",
+      model: "Opus",
       version: "4.7",
     });
     // No identity flags other than canonical ones.
@@ -207,16 +208,18 @@ describe("createLease canonical fields", () => {
     const args = await captureCreateLeaseArgs(
       agents.codex, "foolery:codex", "lease-codex",
     );
-    // Codex with `gpt-5.4-codex` -> flavor="Codex", model="GPT"
-    // -> lease_model joins to "Codex/GPT".
+    // Codex with `gpt-5.4-codex` -> model="GPT" (kept), flavor
+    // "Codex" (kept — flavor is always preserved, even when it
+    // equals the provider; Codex variants accept the redundancy
+    // because flavor is the load-bearing distinguisher).
     assertCanonicalLeaseArgs(args, {
       nickname: "foolery:codex",
       agentName: "Codex",
       provider: "Codex",
-      model: "Codex/GPT",
+      model: "GPT Codex",
       version: "5.4",
     });
-    // canonical name, NOT "GPT Codex 5.4"
+    // canonical name, NOT a label-format with version mixed in.
     expect(args).not.toContain("GPT Codex 5.4");
   });
 
@@ -228,7 +231,8 @@ describe("createLease canonical fields", () => {
       nickname: "foolery:gemini",
       agentName: "Gemini",
       provider: "Gemini",
-      model: "Pro/Gemini",
+      // model="Gemini" dropped (equals provider); flavor "Pro" kept.
+      model: "Pro",
       version: "2.5",
     });
   });
@@ -246,7 +250,9 @@ describe("createLease canonical fields", () => {
       nickname: "foolery:copilot",
       agentName: "Copilot",
       provider: "Copilot",
-      model: "Sonnet/Claude",
+      // model="Claude" + flavor="Sonnet" — neither equals provider
+      // "Copilot", both kept. lease_model = "Claude Sonnet".
+      model: "Claude Sonnet",
       version: "4.5",
     });
   });

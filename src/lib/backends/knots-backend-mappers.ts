@@ -129,6 +129,14 @@ function toBeatWithoutWorkflow(
     metadata: {
       knotsProfileId: profileId,
       knotsSteps: stepEntries,
+      // For Lease-type knots, the agent identity lives on the
+      // knot's own `lease.agent_info` (no step / note / capsule
+      // exists on a fresh lease). Surfacing it here lets the
+      // beat-table renderer show the lease's agent without
+      // re-extracting from anywhere — read what Knots stamped.
+      ...(knot.lease?.agent_info
+        ? { knotsLeaseAgentInfo: knot.lease.agent_info }
+        : {}),
     },
   };
 }
@@ -200,6 +208,11 @@ function toBeatWithWorkflow(
       knotsHandoffCapsules: knot.handoff_capsules ?? [],
       knotsNotes: knot.notes ?? [],
       knotsSteps: stepEntries,
+      // Surfaced for any knot with a bound lease so the table can
+      // render the lease's agent without re-extracting. See above.
+      ...(knot.lease?.agent_info
+        ? { knotsLeaseAgentInfo: knot.lease.agent_info }
+        : {}),
     },
   };
 }
