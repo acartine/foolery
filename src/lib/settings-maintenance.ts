@@ -12,7 +12,6 @@ import {
 } from "@/lib/settings-core";
 import { foolerySettingsSchema, type FoolerySettings } from "@/lib/schemas";
 import {
-  hydrateSettingsAgents,
   normalizeSettingsAgents,
 } from "@/lib/agent-config-normalization";
 
@@ -137,11 +136,8 @@ async function computeSettingsDefaultsStatus(): Promise<
   const normalizedResult = normalizeSettingsAgents(merged);
 
   try {
-    const hydrated = hydrateSettingsAgents(
-      normalizedResult.normalized,
-    );
     const settings = foolerySettingsSchema.parse(
-      hydrated,
+      normalizedResult.normalized,
     );
     return {
       settings,

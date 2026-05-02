@@ -1,5 +1,3 @@
-import type { ExecutionAgentInfo } from "@/lib/execution-port";
-
 export type AgentProviderId =
   | "claude"
   | "copilot"
@@ -22,14 +20,12 @@ export interface AgentIdentityLike {
   kind?: "cli";
 }
 
-export interface CanonicalLeaseIdentity {
-  agent_type?: string;
-  vendor?: string;
-  provider?: string;
-  agent_name?: string;
-  lease_model?: string;
-  version?: string;
-}
+// Canonical shapes are defined in `agent-identity-canonical.ts`; re-export
+// them here so existing callers can keep importing from `@/lib/agent-identity`.
+export type {
+  CanonicalLeaseIdentity,
+  CanonicalAgentConfig,
+} from "@/lib/agent-identity-canonical";
 
 export interface AgentOptionSeed {
   provider?: string;
@@ -531,55 +527,11 @@ export function buildAgentOptionId(
   return parts.join("-");
 }
 
-export function toCanonicalLeaseIdentity(
-  agent: AgentIdentityLike,
-): CanonicalLeaseIdentity {
-  const n = normalizeAgentIdentity(agent);
-  const explicitCommand = cleanValue(agent.command);
-  const agentType =
-    cleanValue(agent.agent_type)
-    ?? cleanValue(agent.kind)
-    ?? "cli";
-  const vendor = cleanValue(agent.vendor)
-    ?? (explicitCommand
-      ? detectAgentProviderId(explicitCommand)
-      : undefined);
-  const provider = cleanValue(agent.provider) ?? n.provider;
-  const agentName = cleanValue(agent.agent_name)
-    ?? displayCommandLabel(explicitCommand)
-    ?? provider
-    ?? explicitCommand
-    ?? "Unknown";
-  // OpenCode model strings are already canonical paths
-  // (e.g. "openrouter/moonshotai/kimi-k2.6"); the flavor (router) is
-  // encoded inside the path. Prepending flavor here would double-stamp
-  // it (e.g. "openrouter/openrouter/moonshotai/kimi-k2.6"). Other
-  // providers' model strings are short tokens ("claude", "gpt") where
-  // flavor disambiguates, so the flavor/model join is correct.
-  const derivedLeaseModel = n.provider === "OpenCode"
-    ? (n.model ?? cleanValue(agent.model))
-    : [n.flavor, n.model].filter(Boolean).join("/")
-      || cleanValue(agent.model);
-  const leaseModel = cleanValue(agent.lease_model)
-    ?? derivedLeaseModel;
-
-  return {
-    ...(agentType ? { agent_type: agentType } : {}),
-    ...(vendor && vendor !== "unknown" ? { vendor } : {}),
-    ...(provider ? { provider } : {}),
-    ...(agentName ? { agent_name: agentName } : {}),
-    ...(leaseModel ? { lease_model: leaseModel } : {}),
-    ...(n.version ? { version: n.version } : {}),
-  };
-}
-
-export function toExecutionAgentInfo(agent: AgentIdentityLike): ExecutionAgentInfo {
-  const canonical = toCanonicalLeaseIdentity(agent);
-  return {
-    agentName: canonical.agent_name,
-    agentProvider: canonical.provider,
-    agentModel: canonical.lease_model,
-    agentVersion: canonical.version,
-    agentType: canonical.agent_type,
-  };
-}
+// Canonical extractors (see `agent-identity-canonical.ts` for the
+// implementation). Re-exported here so existing callers continue to
+// import from `@/lib/agent-identity` without churn.
+export {
+  toCanonicalLeaseIdentity,
+  toCanonicalAgentConfig,
+  toExecutionAgentInfo,
+} from "@/lib/agent-identity-canonical";

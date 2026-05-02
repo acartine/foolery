@@ -9,12 +9,14 @@ import { exec } from "node:child_process";
 import { promisify } from "node:util";
 import type { ScannedAgent, ScannedAgentOption } from "@/lib/types";
 import {
-  normalizeAgentIdentity,
   providerLabel,
   buildAgentOptionId,
   formatAgentOptionLabel,
 } from "@/lib/agent-identity";
-import { canonicalizeRuntimeModel } from "@/lib/agent-config-normalization";
+import {
+  canonicalizeRuntimeModel,
+  canonicalizeScanFields,
+} from "@/lib/agent-config-normalization";
 
 const execAsync = promisify(exec);
 
@@ -136,8 +138,8 @@ export async function readCopilotModels(): Promise<
         "copilot",
         modelId,
       ) ?? modelId;
-      const n = normalizeAgentIdentity({
-        command: "copilot", model: runtimeModelId,
+      const n = canonicalizeScanFields("copilot", {
+        model: runtimeModelId,
       });
       const credits = COPILOT_CREDITS[modelId];
       return {
@@ -213,9 +215,8 @@ function buildStaticProviderCatalog(
       agentId,
       modelId,
     ) ?? modelId;
-    const normalized = normalizeAgentIdentity({
-      command: agentId,
-      provider,
+    const normalized = canonicalizeScanFields(agentId, {
+      ...(provider ? { provider } : {}),
       model: runtimeModelId,
     });
     return {

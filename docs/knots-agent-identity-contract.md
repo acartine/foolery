@@ -151,8 +151,9 @@ is a violation that needs to be pulled into one of these.
 | Per-provider parsing | `normalize{Claude,Codex,Gemini,Copilot,OpenCode}Model` | `src/lib/agent-identity.ts` | raw model string | `{ model, flavor, version }` |
 | Provider detection | `detectAgentProviderId(command)` | `src/lib/agent-identity.ts:80` | command string | `AgentProviderId` enum |
 | Identity resolution | `normalizeAgentIdentity(agent)` | `src/lib/agent-identity.ts:233` | `AgentIdentityLike` | `{ provider, model, flavor, version }` |
-| Canonical lease payload | `toCanonicalLeaseIdentity(agent)` | `src/lib/agent-identity.ts:457` | `AgentIdentityLike` | `CanonicalLeaseIdentity` |
-| Execution shape | `toExecutionAgentInfo(agent)` | `src/lib/agent-identity.ts:492` | `AgentIdentityLike` | `ExecutionAgentInfo` |
+| Canonical lease payload | `toCanonicalLeaseIdentity(agent)` | `src/lib/agent-identity-canonical.ts` | `AgentIdentityLike` | `CanonicalLeaseIdentity` |
+| Canonical persisted config | `toCanonicalAgentConfig(agent)` | `src/lib/agent-identity-canonical.ts` | `AgentIdentityLike` | `CanonicalAgentConfig` (superset of lease identity, adds `model` + `flavor`) |
+| Execution shape | `toExecutionAgentInfo(agent)` | `src/lib/agent-identity-canonical.ts` | `AgentIdentityLike` | `ExecutionAgentInfo` |
 | Lease creation | `ensureKnotsLease(input)` | `src/lib/knots-lease-runtime.ts:58` | `EnsureKnotsLeaseInput` (carries `ExecutionAgentInfo`) | `lease_id` |
 | `kno lease create` wrapper | `createLease(opts)` | `src/lib/knots-operations.ts:332` | `CreateLeaseOptions` | `KnotRecord` |
 | Display label (UI) | `formatAgentDisplayLabel(agent)` | `src/lib/agent-identity.ts:351` | `AgentIdentityLike` from a stamped artifact | string |
@@ -165,6 +166,32 @@ extractors. The display functions (`formatAgentDisplayLabel`,
 take canonical fields and produce a string. They MUST NOT be the path that
 fixes up bad data; if a caller is feeding them raw runtime hints they are a
 symptom of a broken upstream.
+
+### Sanctioned exceptions
+
+Exactly one site outside `agent-identity*.ts` is permitted to invoke the
+canonical extractor. It is the **registration write boundary**:
+
+- **`src/lib/agent-config-normalization.ts:normalizeRegisteredAgentConfig`**
+  — the single canonical write-side normaliser. Every code path that
+  writes an agent record into `settings.toml` (manual `addRegisteredAgent`,
+  CLI scan, auto-detect, load-time auto-migration) routes through this
+  function, which calls `toCanonicalAgentConfig` exactly once and persists
+  the canonical shape. The thin adapter `canonicalizeScanFields` in the
+  same file lets the scan/detect paths consume canonical fields without
+  importing `normalizeAgentIdentity` directly; it too is sanctioned.
+
+After this function runs, the data on disk and on every downstream
+`RegisteredAgentConfig` is canonical. Settings hydration
+(`getRegisteredAgents()`), CLI target resolution
+(`settings-agent-targets.ts:toCliTarget`), and pool resolution
+(`agent-pool.ts:toAgentTarget`) are pure pass-through reads — they
+project canonical fields onto their target shape without re-deriving.
+
+A new caller that needs canonical fields MUST either route through
+`normalizeRegisteredAgentConfig` / `canonicalizeScanFields` or be added
+to this section with explicit justification — it MUST NOT invoke
+`normalizeAgentIdentity` or `toCanonicalAgentConfig` directly.
 
 ## What Foolery Reads Back
 
@@ -308,11 +335,19 @@ grep -rn "normalize\(Claude\|Codex\|Gemini\|Copilot\|OpenCode\)Model" src/ \
   | grep -v "__tests__"
 
 # Should return zero hits — toActiveAgentInfo and friends should never be
-# called outside the active-beats display path.
+# called outside the active-beats display path. The sanctioned write-side
+# extractor `toCanonicalAgentConfig` lives in `agent-identity-canonical.ts`
+# and is wrapped by `normalizeRegisteredAgentConfig` in
+# `agent-config-normalization.ts`; both files are excluded below as the
+# canonical exception. JSDoc references to `normalizeAgentIdentity` (i.e.
+# comment-only mentions) are filtered too.
 grep -rn "toActiveAgentInfo\|normalizeAgentIdentity" src/ \
   | grep -v "src/lib/agent-identity.ts" \
+  | grep -v "src/lib/agent-identity-canonical.ts" \
+  | grep -v "src/lib/agent-config-normalization.ts" \
   | grep -v "src/app/beats/" \
-  | grep -v "__tests__"
+  | grep -v "__tests__" \
+  | grep -vE ":\s+\*"
 
 # Should return zero hits — no agent-identity flags on non-lease-create.
 grep -rn -- "--agent-name\|--agent-model\|--agent-version" src/ \
