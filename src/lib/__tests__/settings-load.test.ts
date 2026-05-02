@@ -248,9 +248,10 @@ describe("backfillMissingSettingsDefaults", () => {
     expect(written).toContain('model = "claude-opus-4-6"');
     expect(written).toContain('provider = "Claude"');
     expect(written).toContain('agent_name = "Claude"');
-    // Display-form lease_model after foolery-b42b: model token is
-    // "Claude" (display-cased), flavor is "Opus".
-    expect(written).toContain('lease_model = "Opus/Claude"');
+    // Display-form lease_model: model="Claude" dropped (equals
+    // provider), flavor "Opus" kept; the Provider column carries
+    // "Claude" so duplicating it in the model column is noise.
+    expect(written).toContain('lease_model = "Opus"');
     expect(written).toContain('version = "4.6"');
     expect(written).toContain('label = "Claude Opus 4.6"');
   });

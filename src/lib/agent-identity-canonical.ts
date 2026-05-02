@@ -16,6 +16,7 @@ import {
   type AgentIdentityLike,
   detectAgentProviderId,
   displayCommandLabel,
+  formatLeaseModelDisplay,
   normalizeAgentIdentity,
 } from "@/lib/agent-identity";
 
@@ -77,22 +78,27 @@ function buildCanonicalCore(agent: AgentIdentityLike): CanonicalCore {
     ?? provider
     ?? explicitCommand
     ?? "Unknown";
-  // OpenCode model strings are already canonical display strings
-  // (e.g. "OpenRouter MoonshotAI Kimi-k") with the version split off
-  // — the formatter has done the work. Other providers join the
-  // display-cased flavor and model with "/" (e.g. "Opus/Claude",
-  // "Codex/GPT"). Flavor "Codex" + model "GPT" -> "Codex/GPT".
+  // The lease_model is what gets stamped onto Knots leases (and onto
+  // step/note/handoff records under those leases). The beat-table
+  // Model column reads it verbatim, so it must read as a clean
+  // human-readable string.
+  //
+  // Single rule: drop `model` when it equals the provider (Claude
+  // model "Claude" / Gemini model "Gemini" duplicates the Provider
+  // column), always keep flavor. Join with " " (not "/" — that
+  // was a c4a6-era encoding artefact, not display form). For
+  // OpenCode the `model` field is already a pre-formatted display
+  // string ("OpenRouter MoonshotAI Kimi-k") so it falls through the
+  // same path naturally.
   //
   // Per foolery-b42b: the parsed value from the canonical extractor
-  // wins over the caller's `lease_model` field. This is what makes
-  // the migration work — legacy machine-form lease_model values
-  // ("opus/claude") on disk get overwritten by the display-form
-  // values produced here ("Opus/Claude"). Caller's lease_model is
-  // honoured only as a fallback when the extractor produced nothing.
-  const derivedLeaseModel = n.provider === "OpenCode"
-    ? (n.model ?? cleanValue(agent.model))
-    : [n.flavor, n.model].filter(Boolean).join("/")
-      || cleanValue(agent.model);
+  // wins over the caller's `lease_model` field, so legacy machine-
+  // form values on disk get overwritten on first read.
+  const derivedLeaseModel = formatLeaseModelDisplay({
+    provider: n.provider,
+    model: n.model,
+    flavor: n.flavor,
+  }) ?? cleanValue(agent.model);
   const leaseModel = derivedLeaseModel
     ?? cleanValue(agent.lease_model);
 
