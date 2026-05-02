@@ -1,0 +1,20 @@
+{
+  "event_id": "019de9b3-73d0-7ec2-94f9-edf3683db96a",
+  "occurred_at": "2026-05-02T17:19:05.168306Z",
+  "knot_id": "foolery-3200",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "agent_model": "OpenRouter MoonshotAI Kimi-k",
+    "agent_name": "OpenCode",
+    "agent_version": "2.6",
+    "force": false,
+    "from": "ready_for_implementation",
+    "profile_id": "autopilot",
+    "to": "implementation",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019de9b2-c0cc-7ad1-a367-0c1b06cc2d06"
+  }
+}
