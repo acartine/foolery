@@ -147,12 +147,15 @@ describe("scanForAgents: copilot model metadata", () => {
 
     const agents = await scanForAgents();
     const copilot = agents.find((agent) => agent.id === "copilot");
+    // Copilot is always the provider — even when routing Anthropic
+    // weights — so the runtime engine shows in the label. The inner
+    // family becomes model + flavor.
     expect(copilot).toMatchObject({
       id: "copilot",
       command: "copilot",
       path: "/opt/homebrew/bin/copilot",
       installed: true,
-      provider: "Claude",
+      provider: "Copilot",
       model: "Claude",
       flavor: "Sonnet",
       modelId: "claude-sonnet-4.5",
@@ -161,8 +164,8 @@ describe("scanForAgents: copilot model metadata", () => {
     expect(copilot?.options?.length).toBe(2);
     expect(copilot?.options?.[0]).toMatchObject({
       id: "copilot-claude-sonnet-4-5",
-      label: "Claude Sonnet 4.5",
-      provider: "Claude",
+      label: "Copilot Claude Sonnet 4.5",
+      provider: "Copilot",
       model: "Claude",
       flavor: "Sonnet",
       version: "4.5",

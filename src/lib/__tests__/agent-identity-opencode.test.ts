@@ -44,7 +44,9 @@ describe("normalizeAgentIdentity OpenCode canonical 3-segment paths", () => {
     });
     expect(result).toEqual({
       provider: "OpenCode",
-      model: "OpenRouter Z-AI Glm",
+      // "GLM" is in the acronym vocabulary table — the published
+      // canonical capitalisation, not auto title-case "Glm".
+      model: "OpenRouter Z-AI GLM",
       version: "5.1",
     });
   });

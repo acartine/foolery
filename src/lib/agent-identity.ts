@@ -9,10 +9,7 @@
  *
  * See `docs/knots-agent-identity-contract.md` § "Single canonical form".
  */
-import {
-  parseOpenCodePath,
-  formatOpenCodeSegment,
-} from "@/lib/agent-identity-opencode-format";
+import { parseOpenCodePath } from "@/lib/agent-identity-opencode-format";
 
 export type AgentProviderId =
   | "claude"
@@ -158,10 +155,22 @@ function normalizeClaudeModel(
   const cleaned = cleanValue(rawModel)?.toLowerCase();
   if (!cleaned) return {};
   const familyMatch = cleaned.match(/(opus|sonnet|haiku)/i);
-  const versionMatch = cleaned.match(/(?:opus|sonnet|haiku)[- ](\d+(?:[-.]\d+)*)/i);
-  const normalizedVersion = versionMatch?.[1]?.replace(/-/g, ".");
   const hasOneMillion = cleaned.includes("1m");
   const hasFast = /\bfast\b/.test(cleaned);
+  // Strip 1m/fast suffixes BEFORE version-matching. The version regex
+  // is greedy on `(\d+(?:[-.]\d+)*)`, so "opus-4-7-1m" would otherwise
+  // produce version "4.7.1" — the leading "1" of "1m" gets eaten.
+  // Suffixes are recorded above (hasOneMillion / hasFast) and feed
+  // into the flavour display; they are not part of the version.
+  const versionTarget = cleaned
+    .replace(/-1m\b/g, "")
+    .replace(/\b1m\b/g, "")
+    .replace(/-fast\b/g, "")
+    .replace(/\bfast\b/g, "");
+  const versionMatch = versionTarget.match(
+    /(?:opus|sonnet|haiku)[- ](\d+(?:[-.]\d+)*)/i,
+  );
+  const normalizedVersion = versionMatch?.[1]?.replace(/-/g, ".");
   const flavor = familyMatch?.[1]
     ? claudeFlavorDisplay(familyMatch[1], hasOneMillion, hasFast)
     : undefined;
@@ -239,6 +248,14 @@ function normalizeOpenCodeModel(
   };
 }
 
+/**
+ * Normalize a Copilot model. Copilot is always the provider — the inner
+ * model family (GPT / Claude / Gemini) is surfaced via the `model` and
+ * `flavor` fields so the display label reads "Copilot Claude Sonnet 4.5",
+ * not just "Claude Sonnet 4.5". The runtime engine is Copilot; the user
+ * needs to see that, even when the underlying weights come from Anthropic
+ * or Google.
+ */
 function normalizeCopilotModel(
   rawModel?: string,
 ): {
@@ -258,7 +275,7 @@ function normalizeCopilotModel(
   ) {
     const normalized = normalizeCodexModel(rawModel);
     return {
-      provider: "Codex",
+      provider: "Copilot",
       ...(normalized.model ? { model: normalized.model } : {}),
       ...(normalized.flavor ? { flavor: normalized.flavor } : {}),
       ...(normalized.version ? { version: normalized.version } : {}),
@@ -267,7 +284,7 @@ function normalizeCopilotModel(
   if (cleaned.includes("gemini")) {
     const normalized = normalizeGeminiModel(rawModel);
     return {
-      provider: "Gemini",
+      provider: "Copilot",
       ...(normalized.model ? { model: normalized.model } : {}),
       ...(normalized.flavor ? { flavor: normalized.flavor } : {}),
       ...(normalized.version ? { version: normalized.version } : {}),
@@ -281,7 +298,7 @@ function normalizeCopilotModel(
   ) {
     const normalized = normalizeClaudeModel(rawModel);
     return {
-      provider: "Claude",
+      provider: "Copilot",
       ...(normalized.model ? { model: normalized.model } : {}),
       ...(normalized.flavor ? { flavor: normalized.flavor } : {}),
       ...(normalized.version ? { version: normalized.version } : {}),
@@ -485,40 +502,42 @@ export function parseAgentDisplayParts(
   return { label: formatAgentDisplayLabel(agent), pills };
 }
 
+/**
+ * Render OpenCode display parts via the canonical `parseOpenCodePath`
+ * for ALL shapes — bare, 2-segment, 3-segment. This is the single
+ * formatting path; the previous split between `openCodeDisplayParts`
+ * (bare) and `openCodePathDisplayParts` (path) produced inconsistent
+ * output (e.g. bare "kimi-k2.6" → "OpenCode Kimi-k2.6" without the
+ * version split, vs the canonical extractor's "Kimi-k 2.6"). Bug 4 of
+ * the agent-identity audit.
+ *
+ * Pill differentiation by shape:
+ *  - 3-segment (router/vendor/model): router pill (e.g. "openrouter")
+ *  - 2-segment (vendor/model)       : no shape pill (just "cli")
+ *  - 1-segment (bare model)         : "opencode" pill
+ *  - empty model                    : just "cli"
+ */
 function openCodeDisplayParts(
   agent: AgentIdentityLike,
 ): AgentDisplayParts {
   const rawModel = cleanValue(agent.model);
-  const pills: string[] = [];
   if (!rawModel) {
-    pills.push("cli");
-    return { label: "OpenCode", pills };
+    return { label: "OpenCode", pills: ["cli"] };
   }
-  if (rawModel.includes("/")) {
-    return openCodePathDisplayParts(rawModel, agent.version);
-  }
-  // Bare model — single segment, no router pill.
-  pills.push("opencode");
-  pills.push("cli");
-  const single = formatOpenCodeSegment(rawModel);
-  const version = cleanValue(agent.version);
-  return {
-    label: ["OpenCode", single, version].filter(Boolean).join(" "),
-    pills,
-  };
-}
-
-function openCodePathDisplayParts(
-  rawModel: string,
-  version?: string,
-): AgentDisplayParts {
   const parsed = parseOpenCodePath(rawModel);
-  const v = parsed.version ?? cleanValue(version);
-  const labelParts = ["OpenCode", parsed.model, v].filter(Boolean);
+  const version = parsed.version ?? cleanValue(agent.version);
+  const label = ["OpenCode", parsed.model, version]
+    .filter(Boolean)
+    .join(" ");
   const pills: string[] = [];
-  if (parsed.router) pills.push(parsed.router);
+  if (parsed.router) {
+    pills.push(parsed.router);
+  } else if (!parsed.vendor) {
+    // Bare single-token model (no router AND no vendor in path).
+    pills.push("opencode");
+  }
   pills.push("cli");
-  return { label: labelParts.join(" "), pills };
+  return { label, pills };
 }
 
 export function buildAgentOptionId(

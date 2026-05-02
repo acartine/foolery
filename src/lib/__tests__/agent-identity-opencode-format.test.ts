@@ -52,7 +52,7 @@ describe("splitOpenCodeModelToken", () => {
       version: "2.6",
     });
     expect(splitOpenCodeModelToken("glm-5.1")).toEqual({
-      name: "Glm",
+      name: "GLM",
       version: "5.1",
     });
     expect(splitOpenCodeModelToken("devstral-2512")).toEqual({

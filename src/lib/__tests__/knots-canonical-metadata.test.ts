@@ -237,14 +237,15 @@ describe("createLease canonical fields", () => {
     const args = await captureCreateLeaseArgs(
       agents.copilot, "foolery:copilot", "lease-copilot",
     );
-    // Copilot routing a Claude-family model surfaces
-    // provider=Claude (per normalizeCopilotModel) — agent_name
-    // stays "Copilot" from displayCommandLabel("copilot"), so
-    // both labels appear in argv.
+    // Copilot is always the provider — even when routing Anthropic
+    // weights. The inner family (Claude Sonnet) lives in
+    // model + flavor so the full provenance shows in the label
+    // ("Copilot Claude Sonnet 4.5") rather than collapsing to
+    // "Claude Sonnet 4.5" and hiding the runtime engine.
     assertCanonicalLeaseArgs(args, {
       nickname: "foolery:copilot",
       agentName: "Copilot",
-      provider: "Claude",
+      provider: "Copilot",
       model: "Sonnet/Claude",
       version: "4.5",
     });
