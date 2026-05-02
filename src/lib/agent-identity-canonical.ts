@@ -77,18 +77,24 @@ function buildCanonicalCore(agent: AgentIdentityLike): CanonicalCore {
     ?? provider
     ?? explicitCommand
     ?? "Unknown";
-  // OpenCode model strings are already canonical paths
-  // (e.g. "openrouter/moonshotai/kimi-k2.6"); the flavor (router) is
-  // encoded inside the path. Prepending flavor here would double-stamp
-  // it (e.g. "openrouter/openrouter/moonshotai/kimi-k2.6"). Other
-  // providers' model strings are short tokens ("claude", "gpt") where
-  // flavor disambiguates, so the flavor/model join is correct.
+  // OpenCode model strings are already canonical display strings
+  // (e.g. "OpenRouter MoonshotAI Kimi-k") with the version split off
+  // — the formatter has done the work. Other providers join the
+  // display-cased flavor and model with "/" (e.g. "Opus/Claude",
+  // "Codex/GPT"). Flavor "Codex" + model "GPT" -> "Codex/GPT".
+  //
+  // Per foolery-b42b: the parsed value from the canonical extractor
+  // wins over the caller's `lease_model` field. This is what makes
+  // the migration work — legacy machine-form lease_model values
+  // ("opus/claude") on disk get overwritten by the display-form
+  // values produced here ("Opus/Claude"). Caller's lease_model is
+  // honoured only as a fallback when the extractor produced nothing.
   const derivedLeaseModel = n.provider === "OpenCode"
     ? (n.model ?? cleanValue(agent.model))
     : [n.flavor, n.model].filter(Boolean).join("/")
       || cleanValue(agent.model);
-  const leaseModel = cleanValue(agent.lease_model)
-    ?? derivedLeaseModel;
+  const leaseModel = derivedLeaseModel
+    ?? cleanValue(agent.lease_model);
 
   return {
     normalized: n,

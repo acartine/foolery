@@ -1,71 +1,82 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { BeatStatusBadge } from '@/components/beat-status-badge';
-// BeatStatus is now a string type; keep array typed inline
+import { BeatStateBadge } from '@/components/beat-state-badge';
 import '@/app/globals.css';
 
 const meta = {
-  title: 'Components/Badges/BeatStatusBadge',
-  component: BeatStatusBadge,
+  title: 'Components/Badges/BeatStateBadge',
+  component: BeatStateBadge,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
-} satisfies Meta<typeof BeatStatusBadge>;
+} satisfies Meta<typeof BeatStateBadge>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Open: Story = {
+export const ReadyForImplementation: Story = {
   args: {
-    status: 'open',
-    showTooltip: true,
+    state: 'ready_for_implementation',
   },
 };
 
-export const InProgress: Story = {
+export const Implementation: Story = {
   args: {
-    status: 'in_progress',
-    showTooltip: true,
+    state: 'implementation',
+  },
+};
+
+export const Shipped: Story = {
+  args: {
+    state: 'shipped',
   },
 };
 
 export const Blocked: Story = {
   args: {
-    status: 'blocked',
-    showTooltip: true,
+    state: 'blocked',
   },
 };
 
 export const Deferred: Story = {
   args: {
-    status: 'deferred',
-    showTooltip: true,
+    state: 'deferred',
   },
 };
 
 export const Closed: Story = {
   args: {
-    status: 'closed',
-    showTooltip: true,
+    state: 'closed',
   },
 };
 
-export const AllStatuses: Story = {
+export const AllStates: Story = {
   render: () => {
-    const statuses = ['open', 'in_progress', 'blocked', 'deferred', 'closed'];
+    const states = [
+      'ready_for_planning',
+      'planning',
+      'ready_for_plan_review',
+      'plan_review',
+      'ready_for_implementation',
+      'implementation',
+      'ready_for_implementation_review',
+      'implementation_review',
+      'ready_for_shipment',
+      'shipment',
+      'ready_for_shipment_review',
+      'shipment_review',
+      'shipped',
+      'abandoned',
+      'closed',
+      'blocked',
+      'deferred',
+    ];
     return (
       <div className="flex gap-4 flex-wrap">
-        {statuses.map((status) => (
-          <BeatStatusBadge key={status} status={status} showTooltip />
+        {states.map((state) => (
+          <BeatStateBadge key={state} state={state} />
         ))}
       </div>
     );
-  },
-};
-
-export const WithoutTooltip: Story = {
-  args: {
-    status: 'open',
-    showTooltip: false,
   },
 };

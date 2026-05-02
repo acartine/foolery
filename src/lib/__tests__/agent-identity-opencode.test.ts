@@ -4,61 +4,74 @@ import { normalizeAgentIdentity } from "@/lib/agent-identity";
 /*
  * normalizeOpenCodeModel is a private helper inside agent-identity.ts.
  * The canonical contract says its outputs are observable through
- * normalizeAgentIdentity for the OpenCode branch, so we test through
- * that public surface — this also covers AC-1's "calls
- * normalizeOpenCodeModel for the OpenCode branch" requirement.
+ * normalizeAgentIdentity for the OpenCode branch. After foolery-b42b,
+ * OpenCode emits a single canonical form: a pre-formatted display
+ * string with version split off. Flavor is undefined because the
+ * router segment is already part of the formatted model string.
  */
 
 describe("normalizeAgentIdentity OpenCode canonical 3-segment paths", () => {
-  it("parses openrouter/moonshotai/kimi-k2.6", () => {
+  it("parses openrouter/moonshotai/kimi-k2.6 to display form", () => {
     const result = normalizeAgentIdentity({
       command: "opencode",
       model: "openrouter/moonshotai/kimi-k2.6",
     });
     expect(result).toEqual({
       provider: "OpenCode",
-      model: "openrouter/moonshotai/kimi-k2.6",
-      flavor: "openrouter",
+      model: "OpenRouter MoonshotAI Kimi-k",
       version: "2.6",
     });
+    expect(result.flavor).toBeUndefined();
   });
 
-  it("parses openrouter/anthropic/claude-sonnet-4-5", () => {
+  it("parses openrouter/anthropic/claude-sonnet-4-5 to display form", () => {
     const result = normalizeAgentIdentity({
       command: "opencode",
       model: "openrouter/anthropic/claude-sonnet-4-5",
     });
     expect(result).toEqual({
       provider: "OpenCode",
-      model: "openrouter/anthropic/claude-sonnet-4-5",
-      flavor: "openrouter",
+      model: "OpenRouter Anthropic Claude Sonnet",
       version: "4.5",
     });
+    expect(result.flavor).toBeUndefined();
   });
 
-  it("parses openrouter/z-ai/glm-5.1", () => {
+  it("parses openrouter/z-ai/glm-5.1 to display form", () => {
     const result = normalizeAgentIdentity({
       command: "opencode",
       model: "openrouter/z-ai/glm-5.1",
     });
     expect(result).toEqual({
       provider: "OpenCode",
-      model: "openrouter/z-ai/glm-5.1",
-      flavor: "openrouter",
+      model: "OpenRouter Z-AI Glm",
       version: "5.1",
     });
   });
 
-  it("parses openrouter/mistral/devstral-2512", () => {
+  it("parses openrouter/mistral/devstral-2512 to display form", () => {
     const result = normalizeAgentIdentity({
       command: "opencode",
       model: "openrouter/mistral/devstral-2512",
     });
     expect(result).toEqual({
       provider: "OpenCode",
-      model: "openrouter/mistral/devstral-2512",
-      flavor: "openrouter",
+      model: "OpenRouter Mistral Devstral",
       version: "2512",
+    });
+  });
+
+  it("parses openrouter/google/gemini-2.5-pro to display form", () => {
+    const result = normalizeAgentIdentity({
+      command: "opencode",
+      model: "openrouter/google/gemini-2.5-pro",
+    });
+    // Trailing non-numeric "pro" segment after the version becomes
+    // a "tail" appended to the model name in display-cased form.
+    expect(result).toEqual({
+      provider: "OpenCode",
+      model: "OpenRouter Google Gemini Pro",
+      version: "2.5",
     });
   });
 
@@ -69,22 +82,21 @@ describe("normalizeAgentIdentity OpenCode canonical 3-segment paths", () => {
     });
     expect(result).toEqual({
       provider: "OpenCode",
-      model: "copilot/anthropic/claude-sonnet-4",
-      flavor: "copilot",
+      model: "Copilot Anthropic Claude Sonnet",
       version: "4",
     });
   });
 });
 
 describe("normalizeAgentIdentity OpenCode shorter and edge shapes", () => {
-  it("parses 2-segment vendor/model with no flavor", () => {
+  it("parses 2-segment vendor/model with no router pill", () => {
     const result = normalizeAgentIdentity({
       command: "opencode",
       model: "mistral/devstral-2512",
     });
     expect(result).toEqual({
       provider: "OpenCode",
-      model: "mistral/devstral-2512",
+      model: "Mistral Devstral",
       version: "2512",
     });
     expect(result.flavor).toBeUndefined();
@@ -97,7 +109,7 @@ describe("normalizeAgentIdentity OpenCode shorter and edge shapes", () => {
     });
     expect(result).toEqual({
       provider: "OpenCode",
-      model: "kimi",
+      model: "Kimi",
     });
     expect(result.flavor).toBeUndefined();
     expect(result.version).toBeUndefined();
@@ -110,7 +122,7 @@ describe("normalizeAgentIdentity OpenCode shorter and edge shapes", () => {
     });
     expect(result).toEqual({
       provider: "OpenCode",
-      model: "kimi-k2.6",
+      model: "Kimi-k",
       version: "2.6",
     });
     expect(result.flavor).toBeUndefined();
@@ -143,12 +155,11 @@ describe("normalizeAgentIdentity OpenCode shorter and edge shapes", () => {
       command: "opencode",
       model: "//openrouter//moonshotai//kimi-k2.6//",
     });
-    // Empty tokens are filtered; the cleaned 3-token shape stands.
-    // The model string is preserved verbatim per the contract.
+    // Empty tokens are filtered; the cleaned 3-token shape stands
+    // and produces the same display-form output as canonical input.
     expect(result).toEqual({
       provider: "OpenCode",
-      model: "//openrouter//moonshotai//kimi-k2.6//",
-      flavor: "openrouter",
+      model: "OpenRouter MoonshotAI Kimi-k",
       version: "2.6",
     });
   });
@@ -174,8 +185,7 @@ describe("normalizeAgentIdentity OpenCode anti-leak regressions", () => {
       version: "4.7",
     });
     expect(result.version).toBe("2.6");
-    expect(result.model).toBe("openrouter/moonshotai/kimi-k2.6");
-    expect(result.flavor).toBe("openrouter");
+    expect(result.model).toBe("OpenRouter MoonshotAI Kimi-k");
   });
 
   it("falls back to caller version when bare model has no numeric tail", () => {
@@ -194,7 +204,7 @@ describe("normalizeAgentIdentity OpenCode anti-leak regressions", () => {
       version: "4.7",
     });
     expect(result.provider).toBe("OpenCode");
-    expect(result.model).toBe("kimi");
+    expect(result.model).toBe("Kimi");
     expect(result.version).toBe("4.7");
   });
 });

@@ -96,49 +96,82 @@ The canonical (green) path is a one-way street: raw → normalised → lease →
 stamped artifact → display. The display layer (red border) is **forbidden**
 from re-deriving anything — it reads what's already on the artifact.
 
+## Single canonical form
+
+**The canonical form IS the display form.** There is exactly one
+representation of every model name. Per-provider extractors emit
+display-cased values (`"GPT"`, `"Claude"`, `"Opus"`, `"Pro"`,
+`"OpenRouter MoonshotAI Kimi-k"`); the lease stamps display-cased
+values; every reader renders the field as-is. There is no machine-form
+vs display-form duality, no `MODEL_LABELS` lookup table, no
+`formatModelDisplay` translation step.
+
+Closed by foolery-b42b (parent foolery-2e97). Before that knot, the
+codebase carried two parallel forms — a lower-case "machine token"
+stamped onto leases (`"gpt"`, `"opus"`) and an upper-case "display
+token" produced by a `MODEL_LABELS` lookup at render time. Some
+readers went through the lookup; some read the stamped field
+directly. The result was visible divergence in the UI: a beat row
+that said `Model="gpt"` while the title-bar pill above it said
+`"GPT 5.5"`. The fix collapsed the two forms into one — display form
+all the way down.
+
+### What the rule means in practice
+
+1. `normalize{Claude,Codex,Gemini,Copilot,OpenCode}Model` return
+   display-cased strings. No lower-case machine tokens exit these
+   functions.
+2. `toCanonicalAgentConfig` and `toCanonicalLeaseIdentity` produce
+   display-cased `model` / `flavor` / `lease_model`. The lease is
+   stamped with display-cased values via `--model` / `--agent-name` /
+   `--provider` flags on `kno lease create`.
+3. `formatAgentFamily` is a single-line filter+join with no
+   per-provider branching. The only post-filter rule is "drop fields
+   that are redundant with the provider name" (e.g. provider "Claude"
+   + model "Claude" -> "Claude Sonnet 4.5", not "Claude Claude
+   Sonnet 4.5"). This rule is uniform across providers.
+4. `MODEL_LABELS` and `formatModelDisplay` are **gone**. There is no
+   lookup table to translate machine tokens to display tokens; the
+   tokens are display-form from extraction onward.
+5. The parser-derived value wins over the caller's input for
+   `flavor` / `version` / `lease_model`. This is what makes the
+   migration work — legacy machine-form values on disk get
+   overwritten by the display-form values the extractor produces.
+
+### Self-audit grep
+
+A bash one-liner that any agent or human can run from the foolery
+root to detect regressions to the dual-form architecture:
+
+```bash
+# Should return zero hits — the lookup table is gone. Any reappearance
+# is a regression to the dual-form architecture this section forbids.
+grep -rn 'MODEL_LABELS\[' src/ | grep -v "// legacy migration"
+```
+
+If a future change re-introduces a `MODEL_LABELS`-style lookup, that
+change is fixing a symptom of broken upstream extraction and will
+re-introduce the divergence. Push the change up to the per-provider
+extractor instead.
+
 ## Per-Provider Extraction Rules
 
 Each row is the **only** way Foolery is allowed to map raw config to
 canonical fields for that provider. The function name in the last column is
-the **only** function that may run for that provider.
+the **only** function that may run for that provider. **All output values
+are in display form** (per "Single canonical form" above).
 
 | Provider | Detection (from `command`) | `provider` | `agent_name` | `model` | `flavor` | `version` | Canonical extractor |
 |---|---|---|---|---|---|---|---|
-| Claude | `command` contains "claude" | `"Claude"` | `"Claude"` (display label of `command`) | `"claude"` if family matched | `"opus"` / `"sonnet"` / `"haiku"`, plus `-1m` or `-fast` suffix | first numeric segment after family, normalised to dot form (e.g. `4-7` → `4.7`) | [`normalizeClaudeModel`](../src/lib/agent-identity.ts) |
-| Codex (OpenAI) | `command` contains "codex", "chatgpt", or "openai" | `"Codex"` | `"Codex"` | `"gpt"` or `"chatgpt"` | `codex-max` / `codex-mini` / `codex-spark` / `codex` / `mini` (if matched) | numeric after `gpt-` / `chatgpt-` | [`normalizeCodexModel`](../src/lib/agent-identity.ts) |
-| Gemini | `command` contains "gemini" | `"Gemini"` | `"Gemini"` | `"gemini"` always | `pro` / `flash` / `flash-lite`, optionally `-preview` | numeric after `gemini-` | [`normalizeGeminiModel`](../src/lib/agent-identity.ts) |
+| Claude | `command` contains "claude" | `"Claude"` | `"Claude"` (display label of `command`) | `"Claude"` if family matched | `"Opus"` / `"Sonnet"` / `"Haiku"`, plus `(1M context)` or `(Fast)` suffix | first numeric segment after family, normalised to dot form (e.g. `4-7` → `4.7`) | [`normalizeClaudeModel`](../src/lib/agent-identity.ts) |
+| Codex (OpenAI) | `command` contains "codex", "chatgpt", or "openai" | `"Codex"` | `"Codex"` | `"GPT"` or `"ChatGPT"` | `"Codex Max"` / `"Codex Mini"` / `"Codex Spark"` / `"Codex"` / `"Mini"` (if matched; the redundant `"Codex"` flavor is dropped at display time when provider == flavor) | numeric after `gpt-` / `chatgpt-` | [`normalizeCodexModel`](../src/lib/agent-identity.ts) |
+| Gemini | `command` contains "gemini" | `"Gemini"` | `"Gemini"` | `"Gemini"` always | `"Pro"` / `"Flash"` / `"Flash Lite"`, optionally `(Preview)` suffix | numeric after `gemini-` | [`normalizeGeminiModel`](../src/lib/agent-identity.ts) |
 | Copilot | `command` contains "copilot" | depends on inner model: Codex/Claude/Gemini if model hints, else `"Copilot"` | `"Copilot"` | inherited from inner extractor | inherited | inherited | [`normalizeCopilotModel`](../src/lib/agent-identity.ts) |
-| OpenCode | `command` contains "opencode" | `"OpenCode"` | `"OpenCode"` | full router-path string (e.g. `openrouter/moonshotai/kimi-k2.6`) | (none — encoded in path) | **none from runtime;** only honoured if explicitly recorded on the registered config | [`normalizeOpenCodeModel`](../src/lib/agent-identity.ts) **(see "Known gap" below)** |
+| OpenCode | `command` contains "opencode" | `"OpenCode"` | `"OpenCode"` | pre-formatted display string with version split off, e.g. `"OpenRouter MoonshotAI Kimi-k"` for `openrouter/moonshotai/kimi-k2.6` | (none — vendor segment is part of the formatted `model`) | trailing numeric run of the last token, e.g. `"2.6"`; **never** from runtime/binary version | [`normalizeOpenCodeModel`](../src/lib/agent-identity.ts) (delegates to [`parseOpenCodePath`](../src/lib/agent-identity-opencode-format.ts)) |
 
 **Order of precedence in `detectAgentProviderId`:** opencode → copilot →
 claude → codex → gemini. This order matters. Adding a new provider means
 deciding where it sits.
-
-### Known gap: OpenCode does not yet have a canonical extractor
-
-As of 2026-04-30, [`normalizeAgentIdentity`](../src/lib/agent-identity.ts)
-treats OpenCode as a passthrough — it copies `model`, `flavor`, `version`
-from the input AgentIdentityLike without parsing. This is why the agent
-table can show a stale "version" (e.g. `4.7`) for an OpenCode terminal
-running `openrouter/moonshotai/kimi-k2.6` — the OpenCode runtime version
-of the binary is leaking into the model-version slot.
-
-The fix is a `normalizeOpenCodeModel` helper that:
-
-- splits the model on `/` and recognises the canonical 3-segment shape
-  `<router>/<vendor>/<model-with-version>`;
-- emits `provider` = `"OpenCode"`, `agent_name` = `"OpenCode"`,
-  `model` = full path string,
-  `flavor` = router (e.g. `openrouter`),
-  `version` = the numeric segment of the trailing model token if any
-  (e.g. `kimi-k2.6` → `2.6`); **never** from runtime/binary version;
-- has a unit test parallel to `normalizeClaudeModel` /
-  `normalizeCodexModel`.
-
-This is the canonical knot's first acceptance criterion. See knot
-[`foolery-2e97`](https://github.com/acartine/foolery) (run
-`kno -C ~/foolery show foolery-2e97` or
-`kno -C ~/foolery ls --tag canonical-agent-metadata`) for the full list.
 
 ## Canonical Functions (One Per Task)
 
@@ -328,6 +361,11 @@ A bash one-liner that any agent or human can run from the foolery root to
 spot regressions:
 
 ```bash
+# Should return zero hits — the dual-form lookup table introduced before
+# foolery-b42b. Any reappearance reverts to the machine-form vs
+# display-form duality this contract forbids.
+grep -rn 'MODEL_LABELS\[' src/ | grep -v "// legacy migration"
+
 # Should return zero hits — anywhere outside agent-identity.ts that imports
 # the per-provider normalisers is a violation.
 grep -rn "normalize\(Claude\|Codex\|Gemini\|Copilot\|OpenCode\)Model" src/ \

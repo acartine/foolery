@@ -6,7 +6,6 @@ import type { ActionName } from "@/lib/types";
 import {
   detectAgentProviderId,
   formatAgentDisplayLabel,
-  formatModelDisplay as formatAgentModelDisplay,
 } from "@/lib/agent-identity";
 
 export interface ResolvedAgentInfo {
@@ -23,7 +22,6 @@ export interface ResolvedAgentInfo {
   vendor: string;
 }
 export const detectVendor = detectAgentProviderId;
-export const formatModelDisplay = formatAgentModelDisplay;
 
 /**
  * Hook that fetches settings and resolves agent info for a given action.

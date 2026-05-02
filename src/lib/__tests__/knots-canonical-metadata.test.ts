@@ -187,11 +187,13 @@ describe("createLease canonical fields", () => {
     const args = await captureCreateLeaseArgs(
       agents.claude, "foolery:claude", "lease-claude",
     );
+    // Display-form: model="Claude", flavor="Opus" -> lease_model
+    // joins to "Opus/Claude" (single canonical form, foolery-b42b).
     assertCanonicalLeaseArgs(args, {
       nickname: "foolery:claude",
       agentName: "Claude",
       provider: "Claude",
-      model: "opus/claude",
+      model: "Opus/Claude",
       version: "4.7",
     });
     // No identity flags other than canonical ones.
@@ -205,13 +207,13 @@ describe("createLease canonical fields", () => {
     const args = await captureCreateLeaseArgs(
       agents.codex, "foolery:codex", "lease-codex",
     );
-    // Codex with `gpt-5.4-codex` -> flavor=codex, model=gpt
-    // -> lease_model joins to "codex/gpt".
+    // Codex with `gpt-5.4-codex` -> flavor="Codex", model="GPT"
+    // -> lease_model joins to "Codex/GPT".
     assertCanonicalLeaseArgs(args, {
       nickname: "foolery:codex",
       agentName: "Codex",
       provider: "Codex",
-      model: "codex/gpt",
+      model: "Codex/GPT",
       version: "5.4",
     });
     // canonical name, NOT "GPT Codex 5.4"
@@ -226,7 +228,7 @@ describe("createLease canonical fields", () => {
       nickname: "foolery:gemini",
       agentName: "Gemini",
       provider: "Gemini",
-      model: "pro/gemini",
+      model: "Pro/Gemini",
       version: "2.5",
     });
   });
@@ -243,7 +245,7 @@ describe("createLease canonical fields", () => {
       nickname: "foolery:copilot",
       agentName: "Copilot",
       provider: "Claude",
-      model: "sonnet/claude",
+      model: "Sonnet/Claude",
       version: "4.5",
     });
   });
@@ -252,14 +254,13 @@ describe("createLease canonical fields", () => {
     const args = await captureCreateLeaseArgs(
       agents.openCode, "foolery:opencode", "lease-opencode",
     );
-    // OpenCode model strings are canonical paths — flavor is
-    // encoded in-path, never doubled by the canonicalizer.
-    // Path-derived version (2.6) wins for OpenCode.
+    // OpenCode emits a single canonical form: pre-formatted display
+    // string with version split off. Flavor is undefined.
     assertCanonicalLeaseArgs(args, {
       nickname: "foolery:opencode",
       agentName: "OpenCode",
       provider: "OpenCode",
-      model: "openrouter/moonshotai/kimi-k2.6",
+      model: "OpenRouter MoonshotAI Kimi-k",
       version: "2.6",
     });
   });

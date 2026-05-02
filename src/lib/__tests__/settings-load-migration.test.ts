@@ -40,16 +40,16 @@ describe("loadSettings auto-migration to canonical agent shape", () => {
       ].join("\n"),
     );
     const settings = await loadSettings();
-    // In-memory result is canonical.
+    // In-memory result is canonical (display-form per foolery-b42b).
     expect(settings.agents["claude-opus"]).toMatchObject({
       command: "claude",
       agent_type: "cli",
       vendor: "claude",
       provider: "Claude",
       agent_name: "Claude",
-      lease_model: "opus/claude",
+      lease_model: "Opus/Claude",
       model: "claude-opus-4-6",
-      flavor: "opus",
+      flavor: "Opus",
       version: "4.6",
     });
     // The legacy entry was non-canonical, so the migration write fired.
@@ -57,8 +57,8 @@ describe("loadSettings auto-migration to canonical agent shape", () => {
     const written = mockWriteFile.mock.calls[0][1] as string;
     expect(written).toContain('agent_type = "cli"');
     expect(written).toContain('provider = "Claude"');
-    expect(written).toContain('lease_model = "opus/claude"');
-    expect(written).toContain('flavor = "opus"');
+    expect(written).toContain('lease_model = "Opus/Claude"');
+    expect(written).toContain('flavor = "Opus"');
     expect(written).toContain('model = "claude-opus-4-6"');
     expect(written).toContain('version = "4.6"');
     expect(mockChmod).toHaveBeenCalledWith(
@@ -68,7 +68,7 @@ describe("loadSettings auto-migration to canonical agent shape", () => {
   });
 
   it("is idempotent — a second read of canonical settings does not write", async () => {
-    // Already-canonical TOML on disk.
+    // Already-canonical TOML on disk (display-form).
     mockReadFile.mockResolvedValue(
       [
         "[agents.claude-opus]",
@@ -77,9 +77,9 @@ describe("loadSettings auto-migration to canonical agent shape", () => {
         'vendor = "claude"',
         'provider = "Claude"',
         'agent_name = "Claude"',
-        'lease_model = "opus/claude"',
+        'lease_model = "Opus/Claude"',
         'model = "claude-opus-4-6"',
-        'flavor = "opus"',
+        'flavor = "Opus"',
         'version = "4.6"',
         'label = "Claude Opus 4.6"',
       ].join("\n"),
@@ -124,5 +124,39 @@ describe("loadSettings auto-migration to canonical agent shape", () => {
     mockReadFile.mockResolvedValue('dispatchMode = "actions"');
     await loadSettings();
     expect(mockWriteFile).not.toHaveBeenCalled();
+  });
+});
+
+// foolery-b42b AC-7: legacy machine-form values get rewritten to
+// display-form on first read, idempotently. The previous block already
+// covers the legacy-entry-from-scratch path; this case targets the
+// machine-form-from-foolery-c4a6 era specifically.
+describe("loadSettings: foolery-b42b machine-form -> display-form migration", () => {
+  it("rewrites lease_model and flavor to display-form", async () => {
+    mockReadFile.mockResolvedValue(
+      [
+        "[agents.claude-opus]",
+        'command = "claude"',
+        'agent_type = "cli"',
+        'vendor = "claude"',
+        'provider = "Claude"',
+        'agent_name = "Claude"',
+        'lease_model = "opus/claude"',
+        'model = "claude-opus-4-6"',
+        'flavor = "opus"',
+        'version = "4.6"',
+      ].join("\n"),
+    );
+    const settings = await loadSettings();
+    expect(settings.agents["claude-opus"]).toMatchObject({
+      lease_model: "Opus/Claude",
+      flavor: "Opus",
+    });
+    expect(mockWriteFile).toHaveBeenCalledTimes(1);
+    const written = mockWriteFile.mock.calls[0][1] as string;
+    expect(written).toContain('lease_model = "Opus/Claude"');
+    expect(written).toContain('flavor = "Opus"');
+    expect(written).not.toContain('lease_model = "opus/claude"');
+    expect(written).not.toContain('flavor = "opus"');
   });
 });

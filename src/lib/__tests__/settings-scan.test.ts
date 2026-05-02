@@ -90,8 +90,9 @@ describe("scanForAgents: discovery and status", () => {
       id: "claude-claude-opus-4-7",
       modelId: "claude-opus-4-7",
       provider: "Claude",
-      model: "claude",
-      flavor: "opus",
+      // Display-form per foolery-b42b.
+      model: "Claude",
+      flavor: "Opus",
       version: "4.7",
       label: "Claude Opus 4.7",
     });
@@ -152,8 +153,8 @@ describe("scanForAgents: copilot model metadata", () => {
       path: "/opt/homebrew/bin/copilot",
       installed: true,
       provider: "Claude",
-      model: "claude",
-      flavor: "sonnet",
+      model: "Claude",
+      flavor: "Sonnet",
       modelId: "claude-sonnet-4.5",
       version: "4.5",
     });
@@ -162,8 +163,8 @@ describe("scanForAgents: copilot model metadata", () => {
       id: "copilot-claude-sonnet-4-5",
       label: "Claude Sonnet 4.5",
       provider: "Claude",
-      model: "claude",
-      flavor: "sonnet",
+      model: "Claude",
+      flavor: "Sonnet",
       version: "4.5",
       modelId: "claude-sonnet-4.5",
     });
@@ -196,7 +197,7 @@ describe("scanForAgents: codex model metadata", () => {
       path: "/opt/homebrew/bin/codex",
       installed: true,
       provider: "Codex",
-      model: "gpt",
+      model: "GPT",
       modelId: "gpt-5.4",
       version: "5.4",
     });
@@ -214,9 +215,10 @@ describe("scanForAgents: codex model metadata", () => {
     expect(codex?.selectedOptionId).toBe("codex-gpt-5-4");
     expect(codex?.options?.[0]).toMatchObject({
       id: "codex-gpt-5-4",
-      label: "GPT 5.4",
+      // Display-form per foolery-b42b: provider+model joined.
+      label: "Codex GPT 5.4",
       provider: "Codex",
-      model: "gpt",
+      model: "GPT",
       version: "5.4",
       modelId: "gpt-5.4",
     });
@@ -248,8 +250,8 @@ describe("scanForAgents: claude model metadata", () => {
       path: "/usr/local/bin/claude",
       installed: true,
       provider: "Claude",
-      model: "claude",
-      flavor: "sonnet",
+      model: "Claude",
+      flavor: "Sonnet",
       modelId: "claude-sonnet-4-5",
       version: "4.5",
     });
@@ -259,8 +261,8 @@ describe("scanForAgents: claude model metadata", () => {
       modelId: "claude-sonnet-4-5",
       label: "Claude Sonnet 4.5",
       provider: "Claude",
-      model: "claude",
-      flavor: "sonnet",
+      model: "Claude",
+      flavor: "Sonnet",
       version: "4.5",
     });
     expect(claude?.options?.[1]).toMatchObject({
@@ -268,8 +270,8 @@ describe("scanForAgents: claude model metadata", () => {
       modelId: "claude-opus-4-7",
       label: "Claude Opus 4.7",
       provider: "Claude",
-      model: "claude",
-      flavor: "opus",
+      model: "Claude",
+      flavor: "Opus",
       version: "4.7",
     });
     expect(claude?.options?.[2]?.label).toBe("Claude Sonnet 4.6");
@@ -310,8 +312,8 @@ describe("scanForAgents: gemini model metadata", () => {
       path: "/opt/homebrew/bin/gemini",
       installed: true,
       provider: "Gemini",
-      model: "gemini",
-      flavor: "pro",
+      model: "Gemini",
+      flavor: "Pro",
       modelId: "gemini-2.5-pro",
       version: "2.5",
     });
@@ -321,8 +323,8 @@ describe("scanForAgents: gemini model metadata", () => {
       modelId: "gemini-2.5-pro",
       label: "Gemini Pro 2.5",
       provider: "Gemini",
-      model: "gemini",
-      flavor: "pro",
+      model: "Gemini",
+      flavor: "Pro",
       version: "2.5",
     });
     expect(gemini?.options?.[1]?.label).toBe("Gemini Flash 2.5");

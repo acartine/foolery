@@ -29,7 +29,7 @@ describe("parseAgentDisplayParts", () => {
       command: "opencode",
       model: "/openrouter/mistral/devstral-2512",
     });
-    expect(result.label).toBe("Mistral Devstral 2512");
+    expect(result.label).toBe("OpenCode OpenRouter Mistral Devstral 2512");
     expect(result.pills).toEqual(["openrouter", "cli"]);
   });
 
@@ -38,7 +38,7 @@ describe("parseAgentDisplayParts", () => {
       command: "opencode",
       model: "/opencode/anthropic/claude-sonnet-4",
     });
-    expect(result.label).toBe("Anthropic Claude Sonnet 4");
+    expect(result.label).toBe("OpenCode OpenCode Anthropic Claude Sonnet 4");
     expect(result.pills).toEqual(["opencode", "cli"]);
   });
 
@@ -47,7 +47,7 @@ describe("parseAgentDisplayParts", () => {
       command: "opencode",
       model: "mistral/devstral-2512",
     });
-    expect(result.label).toBe("Mistral Devstral 2512");
+    expect(result.label).toBe("OpenCode Mistral Devstral 2512");
     expect(result.pills).toEqual(["cli"]);
   });
 
@@ -56,7 +56,7 @@ describe("parseAgentDisplayParts", () => {
       command: "opencode",
       model: "devstral",
     });
-    expect(result.label).toBe("Devstral");
+    expect(result.label).toBe("OpenCode Devstral");
     expect(result.pills).toEqual(["opencode", "cli"]);
   });
 
@@ -83,6 +83,9 @@ describe("parseAgentDisplayParts", () => {
       model: "claude-sonnet-4.5",
     });
     expect(result.pills).toEqual(["copilot", "cli"]);
+    // Copilot routes to inner provider Claude. The model token
+    // "Claude" is dropped because it equals the provider name
+    // ("drop redundant fields" rule); flavor "Sonnet" remains.
     expect(result.label).toBe("Claude Sonnet 4.5");
   });
 
@@ -92,7 +95,9 @@ describe("parseAgentDisplayParts", () => {
       model: "gpt-5.3-codex",
     });
     expect(result.pills).toEqual(["copilot", "cli"]);
-    expect(result.label).toBe("GPT Codex 5.3");
+    // flavor "Codex" is dropped because it equals the provider
+    // ("Codex"); per the uniform "drop redundant flavor" rule.
+    expect(result.label).toBe("Codex GPT 5.3");
   });
 
   it("detects openai commands as Codex", () => {

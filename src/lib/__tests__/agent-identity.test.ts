@@ -18,7 +18,7 @@ describe("canonical lease identity", () => {
     // to displayCommandLabel("codex") → "Codex"
     expect(canonical.agent_name).toBe("Codex");
     expect(canonical.provider).toBe("Codex");
-    expect(canonical.lease_model).toBe("codex-spark/gpt");
+    expect(canonical.lease_model).toBe("Codex Spark/GPT");
     expect(canonical.version).toBe("5.3");
     expect(canonical.agent_type).toBe("cli");
   });
@@ -35,7 +35,7 @@ describe("canonical lease identity", () => {
     expect(canonical.agent_name).toBe("Codex CLI");
   });
 
-  it("normalizes Claude agent identity", () => {
+  it("normalizes Claude agent identity (display-form)", () => {
     const info = toExecutionAgentInfo({
       command: "claude",
       model: "claude-opus-4.6",
@@ -45,13 +45,13 @@ describe("canonical lease identity", () => {
     expect(info).toMatchObject({
       agentName: "Claude",
       agentProvider: "Claude",
-      agentModel: "opus/claude",
+      agentModel: "Opus/Claude",
       agentVersion: "4.6",
       agentType: "cli",
     });
   });
 
-  it("normalizes Codex agent identity", () => {
+  it("normalizes Codex agent identity (display-form)", () => {
     const info = toExecutionAgentInfo({
       command: "codex",
       model: "gpt-5.4-codex",
@@ -61,13 +61,13 @@ describe("canonical lease identity", () => {
     expect(info).toMatchObject({
       agentName: "Codex",
       agentProvider: "Codex",
-      agentModel: "codex/gpt",
+      agentModel: "Codex/GPT",
       agentVersion: "5.4",
       agentType: "cli",
     });
   });
 
-  it("normalizes OpenCode agent identity", () => {
+  it("normalizes OpenCode agent identity (display-form path)", () => {
     const info = toExecutionAgentInfo({
       command: "opencode",
       provider: "OpenCode",
@@ -78,7 +78,8 @@ describe("canonical lease identity", () => {
     expect(info).toMatchObject({
       agentName: "OpenCode",
       agentProvider: "OpenCode",
-      agentModel: "copilot/anthropic/claude-sonnet-4",
+      // Pre-formatted display string — single canonical form.
+      agentModel: "Copilot Anthropic Claude Sonnet",
       agentVersion: "4",
       agentType: "cli",
     });
@@ -95,13 +96,13 @@ describe("canonical lease identity", () => {
     // agentName uses canonical identity, not label
     expect(info.agentName).toBe("Codex");
     expect(info.agentProvider).toBe("Codex");
-    expect(info.agentModel).toBe("codex-spark/gpt");
+    expect(info.agentModel).toBe("Codex Spark/GPT");
     expect(info.agentVersion).toBe("5.3");
   });
 });
 
 describe("display label formatting", () => {
-  it("still renders friendly label from raw fields", () => {
+  it("renders friendly display-form label from raw fields", () => {
     expect(
       formatAgentDisplayLabel({
         command: "codex",
@@ -109,7 +110,7 @@ describe("display label formatting", () => {
         model: "gpt-5.3-codex-spark",
         version: "5.3",
       }),
-    ).toBe("GPT Codex Spark 5.3");
+    ).toBe("Codex GPT Codex Spark 5.3");
   });
 
   it("falls back to formatted output when no label", () => {
@@ -118,7 +119,7 @@ describe("display label formatting", () => {
         command: "codex-cli",
         model: "gpt-5.4-codex",
       }),
-    ).toBe("GPT Codex 5.4");
+    ).toBe("Codex GPT 5.4");
   });
 
   it("uses label as last resort for display", () => {
