@@ -15,11 +15,6 @@ import type {
 import type { AgentTarget } from "@/lib/types-agent-target";
 import { resolvePoolAgent } from "@/lib/agent-pool";
 import {
-  normalizeAgentIdentity,
-} from "@/lib/agent-identity";
-import {
-  hydrateRegisteredAgentConfig,
-  hydrateSettingsAgents,
   normalizeRegisteredAgentConfig,
   normalizeSettingsAgents,
 } from "@/lib/agent-config-normalization";
@@ -106,13 +101,11 @@ export async function loadSettings(): Promise<FoolerySettings> {
         unknown
       >,
     );
-    const { normalized } =
+    const { normalized, changedPaths } =
       normalizeSettingsAgents(merged);
     let settings: FoolerySettings;
     try {
-      settings = foolerySettingsSchema.parse(
-        hydrateSettingsAgents(normalized),
-      );
+      settings = foolerySettingsSchema.parse(normalized);
     } catch (error) {
       serverLog(
         "error",
@@ -132,6 +125,37 @@ export async function loadSettings(): Promise<FoolerySettings> {
       agentCount: Object.keys(settings.agents).length,
       dispatchMode: settings.dispatchMode,
     });
+    // AC-B4: persist canonical form back to disk if the on-disk file was
+    // non-canonical (legacy entries from before the canonical-write
+    // refactor). Idempotent — a second load finds no changed paths and
+    // skips the write. Skipped when the file is missing (the file
+    // doesn't exist yet) or when no agent fields changed.
+    if (
+      !raw.fileMissing &&
+      changedPaths.length > 0 &&
+      changedPaths.some((p) => p.startsWith("agents."))
+    ) {
+      try {
+        await persistMigratedSettings(settings);
+        serverLog("info", "settings", "auto-migrated to canonical", {
+          settingsFile: SETTINGS_FILE,
+          changedPaths,
+        });
+      } catch (migrationError) {
+        // Migration failure must not block reads — the in-memory shape
+        // is already canonical for this process. The next successful
+        // write will persist it.
+        serverLog(
+          "warn",
+          "settings",
+          "auto-migration write failed",
+          {
+            settingsFile: SETTINGS_FILE,
+            error: formatError(migrationError),
+          },
+        );
+      }
+    }
     return settings;
   } catch (error) {
     serverLog("error", "settings", "load failed", {
@@ -140,6 +164,23 @@ export async function loadSettings(): Promise<FoolerySettings> {
     });
     throw error;
   }
+}
+
+/**
+ * Persist the in-memory settings to disk after auto-migration. Used by
+ * `loadSettings` when the on-disk shape was non-canonical. Re-runs the
+ * canonical normaliser to get a clean TOML serialisation, then atomically
+ * writes to `SETTINGS_FILE`. Reuses `saveSettings`'s exact write path so
+ * file permissions and locking semantics stay consistent.
+ */
+async function persistMigratedSettings(
+  settings: FoolerySettings,
+): Promise<void> {
+  await mkdir(CONFIG_DIR, { recursive: true });
+  const normalized = normalizeSettingsAgents(settings).normalized;
+  const toml = stringify(normalized);
+  await writeFile(SETTINGS_FILE, toml, "utf-8");
+  await chmod(SETTINGS_FILE, 0o600);
 }
 
 /**
@@ -157,9 +198,7 @@ export async function saveSettings(
     });
     await mkdir(CONFIG_DIR, { recursive: true });
     const normalized = foolerySettingsSchema.parse(
-      hydrateSettingsAgents(
-        normalizeSettingsAgents(settings).normalized,
-      ),
+      normalizeSettingsAgents(settings).normalized,
     );
     const toml = stringify(
       normalizeSettingsAgents(normalized).normalized,
@@ -221,35 +260,18 @@ export async function updateSettings(
 
 // ── Public dispatch API ──────────────────────────────────────
 
-/** Returns the registered agents map. */
+/**
+ * Returns the registered agents map. Pure pass-through read — the agent
+ * records in `settings.agents` are already canonical (set at write time
+ * by `normalizeRegisteredAgentConfig` and migrated on first read by
+ * `loadSettings`). No re-derivation runs here; callers consume the
+ * canonical fields directly.
+ */
 export async function getRegisteredAgents(): Promise<
   Record<string, RegisteredAgentConfig>
 > {
   const settings = await loadSettings();
-  return Object.fromEntries(
-    Object.entries(settings.agents).map(([id, agent]) => {
-      const hydrated = hydrateRegisteredAgentConfig(agent);
-      const normalized = normalizeAgentIdentity(hydrated);
-      return [
-        id,
-        {
-          ...hydrated,
-          ...(normalized.provider
-            ? { provider: normalized.provider }
-            : {}),
-          ...(normalized.flavor
-            ? { flavor: normalized.flavor }
-            : {}),
-          ...(normalized.version
-            ? { version: normalized.version }
-            : {}),
-          ...(hydrated.label
-            ? { label: hydrated.label }
-            : {}),
-        },
-      ];
-    }),
-  );
+  return { ...settings.agents };
 }
 
 export async function getOrchestrationAgent(

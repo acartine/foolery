@@ -13,11 +13,11 @@ import { promisify } from "node:util";
 import { join } from "node:path";
 import { homedir } from "node:os";
 import type { ScannedAgent } from "@/lib/types";
+import { providerLabel } from "@/lib/agent-identity";
 import {
-  normalizeAgentIdentity,
-  providerLabel,
-} from "@/lib/agent-identity";
-import { canonicalizeRuntimeModel } from "@/lib/agent-config-normalization";
+  canonicalizeRuntimeModel,
+  canonicalizeScanFields,
+} from "@/lib/agent-config-normalization";
 import {
   readDynamicModels,
   buildAgentImportOptions,
@@ -285,10 +285,9 @@ async function inspectStandardAgent(
     resolvedCommand,
     configuredModelId,
   );
-  const normalized = normalizeAgentIdentity({
-    command: resolvedCommand,
-    provider,
-    model: modelId,
+  const normalized = canonicalizeScanFields(resolvedCommand, {
+    ...(provider ? { provider } : {}),
+    ...(modelId ? { model: modelId } : {}),
   });
   return {
     ...(normalized.provider
@@ -307,8 +306,8 @@ function normalizedMetadata(
   resolvedCommand: string,
   provider: string | undefined,
 ): AgentMetadata {
-  const normalized = normalizeAgentIdentity({
-    command: resolvedCommand, provider,
+  const normalized = canonicalizeScanFields(resolvedCommand, {
+    ...(provider ? { provider } : {}),
   });
   return {
     ...(normalized.provider

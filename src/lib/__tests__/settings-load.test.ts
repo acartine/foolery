@@ -154,6 +154,8 @@ describe("loadSettings", () => {
   });
 });
 
+// Auto-migration tests live in `settings-load-migration.test.ts`.
+
 describe("inspectSettingsDefaults", () => {
   it("reports missing default keys for partial files", async () => {
     mockReadFile.mockResolvedValue('[actions]\ntake = ""');
@@ -229,7 +231,6 @@ describe("backfillMissingSettingsDefaults", () => {
         '[agents.claude-opus]',
         'command = "claude"',
         'model = "claude-opus-4.6"',
-        'label = "Claude Opus 4.6"',
       ].join("\n"),
     );
     const result = await backfillMissingSettingsDefaults();
@@ -237,6 +238,7 @@ describe("backfillMissingSettingsDefaults", () => {
     expect(result.normalizationPaths).toContain(
       "agents.claude-opus.model",
     );
+    // Label is computed at canonical write time (added when missing).
     expect(result.normalizationPaths).toContain(
       "agents.claude-opus.label",
     );
@@ -248,7 +250,7 @@ describe("backfillMissingSettingsDefaults", () => {
     expect(written).toContain('agent_name = "Claude"');
     expect(written).toContain('lease_model = "opus/claude"');
     expect(written).toContain('version = "4.6"');
-    expect(written).not.toContain('label = "Claude Opus 4.6"');
+    expect(written).toContain('label = "Claude Opus 4.6"');
   });
 
   it("does not write when defaults are already present", async () => {
