@@ -1,0 +1,15 @@
+{
+  "event_id": "019de71c-db2c-7961-ac91-adbf90f4da79",
+  "occurred_at": "2026-05-02T05:15:21.260027Z",
+  "knot_id": "foolery-b42b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan reviewed. Plan is concrete and aligned with knot ACs. Approved. Proceeding to implementation.",
+    "datetime": "2026-05-02T05:15:21.260027Z",
+    "entry_id": "019de71c-db2c-7961-ac91-adac9bbee49c",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

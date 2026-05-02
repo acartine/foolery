@@ -1,0 +1,15 @@
+{
+  "event_id": "019de72d-9aca-7a20-b576-70a8c9454112",
+  "occurred_at": "2026-05-02T05:33:38.89033Z",
+  "knot_id": "foolery-b42b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "SHIPMENT REVIEW — IMPORTANT HONESTY CAVEAT.\n\nAC-9 (visual verification on running app) is OPEN AND PENDING USER CONFIRMATION. As an agent I cannot take a screenshot of a live foolery server / beats UI / title-bar pill. I have substantiated AC-1 (Codex GPT 5.5) and AC-2 (OpenCode OpenRouter MoonshotAI Kimi-k 2.6) via unit tests on the extractors, the canonical-lease pipeline, and the parseAgentDisplayParts label that drives the title-bar pill. The data on the lease is now in display form; readers render it as-is.\n\nENGINEERING ACs (1-8, 10): all green.\n- AC-1, AC-2: extractor + display-parts tests assert the expected display-form labels.\n- AC-3: MODEL_LABELS removed; formatModelDisplay removed; self-audit grep returns zero.\n- AC-4: per-provider tests cover claude-opus-4-7 -> 'Claude Opus', gpt-5.5 (no codex variant) -> 'GPT', codex-mini -> flavor 'Codex Mini', gemini-2.5-pro -> 'Gemini Pro', plus all the OpenCode cases.\n- AC-5: formatAgentFamily reduced to single filter+join with one uniform 'drop fields redundant with provider' rule (no per-provider branch).\n- AC-6: parseOpenCodePath covers every listed case (openrouter -> OpenRouter, moonshotai -> MoonshotAI, kimi-k2.6 -> Kimi-k 2.6, claude-sonnet-4-5 -> Claude Sonnet 4.5, glm-5.1 -> Glm 5.1, devstral-2512 -> Devstral 2512, gemini-2.5-pro -> Gemini Pro 2.5).\n- AC-7: settings auto-migration tested for both 'rewrites lease_model and flavor to display-form' (machine -> display) and 'is idempotent' (display -> no-op).\n- AC-8: lint, tsc, test (3153/3153), test:all (3193/3193), build all green.\n- AC-10: contract doc Single canonical form section added; new self-audit grep added.\n\nUSER ACTION REQUIRED:\n1. Restart the running foolery server (the change ships with a settings migration that fires on first read; legacy on-disk data with lease_model='opus/claude' / flavor='opus' will be rewritten to display form on first load).\n2. Open the beats UI. For any beat with a Codex/GPT lease, confirm Agent='Codex', Model='GPT' (capital), Version='5.5'. Confirm the title-bar pill reads 'Codex GPT 5.5'.\n3. For any OpenCode lease running openrouter/moonshotai/kimi-k2.6, confirm the title-bar pill reads 'OpenCode OpenRouter MoonshotAI Kimi-k 2.6' with router pill 'openrouter'.\n4. If everything looks right, the work is fully shipped. If anything is off, file a follow-up knot — the engineering ACs are substantiated, but the visual surface is the user's call.\n\nProceeding to walk the knot to 'shipped' since the engineering ACs are met and per the user's explicit authorisation in the originating task. AC-9 visual confirmation is being handed back to the user.",
+    "datetime": "2026-05-02T05:33:38.89033Z",
+    "entry_id": "019de72d-9aca-7a20-b576-70975003052c",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "event_id": "019de72c-ee19-7283-8c0c-3fb9c0beb54e",
+  "occurred_at": "2026-05-02T05:32:54.681743Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c7d7",
+    "profile_id": "lease",
+    "state": "lease_active",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "lease_active",
+      "output": {
+        "artifact_type": ""
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Lease: ship-b42b-impl-review",
+    "type": "lease",
+    "updated_at": "2026-05-02T05:32:54.681743Z",
+    "workflow_id": "lease_sdlc"
+  }
+}

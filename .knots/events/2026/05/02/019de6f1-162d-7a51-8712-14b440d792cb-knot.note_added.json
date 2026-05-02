@@ -1,0 +1,15 @@
+{
+  "event_id": "019de6f1-162d-7a51-8712-14b440d792cb",
+  "occurred_at": "2026-05-02T04:27:32.78192Z",
+  "knot_id": "foolery-c4a6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Path decision: PATH B (refactor to persist canonical form). Per user: 'model metadata normalization and formatting is entirely centralized within the repo — no duplication or divergence of logic.' Path A would sanction the 5 callers; Path B reduces them to one canonical write-side call and pure reads everywhere else. Plan accordingly.",
+    "datetime": "2026-05-02T04:27:32.78192Z",
+    "entry_id": "019de6f1-162d-7a51-8712-14ad0704808d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019de6f4-18be-7d93-99a2-e5ab6c048f1c",
+  "occurred_at": "2026-05-02T04:30:50.046894Z",
+  "knot_id": "foolery-c4a6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan reviewed. Approach is sound — canonicalize at write boundary, persist canonical form to settings.toml, all reads pure. Reusing existing atomic write primitives (saveSettings) for migration. Tests: extend settings-load.test.ts with explicit auto-migration scenario (legacy entry detection + persist-back roundtrip + idempotency check). No security/perf/maintainability concerns. Invariants respected: hermetic (mocked fs), fail-loud preserved (no silent fallbacks), descriptor-driven workflow respected.",
+    "datetime": "2026-05-02T04:30:50.046894Z",
+    "entry_id": "019de6f4-18be-7d93-99a2-e59fa9b3a2c7",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

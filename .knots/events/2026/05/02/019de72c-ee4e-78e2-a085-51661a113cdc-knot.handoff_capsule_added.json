@@ -1,0 +1,15 @@
+{
+  "event_id": "019de72c-ee4e-78e2-a085-51661a113cdc",
+  "occurred_at": "2026-05-02T05:32:54.734413Z",
+  "knot_id": "foolery-b42b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review complete. Code changes are surgical and aligned with knot ACs (1-8, 10). All 4 quality gates green (lint, tsc, test 3153/3153, build). MODEL_LABELS removed; formatAgentFamily one-line filter+join; OpenCode segment formatter handles all listed vocab cases; settings migration tested for idempotency and machine->display rewrite. AC-9 (visual confirmation) intentionally deferred to user. Approving for shipment.",
+    "datetime": "2026-05-02T05:32:54.734413Z",
+    "entry_id": "019de72c-ee4e-78e2-a085-515ebd1de71c",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

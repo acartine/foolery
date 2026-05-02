@@ -1,0 +1,21 @@
+{
+  "event_id": "019de703-ab55-7ef3-ab59-fb78db7bf978",
+  "occurred_at": "2026-05-02T04:47:50.613762Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c4a6",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "P4: Sanction settings-side normalizeAgentIdentity callers (or refactor)",
+    "type": "work",
+    "updated_at": "2026-05-02T04:47:50.613762Z",
+    "workflow_id": "work_sdlc"
+  }
+}

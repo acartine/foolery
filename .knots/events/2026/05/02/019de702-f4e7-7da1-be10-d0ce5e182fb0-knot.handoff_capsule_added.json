@@ -1,0 +1,15 @@
+{
+  "event_id": "019de702-f4e7-7da1-be10-d0ce5e182fb0",
+  "occurred_at": "2026-05-02T04:47:03.9113Z",
+  "knot_id": "foolery-c4a6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review: 4 quality gates pass on branch ship-c4a6-impl (commit 42ebc503). All AC-B1 through AC-B5 satisfied. Hermetic test policy preserved (auto-migration test mocks fs). Fail-loud policy preserved (no silent fallbacks introduced). Code style: agent-identity.ts split to keep under 500-line limit (extracted agent-identity-canonical.ts). Test file split similarly. Audit grep #2 returns zero unsanctioned hits when run with the documented sanctioned-files filter (agent-identity.ts, agent-identity-canonical.ts, agent-config-normalization.ts excluded since these are the canonical extractors and write-side normalizer).",
+    "datetime": "2026-05-02T04:47:03.9113Z",
+    "entry_id": "019de702-f4e7-7da1-be10-d0b333f029bd",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

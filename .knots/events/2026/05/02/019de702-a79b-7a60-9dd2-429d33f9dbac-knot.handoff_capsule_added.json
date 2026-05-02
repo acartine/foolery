@@ -1,0 +1,15 @@
+{
+  "event_id": "019de702-a79b-7a60-9dd2-429d33f9dbac",
+  "occurred_at": "2026-05-02T04:46:44.123807Z",
+  "knot_id": "foolery-c4a6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete on branch ship-c4a6-impl (commit 42ebc503). All 4 quality gates green. Path B refactor: (1) toCanonicalAgentConfig added to new agent-identity-canonical.ts as the single write-side extractor. (2) normalizeRegisteredAgentConfig is the sanctioned write-side caller. (3) settings.ts:loadSettings auto-migrates legacy entries (AC-B4 covered by 5 tests in settings-load-migration.test.ts). (4) getRegisteredAgents and toCliTarget are pure pass-throughs. (5) settings-agent-scan.ts and settings-agent-detect.ts route through canonicalizeScanFields. (6) Contract doc updated with Sanctioned Exceptions subsection; grep #2 returns zero hits. Tests: 314 files / 3127 tests pass.",
+    "datetime": "2026-05-02T04:46:44.123807Z",
+    "entry_id": "019de702-a79b-7a60-9dd2-4281e4128e2d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

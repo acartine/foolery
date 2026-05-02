@@ -1,0 +1,34 @@
+{
+  "event_id": "019de72d-9ad2-7192-9d9e-f2e13fff04ca",
+  "occurred_at": "2026-05-02T05:33:38.89033Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b42b",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "P0: Single canonical=display form for model metadata; eliminate machine-token duality",
+    "type": "work",
+    "updated_at": "2026-05-02T05:33:38.89033Z",
+    "workflow_id": "work_sdlc"
+  }
+}

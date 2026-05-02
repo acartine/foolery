@@ -1,0 +1,15 @@
+{
+  "event_id": "019de703-ab23-7eb1-a261-41ca8a69deaa",
+  "occurred_at": "2026-05-02T04:47:50.563395Z",
+  "knot_id": "foolery-c4a6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment review: merge commit eb59d3d6 confirmed on origin/main. Final verification: (1) audit grep #2 returns zero unsanctioned hits; (2) all four quality gates green on the merge commit; (3) AC-B1 through AC-B5 satisfied; (4) AC-COMMON umbrella foolery-2e97 AC-6 will pass once both this and the already-shipped sibling foolery-11b1 are combined. No surprises during shipment. Ready to terminal.",
+    "datetime": "2026-05-02T04:47:50.563395Z",
+    "entry_id": "019de703-ab23-7eb1-a261-41b467e57e70",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

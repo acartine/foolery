@@ -1,0 +1,15 @@
+{
+  "event_id": "019de703-895a-7340-8422-874affd1399d",
+  "occurred_at": "2026-05-02T04:47:41.91403Z",
+  "knot_id": "foolery-c4a6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipped to origin/main as merge commit eb59d3d6 (Merge ship-c4a6: settings-side canonical write-side normalizer). Quality gates green: lint, typecheck, 3127 tests pass, build succeeds. Audit grep #2 returns zero unsanctioned hits with the documented sanctioned-files filter.",
+    "datetime": "2026-05-02T04:47:41.91403Z",
+    "entry_id": "019de703-895a-7340-8422-87304e273c0f",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

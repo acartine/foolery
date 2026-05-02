@@ -1,0 +1,15 @@
+{
+  "event_id": "019de6f3-d4f3-79d0-8acf-5971fe8ef55b",
+  "occurred_at": "2026-05-02T04:30:32.691617Z",
+  "knot_id": "foolery-c4a6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Path B selected. Plan: 1) Extend toCanonicalLeaseIdentity (or add toCanonicalAgentConfig) in agent-identity.ts so write-side has access to canonical flavor in addition to {agent_type, vendor, provider, agent_name, lease_model, version}. 2) Make normalizeRegisteredAgentConfig the SINGLE write-side caller of normalizeAgentIdentity. 3) Remove inline normalizeAgentIdentity calls from settings-agent-scan.ts (lines 139, 216) — pipe scan output through write-side normalizer. 4) Remove from settings-agent-detect.ts (lines 288, 310) — same pattern. 5) Remove from settings.ts:232 — getRegisteredAgents becomes pure pass-through (data on disk is already canonical because hydration writes it back). 6) Make settings-agent-targets.ts:toCliTarget read canonical fields directly off the agent record (no normalize). 7) Auto-migration: settings.ts:loadSettings detects non-canonical entries and persists canonical form back to disk via existing atomic write path (saveSettings). Already exists in settings-maintenance:backfillMissingSettingsDefaults. Just need to invoke that flow on load when normalizationChanged. 8) Update contract doc: grep #2 returns zero hits, sanctioned exception is exactly the canonical write-side function.",
+    "datetime": "2026-05-02T04:30:32.691617Z",
+    "entry_id": "019de6f3-d4f3-79d0-8acf-59696f745698",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

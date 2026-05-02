@@ -1,0 +1,37 @@
+{
+  "event_id": "019de72d-9a6f-76a2-9dea-e5cd0504426c",
+  "occurred_at": "2026-05-02T05:33:38.799422Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b42b",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "P0: Single canonical=display form for model metadata; eliminate machine-token duality",
+    "type": "work",
+    "updated_at": "2026-05-02T05:33:38.799422Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019de72d-383f-7271-af1f-932e52ad8a79"
+  }
+}

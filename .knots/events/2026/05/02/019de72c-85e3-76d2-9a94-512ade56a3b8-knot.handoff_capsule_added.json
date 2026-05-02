@@ -1,0 +1,15 @@
+{
+  "event_id": "019de72c-85e3-76d2-9a94-512ade56a3b8",
+  "occurred_at": "2026-05-02T05:32:28.0033Z",
+  "knot_id": "foolery-b42b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete on commit 3f971f86.\n\nCHANGES:\n- src/lib/agent-identity.ts: rewrote per-provider extractors (Claude/Codex/Gemini/Copilot/OpenCode) to emit display-form. Removed MODEL_LABELS, formatModelDisplay, formatFlavorDisplay. Simplified formatAgentFamily to single-line filter+join with one uniform 'drop redundant fields vs provider' rule.\n- src/lib/agent-identity-opencode-format.ts (new): parseOpenCodePath with small vocabulary table for known compound vendors (openrouter, moonshotai, anthropic, z-ai, mistral, google, copilot, opencode, openai, meta, qwen, deepseek, xai, perplexity, cohere); auto-uppercase trailing AI/ML/IO/JS suffix; version-split rule.\n- src/lib/agent-identity-canonical.ts: parsed value wins over caller-supplied lease_model/flavor/version (foolery-b42b migration story).\n- Tests: agent-identity*.test.ts, knots-canonical-metadata.test.ts, knots-lease-roundtrip.test.ts, settings-load*.test.ts, settings-scan.test.ts updated lock-step. Added agent-identity-opencode-format.test.ts (16 cases covering vocab, suffix-upper, version-split, path parsing).\n- Migration: legacy machine-form lease_model='opus/claude' / flavor='opus' on disk get rewritten to 'Opus/Claude' / 'Opus' on first read (idempotent). Test added: 'rewrites lease_model and flavor to display-form'.\n- docs/knots-agent-identity-contract.md: new 'Single canonical form' section + new self-audit grep on MODEL_LABELS[.\n- src/stories/beat-status-badge.stories.tsx: fixed pre-existing dangling import (unrelated cleanup; was failing test:all on main).\n\nACs covered:\n- AC-1, AC-2: engineering substantiated by tests; visual confirmation pending user (AC-9).\n- AC-3: MODEL_LABELS and formatModelDisplay removed entirely. Self-audit grep returns zero.\n- AC-4: per-provider extractor tests assert display-form output ('GPT', 'Claude', 'Opus', 'Pro').\n- AC-5: formatAgentFamily is a single filter+join. Codex special-case removed.\n- AC-6: parseOpenCodePath covers all listed segment cases (kimi-k2.6, glm-5.1, claude-sonnet-4-5, devstral-2512, gemini-2.5-pro).\n- AC-7: settings migration wired through normalizeRegisteredAgentConfig; idempotent; preserves approvalMode.\n- AC-8: lint, tsc, test (3153/3153), test:all (3193/3193), build all green.\n- AC-10: contract doc updated.\n\nOpenCode display proof: openrouter/moonshotai/kimi-k2.6 -> normalizeAgentIdentity yields {provider:'OpenCode', model:'OpenRouter MoonshotAI Kimi-k', version:'2.6', flavor:undefined}. parseAgentDisplayParts label = 'OpenCode OpenRouter MoonshotAI Kimi-k 2.6' with router pill 'openrouter'.\n\nAC-9 (visual verification) explicitly LEFT OPEN — pending user eyeball on running app.",
+    "datetime": "2026-05-02T05:32:28.0033Z",
+    "entry_id": "019de72c-85e3-76d2-9a94-5111efd99778",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

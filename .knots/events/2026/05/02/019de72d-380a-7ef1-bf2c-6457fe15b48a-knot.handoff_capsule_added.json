@@ -1,0 +1,15 @@
+{
+  "event_id": "019de72d-380a-7ef1-bf2c-6457fe15b48a",
+  "occurred_at": "2026-05-02T05:33:13.610807Z",
+  "knot_id": "foolery-b42b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipped to origin/main as commit 3f971f86. Push: 5895b41f..3f971f86 -> main. The single-canonical-form refactor is live in main.",
+    "datetime": "2026-05-02T05:33:13.610807Z",
+    "entry_id": "019de72d-380a-7ef1-bf2c-64434cf5aa70",
+    "model": "opus",
+    "username": "Anthropic",
+    "version": "4.7"
+  }
+}

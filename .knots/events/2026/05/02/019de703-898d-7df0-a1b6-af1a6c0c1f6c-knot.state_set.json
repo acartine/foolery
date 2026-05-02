@@ -1,0 +1,17 @@
+{
+  "event_id": "019de703-898d-7df0-a1b6-af1a6c0c1f6c",
+  "occurred_at": "2026-05-02T04:47:41.965451Z",
+  "knot_id": "foolery-c4a6",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "agent_model": "opus",
+    "agent_name": "claude",
+    "agent_version": "4.7",
+    "force": false,
+    "from": "shipment",
+    "profile_id": "autopilot",
+    "to": "ready_for_shipment_review",
+    "workflow_id": "work_sdlc"
+  }
+}

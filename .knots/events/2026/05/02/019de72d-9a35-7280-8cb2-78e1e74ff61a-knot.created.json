@@ -1,0 +1,17 @@
+{
+  "event_id": "019de72d-9a35-7280-8cb2-78e1e74ff61a",
+  "occurred_at": "2026-05-02T05:33:38.741113Z",
+  "knot_id": "foolery-bff5",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "lease",
+    "state": "lease_ready",
+    "title": "Lease: ship-b42b-shipment-review",
+    "type": "lease",
+    "workflow_id": "lease_sdlc"
+  }
+}

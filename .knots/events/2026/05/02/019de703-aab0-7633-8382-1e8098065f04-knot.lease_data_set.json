@@ -1,0 +1,20 @@
+{
+  "event_id": "019de703-aab0-7633-8382-1e8098065f04",
+  "occurred_at": "2026-05-02T04:47:50.448521Z",
+  "knot_id": "foolery-f83a",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "claude",
+        "agent_type": "cli",
+        "model": "opus",
+        "model_version": "4.7",
+        "provider": "Anthropic"
+      },
+      "lease_type": "agent",
+      "nickname": "ship-c4a6-shipment_review",
+      "timeout_seconds": 600
+    }
+  }
+}
