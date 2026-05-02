@@ -30,6 +30,7 @@ const VENDOR_DISPLAY_NAMES: Record<string, string> = {
   anthropic: "Anthropic",
   "z-ai": "Z-AI",
   mistral: "Mistral",
+  mistralai: "MistralAI",
   google: "Google",
   copilot: "Copilot",
   opencode: "OpenCode",
@@ -40,6 +41,13 @@ const VENDOR_DISPLAY_NAMES: Record<string, string> = {
   xai: "xAI",
   perplexity: "Perplexity",
   cohere: "Cohere",
+  // Acronym-form model families (rendered as the published canonical
+  // capitalisation rather than auto title-case).
+  glm: "GLM",
+  llama: "Llama",
+  bert: "BERT",
+  rwkv: "RWKV",
+  t5: "T5",
 };
 
 /**

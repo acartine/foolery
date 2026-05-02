@@ -130,3 +130,72 @@ describe("display label formatting", () => {
     ).toBe("Custom Agent Display");
   });
 });
+
+/* ── Regression tests for the agent-identity audit ────────────────── */
+
+describe("Claude 1m / fast suffixes (Bug 2 regression)", () => {
+  it("opus-4-7-1m: version is 4.7 (not 4.7.1) and flavor carries 1M context", () => {
+    const info = toExecutionAgentInfo({
+      command: "claude",
+      model: "claude-opus-4-7-1m",
+    });
+    expect(info.agentVersion).toBe("4.7");
+    expect(info.agentModel).toBe("Opus (1M context)/Claude");
+  });
+
+  it("sonnet-4-5-fast: version is 4.5 and flavor carries (Fast)", () => {
+    const info = toExecutionAgentInfo({
+      command: "claude",
+      model: "claude-sonnet-4-5-fast",
+    });
+    expect(info.agentVersion).toBe("4.5");
+    expect(info.agentModel).toBe("Sonnet (Fast)/Claude");
+  });
+
+  it("haiku-4-5: plain version still parses correctly", () => {
+    const info = toExecutionAgentInfo({
+      command: "claude",
+      model: "claude-haiku-4-5",
+    });
+    expect(info.agentVersion).toBe("4.5");
+    expect(info.agentModel).toBe("Haiku/Claude");
+  });
+});
+
+describe("Copilot keeps Copilot as provider (Bug 3 regression)", () => {
+  it("copilot + claude-sonnet-4-5: provider stays Copilot, inner family in model+flavor", () => {
+    const info = toExecutionAgentInfo({
+      command: "copilot",
+      model: "claude-sonnet-4-5",
+    });
+    expect(info.agentProvider).toBe("Copilot");
+    expect(formatAgentDisplayLabel({
+      command: "copilot",
+      model: "claude-sonnet-4-5",
+    })).toBe("Copilot Claude Sonnet 4.5");
+  });
+
+  it("copilot + gpt-5.5: provider stays Copilot, GPT in model", () => {
+    const info = toExecutionAgentInfo({
+      command: "copilot",
+      model: "gpt-5.5",
+    });
+    expect(info.agentProvider).toBe("Copilot");
+    expect(formatAgentDisplayLabel({
+      command: "copilot",
+      model: "gpt-5.5",
+    })).toBe("Copilot GPT 5.5");
+  });
+
+  it("copilot + gemini-2.5-pro: provider stays Copilot, Gemini Pro in model+flavor", () => {
+    const info = toExecutionAgentInfo({
+      command: "copilot",
+      model: "gemini-2.5-pro",
+    });
+    expect(info.agentProvider).toBe("Copilot");
+    expect(formatAgentDisplayLabel({
+      command: "copilot",
+      model: "gemini-2.5-pro",
+    })).toBe("Copilot Gemini Pro 2.5");
+  });
+});
