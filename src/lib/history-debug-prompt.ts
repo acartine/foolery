@@ -1,4 +1,5 @@
 import type { AgentHistoryEntry, AgentHistorySession } from "@/lib/agent-history-types";
+import { summarizeToolInput } from "@/lib/tool-input-summary";
 
 const MAX_SUMMARY_CHARS = 1_200;
 
@@ -54,21 +55,7 @@ function summarizeAssistantPayload(payload: Record<string, unknown>): string | n
     }
     if (block.type === "tool_use") {
       const name = typeof block.name === "string" ? block.name : "tool";
-      const input = toObject(block.input);
-      const detail =
-        typeof input?.command === "string"
-          ? input.command
-          : typeof input?.description === "string"
-            ? input.description
-            : typeof input?.file_path === "string"
-              ? input.file_path
-              : typeof input?.filePath === "string"
-                ? input.filePath
-                : typeof input?.pattern === "string"
-                  ? input.pattern
-                  : typeof input?.path === "string"
-                    ? input.path
-                    : "";
+      const detail = summarizeToolInput(block.input, 200);
       parts.push(detail ? `tool:${name} ${detail}` : `tool:${name}`);
     }
   }

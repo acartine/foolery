@@ -12,6 +12,7 @@ import {
   defaultWorkflowDescriptor,
   resolveStep,
 } from "@/lib/workflows";
+import { summarizeToolInput } from "@/lib/tool-input-summary";
 
 const DEFAULT_WF = defaultWorkflowDescriptor();
 
@@ -240,33 +241,11 @@ function summarizeAssistant(
         typeof block.name === "string"
           ? block.name
           : "tool";
-      const input = toObject(block.input);
-      let summary = "";
-      if (typeof input?.command === "string") {
-        summary = ` ${input.command}`;
-      } else if (
-        typeof input?.description === "string"
-      ) {
-        summary = ` ${input.description}`;
-      } else if (
-        typeof input?.file_path === "string"
-      ) {
-        summary = ` ${input.file_path}`;
-      } else if (
-        typeof input?.filePath === "string"
-      ) {
-        summary = ` ${input.filePath}`;
-      } else if (
-        typeof input?.pattern === "string"
-      ) {
-        summary = ` ${input.pattern}`;
-      } else if (
-        typeof input?.path === "string"
-      ) {
-        summary = ` ${input.path}`;
-      }
+      const summary = summarizeToolInput(block.input, 200);
       parts.push(
-        `▶ ${name}${summary}`.trim(),
+        summary
+          ? `▶ ${name} ${summary}`
+          : `▶ ${name}`,
       );
     }
   }

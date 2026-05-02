@@ -5,6 +5,7 @@ import {
 } from "@/lib/approval-request-visibility";
 import { formatCodexEvent } from "@/lib/codex-event-format";
 import { formatOpenCodeEvent } from "@/lib/opencode-event-format";
+import { summarizeToolInput } from "@/lib/tool-input-summary";
 
 export type JsonObject = Record<string, unknown>;
 
@@ -254,23 +255,9 @@ function formatAssistantEvent(
       parts.push(formatEventTextLines(block.text));
     } else if (block.type === "tool_use") {
       const name = block.name as string;
-      const input = block.input as
-        Record<string, unknown> | undefined;
-      let summary = "";
-      if (input) {
-        if (input.command) {
-          summary = ` ${String(input.command).slice(0, 120)}`;
-        } else if (input.file_path) {
-          summary = ` ${input.file_path}`;
-        } else if (input.filePath) {
-          summary = ` ${input.filePath}`;
-        } else if (input.pattern) {
-          summary = ` ${input.pattern}`;
-        } else if (input.path) {
-          summary = ` ${input.path}`;
-        }
-      }
-      parts.push(`\x1b[36m▶ ${name}${summary}\x1b[0m\n`);
+      const summary = summarizeToolInput(block.input, 160);
+      const sep = summary ? " " : "";
+      parts.push(`\x1b[36m▶ ${name}${sep}${summary}\x1b[0m\n`);
     }
   }
   const text = parts.join("");
