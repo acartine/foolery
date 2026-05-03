@@ -1,3 +1,15 @@
+/**
+ * Manual integration test for the foolery version CLI flag.
+ *
+ * Builds a real CLI launcher artifact via bash and executes it, so it lives
+ * in `__manual_tests__/` and is excluded from the default suite per
+ * the project's Hermetic Test Policy. Run with `bun run test:manual`.
+ *
+ * Host preconditions:
+ *   - `bash` available on PATH
+ *   - Repo root == process.cwd()
+ */
+
 import { execFile } from "node:child_process";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";

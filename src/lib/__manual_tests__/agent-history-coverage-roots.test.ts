@@ -1,6 +1,12 @@
 /**
- * Additional coverage tests for agent-history.ts: production log root
+ * Manual integration test for agent-history.ts production log root
  * discovery, worktree roots, knots worktree, and dedup.
+ *
+ * Writes JSONL logs to a real `mkdtemp` directory and mutates
+ * `process.env.HOME` + `NODE_ENV` to steer the production log-root
+ * resolver, so it lives in `__manual_tests__/` and is excluded from the
+ * default suite per the project's Hermetic Test Policy.
+ * Run with `bun run test:manual`.
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockInstallConsoleTap = vi.fn();
 vi.mock("@/lib/console-log-tap", () => ({
@@ -33,7 +33,7 @@ function setupMocks(): void {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.restoreAllMocks();
-    delete process.env.NEXT_RUNTIME;
+    vi.stubEnv("NEXT_RUNTIME", undefined);
     mockBackfillMissingSettingsDefaults.mockResolvedValue({
       settings: {}, missingPaths: [],
       fileMissing: false, changed: false,
@@ -51,6 +51,10 @@ function setupMocks(): void {
       entries: [],
     });
     mockWriteMessageTypeIndex.mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 }
 
@@ -84,7 +88,7 @@ describe("register: settings and registry backfills", () => {
   });
 
   it("skips all backfills for non-nodejs runtime", async () => {
-    process.env.NEXT_RUNTIME = "edge";
+    vi.stubEnv("NEXT_RUNTIME", "edge");
     await register();
     expect(
       mockBackfillMissingSettingsDefaults,
@@ -352,7 +356,7 @@ describe("register: message-type index edge cases", () => {
   });
 
   it("skips index build for non-nodejs runtime", async () => {
-    process.env.NEXT_RUNTIME = "edge";
+    vi.stubEnv("NEXT_RUNTIME", "edge");
     await register();
     expect(
       mockReadMessageTypeIndex,

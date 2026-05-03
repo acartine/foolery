@@ -1,3 +1,15 @@
+/**
+ * Manual integration test for the foolery-config CLI.
+ *
+ * Spawns `bun run` child processes and writes to the real filesystem, so it
+ * lives in `__manual_tests__/` and is excluded from the default suite per
+ * the project's Hermetic Test Policy. Run with `bun run test:manual`.
+ *
+ * Host preconditions:
+ *   - `bun` available on PATH
+ *   - Repo root == process.cwd()
+ */
+
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";

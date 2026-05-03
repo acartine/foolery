@@ -1,3 +1,14 @@
+/**
+ * Manual integration test for the agent-output-log paths on the
+ * interaction-logger module.
+ *
+ * Exercises the SUT against a real `mkdtemp` directory and mutates
+ * `process.env.NODE_ENV` + `process.chdir` to steer the log-root
+ * resolver, so it lives in `__manual_tests__/` and is excluded from the
+ * default suite per the project's Hermetic Test Policy.
+ * Run with `bun run test:manual`.
+ */
+
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
 import { join } from "node:path";

@@ -1,3 +1,12 @@
+/**
+ * Manual integration test for app-update module.
+ *
+ * Uses real filesystem operations (mkdtemp, writeFile, readFile, rm) against
+ * real disk to test status persistence and launcher detection, so it lives
+ * in `__manual_tests__/` and is excluded from the default suite per the
+ * project's Hermetic Test Policy. Run with `bun run test:manual`.
+ */
+
 import {
   chmod,
   mkdtemp,

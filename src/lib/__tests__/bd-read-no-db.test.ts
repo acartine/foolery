@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 interface MockExecResult {
   stdout?: string;
@@ -47,9 +47,13 @@ describe("bd read-mode BD_NO_DB behavior", () => {
     execInvocations.length = 0;
     execQueue.length = 0;
     execFileMock.mockClear();
-    delete process.env.BD_NO_DB;
-    delete process.env.FOOLERY_BD_READ_NO_DB;
+    vi.stubEnv("BD_NO_DB", undefined);
+    vi.stubEnv("FOOLERY_BD_READ_NO_DB", undefined);
     vi.resetModules();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it("sets BD_NO_DB=true for read commands by default", async () => {
@@ -75,7 +79,7 @@ describe("bd read-mode BD_NO_DB behavior", () => {
   });
 
   it("retries read commands with BD_NO_DB=true after nil panic when default is disabled", async () => {
-    process.env.FOOLERY_BD_READ_NO_DB = "0";
+    vi.stubEnv("FOOLERY_BD_READ_NO_DB", "0");
     queueExec(
       {
         stderr:

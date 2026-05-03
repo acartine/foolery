@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 const mockReadFile = vi.fn();
 const mockWriteFile = vi.fn();
@@ -50,29 +50,22 @@ beforeEach(() => {
   mockStat.mockResolvedValue({ mtimeMs: 0 });
 });
 
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+
 describe("getBackendType", () => {
   it("returns FOOLERY_BACKEND env var when set", async () => {
-    const orig = process.env.FOOLERY_BACKEND;
-    process.env.FOOLERY_BACKEND = "http";
-    try {
-      const type = await getBackendType();
-      expect(type).toBe("http");
-    } finally {
-      if (orig !== undefined) process.env.FOOLERY_BACKEND = orig;
-      else delete process.env.FOOLERY_BACKEND;
-    }
+    vi.stubEnv("FOOLERY_BACKEND", "http");
+    const type = await getBackendType();
+    expect(type).toBe("http");
   });
 
   it("returns settings backend type when env var not set", async () => {
-    const orig = process.env.FOOLERY_BACKEND;
-    delete process.env.FOOLERY_BACKEND;
+    vi.stubEnv("FOOLERY_BACKEND", undefined);
     mockReadFile.mockResolvedValue('[backend]\ntype = "cli"');
-    try {
-      const type = await getBackendType();
-      expect(type).toBe("cli");
-    } finally {
-      if (orig !== undefined) process.env.FOOLERY_BACKEND = orig;
-    }
+    const type = await getBackendType();
+    expect(type).toBe("cli");
   });
 });
 

@@ -1,3 +1,16 @@
+/**
+ * Manual integration test for the foolery launcher setup command.
+ *
+ * Touches the real filesystem and spawns real bash processes, so it lives
+ * in `__manual_tests__/` and is excluded from the default suite per
+ * the project's Hermetic Test Policy. Run with `bun run test:manual`.
+ *
+ * Host preconditions:
+ *   - `bash` available on PATH
+ *   - scripts/install.sh relative to repo root is readable
+ *   - Repo root == process.cwd()
+ */
+
 import { execFile } from "node:child_process";
 import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
