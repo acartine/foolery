@@ -51,6 +51,8 @@ interface SessionState {
   sessionId: string | null;
   ready: boolean;
   turnInFlight: boolean;
+  turnActivityObserved: boolean;
+  turnId: number;
   model?: string;
   eventStreamAbort: AbortController | null;
   shutdownInFlight: Promise<void> | null;
@@ -64,6 +66,11 @@ interface SessionState {
 const SERVER_URL_PATTERN =
   /server listening on (https?:\/\/\S+)/;
 const CONTROL_REQUEST_TIMEOUT_MS = 1_500;
+const MESSAGE_REQUEST_RETRY_BACKOFF_MS = [
+  8_000, 16_000, 32_000,
+] as const;
+const MESSAGE_REQUEST_MAX_ATTEMPTS =
+  MESSAGE_REQUEST_RETRY_BACKOFF_MS.length + 1;
 
 async function createSession(
   baseUrl: string,
@@ -120,6 +127,43 @@ async function sendMessage(
   } catch {
     return null;
   }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function sendMessageWithRetry(
+  s: SessionState,
+  cb: SessionCallbacks,
+  prompt: string,
+  turnId: number,
+): Promise<OpenCodeMessageResponse | null> {
+  let resp: OpenCodeMessageResponse | null = null;
+  for (
+    let attempt = 0;
+    attempt < MESSAGE_REQUEST_MAX_ATTEMPTS;
+    attempt += 1
+  ) {
+    if (s.turnId !== turnId) return null;
+    resp = await sendMessage(
+      s.serverUrl!, s.sessionId!, prompt, s.model,
+    );
+    if (resp && hasOpenCodeMessagePayload(resp)) return resp;
+    if (s.turnActivityObserved) return resp;
+    const delay = MESSAGE_REQUEST_RETRY_BACKOFF_MS[attempt];
+    if (delay === undefined) break;
+    cb.onError(
+      "OpenCode HTTP message request failed; retrying " +
+      `in ${delay / 1_000}s ` +
+      `(${attempt + 2}/${MESSAGE_REQUEST_MAX_ATTEMPTS}).`,
+    );
+    await sleep(delay);
+    if (s.turnId !== turnId) return null;
+  }
+  return resp;
 }
 
 async function postControlRequest(
@@ -203,6 +247,8 @@ function emitTranslated(
   cb: SessionCallbacks,
   events: Array<Record<string, unknown>>,
 ): void {
+  const wasTurnInFlight = s.turnInFlight;
+  let emitted = false;
   for (const event of events) {
     if (
       event.type === "session_idle" ||
@@ -211,7 +257,13 @@ function emitTranslated(
       s.turnInFlight = false;
     }
     const filtered = dedupeStreamedEvent(s, event);
-    if (filtered) cb.onEvent(JSON.stringify(filtered));
+    if (filtered) {
+      emitted = true;
+      cb.onEvent(JSON.stringify(filtered));
+    }
+  }
+  if (wasTurnInFlight && emitted) {
+    s.turnActivityObserved = true;
   }
 }
 
@@ -263,6 +315,8 @@ async function doTurn(
   hooks: PromptDispatchHooks,
 ): Promise<void> {
   s.turnInFlight = true;
+  const turnId = s.turnId + 1;
+  s.turnId = turnId;
   hooks.onAttempted?.();
   try {
     const ok = await ensureSession(s, cb);
@@ -278,9 +332,11 @@ async function doTurn(
       return;
     }
     startEventStream(s, cb);
-    const resp = await sendMessage(
-      s.serverUrl, s.sessionId, prompt, s.model,
+    s.turnActivityObserved = false;
+    const resp = await sendMessageWithRetry(
+      s, cb, prompt, turnId,
     );
+    if (s.turnId !== turnId) return;
     if (!resp || !hasOpenCodeMessagePayload(resp)) {
       // foolery-70fb: do NOT synthesize a fake
       // {type:"result", is_error:true} here. The SSE
@@ -378,6 +434,8 @@ export function createOpenCodeHttpSession(
     sessionId: null,
     ready: false,
     turnInFlight: false,
+    turnActivityObserved: false,
+    turnId: 0,
     model: options.model,
     eventStreamAbort: null,
     shutdownInFlight: null,
@@ -415,6 +473,7 @@ export function createOpenCodeHttpSession(
 
     interruptTurn(child) {
       s.pendingTurn = null;
+      s.turnId += 1;
       if (s.shutdownInFlight) return true;
       s.shutdownInFlight = disposeServer(
         s,
