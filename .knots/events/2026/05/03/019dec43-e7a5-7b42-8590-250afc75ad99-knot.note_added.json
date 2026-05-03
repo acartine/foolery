@@ -1,0 +1,15 @@
+{
+  "event_id": "019dec43-e7a5-7b42-8590-250afc75ad99",
+  "occurred_at": "2026-05-03T05:16:06.437213Z",
+  "knot_id": "foolery-3200",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "# Handoff — Implementation → Implementation Review\n\n## Artifact\n- **Branch:** `foolery-3200-hermetic-tests`\n- **Commit on origin/main:** `819fc50f` (`8e930697..819fc50f`, fast-forward)\n- **PR:** none (per project policy: direct push to main)\n\n## What changed (incremental over 8e930697)\n\nCloses the gap from the prior implementation review (non-hermetic\nfs/promises fixture tests + source-grep contract tests left in default\nsuite).\n\n- **Moved 64 non-hermetic test files** from `src/**/__tests__/` to the\n  matching `src/**/__manual_tests__/` directory:\n  - 50 from `src/lib/__tests__/` (Cat A fs/promises fixture tests +\n    Cat B `process.cwd()` source-grep contract tests, plus the\n    `validate-cwd.test.ts` host-cwd reader)\n  - 13 from `src/components/__tests__/` (Cat B contract tests +\n    `dropdown-menu-modal`, `select-popper-position`)\n  - 1 from `src/app/beats/__tests__/`\n- **Split 2 mixed files**: kept hermetic test cases in `__tests__/`,\n  moved source-grep cases to a sibling `__manual_tests__/` file:\n  - `src/components/.../bulk-edit-terminal-states.test.ts`\n  - `src/hooks/.../scope-refinement-pending-integration.test.ts`\n- **Created** `src/components/__manual_tests__/` and\n  `src/hooks/__manual_tests__/` (both newly tracked).\n- **Fixed cross-dir imports** in two moved files that referenced\n  helpers still in `__tests__/`:\n  - `backends-mark-terminal-parity.test.ts` →\n    `../__tests__/mock-backend-port`\n  - `beads-backend-contract.test.ts` →\n    `../__tests__/backend-contract.test`\n\n## How to verify\n\n```sh\ngit fetch origin && git checkout 819fc50f  # or origin/main\nbun install --frozen-lockfile\nbun run lint\nbunx tsc --noEmit\nbun run test          # 246 files, 2656 passes (hermetic)\nbun run test:manual   # 77 files, 546 passes (opt-in)\nbun run build\n```\n\nHermeticity grep matrix (must all be empty against `src/**/__tests__/`):\n\n```sh\nrg -l 'from \"node:fs\"|from \"node:fs/promises\"' src --glob 'src/**/__tests__/**'\nrg -ln 'process\\.(cwd|chdir|env)' src --glob 'src/**/__tests__/**'\nrg -ln 'readFileSync|writeFileSync|mkdirSync|rmSync|mkdtemp|tmpdir\\(\\)' src --glob 'src/**/__tests__/**'\n```\n\nAll return empty after this commit.\n\n## Acceptance check\n\n- [x] Each test file under `src/**/__tests__/` is hermetic per docs/DEVELOPING.md\n- [x] Non-hermetic tests moved to `src/**/__manual_tests__/` (or split, preserving the hermetic portion)\n- [x] `bun run test` passes deterministically regardless of host state\n- [x] Commit + branch tagged on the knot",
+    "datetime": "2026-05-03T05:16:06.437213Z",
+    "entry_id": "019dec43-e7a5-7b42-8590-24f8843ef0a2",
+    "model": "Opus",
+    "username": "Claude",
+    "version": "4.7"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019dec47-7baa-7250-b9b8-d9a324b888e2",
+  "occurred_at": "2026-05-03T05:20:00.938846Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3200",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Audit and remediate non-hermetic tests in default suite",
+    "type": "work",
+    "updated_at": "2026-05-03T05:20:00.938846Z",
+    "workflow_id": "work_sdlc"
+  }
+}

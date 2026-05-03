@@ -1,0 +1,15 @@
+{
+  "event_id": "019dec34-f866-7a21-af6c-8662af1d3fe9",
+  "occurred_at": "2026-05-03T04:59:47.68624Z",
+  "knot_id": "foolery-3200",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "# Handoff — Implementation → Implementation Review\n\n## Artifact\n- **Branch:** `foolery-3200-hermetic-tests`\n- **Commit on origin/main:** `8e930697` (`50305cf4..8e930697`, fast-forward)\n- **PR:** none (per project policy: direct push to main)\n\n## What changed\n- Moved 8 non-hermetic test files into `src/**/__manual_tests__/` (5 prior + 3 new).\n- Refactored 3 test files to replace direct `process.env` mutation with `vi.stubEnv` + `vi.unstubAllEnvs`.\n- Fixed pre-existing duplicated docstring blocks in 4 manual-test files.\n\n## How to verify\n```sh\ngit fetch origin && git checkout 8e930697  # or origin/main\nbun install --frozen-lockfile\nbun run lint\nbunx tsc --noEmit\nbun run test            # default suite, hermetic\nbun run test:manual     # opt-in, exercises real env (host preconditions in each file's docstring)\nbun run test:storybook\nbun run build\n```\n\nHostile-mode matrix (commands captured in the audit note) all yield identical pass counts.\n\n## Acceptance check\n- [x] `src/**/__tests__/` hermetic per docs/DEVELOPING.md (no env vars, no real fs, no spawn, no network, no host binaries)\n- [x] Non-hermetic tests moved to `src/**/__manual_tests__/` (or refactored where stubEnv suffices)\n- [x] `bun run test` passes deterministically regardless of host state (verified via 3-scenario hostile-mode matrix)\n\n## Notes for reviewer\n- The 3 `vi.stubEnv` refactors retain identical test semantics (assertions on `env.BD_NO_DB === undefined` and friends still pass; `vi.stubEnv(name, undefined)` deletes the var, distinct from setting `\"\"`).\n- The `app-update.test.ts` move (vs. plan's preferred refactor with `vi.mock(\"node:fs/promises\")`) is documented in the audit note.",
+    "datetime": "2026-05-03T04:59:47.68624Z",
+    "entry_id": "019dec34-f866-7a21-af6c-8654d763d929",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
