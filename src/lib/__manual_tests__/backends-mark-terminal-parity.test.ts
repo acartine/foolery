@@ -9,7 +9,7 @@ import os from "node:os";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BeadsBackend } from "@/lib/backends/beads-backend";
 import { StubBackend } from "@/lib/backends/stub-backend";
-import { MockBackendPort } from "./mock-backend-port";
+import { MockBackendPort } from "../__tests__/mock-backend-port";
 import {
   WORKFLOW_CORRECTION_FAILURE_MARKER,
 } from "@/lib/workflow-correction-failure";

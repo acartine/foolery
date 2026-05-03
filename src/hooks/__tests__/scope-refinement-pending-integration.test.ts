@@ -18,6 +18,10 @@ import type {
  * Integration test proving the notification hook's
  * completion pipeline clears pending state in the
  * store — covering acceptance criteria 4 & 5.
+ *
+ * The source-grep assertion that the hook wires `markComplete` for
+ * each `beatId` lives in the matching manual test file under
+ * `__manual_tests__/` because it requires a real fs read.
  */
 
 function makeCompletion(
@@ -119,35 +123,5 @@ describe("scope refinement pending integration", () => {
         .getState()
         .pendingBeatIds.size,
     ).toBe(0);
-  });
-
-  it("hook source calls markComplete for each beatId from completions", async () => {
-    // Verify the hook source wires markComplete
-    // to the completion pipeline
-    const fs = await import("node:fs");
-    const path = await import("node:path");
-    const hookSrc = fs.readFileSync(
-      path.resolve(
-        __dirname,
-        "../use-scope-refinement-notifications.ts",
-      ),
-      "utf-8",
-    );
-
-    // Hook subscribes to markComplete from store
-    expect(hookSrc).toContain(
-      "useScopeRefinementPendingStore",
-    );
-    expect(hookSrc).toContain(
-      "state.markComplete",
-    );
-
-    // markComplete is called for each beatId
-    expect(hookSrc).toContain(
-      "markComplete(beatId)",
-    );
-    expect(hookSrc).toMatch(
-      /for\s*\(\s*const beatId of beatIds\s*\)\s*\{[\s\S]*?markComplete\(beatId\)/,
-    );
   });
 });

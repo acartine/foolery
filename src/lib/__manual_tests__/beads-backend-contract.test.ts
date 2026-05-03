@@ -5,7 +5,7 @@
  * backend satisfies the BackendPort behavioural contract.
  */
 
-import { runBackendContractTests } from "./backend-contract.test";
+import { runBackendContractTests } from "../__tests__/backend-contract.test";
 import { BeadsBackend, BEADS_CAPABILITIES } from "@/lib/backends/beads-backend";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
