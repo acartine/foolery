@@ -24,6 +24,9 @@ import {
   DiagnosticsView,
 } from "@/components/lease-audit-view";
 import { SetlistView } from "@/components/setlist-view";
+import {
+  BeatStateOverviewScreen,
+} from "@/components/beat-state-overview";
 import { RepoSwitchLoadingState } from "@/components/repo-switch-loading-state";
 import {
   StreamingProgressBar,
@@ -68,8 +71,10 @@ function useBeatsPageState() {
   const beatsView =
     parseBeatsView(searchParams.get("view"));
   const isListView = isListBeatsView(beatsView);
+  const isOverviewView = beatsView === "overview";
+  const shouldLoadBeats = isListView || isOverviewView;
   const supportsBeatDetail =
-    isListView || beatsView === "setlist";
+    shouldLoadBeats || beatsView === "setlist";
   const viewPhase: ViewPhase =
     beatsView === "active" ? "active" : "queues";
   const isActiveView = beatsView === "active";
@@ -107,7 +112,7 @@ function useBeatsPageState() {
     isDegradedError, hasRollingAncestor,
     streamingProgress,
   } = useBeatsQuery({
-    beatsView, searchQuery, isListView, activeRepo,
+    beatsView, searchQuery, shouldLoadBeats, activeRepo,
     registeredRepos, shippingByBeatId,
   });
 
@@ -130,7 +135,7 @@ function useBeatsPageState() {
     activeRepo,
   });
   return {
-    beatsView, isListView, viewPhase,
+    beatsView, isListView, isOverviewView, viewPhase,
     supportsBeatDetail,
     isActiveView, activeRepo,
     searchQuery, detailBeatId, detailRepo,
@@ -149,6 +154,7 @@ function BeatsPageInner() {
   const isSetlistView = s.beatsView === "setlist";
   const isRetakesView = s.beatsView === "retakes";
   const isHistoryView = s.beatsView === "history";
+  const isOverviewView = s.beatsView === "overview";
   const isDiagnosticsView =
     s.beatsView === "diagnostics";
   const warmupView = s.isListView
@@ -188,6 +194,7 @@ function BeatsPageInner() {
         isFinalCutView={isFinalCutView}
         isRetakesView={isRetakesView}
         isHistoryView={isHistoryView}
+        isOverviewView={isOverviewView}
         isDiagnosticsView={isDiagnosticsView}
         state={s}
       />
@@ -230,6 +237,7 @@ function BeatsViewBody({
   isSetlistView,
   isFinalCutView, isRetakesView,
   isHistoryView,
+  isOverviewView,
   isDiagnosticsView,
   state: s,
 }: {
@@ -237,6 +245,7 @@ function BeatsViewBody({
   isFinalCutView: boolean;
   isRetakesView: boolean;
   isHistoryView: boolean;
+  isOverviewView: boolean;
   isDiagnosticsView: boolean;
   state: PageState;
 }) {
@@ -253,6 +262,16 @@ function BeatsViewBody({
         <RetakesView />
       ) : isHistoryView ? (
         <AgentHistoryView />
+      ) : isOverviewView ? (
+        <BeatStateOverviewScreen
+          isLoading={s.isLoading}
+          loadError={s.loadError}
+          isDegradedError={s.isDegradedError}
+          beats={s.beats}
+          showRepoColumn={s.showRepoColumn}
+          onOpenBeat={s.handleOpenBeat}
+          streamingProgress={s.streamingProgress}
+        />
       ) : isDiagnosticsView ? (
         <DiagnosticsView
           repoPath={s.activeRepo ?? undefined}

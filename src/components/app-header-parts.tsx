@@ -5,6 +5,7 @@ import {
   Plus, Megaphone, RotateCcw, Settings,
   X, History, PartyPopper,
   Zap, Inbox, BarChart3, ListMusic,
+  LayoutDashboard,
 } from "lucide-react";
 import { FooleryWordmark } from "@/components/foolery-wordmark";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -338,6 +339,80 @@ export function HeaderToolbar(props: {
 // ViewSwitcher
 // -----------------------------------------------------------
 
+function ViewSwitcherTabs(props: {
+  beatsView: string;
+  setView: (v: BeatsViewId) => void;
+  escalationsCount: number;
+}) {
+  const {
+    beatsView, setView, escalationsCount,
+  } = props;
+  return (
+    <div className={
+      "flex min-w-max shrink-0 items-center gap-1"
+      + " rounded-lg border bg-muted/20 p-1"
+    }>
+      <ViewTab
+        view="setlist" current={beatsView}
+        icon={<ListMusic className="size-4" />}
+        label="Setlist"
+        title="Execution plans and gantt-style setlist"
+        setView={setView}
+      />
+      <ViewTab
+        view="overview" current={beatsView}
+        icon={<LayoutDashboard className="size-4" />}
+        label="Overview"
+        title="Beat state overview"
+        setView={setView}
+      />
+      <ViewTab
+        view="queues" current={beatsView}
+        icon={<Inbox className="size-4" />}
+        label="Queues"
+        title="Queue beats (ready for action)"
+        setView={setView}
+      />
+      <ViewTab
+        view="active" current={beatsView}
+        icon={<Zap className="size-4" />}
+        label="Active"
+        title="Active beats (in progress)"
+        setView={setView}
+      />
+      <ViewTab
+        view="finalcut" current={beatsView}
+        icon={<Megaphone className="size-4" />}
+        label="Escalations"
+        title="Escalations queue"
+        setView={setView}
+        badge={escalationsCount}
+      />
+      <ViewTab
+        view="retakes" current={beatsView}
+        icon={<RotateCcw className="size-4" />}
+        label="ReTakes"
+        title="Regression tracking for beats in retake"
+        setView={setView}
+      />
+      <ViewTab
+        view="history" current={beatsView}
+        icon={<History className="size-4" />}
+        label="History"
+        title="Take!/Scene agent history"
+        setView={setView}
+      />
+      <ViewTab
+        view="diagnostics" current={beatsView}
+        icon={<BarChart3 className="size-4" />}
+        label="Diagnostics"
+        title="Runtime diagnostics and lease analytics"
+        setView={setView}
+      />
+    </div>
+  );
+}
+
 export function ViewSwitcher(props: {
   beatsView: string;
   setView: (v: BeatsViewId) => void;
@@ -353,60 +428,18 @@ export function ViewSwitcher(props: {
     openSettingsToRepos,
   } = props;
   return (
-    <div className="ml-auto flex items-center gap-2">
-      <div className="flex items-center gap-1 rounded-lg border bg-muted/20 p-1">
-        <ViewTab
-          view="setlist" current={beatsView}
-          icon={<ListMusic className="size-4" />}
-          label="Setlist"
-          title="Execution plans and gantt-style setlist"
-          setView={setView}
-        />
-        <ViewTab
-          view="queues" current={beatsView}
-          icon={<Inbox className="size-4" />}
-          label="Queues"
-          title="Queue beats (ready for action)"
-          setView={setView}
-        />
-        <ViewTab
-          view="active" current={beatsView}
-          icon={<Zap className="size-4" />}
-          label="Active"
-          title="Active beats (in progress)"
-          setView={setView}
-        />
-        <ViewTab
-          view="finalcut" current={beatsView}
-          icon={<Megaphone className="size-4" />}
-          label="Escalations"
-          title="Escalations queue"
-          setView={setView}
-          badge={escalationsCount}
-        />
-        <ViewTab
-          view="retakes" current={beatsView}
-          icon={<RotateCcw className="size-4" />}
-          label="ReTakes"
-          title="Regression tracking for beats in retake"
-          setView={setView}
-        />
-        <ViewTab
-          view="history" current={beatsView}
-          icon={<History className="size-4" />}
-          label="History"
-          title="Take!/Scene agent history"
-          setView={setView}
-        />
-        <ViewTab
-          view="diagnostics" current={beatsView}
-          icon={<BarChart3 className="size-4" />}
-          label="Diagnostics"
-          title="Runtime diagnostics and lease analytics"
-          setView={setView}
-        />
-      </div>
-      <div className="grid w-[88px]">
+    <div className={
+      "order-4 flex w-full min-w-0 items-center"
+      + " gap-2 overflow-x-auto pb-1"
+      + " md:order-none md:ml-auto md:w-auto"
+      + " md:overflow-visible md:pb-0"
+    }>
+      <ViewSwitcherTabs
+        beatsView={beatsView}
+        setView={setView}
+        escalationsCount={escalationsCount}
+      />
+      <div className="grid w-[88px] shrink-0">
         {canCreate && showAction ? (
           actionButton
         ) : canCreate ? (

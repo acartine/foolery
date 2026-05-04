@@ -9,6 +9,7 @@ import {
 describe("beats view helpers", () => {
   it("parses setlist and search as first-class beats views", () => {
     expect(parseBeatsView("setlist")).toBe("setlist");
+    expect(parseBeatsView("overview")).toBe("overview");
     expect(parseBeatsView("search")).toBe("search");
     expect(parseBeatsView("active")).toBe("active");
     expect(parseBeatsView("legacy")).toBe("queues");
@@ -19,6 +20,7 @@ describe("beats view helpers", () => {
     expect(isListBeatsView("search")).toBe(true);
     expect(isListBeatsView("queues")).toBe(true);
     expect(isListBeatsView("active")).toBe(true);
+    expect(isListBeatsView("overview")).toBe(false);
     expect(isListBeatsView("setlist")).toBe(false);
     expect(isListBeatsView("finalcut")).toBe(false);
   });
@@ -30,7 +32,9 @@ describe("beats view helpers", () => {
         " alpha beta ",
       ),
     ).toBe(
-      "/beats?repo=%2Ftmp%2Frepo&state=in_action&beat=beat-12&detailRepo=%2Ftmp%2Frepo&q=alpha+beta&view=search",
+      "/beats?repo=%2Ftmp%2Frepo&state=in_action"
+      + "&beat=beat-12&detailRepo=%2Ftmp%2Frepo"
+      + "&q=alpha+beta&view=search",
     );
   });
 

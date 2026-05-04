@@ -49,7 +49,7 @@ function throwIfDegraded(
 interface UseBeatsQueryArgs {
   beatsView: string;
   searchQuery: string;
-  isListView: boolean;
+  shouldLoadBeats: boolean;
   activeRepo: string | null;
   registeredRepos: RegisteredRepo[];
   shippingByBeatId: Record<string, string>;
@@ -72,7 +72,7 @@ export function useBeatsQuery(
   args: UseBeatsQueryArgs,
 ): UseBeatsQueryResult {
   const {
-    beatsView, searchQuery, isListView, activeRepo,
+    beatsView, searchQuery, shouldLoadBeats, activeRepo,
     registeredRepos, shippingByBeatId,
   } = args;
   const { filters } = useAppStore();
@@ -80,7 +80,11 @@ export function useBeatsQuery(
   const streaming = useStreamingProgress();
 
   const params: Record<string, string> = {};
-  if (!searchQuery && filters.state) {
+  if (
+    !searchQuery
+    && beatsView !== "overview"
+    && filters.state
+  ) {
     params.state = filters.state;
   }
   if (filters.type) params.type = filters.type;
@@ -110,7 +114,7 @@ export function useBeatsQuery(
       onRepoLoaded: streaming.onRepoLoaded,
       onStreamComplete: streaming.onStreamComplete,
     }),
-    enabled: isListView && (
+    enabled: shouldLoadBeats && (
       Boolean(activeRepo) || registeredRepos.length > 0
     ),
     staleTime: 10_000,

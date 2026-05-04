@@ -22,11 +22,11 @@ export type VersionBannerData = {
 };
 
 export type BeatsViewId =
-  | "setlist" | "queues" | "active" | "finalcut"
-  | "retakes" | "history" | "diagnostics";
+  | "setlist" | "overview" | "queues" | "active"
+  | "finalcut" | "retakes" | "history" | "diagnostics";
 
 export const VIEWS: readonly BeatsViewId[] = [
-  "setlist", "queues", "active", "finalcut",
+  "setlist", "overview", "queues", "active", "finalcut",
   "retakes", "history", "diagnostics",
 ];
 
@@ -190,6 +190,7 @@ export function useBeatsViewSetter(
     if (view === "queues") p.delete("view");
     else p.set("view", view);
     if (view === "queues") p.set("state", "queued");
+    else if (view === "overview") p.set("state", "all");
     else if (view === "active") {
       p.set("state", "in_action");
     }
@@ -212,6 +213,7 @@ export function useCreateBeatHotkey(
     if (!isBeats || !canCreate) return;
     if (
       beatsView !== "queues" &&
+      beatsView !== "overview" &&
       beatsView !== "active"
     ) return;
     const handler = (e: KeyboardEvent) => {

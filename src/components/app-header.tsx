@@ -135,6 +135,7 @@ export function AppHeader() {
     useVersionUpdateAction();
   const showAction =
     s.beatsView === "queues" ||
+    s.beatsView === "overview" ||
     s.beatsView === "active" ||
     s.beatsView === "finalcut";
 
