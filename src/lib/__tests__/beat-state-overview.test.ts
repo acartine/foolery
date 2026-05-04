@@ -7,6 +7,8 @@ import {
   groupOverviewBeatsByState,
   isOverviewActiveState,
   isOverviewBeat,
+  nextOverviewSizingColumnCount,
+  nextOverviewSizingColumnCounts,
   normalizeOverviewState,
   overviewBeatLabel,
   overviewColumnWidthPx,
@@ -235,14 +237,67 @@ describe("beat-state-overview tabs", () => {
       "implementation",
     ]);
   });
+});
 
-  it("sizes visible columns from available width and visible count", () => {
-    expect(overviewColumnWidthPx(1200, 3)).toBe(300);
-    expect(overviewColumnWidthPx(1200, 10)).toBe(109);
-    expect(overviewColumnWidthPx(240, 10)).toBe(80);
+describe("beat-state-overview sizing", () => {
+  it("caps overview columns at one sixth of available width", () => {
+    expect(overviewColumnWidthPx(1200, 3)).toBe(200);
+    expect(overviewColumnWidthPx(300, 1)).toBe(50);
     expect(overviewColumnWidthPx(2000, 2)).toBe(320);
+  });
+
+  it("sizes visible columns from available width and sizing count", () => {
+    expect(overviewColumnWidthPx(1200, 10)).toBe(109);
+    expect(overviewColumnWidthPx(240, 10)).toBe(40);
     expect(overviewColumnWidthPx(0, 2)).toBe(160);
     expect(overviewColumnWidthPx(1200, 0)).toBe(160);
+  });
+
+  it("promotes sizing pressure by two columns on growth", () => {
+    let watermark = nextOverviewSizingColumnCount(undefined, 4);
+
+    expect(watermark).toBe(4);
+    expect(overviewColumnWidthPx(1200, watermark)).toBe(200);
+
+    watermark = nextOverviewSizingColumnCount(watermark, 6);
+
+    expect(watermark).toBe(8);
+    expect(overviewColumnWidthPx(1200, watermark)).toBe(133);
+  });
+
+  it("keeps the sizing watermark when visible columns decrease", () => {
+    const watermark = nextOverviewSizingColumnCount(8, 4);
+
+    expect(watermark).toBe(8);
+    expect(overviewColumnWidthPx(1200, watermark)).toBe(133);
+  });
+
+  it("tracks sizing watermarks independently by tab", () => {
+    let watermarks = nextOverviewSizingColumnCounts(
+      {},
+      "work_items",
+      4,
+    );
+    watermarks = nextOverviewSizingColumnCounts(
+      watermarks,
+      "terminated",
+      2,
+    );
+    watermarks = nextOverviewSizingColumnCounts(
+      watermarks,
+      "work_items",
+      6,
+    );
+    watermarks = nextOverviewSizingColumnCounts(
+      watermarks,
+      "terminated",
+      1,
+    );
+
+    expect(watermarks).toMatchObject({
+      work_items: 8,
+      terminated: 2,
+    });
   });
 });
 

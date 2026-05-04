@@ -35,11 +35,16 @@ export interface OverviewStateTabSummary {
   count: number;
 }
 
+export type OverviewSizingColumnCounts =
+  Partial<Record<OverviewStateTabId, number>>;
+
 export const DEFAULT_OVERVIEW_STATE_TAB: OverviewStateTabId =
   "work_items";
 const OVERVIEW_COLUMN_MIN_WIDTH_PX = 80;
 const OVERVIEW_COLUMN_MAX_WIDTH_PX = 320;
 const OVERVIEW_COLUMN_FALLBACK_WIDTH_PX = 160;
+const OVERVIEW_COLUMN_PRESSURE_BUFFER = 2;
+const OVERVIEW_COLUMN_VISIBLE_WIDTH_FRACTION = 6;
 
 const WORK_ITEM_OVERVIEW_STATES = [
   "ready_for_planning",
@@ -237,15 +242,55 @@ export function visibleOverviewGroups(
 
 export function overviewColumnWidthPx(
   availableWidth: number,
+  sizingColumnCount: number,
+): number {
+  if (sizingColumnCount <= 0) return OVERVIEW_COLUMN_FALLBACK_WIDTH_PX;
+  if (availableWidth <= 0) return OVERVIEW_COLUMN_FALLBACK_WIDTH_PX;
+  const maxWidth = Math.min(
+    OVERVIEW_COLUMN_MAX_WIDTH_PX,
+    Math.floor(
+      availableWidth / OVERVIEW_COLUMN_VISIBLE_WIDTH_FRACTION,
+    ),
+  );
+  const minWidth = Math.min(OVERVIEW_COLUMN_MIN_WIDTH_PX, maxWidth);
+  const rawWidth = Math.floor(availableWidth / (sizingColumnCount + 1));
+  return Math.min(
+    maxWidth,
+    Math.max(minWidth, rawWidth),
+  );
+}
+
+export function nextOverviewSizingColumnCount(
+  currentSizingColumnCount: number | undefined,
   visibleColumnCount: number,
 ): number {
-  if (visibleColumnCount <= 0) return OVERVIEW_COLUMN_FALLBACK_WIDTH_PX;
-  if (availableWidth <= 0) return OVERVIEW_COLUMN_FALLBACK_WIDTH_PX;
-  const rawWidth = Math.floor(availableWidth / (visibleColumnCount + 1));
-  return Math.min(
-    OVERVIEW_COLUMN_MAX_WIDTH_PX,
-    Math.max(OVERVIEW_COLUMN_MIN_WIDTH_PX, rawWidth),
+  const visible = Math.max(0, Math.floor(visibleColumnCount));
+  const current = Math.max(
+    0,
+    Math.floor(currentSizingColumnCount ?? 0),
   );
+  if (visible === 0) return current;
+  if (current === 0) return visible;
+  if (visible > current) {
+    return visible + OVERVIEW_COLUMN_PRESSURE_BUFFER;
+  }
+  return current;
+}
+
+export function nextOverviewSizingColumnCounts(
+  current: OverviewSizingColumnCounts,
+  tabId: OverviewStateTabId,
+  visibleColumnCount: number,
+): OverviewSizingColumnCounts {
+  const nextCount = nextOverviewSizingColumnCount(
+    current[tabId],
+    visibleColumnCount,
+  );
+  if (nextCount === current[tabId]) return current;
+  return {
+    ...current,
+    [tabId]: nextCount,
+  };
 }
 
 function activeStepStartedAt(beat: Beat): string | undefined {

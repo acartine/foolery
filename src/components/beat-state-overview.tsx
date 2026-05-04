@@ -43,6 +43,9 @@ import {
 import {
   useElementWidth,
 } from "@/components/use-element-width";
+import {
+  useOverviewColumnWatermark,
+} from "@/components/use-overview-column-watermark";
 
 interface BeatStateOverviewScreenProps {
   isLoading: boolean;
@@ -168,11 +171,16 @@ function BeatStateOverview({
     () => visibleOverviewGroups(groups),
     [groups],
   );
+  const visibleColumnCount = visibleGroups.length;
   const scrollportRef = useRef<HTMLDivElement | null>(null);
   const scrollportWidth = useElementWidth(scrollportRef);
+  const sizingColumnCount = useOverviewColumnWatermark({
+    tabId: activeTab,
+    visibleColumnCount,
+  });
   const columnWidth = overviewColumnWidthPx(
     scrollportWidth,
-    visibleGroups.length,
+    sizingColumnCount,
   );
   const gridStyle = {
     "--overview-column-width": `${columnWidth}px`,
