@@ -1,0 +1,15 @@
+{
+  "event_id": "019df3ca-4b08-7fe1-bb8e-5b0da7b93197",
+  "occurred_at": "2026-05-04T16:20:14.215997Z",
+  "knot_id": "foolery-5ca2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan:\n\n1. Work in a dedicated branch/worktree and bootstrap dependencies with `bun install --frozen-lockfile`.\n2. Extend the settings sheet navigation so callers can request the Dispatch tab, not only Repos. Update the header hook/types to carry that section through cleanly.\n3. Thread an `onOpenSettingsDispatch` callback into `StaleBeatGroomingDialog` from the app header. When invoked, close the stale-beats dialog and open Settings on Dispatch.\n4. Replace the raw `defaultError` rendering in the stale-beats dialog with a compact neutral helper. Copy should say that Foolery can remember the stale-beat review model via model dispatch, while manual selection in the modal remains fine for one-off reviews. Add an icon button/text button to open Dispatch Settings.\n5. Keep review enablement unchanged: a selected explicit model should still allow Review even when no remembered dispatch model exists.\n6. Add focused component/unit coverage if there is an existing test harness for these components; otherwise rely on lint/typecheck plus a browser smoke check of the modal.\n7. Run `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build`; fix any failures before integration.\n\nComplexity: small UI plumbing change across the stale-beats dialog and settings sheet/header path.\n\nRisks: avoid leaking raw configured-resource failure text into the modal, avoid making Settings always open Repos, and avoid disabling the one-off Review path when a model is manually selected.",
+    "datetime": "2026-05-04T16:20:14.215997Z",
+    "entry_id": "019df3ca-4b08-7fe1-bb8e-5afa7883d98b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

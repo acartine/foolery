@@ -1,0 +1,21 @@
+{
+  "event_id": "019df3d7-5966-7702-993d-ed19b614956e",
+  "occurred_at": "2026-05-04T16:34:29.862003Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5ca2",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Improve stale grooming dispatch empty state",
+    "type": "work",
+    "updated_at": "2026-05-04T16:34:29.862003Z",
+    "workflow_id": "work_sdlc"
+  }
+}

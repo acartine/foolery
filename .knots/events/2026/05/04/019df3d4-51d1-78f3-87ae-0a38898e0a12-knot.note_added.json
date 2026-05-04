@@ -1,0 +1,15 @@
+{
+  "event_id": "019df3d4-51d1-78f3-87ae-0a38898e0a12",
+  "occurred_at": "2026-05-04T16:31:11.313298Z",
+  "knot_id": "foolery-5ca2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved. Reviewed branch `codex/5ca2-stale-dispatch-helper` at commit `394b90684fea2b728581a9581bfe26c130f89d97` against `origin/main`. The dialog no longer renders raw `defaultError` text, the review enablement path still depends on explicit `agentId` selection, and `settings=dispatch` opens the existing settings sheet on the Dispatch tab. Coverage includes settings URL parsing; full lint, typecheck, test, build, and Playwright smoke passed. No regressions or invariant violations found.",
+    "datetime": "2026-05-04T16:31:11.313298Z",
+    "entry_id": "019df3d4-51d1-78f3-87ae-0a23299b8e53",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

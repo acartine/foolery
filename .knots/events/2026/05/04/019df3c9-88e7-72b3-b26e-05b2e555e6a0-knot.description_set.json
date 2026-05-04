@@ -1,0 +1,9 @@
+{
+  "event_id": "019df3c9-88e7-72b3-b26e-05b2e555e6a0",
+  "occurred_at": "2026-05-04T16:19:24.50541Z",
+  "knot_id": "foolery-5ca2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Replace the stale-beats modal's raw FOOLERY GROOMING FAILURE dispatch text with a small friendly helper that explains model dispatch should be configured to remember the stale grooming model, while still allowing manual model selection. Include a control that opens the settings screen to model dispatch settings, and keep the Review flow usable when a model is selected explicitly."
+  }
+}

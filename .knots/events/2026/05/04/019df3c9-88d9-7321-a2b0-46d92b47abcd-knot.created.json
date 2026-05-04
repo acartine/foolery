@@ -1,0 +1,17 @@
+{
+  "event_id": "019df3c9-88d9-7321-a2b0-46d92b47abcd",
+  "occurred_at": "2026-05-04T16:19:24.50541Z",
+  "knot_id": "foolery-5ca2",
+  "type": "knot.created",
+  "data": {
+    "body": "Replace the stale-beats modal's raw FOOLERY GROOMING FAILURE dispatch text with a small friendly helper that explains model dispatch should be configured to remember the stale grooming model, while still allowing manual model selection. Include a control that opens the settings screen to model dispatch settings, and keep the Review flow usable when a model is selected explicitly.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Improve stale grooming dispatch empty state",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

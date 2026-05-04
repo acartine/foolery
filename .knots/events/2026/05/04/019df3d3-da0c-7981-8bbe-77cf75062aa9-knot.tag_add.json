@@ -1,0 +1,9 @@
+{
+  "event_id": "019df3d3-da0c-7981-8bbe-77cf75062aa9",
+  "occurred_at": "2026-05-04T16:30:40.652656Z",
+  "knot_id": "foolery-5ca2",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/5ca2-stale-dispatch-helper"
+  }
+}

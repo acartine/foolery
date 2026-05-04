@@ -1,0 +1,15 @@
+{
+  "event_id": "019df3ca-4b08-7fe1-bb8e-5b252afebbf9",
+  "occurred_at": "2026-05-04T16:20:14.215997Z",
+  "knot_id": "foolery-5ca2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planned fix for stale grooming dispatch empty state. Scope is UI-only unless tests reveal API coupling: add Dispatch-tab deep-open support, pass an open-settings callback to the stale-beats modal, and replace the destructive raw `defaultError` with neutral helper copy plus an Open Dispatch Settings action. Preserve explicit model review behavior. Validation should include lint, typecheck, unit tests, build, and preferably a local browser smoke check.",
+    "datetime": "2026-05-04T16:20:14.215997Z",
+    "entry_id": "019df3ca-4b08-7fe1-bb8e-5b166d8d95f1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019df3d7-4cdc-7201-a674-cc2163ab2263",
+  "occurred_at": "2026-05-04T16:34:26.652121Z",
+  "knot_id": "foolery-5ca2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. Verified `origin/main` points at `394b90684fea2b728581a9581bfe26c130f89d97`, the knot has `commit:394b90684fea2b728581a9581bfe26c130f89d97` and `branch:codex/5ca2-stale-dispatch-helper` tags, and GitHub Actions runs completed successfully: CI https://github.com/acartine/foolery/actions/runs/25330582736 and Coverage Badge https://github.com/acartine/foolery/actions/runs/25330582728. Shipped code satisfies the stale-beats helper request and no dependent-system regression was found.",
+    "datetime": "2026-05-04T16:34:26.652121Z",
+    "entry_id": "019df3d7-4cdc-7201-a674-cc1700d236f9",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

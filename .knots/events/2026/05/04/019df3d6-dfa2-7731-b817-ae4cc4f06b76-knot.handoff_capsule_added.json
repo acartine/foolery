@@ -1,0 +1,15 @@
+{
+  "event_id": "019df3d6-dfa2-7731-b817-ae4cc4f06b76",
+  "occurred_at": "2026-05-04T16:33:58.690214Z",
+  "knot_id": "foolery-5ca2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipped to remote main. Commit: 394b90684fea2b728581a9581bfe26c130f89d97. Branch reviewed: codex/5ca2-stale-dispatch-helper. Remote checks passed on main: CI 25330582736, Coverage Badge 25330582728. Coverage regression annotations were warnings, not failures.",
+    "datetime": "2026-05-04T16:33:58.690214Z",
+    "entry_id": "019df3d6-dfa2-7731-b817-ae3997ce6055",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

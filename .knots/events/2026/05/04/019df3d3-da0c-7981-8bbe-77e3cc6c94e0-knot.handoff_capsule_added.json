@@ -1,0 +1,15 @@
+{
+  "event_id": "019df3d3-da0c-7981-8bbe-77e3cc6c94e0",
+  "occurred_at": "2026-05-04T16:30:40.652656Z",
+  "knot_id": "foolery-5ca2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Branch: codex/5ca2-stale-dispatch-helper\nCommit: 394b90684fea2b728581a9581bfe26c130f89d97\n\nImplemented a neutral stale-beats dispatch helper that replaces raw FOOLERY GROOMING FAILURE text, preserves manual model selection for one-off reviews, and opens Settings directly to the Dispatch tab via `settings=dispatch`. Added coverage for settings URL section parsing.\n\nValidation: `bun run lint`, `bunx tsc --noEmit`, `bun run test`, `bun run build`, and Playwright smoke for `/beats?settings=dispatch` all passed.",
+    "datetime": "2026-05-04T16:30:40.652656Z",
+    "entry_id": "019df3d3-da0c-7981-8bbe-77d08ada14ee",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
