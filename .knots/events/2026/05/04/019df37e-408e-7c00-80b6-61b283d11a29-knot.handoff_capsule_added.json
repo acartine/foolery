@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37e-408e-7c00-80b6-61b283d11a29",
+  "occurred_at": "2026-05-04T14:57:10.798571Z",
+  "knot_id": "foolery-d57e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approved. The plan follows the existing scope refinement diagnostics shape, includes a first-class status route, captures queue/worker/active/failure/completion data, and keeps default tests hermetic through controlled in-memory state.",
+    "datetime": "2026-05-04T14:57:10.798571Z",
+    "entry_id": "019df37e-408e-7c00-80b6-61a2465adb34",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

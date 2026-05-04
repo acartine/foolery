@@ -1,0 +1,9 @@
+{
+  "event_id": "019df37a-4612-7712-82a8-92e8ce10d1f0",
+  "occurred_at": "2026-05-04T14:52:50.066713Z",
+  "knot_id": "foolery-2ee2",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/2a4d-stale-grooming-refine"
+  }
+}

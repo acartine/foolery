@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37d-ed8a-7603-b20b-a45322a9e6c9",
+  "occurred_at": "2026-05-04T14:56:49.546919Z",
+  "knot_id": "foolery-79f2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. origin/main is at 69047617 with this UI slice included, commit and branch tags are present, the shipped overview dialog preserves the no-clipping acceptance requirement, and remote CI/CD completed successfully (CI 25326058790, Coverage Badge 25326058791).",
+    "datetime": "2026-05-04T14:56:49.546919Z",
+    "entry_id": "019df37d-ed8a-7603-b20b-a44a06ed9b0b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

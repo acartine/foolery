@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37d-5898-7282-8ae6-97f3c7ebe70e",
+  "occurred_at": "2026-05-04T14:56:11.416321Z",
+  "knot_id": "foolery-79f2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approved. The plan directly addresses the clipped rail finding, integrates stale grooming into the overview tab area, includes age-descending ordering by updated timestamp, covers bulk selection and model default/override behavior, and uses browser verification plus API/unit tests as required.",
+    "datetime": "2026-05-04T14:56:11.416321Z",
+    "entry_id": "019df37d-5898-7282-8ae6-97ed1c66271d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019df37d-0d55-78c1-8723-0605edd1ff05",
+  "occurred_at": "2026-05-04T14:55:52.149487Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2ee2",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add stale grooming dispatch and API",
+    "type": "work",
+    "updated_at": "2026-05-04T14:55:52.149487Z",
+    "workflow_id": "work_sdlc"
+  }
+}

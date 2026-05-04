@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37c-e64a-76a1-8595-83ca41e2dedb",
+  "occurred_at": "2026-05-04T14:55:42.154766Z",
+  "knot_id": "foolery-2ee2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete. Merged codex/2a4d-stale-grooming-refine to main via fast-forward and pushed origin/main at 69047617. Remote workflows passed on main: CI run 25326058790 and Coverage Badge run 25326058791. CI emitted non-failing coverage-regression annotations (lines/functions/statements dropped) but concluded success.",
+    "datetime": "2026-05-04T14:55:42.154766Z",
+    "entry_id": "019df37c-e64a-76a1-8595-83bb4de58318",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

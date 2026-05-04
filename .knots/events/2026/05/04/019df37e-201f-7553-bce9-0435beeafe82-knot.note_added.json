@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37e-201f-7553-bce9-0435beeafe82",
+  "occurred_at": "2026-05-04T14:57:02.495215Z",
+  "knot_id": "foolery-d57e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: mirror the scope refinement diagnostics pattern with a stale grooming runtime card; add shared worker-state tracking for active job, completed/failed counts, recent completions, recent failures, and uptime; expose a first-class status route with queue, worker, review, active, failure, and completion data; render the card on the Diagnostics Runtime tab; add hermetic route/unit tests using injected state/store behavior rather than host processes or real fs.",
+    "datetime": "2026-05-04T14:57:02.495215Z",
+    "entry_id": "019df37e-201f-7553-bce9-042585723c8f",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

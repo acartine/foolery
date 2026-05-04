@@ -1,0 +1,20 @@
+{
+  "event_id": "019df37f-5fb2-7573-b215-6fafd84b841d",
+  "occurred_at": "2026-05-04T14:58:24.306917Z",
+  "knot_id": "foolery-bae8",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "",
+        "agent_type": "",
+        "model": "",
+        "model_version": "",
+        "provider": ""
+      },
+      "lease_type": "agent",
+      "nickname": "claim-foolery-2a4d",
+      "timeout_seconds": 600
+    }
+  }
+}

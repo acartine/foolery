@@ -1,0 +1,15 @@
+{
+  "event_id": "019df35a-43f3-7582-a3c2-ba4b5f010cf9",
+  "occurred_at": "2026-05-04T14:17:52.371122Z",
+  "knot_id": "foolery-2a4d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approved by user. The plan is complete and feasible: it breaks the work into dispatch/API, overview dialog UX, and diagnostics slices; preserves advisory-only behavior; removes the clipped rail; replaces the freeform model textbox with configured dispatch-backed selection; adds first-class API routes for external agents; and covers the required lint, typecheck, test, build, and built-in browser verification gates.",
+    "datetime": "2026-05-04T14:17:52.371122Z",
+    "entry_id": "019df35a-43f3-7582-a3c2-ba35eeff1bcd",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

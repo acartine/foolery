@@ -1,0 +1,34 @@
+{
+  "event_id": "019df37f-7647-7da1-84f7-29f60210a0ff",
+  "occurred_at": "2026-05-04T14:58:30.080279Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2a4d",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Refine stale beat grooming",
+    "type": "work",
+    "updated_at": "2026-05-04T14:58:30.080279Z",
+    "workflow_id": "work_sdlc"
+  }
+}

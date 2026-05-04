@@ -1,0 +1,9 @@
+{
+  "event_id": "019df357-704b-7131-8634-64e4d6f1e438",
+  "occurred_at": "2026-05-04T14:14:47.096825Z",
+  "knot_id": "foolery-2ee2",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Settings schema/actions/pools expose stale grooming alongside scope refinement.\n2. Stale grooming resolves its default agent/model from dispatch settings and allows explicit configured-agent override.\n3. API clients can list stale beats, enqueue selected targets, enqueue oldest N, and read queue/worker/review status."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019df355-a1b2-7b41-bac3-1385d5fe80cb",
+  "occurred_at": "2026-05-04T14:12:48.677734Z",
+  "knot_id": "foolery-2a4d",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nRefine stale beat grooming so it is a first-class backlog grooming workflow: move it out of the clipped overview rail into an integrated stale-beats tab/dialog, use dispatch-backed default agent/model selection instead of a freeform model textbox, add bulk selection affordances, order stale beats by age since update descending, expose diagnostics, and provide API routes external agents can use to list stale beats, trigger grooming batches such as the five oldest, and check execution status.\n\nVerification:\n1. Run `bun run lint` and expect no lint failures.\n2. Run `bunx tsc --noEmit` and expect no type errors.\n3. Run `bun run test` and expect the default suite to pass.\n4. Run `bun run build` and expect the Next.js build to complete.\n5. Open `/beats?view=overview` in the built-in browser and confirm the stale beats surface is reachable from the overview tab area without horizontal clipping, shows oldest-updated stale beats first, supports select all and select fewer actions, defaults to the dispatch-selected model/agent, and allows overriding to another configured model/agent.\n6. Open the diagnostics page and confirm stale grooming queue/worker data appears alongside scope refinement diagnostics.\n7. Exercise the stale grooming API with curl or route tests to list stale beats, trigger the five oldest stale beats, and read review/queue status.\n\nConstraints:\nUse Knots only for work tracking. Preserve advisory-only stale grooming behavior: do not auto-close, mutate beat state, or rewrite beat scope from AI output. Do not add a PR workflow. Keep external API behavior explicit and documented by route tests."
+  }
+}

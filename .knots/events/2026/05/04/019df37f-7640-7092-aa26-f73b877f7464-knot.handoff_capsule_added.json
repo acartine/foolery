@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37f-7640-7092-aa26-f73b877f7464",
+  "occurred_at": "2026-05-04T14:58:30.080279Z",
+  "knot_id": "foolery-2a4d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. origin/main contains shipped commit 69047617; parent and all child knots are tagged with the commit/branch; stale grooming remains advisory-only; no PR workflow was used; local gates and built-in browser review passed; GitHub CI/CD passed on main (CI 25326058790, Coverage Badge 25326058791).",
+    "datetime": "2026-05-04T14:58:30.080279Z",
+    "entry_id": "019df37f-7640-7092-aa26-f72ba469a89a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

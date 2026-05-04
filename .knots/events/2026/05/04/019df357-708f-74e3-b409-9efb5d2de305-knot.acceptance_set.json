@@ -1,0 +1,9 @@
+{
+  "event_id": "019df357-708f-74e3-b409-9efb5d2de305",
+  "occurred_at": "2026-05-04T14:14:47.171374Z",
+  "knot_id": "foolery-d57e",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. `/beats?view=diagnostics` includes a stale grooming diagnostics card.\n2. `/api/beats/stale-grooming/status` or equivalent returns queue, worker, active, failure, and completion data.\n3. Tests cover the status response."
+  }
+}

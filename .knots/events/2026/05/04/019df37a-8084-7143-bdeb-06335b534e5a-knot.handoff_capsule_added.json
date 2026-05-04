@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37a-8084-7143-bdeb-06335b534e5a",
+  "occurred_at": "2026-05-04T14:53:05.028943Z",
+  "knot_id": "foolery-2ee2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved. Verified branch codex/2a4d-stale-grooming-refine at 69047617 against acceptance criteria: settings expose staleGrooming/stale_grooming, resolver uses dispatch default or explicit configured-agent override with loud FOOLERY GROOMING FAILURE on missing default, APIs list stale beats/enqueue selected/enqueue oldest/status, and route/unit tests cover required behavior. Sanity gates passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-05-04T14:53:05.028943Z",
+    "entry_id": "019df37a-8084-7143-bdeb-06240eb402b1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

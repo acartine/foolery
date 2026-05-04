@@ -1,0 +1,15 @@
+{
+  "event_id": "019df35f-84ad-7ea3-a31e-501f2314da10",
+  "occurred_at": "2026-05-04T14:23:36.621679Z",
+  "knot_id": "foolery-2ee2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete. Implementation should be done in the existing foolery-2a4d worktree and keep stale grooming advisory-only. The primary invariant is that missing stale grooming dispatch config must fail loudly, never fall back to the first registered agent.",
+    "datetime": "2026-05-04T14:23:36.621679Z",
+    "entry_id": "019df35f-84ad-7ea3-a31e-5005a1856214",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

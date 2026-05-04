@@ -1,0 +1,9 @@
+{
+  "event_id": "019df357-7068-7881-80d4-30cb311bf592",
+  "occurred_at": "2026-05-04T14:14:47.139242Z",
+  "knot_id": "foolery-79f2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nReplace the clipped right rail with an integrated stale-beats cue in the overview tab area that opens a lightbox/dialog for selection, review dispatch, and review status.\n\nVerification:\n1. Built-in browser review at `/beats?view=overview` shows no horizontal clipping at the default viewport.\n2. Stale beats dialog opens from the overview tab area, orders beats oldest updated first, supports select all and select fewer controls, and opens beat detail from rows.\n\nConstraints:\nKeep the overview matrix usable and do not create nested cards or page-section cards."
+  }
+}

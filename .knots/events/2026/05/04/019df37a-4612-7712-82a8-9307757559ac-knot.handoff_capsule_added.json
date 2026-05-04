@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37a-4612-7712-82a8-9307757559ac",
+  "occurred_at": "2026-05-04T14:52:50.066713Z",
+  "knot_id": "foolery-2ee2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented stale grooming as first-class dispatch/API behavior. Branch: codex/2a4d-stale-grooming-refine. Commit: 69047617. Verification: bun run lint, bunx tsc --noEmit, bun run test, bun run build, plus in-app browser review of overview dialog and diagnostics.",
+    "datetime": "2026-05-04T14:52:50.066713Z",
+    "entry_id": "019df37a-4612-7712-82a8-92fc1a817835",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

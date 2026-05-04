@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37e-6254-7d81-8230-c20dd63f1e03",
+  "occurred_at": "2026-05-04T14:57:19.44439Z",
+  "knot_id": "foolery-d57e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented diagnostics slice in branch codex/2a4d-stale-grooming-refine at commit 69047617, now also shipped on origin/main. Added stale grooming worker state tracking, status API route, runtime diagnostics card, and status route tests. Browser review confirmed the Diagnostics Runtime tab shows the Stale Grooming Worker card with queue/worker/completed/failed/uptime data.",
+    "datetime": "2026-05-04T14:57:19.44439Z",
+    "entry_id": "019df37e-6254-7d81-8230-c1fb2be39484",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

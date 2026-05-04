@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37e-8927-70f0-a78a-df43a6d3dd7f",
+  "occurred_at": "2026-05-04T14:57:29.383642Z",
+  "knot_id": "foolery-d57e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved. Confirmed /api/beats/stale-grooming/status returns queue, worker, active job, failure, completion, and review data; Diagnostics Runtime includes the Stale Grooming Worker card; tests include stale-beat-grooming-status-route coverage; default tests remain hermetic. Sanity gates passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-05-04T14:57:29.383642Z",
+    "entry_id": "019df37e-8927-70f0-a78a-df3db13b3edc",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

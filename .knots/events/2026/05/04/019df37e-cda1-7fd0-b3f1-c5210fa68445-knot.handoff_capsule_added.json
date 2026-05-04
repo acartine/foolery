@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37e-cda1-7fd0-b3f1-c5210fa68445",
+  "occurred_at": "2026-05-04T14:57:46.913786Z",
+  "knot_id": "foolery-d57e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. origin/main contains 69047617 with diagnostics included, commit and branch tags are present, shipped status route/card meet acceptance criteria, and remote CI/CD completed successfully (CI 25326058790, Coverage Badge 25326058791).",
+    "datetime": "2026-05-04T14:57:46.913786Z",
+    "entry_id": "019df37e-cda1-7fd0-b3f1-c51d6824c11e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

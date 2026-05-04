@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37f-52d5-7992-a0ad-d4f427119f0b",
+  "occurred_at": "2026-05-04T14:58:21.013043Z",
+  "knot_id": "foolery-2a4d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete. Feature branch codex/2a4d-stale-grooming-refine was fast-forward merged to main and pushed to origin/main at 69047617. Remote verification passed: CI run 25326058790 success, Coverage Badge run 25326058791 success. Note: CI reported non-failing coverage regression annotations but the required pipeline status is green.",
+    "datetime": "2026-05-04T14:58:21.013043Z",
+    "entry_id": "019df37f-52d5-7992-a0ad-d4eb64d91dee",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

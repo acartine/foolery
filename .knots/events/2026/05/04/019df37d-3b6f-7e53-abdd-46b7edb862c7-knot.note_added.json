@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37d-3b6f-7e53-abdd-46b7edb862c7",
+  "occurred_at": "2026-05-04T14:56:03.951951Z",
+  "knot_id": "foolery-79f2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: remove the clipped overview rail and replace it with a tab-strip stale-beats cue; implement a dialog/lightbox that loads stale beats sorted by updated-age descending; add bulk controls for Select all, Oldest five/select fewer, and Clear; show the default dispatch model plus override options from configured agents; display queued/running/review status; preserve overview matrix responsiveness with no nested page cards; browser-test default in-app viewport and dialog interactions.",
+    "datetime": "2026-05-04T14:56:03.951951Z",
+    "entry_id": "019df37d-3b6f-7e53-abdd-46a23e8c1e66",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37e-fdcb-7da1-9ec3-6c93df51c080",
+  "occurred_at": "2026-05-04T14:57:59.243877Z",
+  "knot_id": "foolery-2a4d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete for all child slices. Branch: codex/2a4d-stale-grooming-refine. Commit: 69047617, now also pushed to origin/main. Shipped children: foolery-2ee2 dispatch/API, foolery-79f2 overview dialog UX, foolery-d57e diagnostics. Verification passed locally: bun run lint, bunx tsc --noEmit, bun run test, bun run build. Built-in browser review passed for overview dialog/default viewport and diagnostics runtime card. Remote workflows on main passed: CI 25326058790 and Coverage Badge 25326058791.",
+    "datetime": "2026-05-04T14:57:59.243877Z",
+    "entry_id": "019df37e-fdcb-7da1-9ec3-6c8d0b5a32d9",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

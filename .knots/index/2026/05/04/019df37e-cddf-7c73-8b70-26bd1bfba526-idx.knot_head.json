@@ -1,0 +1,21 @@
+{
+  "event_id": "019df37e-cddf-7c73-8b70-26bd1bfba526",
+  "occurred_at": "2026-05-04T14:57:46.97507Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d57e",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add stale grooming diagnostics",
+    "type": "work",
+    "updated_at": "2026-05-04T14:57:46.97507Z",
+    "workflow_id": "work_sdlc"
+  }
+}

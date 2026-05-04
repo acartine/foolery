@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37d-3b6f-7e53-abdd-46de1228d753",
+  "occurred_at": "2026-05-04T14:56:03.951951Z",
+  "knot_id": "foolery-79f2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete. Complexity: medium UI refactor with API client dependencies. Main risks: narrow viewport clipping, stale ordering by created age instead of updated age, and ambiguous model override UI. Test strategy: unit/API coverage for list/options/reviews and built-in browser verification for overview/dialog/diagnostics.",
+    "datetime": "2026-05-04T14:56:03.951951Z",
+    "entry_id": "019df37d-3b6f-7e53-abdd-46c2bfa5f0c9",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

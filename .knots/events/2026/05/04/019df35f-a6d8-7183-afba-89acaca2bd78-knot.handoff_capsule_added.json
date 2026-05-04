@@ -1,0 +1,15 @@
+{
+  "event_id": "019df35f-a6d8-7183-afba-89acaca2bd78",
+  "occurred_at": "2026-05-04T14:23:45.368032Z",
+  "knot_id": "foolery-2ee2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approved. The dispatch/API slice is complete enough to implement: it identifies the shared settings contract, the no-fallback failure invariant, the API surface external agents need, and the route-test coverage required before shipment.",
+    "datetime": "2026-05-04T14:23:45.368032Z",
+    "entry_id": "019df35f-a6d8-7183-afba-89943970851c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

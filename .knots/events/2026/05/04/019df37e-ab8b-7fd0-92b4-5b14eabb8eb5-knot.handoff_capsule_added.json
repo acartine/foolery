@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37e-ab8b-7fd0-92b4-5b14eabb8eb5",
+  "occurred_at": "2026-05-04T14:57:38.187571Z",
+  "knot_id": "foolery-d57e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete. The tagged commit 69047617 is already merged and pushed to origin/main. Remote workflows passed on main: CI 25326058790 success and Coverage Badge 25326058791 success.",
+    "datetime": "2026-05-04T14:57:38.187571Z",
+    "entry_id": "019df37e-ab8b-7fd0-92b4-5b0d6461bad6",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

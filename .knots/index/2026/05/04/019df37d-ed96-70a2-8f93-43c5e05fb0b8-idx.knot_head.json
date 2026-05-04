@@ -1,0 +1,34 @@
+{
+  "event_id": "019df37d-ed96-70a2-8f93-43c5e05fb0b8",
+  "occurred_at": "2026-05-04T14:56:49.546919Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-79f2",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Move stale grooming into overview dialog",
+    "type": "work",
+    "updated_at": "2026-05-04T14:56:49.546919Z",
+    "workflow_id": "work_sdlc"
+  }
+}

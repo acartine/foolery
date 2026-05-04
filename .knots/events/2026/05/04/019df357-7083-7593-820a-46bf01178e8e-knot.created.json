@@ -1,0 +1,17 @@
+{
+  "event_id": "019df357-7083-7593-820a-46bf01178e8e",
+  "occurred_at": "2026-05-04T14:14:47.171374Z",
+  "knot_id": "foolery-d57e",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nExpose stale grooming queue and worker health in the Diagnostics runtime page using the scope refinement diagnostics pattern.\n\nVerification:\n1. Diagnostics page shows stale grooming worker status, queue size, active jobs, recent failures, and recent completed review results.\n2. Status route tests cover queue/worker/review status.\n\nConstraints:\nKeep default tests hermetic and avoid host process or fs access in unit tests.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add stale grooming diagnostics",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

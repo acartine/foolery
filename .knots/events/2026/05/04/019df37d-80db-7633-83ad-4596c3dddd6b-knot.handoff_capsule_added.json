@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37d-80db-7633-83ad-4596c3dddd6b",
+  "occurred_at": "2026-05-04T14:56:21.723898Z",
+  "knot_id": "foolery-79f2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented overview dialog slice in branch codex/2a4d-stale-grooming-refine at commit 69047617, now also shipped on origin/main. Replaced stale rail with Stale Beats tab-strip cue and dialog, added Select all/Oldest five/Clear controls, model default/override select, status cue, and updated-age descending ordering. Browser review on default in-app viewport confirmed no horizontal clipping after responsive button polish.",
+    "datetime": "2026-05-04T14:56:21.723898Z",
+    "entry_id": "019df37d-80db-7633-83ad-4580199f0bcf",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

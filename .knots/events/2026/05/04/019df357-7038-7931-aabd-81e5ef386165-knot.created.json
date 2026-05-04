@@ -1,0 +1,17 @@
+{
+  "event_id": "019df357-7038-7931-aabd-81e5ef386165",
+  "occurred_at": "2026-05-04T14:14:47.096825Z",
+  "knot_id": "foolery-2ee2",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nMake stale grooming first-class in dispatch settings and external APIs. Add a stale grooming action/pool target, default resolver, supported configured-model selection data, and API routes for stale listing, selected enqueue, oldest-N enqueue, and status.\n\nVerification:\n1. Route tests cover default resolution, override selection, list stale beats, enqueue selected targets, enqueue oldest five, and status payloads.\n2. `bun run test -- src/lib/__tests__/stale-beat-grooming*.test.ts` passes.\n\nConstraints:\nDo not silently fall back to the first configured agent. Preserve loud failure markers for missing configured dispatch resources.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add stale grooming dispatch and API",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

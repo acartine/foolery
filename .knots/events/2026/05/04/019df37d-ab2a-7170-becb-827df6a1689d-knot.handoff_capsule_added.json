@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37d-ab2a-7170-becb-827df6a1689d",
+  "occurred_at": "2026-05-04T14:56:32.554939Z",
+  "knot_id": "foolery-79f2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved. Confirmed the stale rail was removed from the overview layout and replaced with a tab-strip cue/dialog; dialog includes stale list, Select all/Oldest five/Clear, dispatch default and configured-agent override selection, queued/running status cues, and updated-age descending order. Built-in browser review at default viewport showed no horizontal clipping. Sanity gates passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-05-04T14:56:32.554939Z",
+    "entry_id": "019df37d-ab2a-7170-becb-826128cbcc69",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

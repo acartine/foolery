@@ -1,0 +1,9 @@
+{
+  "event_id": "019df355-a1b9-7a41-b5b5-09d0f7019e98",
+  "occurred_at": "2026-05-04T14:12:48.677734Z",
+  "knot_id": "foolery-2a4d",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The overview stale grooming UI no longer clips at the built-in browser default width and is opened from an integrated overview tab/dialog or equivalent first-class stale-beats cue.\n2. The freeform model textbox is removed; stale grooming defaults come from a configured dispatch/pool target and the user can override to any configured supported agent/model from a select control.\n3. Stale beats are ordered by age since last update descending and the UI provides clear select all and select fewer/select stale subset controls.\n4. First-class API routes allow clients to list stale beats, enqueue selected targets, enqueue the five oldest stale beats, and read review/queue/worker status without using the browser UI.\n5. Diagnostics expose stale grooming queue and worker/status data in the diagnostics page.\n6. Tests cover stale ordering, default dispatch/model selection, API listing/batch triggering/status, and UI payload shaping where practical.\n7. Lint, typecheck, default tests, build, and built-in browser review pass."
+  }
+}

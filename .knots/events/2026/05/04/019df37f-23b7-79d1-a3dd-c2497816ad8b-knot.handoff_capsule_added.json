@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37f-23b7-79d1-a3dd-c2497816ad8b",
+  "occurred_at": "2026-05-04T14:58:08.951518Z",
+  "knot_id": "foolery-2a4d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved. Verified parent acceptance criteria against shipped commit 69047617: overview stale-grooming cue/dialog replaces clipped rail; freeform model textbox removed; dispatch/pool default plus configured-agent override select implemented; stale beats sort by last-updated age descending; Select all/Oldest five/Clear controls present; first-class list/options/reviews/status APIs and OpenAPI/docs added; diagnostics runtime card added; advisory-only behavior preserved. Local gates and built-in browser review passed; remote CI and Coverage Badge passed on main.",
+    "datetime": "2026-05-04T14:58:08.951518Z",
+    "entry_id": "019df37f-23b7-79d1-a3dd-c23c0e9982a8",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

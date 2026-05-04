@@ -1,0 +1,9 @@
+{
+  "event_id": "019df357-7089-7d01-a9a3-f3444e6db07f",
+  "occurred_at": "2026-05-04T14:14:47.171374Z",
+  "knot_id": "foolery-d57e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nExpose stale grooming queue and worker health in the Diagnostics runtime page using the scope refinement diagnostics pattern.\n\nVerification:\n1. Diagnostics page shows stale grooming worker status, queue size, active jobs, recent failures, and recent completed review results.\n2. Status route tests cover queue/worker/review status.\n\nConstraints:\nKeep default tests hermetic and avoid host process or fs access in unit tests."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019df358-feb2-70d2-b760-4b6e6942338e",
+  "occurred_at": "2026-05-04T14:16:29.10598Z",
+  "knot_id": "foolery-2a4d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete for stale grooming refinement. Created planned child slices foolery-2ee2 (dispatch/API), foolery-79f2 (overview dialog UX), and foolery-d57e (diagnostics). Recommended approach: remove the clipped rail, add an overview stale-beats cue that opens a dialog; change stale ordering to updated-age descending; replace the freeform model textbox with a configured agent/model select defaulted from a new stale_grooming dispatch target; add select-all/oldest-five/clear controls; add first-class stale grooming list/enqueue/status/options API routes with OpenAPI/docs; and mirror scope-refinement diagnostics for stale grooming worker health. Preserve advisory-only behavior.",
+    "datetime": "2026-05-04T14:16:29.10598Z",
+    "entry_id": "019df358-feb1-7aa0-b202-46dc258548d3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

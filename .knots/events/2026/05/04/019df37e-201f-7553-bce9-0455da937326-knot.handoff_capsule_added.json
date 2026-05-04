@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37e-201f-7553-bce9-0455da937326",
+  "occurred_at": "2026-05-04T14:57:02.495215Z",
+  "knot_id": "foolery-d57e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete. Complexity: low-to-medium diagnostics/API slice. Risks: keeping worker status deterministic in tests and avoiding accidental host environment access in default tests. Test strategy: dedicated stale-grooming status route test plus full default suite.",
+    "datetime": "2026-05-04T14:57:02.495215Z",
+    "entry_id": "019df37e-201f-7553-bce9-044ad310ca63",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

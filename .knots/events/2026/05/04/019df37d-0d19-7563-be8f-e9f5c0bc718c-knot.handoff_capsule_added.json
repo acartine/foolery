@@ -1,0 +1,15 @@
+{
+  "event_id": "019df37d-0d19-7563-be8f-e9f5c0bc718c",
+  "occurred_at": "2026-05-04T14:55:52.089743Z",
+  "knot_id": "foolery-2ee2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. origin/main contains 69047617, commit and branch tags are present, shipped code preserves the no-silent-fallback invariant for stale grooming dispatch resolution, and remote CI/CD completed successfully: CI 25326058790 success; Coverage Badge 25326058791 success.",
+    "datetime": "2026-05-04T14:55:52.089743Z",
+    "entry_id": "019df37d-0d19-7563-be8f-e9e909cead1d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019df35f-84ad-7ea3-a31e-4ff65fb4fe1e",
+  "occurred_at": "2026-05-04T14:23:36.621679Z",
+  "knot_id": "foolery-2ee2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: update stale grooming settings and dispatch schema with a staleGrooming action plus stale_grooming pool; replace selected-agent-only resolution with dispatch-backed default resolution and explicit configured-agent override; add first-class list/options/reviews/status API routes; add OpenAPI/docs coverage; test sorting, default resolution, override, oldest-N enqueue, and status. Risk is avoiding silent agent fallback, so the resolver will fail loudly with FOOLERY GROOMING FAILURE when the default target is not configured.",
+    "datetime": "2026-05-04T14:23:36.621679Z",
+    "entry_id": "019df35f-84ad-7ea3-a31e-4fe2b7b2d0b1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

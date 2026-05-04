@@ -1,0 +1,9 @@
+{
+  "event_id": "019df357-706d-70d1-8536-4d2afb7c4589",
+  "occurred_at": "2026-05-04T14:14:47.139242Z",
+  "knot_id": "foolery-79f2",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. No clipped stale grooming controls at built-in browser default width.\n2. Dialog/lightbox contains stale beat list, bulk selection controls, dispatch default select, override select, and review status.\n3. Stale list is ordered by last-updated age descending."
+  }
+}
