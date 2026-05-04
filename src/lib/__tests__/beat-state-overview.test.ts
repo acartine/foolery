@@ -13,6 +13,7 @@ import {
   overviewBeatLabel,
   overviewColumnWidthPx,
   overviewLeaseInfoForBeat,
+  overviewTabForBeat,
   overviewTabForState,
   visibleOverviewGroups,
 } from "@/lib/beat-state-overview";
@@ -168,11 +169,32 @@ describe("beat-state-overview tabs", () => {
     expect(overviewTabForState("custom_state")).toBe("work_items");
   });
 
+  it("keeps non-terminal gate beats out of work items", () => {
+    expect(
+      overviewTabForBeat(
+        makeBeat("gate", "ready_for_planning", { type: "gate" }),
+      ),
+    ).toBe("gates");
+    expect(
+      overviewTabForBeat(
+        makeBeat("eval", "ready_for_planning", {
+          workflowId: "evaluate",
+        }),
+      ),
+    ).toBe("gates");
+    expect(
+      overviewTabForBeat(
+        makeBeat("done-gate", "shipped", { type: "gate" }),
+      ),
+    ).toBe("terminated");
+  });
+
   it("builds tab counts without counting lease records", () => {
     const tabs = buildOverviewStateTabs([
       makeBeat("work", "implementation"),
       makeBeat("explore", "ready_for_exploration"),
       makeBeat("gate", "ready_to_evaluate"),
+      makeBeat("gate-ready", "ready_for_planning", { type: "gate" }),
       makeBeat("ship", "shipped"),
       makeBeat("lease", "lease_active", { type: "lease" }),
     ]);
@@ -180,7 +202,7 @@ describe("beat-state-overview tabs", () => {
     expect(tabs.map((tab) => [tab.id, tab.count])).toEqual([
       ["work_items", 1],
       ["exploration", 1],
-      ["gates", 1],
+      ["gates", 2],
       ["terminated", 1],
     ]);
   });
@@ -189,6 +211,7 @@ describe("beat-state-overview tabs", () => {
     const beats = [
       makeBeat("explore", "ready_for_exploration"),
       makeBeat("gate", "ready_to_evaluate"),
+      makeBeat("gate-ready", "ready_for_planning", { type: "gate" }),
       makeBeat("ship", "shipped"),
     ];
 
@@ -199,7 +222,7 @@ describe("beat-state-overview tabs", () => {
     expect(
       groupOverviewBeatsByState(beats, "gates")
         .map((group) => group.state),
-    ).toEqual(["ready_to_evaluate"]);
+    ).toEqual(["ready_to_evaluate", "ready_for_planning"]);
 
     const terminated = groupOverviewBeatsByState(beats, "terminated");
     expect(terminated.map((group) => group.state)).toEqual([

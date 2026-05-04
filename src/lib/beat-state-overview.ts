@@ -128,7 +128,7 @@ export function groupOverviewBeatsByState(
   tabId: OverviewStateTabId = DEFAULT_OVERVIEW_STATE_TAB,
 ): BeatStateGroup[] {
   const tabBeats = beats.filter((beat) =>
-    overviewTabForState(beat.state) === tabId
+    overviewTabForBeat(beat) === tabId
   );
   const groups = new Map(
     groupBeatsByState(tabBeats).map((group) => [
@@ -169,6 +169,18 @@ export function overviewTabForState(
   ) ?? DEFAULT_OVERVIEW_STATE_TAB;
 }
 
+export function overviewTabForBeat(
+  beat: Pick<Beat, "state" | "type" | "workflowId" | "profileId">,
+): OverviewStateTabId {
+  const stateTab = OVERVIEW_STATE_TAB_OVERRIDES.get(
+    normalizeOverviewState(beat.state),
+  );
+  if (stateTab) return stateTab;
+  return isGateOverviewBeat(beat)
+    ? "gates"
+    : DEFAULT_OVERVIEW_STATE_TAB;
+}
+
 export function buildOverviewStateTabs(
   beats: readonly Beat[],
 ): OverviewStateTabSummary[] {
@@ -181,13 +193,21 @@ export function buildOverviewStateTabs(
 
   for (const beat of beats) {
     if (!isOverviewBeat(beat)) continue;
-    counts[overviewTabForState(beat.state)] += 1;
+    counts[overviewTabForBeat(beat)] += 1;
   }
 
   return OVERVIEW_STATE_TABS.map((tab) => ({
     ...tab,
     count: counts[tab.id],
   }));
+}
+
+function isGateOverviewBeat(
+  beat: Pick<Beat, "type" | "workflowId" | "profileId">,
+): boolean {
+  return normalizeOverviewState(beat.type) === "gate"
+    || normalizeOverviewState(beat.workflowId) === "evaluate"
+    || normalizeOverviewState(beat.profileId) === "evaluate";
 }
 
 export function isOverviewActiveState(
