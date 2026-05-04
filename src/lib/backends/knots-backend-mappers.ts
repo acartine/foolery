@@ -28,6 +28,14 @@ import {
   collectAliases,
 } from "@/lib/backends/knots-backend-helpers";
 
+type KnotLeaseAgentInfo = {
+  agent_type?: string;
+  provider?: string;
+  agent_name?: string;
+  model?: string;
+  model_version?: string;
+};
+
 // ── toBeat ──────────────────────────────────────────────────────────
 
 export function toBeat(
@@ -96,6 +104,7 @@ function toBeatWithoutWorkflow(
   const tags = (knot.tags ?? []).filter(
     (tag) => typeof tag === "string" && tag.trim().length > 0
   );
+  const leaseAgentInfo = knotLeaseAgentInfo(knot);
   return {
     id: knot.id,
     title: knot.title,
@@ -134,8 +143,8 @@ function toBeatWithoutWorkflow(
       // exists on a fresh lease). Surfacing it here lets the
       // beat-table renderer show the lease's agent without
       // re-extracting from anywhere — read what Knots stamped.
-      ...(knot.lease?.agent_info
-        ? { knotsLeaseAgentInfo: knot.lease.agent_info }
+      ...(leaseAgentInfo
+        ? { knotsLeaseAgentInfo: leaseAgentInfo }
         : {}),
     },
   };
@@ -155,6 +164,7 @@ function toBeatWithWorkflow(
   const tags = (knot.tags ?? []).filter(
     (tag) => typeof tag === "string" && tag.trim().length > 0
   );
+  const leaseAgentInfo = knotLeaseAgentInfo(knot);
   const rawWorkflowState = normalizeStateForWorkflow(
     knot.state,
     workflow,
@@ -210,11 +220,45 @@ function toBeatWithWorkflow(
       knotsSteps: stepEntries,
       // Surfaced for any knot with a bound lease so the table can
       // render the lease's agent without re-extracting. See above.
-      ...(knot.lease?.agent_info
-        ? { knotsLeaseAgentInfo: knot.lease.agent_info }
+      ...(leaseAgentInfo
+        ? { knotsLeaseAgentInfo: leaseAgentInfo }
         : {}),
     },
   };
+}
+
+function knotLeaseAgentInfo(
+  knot: KnotRecord,
+): KnotLeaseAgentInfo | undefined {
+  return cleanLeaseAgentInfo(knot.lease?.agent_info)
+    ?? cleanLeaseAgentInfo(
+      (knot as KnotRecord & { lease_agent?: unknown }).lease_agent,
+    );
+}
+
+function cleanLeaseAgentInfo(
+  value: unknown,
+): KnotLeaseAgentInfo | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const record = value as Record<string, unknown>;
+  const info: KnotLeaseAgentInfo = {};
+  copyAgentField(info, record, "agent_type");
+  copyAgentField(info, record, "provider");
+  copyAgentField(info, record, "agent_name");
+  copyAgentField(info, record, "model");
+  copyAgentField(info, record, "model_version");
+  return Object.keys(info).length > 0 ? info : undefined;
+}
+
+function copyAgentField(
+  info: KnotLeaseAgentInfo,
+  record: Record<string, unknown>,
+  key: keyof KnotLeaseAgentInfo,
+): void {
+  const value = record[key];
+  if (typeof value === "string" && value.trim().length > 0) {
+    info[key] = value.trim();
+  }
 }
 
 // ── Filtering ───────────────────────────────────────────────────────

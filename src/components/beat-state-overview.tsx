@@ -265,22 +265,23 @@ function BeatStateColumn({
       data-testid={`beat-state-group-${group.state}`}
     >
       <div className={
-        "flex min-h-8 items-start justify-between gap-1.5"
+        "flex min-h-7 items-center justify-between gap-1.5"
         + " border-b border-border/70 bg-muted/35 px-2 py-1"
       }>
-        <div className="min-w-0 flex-1">
+        <div className="flex min-h-4 min-w-0 flex-1 items-center">
           <BeatStateBadge
             state={group.state}
             label={overviewStateLabel(group.state)}
             className={
               "h-auto max-w-full justify-start whitespace-normal"
-              + " rounded-sm px-1 py-0.5 text-[9px] leading-[1.05]"
+              + " rounded-sm px-1 py-px text-[8px] leading-3"
             }
           />
         </div>
         <span className={
-          "rounded-sm bg-background px-1.5 py-0.5"
-          + " text-[9px] tabular-nums text-muted-foreground"
+          "flex h-4 shrink-0 items-center rounded-sm bg-background"
+          + " px-1.5 text-[9px] leading-none tabular-nums"
+          + " text-muted-foreground"
         }>
           {group.beats.length}
         </span>

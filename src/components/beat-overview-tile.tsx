@@ -137,11 +137,11 @@ function LeaseInfoBlock({
   onReleaseBeat: (beat: Beat) => void;
 }) {
   const providerAgent = providerAgentLabel(info);
-  const fields = [
-    { label: "Provider/agent", value: providerAgent ?? "-" },
-    { label: "Model", value: info.model ?? "-" },
-    { label: "Version", value: info.version ?? "-" },
-  ];
+  const metadata = leaseMetadataValues([
+    providerAgent,
+    info.model,
+    info.version,
+  ]);
 
   return (
     <div
@@ -156,43 +156,29 @@ function LeaseInfoBlock({
           Lease {relativeTime(info.startedAt)}
         </div>
       )}
-      <div className="mt-0.5 space-y-px">
-        {fields.map((field) => (
-          <LeaseInfoField
-            key={field.label}
-            label={field.label}
-            value={field.value}
-          />
-        ))}
-      </div>
+      {metadata.length > 0 && (
+        <div className="mt-0.5 flex min-w-0 flex-wrap gap-1">
+          {metadata.map((value) => (
+            <span
+              key={value}
+              className={
+                "max-w-full truncate rounded-sm bg-ochre-100/70"
+                + " px-1 py-px text-[8px] leading-3 text-ochre-900"
+                + " dark:bg-ochre-900/50 dark:text-ochre-100"
+              }
+              title={value}
+            >
+              {value}
+            </span>
+          ))}
+        </div>
+      )}
       <LeaseAction
         beat={beat}
         sessionId={info.sessionId}
         onFocusLeaseSession={onFocusLeaseSession}
         onReleaseBeat={onReleaseBeat}
       />
-    </div>
-  );
-}
-
-function LeaseInfoField({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-x-1">
-      <span className="min-w-0 uppercase text-ochre-600 dark:text-ochre-200">
-        {label}
-      </span>
-      <span
-        className="min-w-0 truncate text-foreground/80"
-        title={value}
-      >
-        {value}
-      </span>
     </div>
   );
 }
@@ -212,21 +198,41 @@ function LeaseAction({
   const onClick = sessionId
     ? () => onFocusLeaseSession(sessionId)
     : () => onReleaseBeat(beat);
+  const toneClass = sessionId
+    ? "bg-lake-700 text-lake-100 hover:bg-lake-700/90"
+    : "bg-rust-500 text-white hover:bg-rust-700";
 
   return (
     <button
       type="button"
       className={
-        "mt-0.5 text-[9px] font-medium leading-3"
-        + " text-ochre-800 underline-offset-2 hover:underline"
+        "mt-1 inline-flex h-4 items-center rounded-sm px-1.5"
+        + " text-[9px] font-semibold leading-none shadow-sm"
+        + ` ${toneClass}`
         + " focus-visible:outline-none focus-visible:ring-1"
-        + " focus-visible:ring-ring dark:text-ochre-100"
+        + " focus-visible:ring-ring"
       }
       onClick={onClick}
     >
       {label}
     </button>
   );
+}
+
+function leaseMetadataValues(
+  values: Array<string | undefined>,
+): string[] {
+  const seen = new Set<string>();
+  const metadata: string[] = [];
+  for (const value of values) {
+    const trimmed = value?.trim();
+    if (!trimmed) continue;
+    const key = trimmed.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    metadata.push(trimmed);
+  }
+  return metadata;
 }
 
 function providerAgentLabel(
