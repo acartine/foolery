@@ -1,0 +1,15 @@
+{
+  "event_id": "019df16e-0242-79c2-a150-ff8467093c6a",
+  "occurred_at": "2026-05-04T05:20:11.842831Z",
+  "knot_id": "foolery-2475",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning result for prototype beat state overview:\n\n1. Worktree/bootstrap: create `.worktrees/foolery-2475-overview` from `main` on branch `codex/2475-beat-state-overview`, then run `bun install --frozen-lockfile` before any lint/type/test/build command.\n2. View plumbing: add `overview` to `src/lib/beats-view.ts`, `src/components/app-header-hooks.ts`, and `src/components/app-header-parts.tsx`; add a header tab using a compact overview/status icon. Keep existing views and hotkey cycling intact.\n3. Data behavior: keep `/beats?view=overview` backed by the existing beat list query path, but make the overview fetch all visible beats rather than inheriting queue/active state filters. Search/type/priority filters can still narrow the loaded beat set if present.\n4. UI component: add a focused component such as `src/components/beat-state-overview.tsx` plus a small pure grouping helper if useful. Group every beat by `beat.state`, sort known workflow states with `compareWorkflowStatePriority`, and place unknown states after known states alphabetically.\n5. Not-a-kanban interaction: render grouped state sections as a responsive overview grid/list with counts and compact beat summaries. No drag handles, no drop zones, no mutation-on-move behavior. Cards/buttons should call the existing `handleOpenBeat` path so details still open through the current lightbox.\n6. Card content: include title, short id/alias context, `BeatStateBadge`, `BeatTypeBadge`, `BeatPriorityBadge`, repo context when `showRepoColumn` is true, and a compact updated/parent signal if space allows. Keep density high and avoid a marketing/dashboard hero treatment.\n7. Loading/error parity: reuse `RepoSwitchLoadingState`, degraded banner, streaming progress, and empty states from the list path where possible so overview behaves like the current beats screens.\n8. Tests: add hermetic unit coverage for grouping/sorting/every-beat-once behavior, then run `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build`.\n\nComplexity: medium. Most work is UI/view plumbing; the main risk is accidentally letting queue/active state filters hide beats in the overview.",
+    "datetime": "2026-05-04T05:20:11.842831Z",
+    "entry_id": "019df16e-0242-79c2-a150-ff77bb26a510",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

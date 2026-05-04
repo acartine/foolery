@@ -1,0 +1,9 @@
+{
+  "event_id": "019df16c-e330-7f20-a36f-a0ef8569e321",
+  "occurred_at": "2026-05-04T05:18:58.319482Z",
+  "knot_id": "foolery-2475",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. `/beats?view=overview` renders a state overview from the beats page data.\n2. Every visible beat appears exactly once in a state group based on its current state.\n3. State groups display counts and compact beat summaries with title, id, priority/type/state context, and repository context when applicable.\n4. The overview reuses existing beat opening/detail behavior instead of creating a separate detail path.\n5. Existing list, active, setlist, retakes, history, diagnostics, and final cut views remain reachable."
+  }
+}

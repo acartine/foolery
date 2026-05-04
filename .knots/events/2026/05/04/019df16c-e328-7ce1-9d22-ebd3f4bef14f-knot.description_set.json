@@ -1,0 +1,9 @@
+{
+  "event_id": "019df16c-e328-7ce1-9d22-ebd3f4bef14f",
+  "occurred_at": "2026-05-04T05:18:58.319482Z",
+  "knot_id": "foolery-2475",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nPrototype a non-kanban overview on the beats screen that shows all loaded beats grouped by their current workflow state, with counts and compact beat summaries for scanning.\n\nVerification:\n1. Run `bun install --frozen-lockfile` in the implementation worktree before quality checks.\n2. Run `bun run lint` and expect no lint failures.\n3. Run `bunx tsc --noEmit` and expect no type errors.\n4. Run `bun run test` and expect the default test suite to pass.\n5. Run `bun run build` and expect the production build to complete.\n6. Start the app and visit `/beats?view=overview`; the screen shows every loaded beat grouped by state without drag-and-drop kanban behavior.\n\nConstraints:\nKeep the prototype scoped to the beats UI. It should be kanban-like only in grouping by state, not a draggable kanban board."
+  }
+}

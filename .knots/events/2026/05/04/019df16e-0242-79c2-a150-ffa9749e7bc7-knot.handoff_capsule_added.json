@@ -1,0 +1,15 @@
+{
+  "event_id": "019df16e-0242-79c2-a150-ffa9749e7bc7",
+  "occurred_at": "2026-05-04T05:20:11.842831Z",
+  "knot_id": "foolery-2475",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan capsule: implement `/beats?view=overview` as a non-draggable state overview of all visible beats. Touch likely files: `src/lib/beats-view.ts`, `src/components/app-header-hooks.ts`, `src/components/app-header-parts.tsx`, `src/app/beats/page.tsx`, plus new `src/components/beat-state-overview.tsx` and optional pure helper/test. Preserve existing views and detail lightbox behavior. Validate with bun install, lint, tsc, test, build, and manual `/beats?view=overview` check.",
+    "datetime": "2026-05-04T05:20:11.842831Z",
+    "entry_id": "019df16e-0242-79c2-a150-ff9e9925c586",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
