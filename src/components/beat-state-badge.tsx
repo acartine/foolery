@@ -56,14 +56,16 @@ function formatState(state: string): string {
 export function BeatStateBadge({
   state: rawState,
   className,
+  label,
 }: {
   state: string;
   className?: string;
+  label?: string;
 }) {
   const state = rawState ?? "open";
   return (
     <Badge variant="outline" className={cn(stateColor(state), className)}>
-      {formatState(state)}
+      {label ?? formatState(state)}
     </Badge>
   );
 }

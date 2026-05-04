@@ -42,6 +42,12 @@ import {
 } from "@/lib/beats-view";
 import { useBeatsQuery } from "./use-beats-query";
 import { useAgentInfoMap } from "./use-agent-info-map";
+import {
+  useTerminalAgentInfoMap,
+} from "./use-terminal-agent-info";
+import {
+  buildOverviewLeaseInfoByBeatKey,
+} from "./overview-lease-info";
 import { useBulkActions } from "./use-bulk-actions";
 import { useBeatActions } from "./use-beat-actions";
 import { useBeatDetail } from "./use-beat-detail";
@@ -121,6 +127,14 @@ function useBeatsPageState() {
   const agentInfoByBeatId = useAgentInfoMap(
     isActiveView, beats, terminals,
   );
+  const terminalAgentInfoMap = useTerminalAgentInfoMap();
+  const overviewLeaseInfoByBeatKey = useMemo(
+    () => buildOverviewLeaseInfoByBeatKey(
+      terminals,
+      terminalAgentInfoMap,
+    ),
+    [terminals, terminalAgentInfoMap],
+  );
   const bulk = useBulkActions(beats);
   const actions = useBeatActions(
     beats, terminals,
@@ -142,6 +156,7 @@ function useBeatsPageState() {
     beats, isLoading, loadError, isDegradedError,
     hasRollingAncestor, showRepoColumn,
     agentInfoByBeatId, shippingByBeatId,
+    overviewLeaseInfoByBeatKey,
     activeBeatIds,
     streamingProgress,
     ...bulk, ...actions, ...detail,
@@ -269,6 +284,8 @@ function BeatsViewBody({
           isDegradedError={s.isDegradedError}
           beats={s.beats}
           showRepoColumn={s.showRepoColumn}
+          isAllRepositories={!s.activeRepo}
+          leaseInfoByBeatKey={s.overviewLeaseInfoByBeatKey}
           onOpenBeat={s.handleOpenBeat}
           streamingProgress={s.streamingProgress}
         />

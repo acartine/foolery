@@ -6,9 +6,14 @@ import type { Beat } from "@/lib/types";
 import {
   countGroupedBeats,
   filterOverviewBeats,
-  groupBeatsByState,
+  groupOverviewBeatsByState,
+  overviewBeatLabel,
+  overviewLeaseInfoForBeat,
 } from "@/lib/beat-state-overview";
-import type { BeatStateGroup } from "@/lib/beat-state-overview";
+import type {
+  BeatStateGroup,
+  OverviewLeaseInfo,
+} from "@/lib/beat-state-overview";
 import { displayBeatLabel } from "@/lib/beat-display";
 import { BeatStateBadge } from "@/components/beat-state-badge";
 import { BeatPriorityBadge } from "@/components/beat-priority-badge";
@@ -28,6 +33,8 @@ interface BeatStateOverviewScreenProps {
   isDegradedError: boolean;
   beats: Beat[];
   showRepoColumn: boolean;
+  isAllRepositories: boolean;
+  leaseInfoByBeatKey: Record<string, OverviewLeaseInfo>;
   onOpenBeat: (beat: Beat) => void;
   streamingProgress: StreamingProgress;
 }
@@ -38,6 +45,8 @@ export function BeatStateOverviewScreen({
   isDegradedError,
   beats,
   showRepoColumn,
+  isAllRepositories,
+  leaseInfoByBeatKey,
   onOpenBeat,
   streamingProgress,
 }: BeatStateOverviewScreenProps) {
@@ -77,7 +86,7 @@ export function BeatStateOverviewScreen({
   const allReposEmpty =
     streamingProgress.isComplete
     && streamingProgress.totalRepos > 0
-    && overviewBeats.length === 0;
+    && beats.length === 0;
 
   return (
     <div
@@ -98,12 +107,14 @@ export function BeatStateOverviewScreen({
         <OverviewEmptyState
           label="No results found across all repositories."
         />
-      ) : overviewBeats.length === 0 ? (
+      ) : beats.length === 0 ? (
         <OverviewEmptyState label="No beats found." />
       ) : (
         <BeatStateOverview
           beats={overviewBeats}
           showRepoColumn={showRepoColumn}
+          isAllRepositories={isAllRepositories}
+          leaseInfoByBeatKey={leaseInfoByBeatKey}
           onOpenBeat={onOpenBeat}
         />
       )}
@@ -114,14 +125,18 @@ export function BeatStateOverviewScreen({
 function BeatStateOverview({
   beats,
   showRepoColumn,
+  isAllRepositories,
+  leaseInfoByBeatKey,
   onOpenBeat,
 }: {
   beats: Beat[];
   showRepoColumn: boolean;
+  isAllRepositories: boolean;
+  leaseInfoByBeatKey: Record<string, OverviewLeaseInfo>;
   onOpenBeat: (beat: Beat) => void;
 }) {
   const groups = useMemo(
-    () => groupBeatsByState(beats),
+    () => groupOverviewBeatsByState(beats),
     [beats],
   );
   const groupedCount = countGroupedBeats(groups);
@@ -148,15 +163,17 @@ function BeatStateOverview({
       <div className="overflow-x-auto pb-2">
         <div className={
           "grid min-w-full grid-flow-col"
-          + " auto-cols-[minmax(14.5rem,1fr)] gap-2"
+          + " auto-cols-[minmax(8.5rem,calc((100%_-_3.5rem)/8))] gap-2"
         }>
           {groups.map((group) => (
             <BeatStateColumn
               key={group.state}
-              group={group}
-              showRepoColumn={showRepoColumn}
-              onOpenBeat={onOpenBeat}
-            />
+            group={group}
+            showRepoColumn={showRepoColumn}
+            isAllRepositories={isAllRepositories}
+            leaseInfoByBeatKey={leaseInfoByBeatKey}
+            onOpenBeat={onOpenBeat}
+          />
           ))}
         </div>
       </div>
@@ -167,10 +184,14 @@ function BeatStateOverview({
 function BeatStateColumn({
   group,
   showRepoColumn,
+  isAllRepositories,
+  leaseInfoByBeatKey,
   onOpenBeat,
 }: {
   group: BeatStateGroup;
   showRepoColumn: boolean;
+  isAllRepositories: boolean;
+  leaseInfoByBeatKey: Record<string, OverviewLeaseInfo>;
   onOpenBeat: (beat: Beat) => void;
 }) {
   return (
@@ -188,7 +209,8 @@ function BeatStateColumn({
         <div className="min-w-0">
           <BeatStateBadge
             state={group.state}
-            className="h-4 rounded-sm px-1 text-[10px]"
+            label={overviewStateLabel(group.state)}
+            className="h-4 max-w-full truncate rounded-sm px-1 text-[10px]"
           />
         </div>
         <span className={
@@ -199,14 +221,28 @@ function BeatStateColumn({
         </span>
       </div>
       <div className="divide-y divide-border/60">
-        {group.beats.map((beat) => (
-          <BeatOverviewTile
-            key={overviewTileKey(beat)}
-            beat={beat}
-            showRepoColumn={showRepoColumn}
-            onOpenBeat={onOpenBeat}
-          />
-        ))}
+        {group.beats.length > 0 ? (
+          group.beats.map((beat) => (
+            <BeatOverviewTile
+              key={overviewTileKey(beat)}
+              beat={beat}
+              showRepoColumn={showRepoColumn}
+              isAllRepositories={isAllRepositories}
+              leaseInfo={leaseInfoForTile(
+                beat,
+                leaseInfoByBeatKey,
+              )}
+              onOpenBeat={onOpenBeat}
+            />
+          ))
+        ) : (
+          <div
+            className="px-2 py-2 text-[10px] text-muted-foreground"
+            data-testid="beat-state-empty-column"
+          >
+            No beats
+          </div>
+        )}
       </div>
     </section>
   );
@@ -215,10 +251,14 @@ function BeatStateColumn({
 function BeatOverviewTile({
   beat,
   showRepoColumn,
+  isAllRepositories,
+  leaseInfo,
   onOpenBeat,
 }: {
   beat: Beat;
   showRepoColumn: boolean;
+  isAllRepositories: boolean;
+  leaseInfo: OverviewLeaseInfo | null;
   onOpenBeat: (beat: Beat) => void;
 }) {
   const repoLabel = showRepoColumn
@@ -244,7 +284,7 @@ function BeatOverviewTile({
           "min-w-0 truncate font-mono text-[10px]"
           + " leading-4 text-muted-foreground"
         }>
-          {displayBeatLabel(beat.id, beat.aliases)}
+          {overviewBeatLabel(beat, isAllRepositories)}
         </span>
         <BeatPriorityBadge
           priority={beat.priority}
@@ -281,7 +321,41 @@ function BeatOverviewTile({
           ))}
         </div>
       )}
+      {leaseInfo && (
+        <LeaseInfoLine info={leaseInfo} />
+      )}
     </button>
+  );
+}
+
+function LeaseInfoLine({ info }: { info: OverviewLeaseInfo }) {
+  const parts = [
+    info.startedAt ? `Lease ${relativeTime(info.startedAt)}` : null,
+    info.provider,
+    info.model,
+    info.version,
+  ].filter(Boolean);
+
+  if (parts.length === 0) return null;
+
+  return (
+    <div
+      className={
+        "mt-0.5 flex min-w-0 flex-wrap gap-x-1.5"
+        + " gap-y-0.5 text-[10px] leading-4 text-ochre-700"
+        + " dark:text-ochre-100"
+      }
+      data-testid="beat-overview-lease-info"
+    >
+      {parts.map((part) => (
+        <span
+          key={part}
+          className="max-w-full truncate"
+        >
+          {part}
+        </span>
+      ))}
+    </div>
   );
 }
 
@@ -340,6 +414,20 @@ function repoDisplayName(
   return null;
 }
 
+const OVERVIEW_STATE_LABELS: Record<string, string> = {
+  ready_for_plan_review: "Ready Plan Review",
+  ready_for_implementation: "Ready Impl",
+  ready_for_implementation_review: "Ready Impl Review",
+  implementation_review: "Impl Review",
+  ready_for_shipment: "Ready Shipment",
+  ready_for_shipment_review: "Ready Ship Review",
+  shipment_review: "Shipment Review",
+};
+
+function overviewStateLabel(state: string): string | undefined {
+  return OVERVIEW_STATE_LABELS[state];
+}
+
 function overviewContextItems(
   beat: Beat,
   repoLabel: string | null,
@@ -352,6 +440,15 @@ function overviewContextItems(
     items.push(repoLabel);
   }
   return items;
+}
+
+function leaseInfoForTile(
+  beat: Beat,
+  leaseInfoByBeatKey: Record<string, OverviewLeaseInfo>,
+): OverviewLeaseInfo | null {
+  const byTile = leaseInfoByBeatKey[overviewTileKey(beat)];
+  const byId = leaseInfoByBeatKey[beat.id];
+  return overviewLeaseInfoForBeat(beat, byTile ?? byId);
 }
 
 function overviewTileKey(
