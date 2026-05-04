@@ -1,0 +1,9 @@
+{
+  "event_id": "019df2d5-fcfb-7f41-b017-efc3292ffe61",
+  "occurred_at": "2026-05-04T11:53:23.441287Z",
+  "knot_id": "foolery-3b78",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The rail fetches registered agents and requires an explicit agent selection before review.\n2. Users can provide an optional model override for the selected run.\n3. Review status and results render next to each stale beat.\n4. Successful review enqueue invalidates or refreshes the relevant status query without mutating beat workflow states."
+  }
+}

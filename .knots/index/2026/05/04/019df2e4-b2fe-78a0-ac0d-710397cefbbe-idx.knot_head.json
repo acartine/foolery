@@ -1,0 +1,34 @@
+{
+  "event_id": "019df2e4-b2fe-78a0-ac0d-710397cefbbe",
+  "occurred_at": "2026-05-04T12:09:27.540474Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-119c",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Keep zero-count overview columns hideable",
+    "type": "work",
+    "updated_at": "2026-05-04T12:09:27.540474Z",
+    "workflow_id": "work_sdlc"
+  }
+}

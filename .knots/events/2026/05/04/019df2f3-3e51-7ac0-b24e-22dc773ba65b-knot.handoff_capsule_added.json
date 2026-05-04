@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2f3-3e51-7ac0-b24e-22dc773ba65b",
+  "occurred_at": "2026-05-04T12:25:20.721848Z",
+  "knot_id": "foolery-3d0f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete on codex/3d0f-stale-grooming at 8091ba70446659f0bac74018d988f5204bc684db. Added stale-beat grooming rail on the overview screen, explicit agent/model selection, stale review API/queue/worker/store, prompt parsing, and hermetic tests. Validation: bun run lint; bunx tsc --noEmit; bun run test; bun run build; Playwright smoke on /beats?view=overview confirmed the stale rail and review controls render.",
+    "datetime": "2026-05-04T12:25:20.721848Z",
+    "entry_id": "019df2f3-3e51-7ac0-b24e-22c1a3d32994",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

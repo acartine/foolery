@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2e4-5d1f-7d41-903a-42d075909fa8",
+  "occurred_at": "2026-05-04T12:09:05.563979Z",
+  "knot_id": "foolery-119c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipped to remote main at 5761392ea2376a7799f21d5e15bbe85c954e042d. Remote verification: CI https://github.com/acartine/foolery/actions/runs/25318046898 succeeded; Coverage Badge https://github.com/acartine/foolery/actions/runs/25318046688 succeeded. Local verification before shipment: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-05-04T12:09:05.563979Z",
+    "entry_id": "019df2e4-5d1f-7d41-903a-42c01f20cd96",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019df2d3-95c3-7cf1-af35-61e75140ed3c",
+  "occurred_at": "2026-05-04T11:50:45.943544Z",
+  "knot_id": "foolery-3d0f",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nAdd an overview-screen stale beat grooming feature that identifies beats older than 7 days and lets a user trigger an AI-backed review that classifies each stale beat as still relevant, changed shape, or no longer relevant. Include model/agent choice at the review trigger/config surface where existing agent configuration patterns support it.\n\nVerification:\n1. Run `bun run lint` and expect no lint failures.\n2. Run `bunx tsc --noEmit` and expect no type errors.\n3. Run `bun run test` and expect the default suite to pass.\n4. Run `bun run build` and expect the Next.js build to complete.\n5. Open the overview screen and confirm stale beats older than 7 days appear in a right-side grooming surface with an AI review trigger and model/agent controls.\n\nConstraints:\nKeep the first implementation aligned with existing overview and agent-setting patterns. Do not introduce an alternate work tracker, workflow graph, or PR workflow."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2e9-e72c-7001-9a00-144e6a419fb6",
+  "occurred_at": "2026-05-04T12:15:08.588276Z",
+  "knot_id": "foolery-4f8e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved. Reviewed branch codex/4f8e-version-source against origin/main. The diff removes the compile-time badge version path, uses /api/version via shared VersionStatusData, passes installedVersion through header props, updates forced badge checks back into the shared status, and adds focused coverage for banner derivation and badge display. Gates verified in the implementation worktree: bun run lint; bunx tsc --noEmit; bun run test; bun run build. No regressions or invariant violations found.",
+    "datetime": "2026-05-04T12:15:08.588276Z",
+    "entry_id": "019df2e9-e72c-7001-9a00-143d0239af01",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

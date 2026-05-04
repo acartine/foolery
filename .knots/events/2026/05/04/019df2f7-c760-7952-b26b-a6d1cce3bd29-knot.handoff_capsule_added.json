@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2f7-c760-7952-b26b-a6d1cce3bd29",
+  "occurred_at": "2026-05-04T12:30:17.952438Z",
+  "knot_id": "foolery-3d0f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete. Fast-forward merged codex/3d0f-stale-grooming to main and pushed remote main at 8091ba70446659f0bac74018d988f5204bc684db. Verified GitHub Actions for that commit: CI succeeded and Coverage Badge succeeded. CI emitted non-blocking coverage regression annotations, but the run conclusion was success.",
+    "datetime": "2026-05-04T12:30:17.952438Z",
+    "entry_id": "019df2f7-c760-7952-b26b-a6c0ce6e6655",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

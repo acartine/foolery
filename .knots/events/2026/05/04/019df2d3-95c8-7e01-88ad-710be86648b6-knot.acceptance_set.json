@@ -1,0 +1,9 @@
+{
+  "event_id": "019df2d3-95c8-7e01-88ad-710be86648b6",
+  "occurred_at": "2026-05-04T11:50:45.943544Z",
+  "knot_id": "foolery-3d0f",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The overview screen exposes a stale-beat grooming surface that counts and lists non-terminal beats older than 7 days.\n2. Stale beat review categories are represented as: still do, reshape, and drop.\n3. The review trigger passes selected stale beats plus the selected agent/model through a backend route or existing dispatch/session path.\n4. Tests cover stale-beat age classification and review request payload shaping.\n5. Existing lint, typecheck, default test, and build commands pass."
+  }
+}

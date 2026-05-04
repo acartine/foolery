@@ -1,0 +1,21 @@
+{
+  "event_id": "019df2ed-23df-7f32-9842-31229d051ad2",
+  "occurred_at": "2026-05-04T12:18:40.735432Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4f8e",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Unify Foolery version display",
+    "type": "work",
+    "updated_at": "2026-05-04T12:18:40.735432Z",
+    "workflow_id": "work_sdlc"
+  }
+}

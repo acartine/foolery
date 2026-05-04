@@ -1,0 +1,21 @@
+{
+  "event_id": "019df2f8-481a-7962-b38b-2ff5b417019a",
+  "occurred_at": "2026-05-04T12:30:50.906559Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3d0f",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add stale beat grooming",
+    "type": "work",
+    "updated_at": "2026-05-04T12:30:50.906559Z",
+    "workflow_id": "work_sdlc"
+  }
+}

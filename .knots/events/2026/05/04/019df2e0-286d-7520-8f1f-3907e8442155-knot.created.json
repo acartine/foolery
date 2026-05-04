@@ -1,0 +1,17 @@
+{
+  "event_id": "019df2e0-286d-7520-8f1f-3907e8442155",
+  "occurred_at": "2026-05-04T12:04:29.933038Z",
+  "knot_id": "foolery-4f8e",
+  "type": "knot.created",
+  "data": {
+    "body": "Fix the UI contradiction where the update banner and header badge report different installed Foolery versions. Trace the installed/current/latest version sources, make the header and update affordance use a single canonical source of truth, and add focused tests for the version display contract.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Unify Foolery version display",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2e1-bf79-7c12-9f99-de6a7c2e9189",
+  "occurred_at": "2026-05-04T12:06:14.137924Z",
+  "knot_id": "foolery-119c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented zero-count overview column persistence on branch codex/119c-overview-hide-empty at commit 5761392ea2376a7799f21d5e15bbe85c954e042d. The overview now remembers introduced columns per tab, keeps them rendered when empty, shows an empty-column Hide button, removes the column when Hide is clicked, and reintroduces it automatically when beats return. Verification on updated origin/main: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-05-04T12:06:14.137924Z",
+    "entry_id": "019df2e1-bf79-7c12-9f99-de5a82a0a059",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

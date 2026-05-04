@@ -1,0 +1,17 @@
+{
+  "event_id": "019df2d3-ad28-7263-bbac-e2de777426a5",
+  "occurred_at": "2026-05-04T11:50:51.944672Z",
+  "knot_id": "foolery-a811",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "lease",
+    "state": "lease_ready",
+    "title": "Lease: claim-foolery-3d0f",
+    "type": "lease",
+    "workflow_id": "lease_sdlc"
+  }
+}

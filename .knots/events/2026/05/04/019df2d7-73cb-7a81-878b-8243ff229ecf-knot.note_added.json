@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2d7-73cb-7a81-878b-8243ff229ecf",
+  "occurred_at": "2026-05-04T11:54:59.403486Z",
+  "knot_id": "foolery-3d0f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Bookkeeping correction: replaced direct `parent_of` edges with `planned_child` links. Direct parent/child edges block parent progression until children advance, which is not appropriate for this planning-only action; the child knots remain linked as planned implementation slices.",
+    "datetime": "2026-05-04T11:54:59.403486Z",
+    "entry_id": "019df2d7-73cb-7a81-878b-823d8f986187",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

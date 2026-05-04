@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2dc-1c86-7ef1-84d9-41737691e656",
+  "occurred_at": "2026-05-04T12:00:04.742415Z",
+  "knot_id": "foolery-3d0f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approved. The plan is complete, feasible, and aligned with repo constraints: it keeps grooming advisory, isolates stale-age logic behind pure helpers with injected time, avoids automatic workflow-state mutation, uses explicit trigger-level agent/model choice to satisfy the quota-selection requirement without broad settings churn, and keeps client API additions out of `src/lib/api.ts` to respect file-size limits. Test coverage targets the critical risks: age classification, payload shaping, prompt/result parsing, invalid selected agents, and full repo quality gates. Implementation should keep the UI rail compact and should use `updated` vs `created` only if user/product feedback later clarifies that \"stale\" means last touched rather than created age.",
+    "datetime": "2026-05-04T12:00:04.742415Z",
+    "entry_id": "019df2dc-1c86-7ef1-84d9-41692d3047fb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

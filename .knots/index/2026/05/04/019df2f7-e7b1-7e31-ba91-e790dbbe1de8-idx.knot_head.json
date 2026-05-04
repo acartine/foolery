@@ -1,0 +1,37 @@
+{
+  "event_id": "019df2f7-e7b1-7e31-ba91-e790dbbe1de8",
+  "occurred_at": "2026-05-04T12:30:26.225964Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3d0f",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Add stale beat grooming",
+    "type": "work",
+    "updated_at": "2026-05-04T12:30:26.225964Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019df2f7-d67f-75f2-a17e-febb93b51630"
+  }
+}

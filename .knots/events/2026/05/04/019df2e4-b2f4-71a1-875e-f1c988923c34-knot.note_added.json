@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2e4-b2f4-71a1-875e-f1c988923c34",
+  "occurred_at": "2026-05-04T12:09:27.540474Z",
+  "knot_id": "foolery-119c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. Verified main and origin/main both point to 5761392ea2376a7799f21d5e15bbe85c954e042d, the shipped commit is tagged on the knot, the branch tag is present, and GitHub Actions completed successfully for CI and Coverage Badge on the shipped SHA. No dependent-system regressions found in local gates or remote CI.",
+    "datetime": "2026-05-04T12:09:27.540474Z",
+    "entry_id": "019df2e4-b2f4-71a1-875e-f1b7c86bff27",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

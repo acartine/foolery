@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2e9-4afc-7003-91ed-e49782909e11",
+  "occurred_at": "2026-05-04T12:14:28.604277Z",
+  "knot_id": "foolery-4f8e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation artifact ready. Branch: codex/4f8e-version-source. Commit: a8ce5d74c65b26e29a2d74b565634a2555926f51. Summary: removed the badge's NEXT_PUBLIC_APP_VERSION source, added a shared /api/version client status fetcher, made the header hook own canonical installed/latest/update status, passed installedVersion into VersionBadge, and wired forced badge checks back into shared status. Validation passed in the implementation worktree: bun run lint; bunx tsc --noEmit; bun run test; bun run build.",
+    "datetime": "2026-05-04T12:14:28.604277Z",
+    "entry_id": "019df2e9-4afc-7003-91ed-e48247583344",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

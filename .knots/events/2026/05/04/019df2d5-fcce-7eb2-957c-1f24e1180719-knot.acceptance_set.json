@@ -1,0 +1,9 @@
+{
+  "event_id": "019df2d5-fcce-7eb2-957c-1f24e1180719",
+  "occurred_at": "2026-05-04T11:53:23.379921Z",
+  "knot_id": "foolery-36d2",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. A pure helper returns non-terminal overview beats older than 7 days using an injected clock value for tests.\n2. The overview tab/header area shows a stale beat count and list on the right.\n3. Stale beat rows can open the existing beat detail view.\n4. Empty and loading states preserve the existing overview behavior."
+  }
+}

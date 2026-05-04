@@ -1,0 +1,9 @@
+{
+  "event_id": "019df2d5-fd1d-72f1-a8dc-3c33d739c1a3",
+  "occurred_at": "2026-05-04T11:53:23.474657Z",
+  "knot_id": "foolery-6b74",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. POST review route accepts beat ids plus selected agent id and optional model override.\n2. Review jobs store decision, rationale, optional suggested scope changes, timestamps, and per-beat status.\n3. The prompt requires one of still_do, reshape, or drop.\n4. Missing or invalid selected agents return a user-visible error with a distinctive grooming failure marker."
+  }
+}

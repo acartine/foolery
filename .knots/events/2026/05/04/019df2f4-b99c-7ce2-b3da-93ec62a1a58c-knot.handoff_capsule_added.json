@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2f4-b99c-7ce2-b3da-93ec62a1a58c",
+  "occurred_at": "2026-05-04T12:26:57.820504Z",
+  "knot_id": "foolery-3d0f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved. Reviewed branch codex/3d0f-stale-grooming against origin/main and found no blockers. Acceptance coverage verified: stale overview rail lists non-terminal beats older than 7 days, decisions are still_do/reshape/drop, selected targets carry explicit agent and optional model override through the API/queue/worker path, and tests cover age rules, payload shaping, prompt parsing, and route validation. Sanity gates passed after rebase: bun run lint; bunx tsc --noEmit; bun run test; bun run build; Playwright smoke confirmed overview rendering.",
+    "datetime": "2026-05-04T12:26:57.820504Z",
+    "entry_id": "019df2f4-b99c-7ce2-b3da-93d626476561",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

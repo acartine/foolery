@@ -1,0 +1,9 @@
+{
+  "event_id": "019df2d5-fcc9-7a21-a387-1ab67dac2fb3",
+  "occurred_at": "2026-05-04T11:53:23.379921Z",
+  "knot_id": "foolery-36d2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nAdd the overview UI surface for stale beat grooming. The overview header/tab row should expose a right-side stale beat rail that lists non-terminal beats older than 7 days and lets the user select which stale beats to review.\n\nVerification:\n1. Run focused component/lib tests for stale beat age filtering and overview rendering.\n2. Open the overview screen and confirm stale beats appear in the right-side rail without disrupting the state matrix.\n\nConstraints:\nUse existing overview components, tab styling, and beat detail opening behavior. Do not add a new top-level page."
+  }
+}

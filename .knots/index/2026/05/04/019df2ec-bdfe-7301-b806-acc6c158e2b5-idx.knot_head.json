@@ -1,0 +1,37 @@
+{
+  "event_id": "019df2ec-bdfe-7301-b806-acc6c158e2b5",
+  "occurred_at": "2026-05-04T12:18:14.654303Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4f8e",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Unify Foolery version display",
+    "type": "work",
+    "updated_at": "2026-05-04T12:18:14.654303Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019df2ec-ae2d-7300-9511-554289602d4e"
+  }
+}

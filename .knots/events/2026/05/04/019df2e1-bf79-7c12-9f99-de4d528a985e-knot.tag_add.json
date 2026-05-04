@@ -1,0 +1,9 @@
+{
+  "event_id": "019df2e1-bf79-7c12-9f99-de4d528a985e",
+  "occurred_at": "2026-05-04T12:06:14.137924Z",
+  "knot_id": "foolery-119c",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/119c-overview-hide-empty"
+  }
+}

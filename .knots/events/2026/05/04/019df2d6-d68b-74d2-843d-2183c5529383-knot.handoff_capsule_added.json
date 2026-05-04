@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2d6-d68b-74d2-843d-2183c5529383",
+  "occurred_at": "2026-05-04T11:54:19.147123Z",
+  "knot_id": "foolery-3d0f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete for stale beat grooming. Created children foolery-36d2 (overview rail), foolery-6b74 (AI review jobs), and foolery-3b78 (controls/status), linked from parent foolery-3d0f. Recommended first implementation uses trigger-level explicit agent selection plus optional model override, not a new persistent dispatch action, and stores advisory results with decisions `still_do`, `reshape`, and `drop`. No implementation files were changed in this planning action.",
+    "datetime": "2026-05-04T11:54:19.147123Z",
+    "entry_id": "019df2d6-d68b-74d2-843d-217b34e2ffde",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

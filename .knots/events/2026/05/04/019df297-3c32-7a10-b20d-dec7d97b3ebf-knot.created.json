@@ -1,0 +1,17 @@
+{
+  "event_id": "019df297-3c32-7a10-b20d-dec7d97b3ebf",
+  "occurred_at": "2026-05-04T10:44:50.866887Z",
+  "knot_id": "foolery-9725",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nMake the overview Release action repaint immediately when clicked instead of waiting for the rollback request to complete, while still reconciling with the server result on success or failure.\n\nVerification:\n1. Run `bun run lint` and expect success.\n2. Run `bunx tsc --noEmit` and expect success.\n3. Run `bun run test` and expect success.\n4. Run `bun run build` and expect success.\n5. Open `http://localhost:4137/beats?view=overview&state=queued`, click Release on an active beat without a terminal session, and confirm the overview updates/repaints immediately before the rollback request finishes.\n\nConstraints:\nUse the existing rollback API as the source of truth. Do not invent a separate state transition; make the client cache/UI optimistic and rollback the optimistic change if the request fails.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Release beats optimistically",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

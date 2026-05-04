@@ -1,0 +1,17 @@
+{
+  "event_id": "019df2d6-246a-7832-86b3-c4389d3df6f0",
+  "occurred_at": "2026-05-04T11:53:33.546358Z",
+  "knot_id": "foolery-119c",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nWhen an overview column has appeared once, keep it visible after its count falls back to zero and show a hide control only while it is empty. If entries return, hide that control and keep the existing width-stability behavior.\n\nVerification:\n1. Run focused overview/column tests and confirm they pass.\n2. Run bun run lint, bunx tsc --noEmit, bun run test, and bun run build after dependencies are installed in the worktree.\n3. In the overview UI, confirm a previously populated column remains visible at count 0 with a hide control, the control removes the empty column, and the control disappears when count becomes nonzero.\n\nConstraints:\nPreserve existing column width anti-jitter behavior. Do not add a PR workflow.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Keep zero-count overview columns hideable",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

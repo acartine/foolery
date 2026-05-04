@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2f8-37d1-7612-963d-81e6be4405c1",
+  "occurred_at": "2026-05-04T12:30:46.737824Z",
+  "knot_id": "foolery-3d0f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. Verified main and origin/main both point to 8091ba70446659f0bac74018d988f5204bc684db, the knot has commit:8091ba70446659f0bac74018d988f5204bc684db and branch:codex/3d0f-stale-grooming tags, the shipped code preserves the advisory-only grooming invariant, and GitHub Actions completed successfully for CI and Coverage Badge on the pushed main commit.",
+    "datetime": "2026-05-04T12:30:46.737824Z",
+    "entry_id": "019df2f8-37d1-7612-963d-81d68445941e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

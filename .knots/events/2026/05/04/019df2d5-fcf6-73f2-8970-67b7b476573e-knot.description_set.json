@@ -1,0 +1,9 @@
+{
+  "event_id": "019df2d5-fcf6-73f2-8970-67b7b476573e",
+  "occurred_at": "2026-05-04T11:53:23.441287Z",
+  "knot_id": "foolery-3b78",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nConnect the overview stale beat rail to backend review jobs, registered-agent choices, model override input, result polling, and status summaries so users can run grooming from the overview screen.\n\nVerification:\n1. Run UI/unit tests covering payload shaping from selected stale beats, agent/model controls, and result display.\n2. Run lint, typecheck, default tests, and build.\n\nConstraints:\nKeep controls compact and consistent with existing Settings/Dispatch selects. Treat selected agent/model as per-run choices in the first implementation unless a later design explicitly adds persistent grooming settings."
+  }
+}

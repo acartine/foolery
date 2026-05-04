@@ -1,0 +1,17 @@
+{
+  "event_id": "019df2d5-fd12-72f1-97d5-db1190a798ba",
+  "occurred_at": "2026-05-04T11:53:23.474657Z",
+  "knot_id": "foolery-6b74",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nAdd a backend AI review path for stale beats. The route should enqueue stale beat review jobs, run a selected registered agent/model against each beat, and store review results using the decisions still_do, reshape, or drop.\n\nVerification:\n1. Run focused unit tests for request validation, job payload shaping, prompt parsing, and result storage.\n2. Trigger a review from the UI and confirm jobs are accepted without starting a normal take session.\n\nConstraints:\nDo not use terminal workflow transitions for grooming. Fail loudly when a selected agent cannot resolve; never fall back to the first configured agent.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add stale grooming AI review jobs",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2e1-cf58-7d03-9e85-3a23dc97b41f",
+  "occurred_at": "2026-05-04T12:06:18.200572Z",
+  "knot_id": "foolery-4f8e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planned 4f8e. The contradiction is caused by `VersionBadge` using compile-time `NEXT_PUBLIC_APP_VERSION` while the banner uses canonical `/api/version` from `release-version.ts`. Implement by making `/api/version` the only UI source, passing installed version through the header into the badge, removing the env-bundled badge constant, updating forced checks to refresh shared status, and adding focused tests. Next implementation should use a dedicated worktree and must not use PR workflow.",
+    "datetime": "2026-05-04T12:06:18.200572Z",
+    "entry_id": "019df2e1-cf58-7d03-9e85-3a197417d9af",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019df2d6-247f-7902-8a9f-a64fa9be131c",
+  "occurred_at": "2026-05-04T11:53:33.546358Z",
+  "knot_id": "foolery-119c",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Overview columns that have previously been introduced remain rendered when their current count is 0.\n2. A hide link or button is rendered only for introduced overview columns whose current count is 0.\n3. Activating the hide control removes that empty overview column from the screen until it is introduced again.\n4. The hide control is not rendered while the same column has a nonzero count."
+  }
+}

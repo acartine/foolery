@@ -1,0 +1,9 @@
+{
+  "event_id": "019df297-3c46-7d73-9b64-7f8cd261fcc6",
+  "occurred_at": "2026-05-04T10:44:50.866887Z",
+  "knot_id": "foolery-9725",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Clicking `Release` immediately removes or visibly updates the released active beat in the overview without waiting for the rollback request to finish.\n2. The Release action still calls the existing rollback API for the correct beat and repository scope.\n3. A failed rollback restores the prior cached overview data and shows an error.\n4. Beat list query caches are invalidated after the rollback settles so server truth wins.\n5. Existing overview tabs, counts, grouping, and tile open/focus behavior remain intact."
+  }
+}

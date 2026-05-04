@@ -1,0 +1,15 @@
+{
+  "event_id": "019df2d6-8bc1-7402-88d7-e958010e5412",
+  "occurred_at": "2026-05-04T11:54:00.001766Z",
+  "knot_id": "foolery-119c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan complete for overview zero-count column visibility. Expected implementation touches the overview column rendering/hook area and focused tests under src/components or src/lib/__tests__. Main risk is conflating width watermarking with user-hidden visibility; keep those concerns explicit. Verify both UI behavior and existing anti-jitter behavior.",
+    "datetime": "2026-05-04T11:54:00.001766Z",
+    "entry_id": "019df2d6-8bc1-7402-88d7-e94fba65a4ec",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
