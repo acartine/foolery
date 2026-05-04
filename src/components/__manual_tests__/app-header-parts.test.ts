@@ -54,22 +54,22 @@ function flattenText(node: ReactNode): string {
   return flattenText(element.props.children);
 }
 
-describe("VersionBannerBar", () => {
-  function makeStatus(
-    phase: AppUpdateStatus["phase"],
-  ): AppUpdateStatus {
-    return {
-      phase,
-      message: null,
-      error: null,
-      startedAt: null,
-      endedAt: null,
-      workerPid: null,
-      launcherPath: null,
-      fallbackCommand: "foolery update && foolery restart",
-    };
-  }
+function makeStatus(
+  phase: AppUpdateStatus["phase"],
+): AppUpdateStatus {
+  return {
+    phase,
+    message: null,
+    error: null,
+    startedAt: null,
+    endedAt: null,
+    workerPid: null,
+    launcherPath: null,
+    fallbackCommand: "foolery update && foolery restart",
+  };
+}
 
+describe("VersionBannerBar", () => {
   it("renders a visible update action in the banner", () => {
     const tree = VersionBannerBar({
       banner: {
@@ -159,6 +159,30 @@ describe("VersionBannerBar", () => {
     expect(updateButton?.props.children).toBe(
       "Restarting…",
     );
+  });
+});
+
+describe("VersionBannerBar completion", () => {
+  it("renders completed updates as non-clickable banner status", () => {
+    const tree = VersionBannerBar({
+      banner: {
+        installedVersion: "0.5.1",
+        latestVersion: "0.6.0",
+      },
+      updateStatus: makeStatus("completed"),
+      onUpdateNow: vi.fn(),
+      onDismiss: vi.fn(),
+    });
+
+    const updateButton = findElement(
+      tree,
+      (element) =>
+        element.type === Button &&
+        element.props.variant === "link",
+    );
+
+    expect(updateButton).toBeNull();
+    expect(flattenText(tree)).toContain("Update complete");
   });
 });
 

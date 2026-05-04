@@ -358,4 +358,26 @@ describe("VersionPopoverBody", () => {
       "Restarting Foolery. Manual fallback:",
     );
   });
+
+  it("renders update completion as non-clickable status", () => {
+    const tree = VersionPopoverBody({
+      state: {
+        status: "update-available",
+        latestVersion: "0.6.2",
+        versionStatus: makeVersionStatus({
+          latestVersion: "0.6.2",
+        }),
+      },
+      installedVersion: "0.5.0",
+      updateStatus: makeUpdateStatus("completed"),
+      onCheck: vi.fn(),
+      onUpdateNow: vi.fn(),
+    });
+
+    expect(findButton(tree)).toBeNull();
+    expect(flattenText(tree)).toContain("Update complete");
+    expect(flattenText(tree)).toContain(
+      "Refreshing page shortly",
+    );
+  });
 });

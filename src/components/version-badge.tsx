@@ -227,23 +227,11 @@ export function VersionPopoverBody(props: {
         <p className="text-muted-foreground">
           {formatDisplayVersion(state.latestVersion)} available
         </p>
-        <Button
-          size="sm"
-          variant="default"
-          className="gap-1.5"
-          disabled={
-            updateStatus.phase === "starting" ||
-            updateStatus.phase === "updating" ||
-            updateStatus.phase === "restarting"
-          }
-          onClick={onUpdateNow}
-        >
-          <ArrowUpCircle className="size-3.5" />
-          {renderUpdateButtonLabel(
-            updateStatus,
-            state.latestVersion,
-          )}
-        </Button>
+        {renderUpdateActionControl(
+          updateStatus,
+          state.latestVersion,
+          onUpdateNow,
+        )}
         <p className="text-xs text-muted-foreground">
           {renderUpdateHelperText(updateStatus)}{" "}
           <code className="rounded bg-muted px-1 py-0.5 font-mono text-[10px]">
@@ -274,6 +262,40 @@ export function VersionPopoverBody(props: {
   );
 }
 
+function renderUpdateActionControl(
+  updateStatus: AppUpdateStatus,
+  latestVersion: string,
+  onUpdateNow: () => void,
+) {
+  if (updateStatus.phase === "completed") {
+    return (
+      <div
+        role="status"
+        className="inline-flex items-center gap-1.5 rounded-md bg-moss-100 px-2.5 py-1 text-sm font-medium text-moss-700"
+      >
+        <Check className="size-3.5" />
+        Update complete
+      </div>
+    );
+  }
+
+  return (
+    <Button
+      size="sm"
+      variant="default"
+      className="gap-1.5"
+      disabled={isUpdateBusy(updateStatus)}
+      onClick={onUpdateNow}
+    >
+      <ArrowUpCircle className="size-3.5" />
+      {renderUpdateButtonLabel(
+        updateStatus,
+        latestVersion,
+      )}
+    </Button>
+  );
+}
+
 function renderUpdateButtonLabel(
   status: AppUpdateStatus,
   latestVersion: string,
@@ -293,11 +315,21 @@ function renderUpdateButtonLabel(
   return `Update now to ${formatDisplayVersion(latestVersion)}`;
 }
 
+function isUpdateBusy(
+  status: AppUpdateStatus,
+): boolean {
+  return (
+    status.phase === "starting" ||
+    status.phase === "updating" ||
+    status.phase === "restarting"
+  );
+}
+
 function renderUpdateHelperText(
   status: AppUpdateStatus,
 ): string {
   if (status.phase === "completed") {
-    return "Automatic update finished. Manual fallback:";
+    return "Automatic update finished. Refreshing page shortly. Manual fallback:";
   }
   if (status.phase === "failed") {
     return "Automatic update failed. Manual fallback:";

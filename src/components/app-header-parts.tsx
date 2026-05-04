@@ -54,20 +54,10 @@ export function VersionBannerBar(props: {
         </span>{" "}
         available (installed{" "}
         {formatDisplayVersion(banner.installedVersion)}).{" "}
-        <Button
-          type="button"
-          variant="link"
-          size="xs"
-          className="h-auto px-0 font-semibold text-clay-700"
-          disabled={
-            updateStatus.phase === "starting" ||
-            updateStatus.phase === "updating" ||
-            updateStatus.phase === "restarting"
-          }
-          onClick={onUpdateNow}
-        >
-          {renderBannerUpdateLabel(updateStatus)}
-        </Button>{" "}
+        {renderBannerUpdateAction(
+          updateStatus,
+          onUpdateNow,
+        )}{" "}
         if automation fails, run{" "}
         <code className="rounded bg-clay-50 px-1 py-0.5 font-mono text-xs">
           {VERSION_UPDATE_COMMAND}
@@ -84,6 +74,32 @@ export function VersionBannerBar(props: {
         <X className="size-4" />
       </Button>
     </div>
+  );
+}
+
+function renderBannerUpdateAction(
+  status: AppUpdateStatus,
+  onUpdateNow: () => void,
+) {
+  if (status.phase === "completed") {
+    return (
+      <span className="font-semibold text-clay-700">
+        Update complete
+      </span>
+    );
+  }
+
+  return (
+    <Button
+      type="button"
+      variant="link"
+      size="xs"
+      className="h-auto px-0 font-semibold text-clay-700"
+      disabled={isBannerUpdateBusy(status)}
+      onClick={onUpdateNow}
+    >
+      {renderBannerUpdateLabel(status)}
+    </Button>
   );
 }
 
@@ -130,6 +146,16 @@ function renderBannerUpdateLabel(
     return "Retry automatic update";
   }
   return "Update now";
+}
+
+function isBannerUpdateBusy(
+  status: AppUpdateStatus,
+): boolean {
+  return (
+    status.phase === "starting" ||
+    status.phase === "updating" ||
+    status.phase === "restarting"
+  );
 }
 
 // -----------------------------------------------------------

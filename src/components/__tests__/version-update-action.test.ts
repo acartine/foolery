@@ -2,9 +2,12 @@ import {
   describe, expect, it, vi,
 } from "vitest";
 import {
+  UPDATE_COMPLETE_RELOAD_DELAY_MS,
   VERSION_UPDATE_COMMAND,
   idleUpdateStatus,
   readVersionUpdateStatus,
+  scheduleUpdateCompleteReload,
+  shouldAutoReloadCompletedUpdate,
   triggerVersionUpdate,
 } from "@/components/version-update-action";
 
@@ -87,5 +90,55 @@ describe("triggerVersionUpdate", () => {
     expect(VERSION_UPDATE_COMMAND).toBe(
       "foolery update && foolery restart",
     );
+  });
+});
+
+describe("update completion reload", () => {
+  it("schedules a page reload after update completion", () => {
+    const reload = vi.fn();
+    const setTimeoutMock = vi.fn(
+      (callback: () => void, delay: number) => {
+        expect(delay).toBe(UPDATE_COMPLETE_RELOAD_DELAY_MS);
+        callback();
+        return 123;
+      },
+    );
+
+    const timer = scheduleUpdateCompleteReload(
+      reload,
+      setTimeoutMock as unknown as typeof setTimeout,
+    );
+
+    expect(timer).toBe(123);
+    expect(reload).toHaveBeenCalledTimes(1);
+  });
+
+  it("only auto-reloads after this page observed an update", () => {
+    const completed = {
+      ...idleUpdateStatus(),
+      phase: "completed" as const,
+    };
+
+    expect(
+      shouldAutoReloadCompletedUpdate(
+        completed,
+        false,
+        false,
+      ),
+    ).toBe(false);
+    expect(
+      shouldAutoReloadCompletedUpdate(
+        completed,
+        true,
+        false,
+      ),
+    ).toBe(true);
+    expect(
+      shouldAutoReloadCompletedUpdate(
+        completed,
+        true,
+        true,
+      ),
+    ).toBe(false);
   });
 });
