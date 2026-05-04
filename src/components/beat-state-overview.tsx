@@ -7,8 +7,8 @@ import {
   countGroupedBeats,
   filterOverviewBeats,
   groupBeatsByState,
-  normalizeOverviewState,
 } from "@/lib/beat-state-overview";
+import type { BeatStateGroup } from "@/lib/beat-state-overview";
 import { displayBeatLabel } from "@/lib/beat-display";
 import { BeatStateBadge } from "@/components/beat-state-badge";
 import { BeatPriorityBadge } from "@/components/beat-priority-badge";
@@ -128,56 +128,87 @@ function BeatStateOverview({
 
   return (
     <div
-      className="space-y-4"
+      className="space-y-3"
       data-testid="beat-state-overview"
     >
       <div className={
         "flex flex-wrap items-center justify-between"
-        + " gap-3 border-b border-border/70 pb-2"
+        + " gap-2 border-b border-border/70 pb-2"
       }>
-        <h2 className="text-base font-semibold tracking-tight">
-          Overview
+        <h2 className="text-sm font-semibold tracking-tight">
+          State overview
         </h2>
         <div className={
-          "rounded-md border bg-muted/30"
-          + " px-2.5 py-1 text-xs text-muted-foreground"
+          "rounded-sm border bg-muted/30"
+          + " px-2 py-0.5 text-[11px] text-muted-foreground"
         }>
           {groupedCount} beat{groupedCount === 1 ? "" : "s"}
         </div>
       </div>
-      <div className="space-y-4">
-        {groups.map((group) => (
-          <section
-            key={group.state}
-            className="space-y-2"
-            data-testid={`beat-state-group-${group.state}`}
-          >
-            <div className={
-              "flex flex-wrap items-center justify-between"
-              + " gap-2 border-b border-border/50 pb-1.5"
-            }>
-              <BeatStateBadge state={group.state} />
-              <span className="text-xs text-muted-foreground">
-                {group.beats.length}
-              </span>
-            </div>
-            <div className={
-              "grid gap-2 sm:grid-cols-2"
-              + " xl:grid-cols-3 2xl:grid-cols-4"
-            }>
-              {group.beats.map((beat) => (
-                <BeatOverviewTile
-                  key={overviewTileKey(beat)}
-                  beat={beat}
-                  showRepoColumn={showRepoColumn}
-                  onOpenBeat={onOpenBeat}
-                />
-              ))}
-            </div>
-          </section>
-        ))}
+      <div className="overflow-x-auto pb-2">
+        <div className={
+          "grid min-w-full grid-flow-col"
+          + " auto-cols-[minmax(14.5rem,1fr)] gap-2"
+        }>
+          {groups.map((group) => (
+            <BeatStateColumn
+              key={group.state}
+              group={group}
+              showRepoColumn={showRepoColumn}
+              onOpenBeat={onOpenBeat}
+            />
+          ))}
+        </div>
       </div>
     </div>
+  );
+}
+
+function BeatStateColumn({
+  group,
+  showRepoColumn,
+  onOpenBeat,
+}: {
+  group: BeatStateGroup;
+  showRepoColumn: boolean;
+  onOpenBeat: (beat: Beat) => void;
+}) {
+  return (
+    <section
+      className={
+        "min-w-0 overflow-hidden border border-border/70"
+        + " bg-background"
+      }
+      data-testid={`beat-state-group-${group.state}`}
+    >
+      <div className={
+        "flex h-8 items-center justify-between gap-2"
+        + " border-b border-border/70 bg-muted/35 px-2"
+      }>
+        <div className="min-w-0">
+          <BeatStateBadge
+            state={group.state}
+            className="h-4 rounded-sm px-1 text-[10px]"
+          />
+        </div>
+        <span className={
+          "rounded-sm bg-background px-1.5 py-0.5"
+          + " text-[10px] tabular-nums text-muted-foreground"
+        }>
+          {group.beats.length}
+        </span>
+      </div>
+      <div className="divide-y divide-border/60">
+        {group.beats.map((beat) => (
+          <BeatOverviewTile
+            key={overviewTileKey(beat)}
+            beat={beat}
+            showRepoColumn={showRepoColumn}
+            onOpenBeat={onOpenBeat}
+          />
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -193,50 +224,63 @@ function BeatOverviewTile({
   const repoLabel = showRepoColumn
     ? repoDisplayName(beat)
     : null;
+  const contextItems = overviewContextItems(beat, repoLabel);
 
   return (
     <button
       type="button"
       className={
-        "min-h-[128px] rounded-md border border-border/80"
-        + " bg-card px-3 py-2 text-left shadow-sm"
-        + " transition-colors hover:border-primary/45"
-        + " hover:bg-muted/30 focus-visible:outline-none"
+        "block w-full px-2 py-1.5 text-left"
+        + " transition-colors hover:bg-muted/35"
+        + " focus-visible:outline-none"
         + " focus-visible:ring-2 focus-visible:ring-ring"
       }
+      data-testid="beat-overview-tile"
       title={beat.title}
       onClick={() => onOpenBeat(beat)}
     >
-      <div className="flex min-w-0 items-start justify-between gap-2">
-        <div className="min-w-0">
-          <div className="font-mono text-[11px] text-muted-foreground">
-            {displayBeatLabel(beat.id, beat.aliases)}
-          </div>
-          <div className="mt-1 line-clamp-2 text-sm font-medium">
-            {beat.title}
-          </div>
-        </div>
+      <div className="flex min-w-0 items-center justify-between gap-2">
+        <span className={
+          "min-w-0 truncate font-mono text-[10px]"
+          + " leading-4 text-muted-foreground"
+        }>
+          {displayBeatLabel(beat.id, beat.aliases)}
+        </span>
         <BeatPriorityBadge
           priority={beat.priority}
-          className="shrink-0"
+          className="h-4 rounded-sm px-1 text-[10px]"
         />
       </div>
-      <div className="mt-2 flex flex-wrap gap-1">
-        <BeatTypeBadge type={beat.type} />
-        <BeatStateBadge
-          state={normalizeOverviewState(beat.state)}
+      <div className="mt-0.5 line-clamp-2 text-xs font-medium leading-snug">
+        {beat.title}
+      </div>
+      <div className="mt-1 flex min-w-0 flex-wrap items-center gap-1">
+        <BeatTypeBadge
+          type={beat.type}
+          className={
+            "h-4 max-w-[8.5rem] rounded-sm px-1"
+            + " text-[10px] [&>svg]:size-2.5"
+          }
         />
+        <span className="text-[10px] leading-4 text-muted-foreground">
+          {relativeTime(beat.updated)}
+        </span>
       </div>
-      <div className={
-        "mt-2 flex flex-wrap items-center gap-x-2"
-        + " gap-y-1 text-[11px] text-muted-foreground"
-      }>
-        <span>Updated {relativeTime(beat.updated)}</span>
-        {beat.parent && (
-          <span>Parent {displayBeatLabel(beat.parent)}</span>
-        )}
-        {repoLabel && <span>{repoLabel}</span>}
-      </div>
+      {contextItems.length > 0 && (
+        <div className={
+          "mt-0.5 flex min-w-0 flex-wrap gap-x-1.5"
+          + " gap-y-0.5 text-[10px] leading-4 text-muted-foreground"
+        }>
+          {contextItems.map((item) => (
+            <span
+              key={item}
+              className="max-w-full truncate"
+            >
+              {item}
+            </span>
+          ))}
+        </div>
+      )}
     </button>
   );
 }
@@ -294,6 +338,20 @@ function repoDisplayName(
     return path.split("/").filter(Boolean).pop() ?? path;
   }
   return null;
+}
+
+function overviewContextItems(
+  beat: Beat,
+  repoLabel: string | null,
+): string[] {
+  const items: string[] = [];
+  if (beat.parent) {
+    items.push(`Parent ${displayBeatLabel(beat.parent)}`);
+  }
+  if (repoLabel) {
+    items.push(repoLabel);
+  }
+  return items;
 }
 
 function overviewTileKey(
