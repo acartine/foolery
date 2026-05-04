@@ -15,8 +15,11 @@ export interface BeatStateGroup {
 export interface OverviewLeaseInfo {
   startedAt?: string;
   provider?: string;
+  agent?: string;
   model?: string;
   version?: string;
+  sessionId?: string;
+  repoPath?: string;
 }
 
 export const OVERVIEW_STATE_TABS = [
@@ -208,20 +211,38 @@ export function overviewLeaseInfoForBeat(
   terminalInfo?: OverviewLeaseInfo,
 ): OverviewLeaseInfo | null {
   if (!isOverviewActiveState(beat.state)) return null;
-  const info = {
-    startedAt:
-      cleanString(terminalInfo?.startedAt)
-      ?? activeStepStartedAt(beat),
-    provider:
-      cleanString(terminalInfo?.provider)
+  const info: OverviewLeaseInfo = {};
+  setLeaseInfoValue(
+    info,
+    "startedAt",
+    cleanString(terminalInfo?.startedAt) ?? activeStepStartedAt(beat),
+  );
+  setLeaseInfoValue(
+    info,
+    "provider",
+    cleanString(terminalInfo?.provider)
       ?? leaseAgentInfoString(beat, "provider"),
-    model:
-      cleanString(terminalInfo?.model)
+  );
+  setLeaseInfoValue(
+    info,
+    "agent",
+    cleanString(terminalInfo?.agent)
+      ?? leaseAgentInfoString(beat, "agent_name"),
+  );
+  setLeaseInfoValue(
+    info,
+    "model",
+    cleanString(terminalInfo?.model)
       ?? leaseAgentInfoString(beat, "model"),
-    version:
-      cleanString(terminalInfo?.version)
+  );
+  setLeaseInfoValue(
+    info,
+    "version",
+    cleanString(terminalInfo?.version)
       ?? leaseAgentInfoString(beat, "model_version"),
-  };
+  );
+  setLeaseInfoValue(info, "sessionId", cleanString(terminalInfo?.sessionId));
+  setLeaseInfoValue(info, "repoPath", cleanString(terminalInfo?.repoPath));
   return Object.values(info).some(Boolean) ? info : null;
 }
 
@@ -323,6 +344,14 @@ function cleanString(value: unknown): string | undefined {
   return typeof value === "string" && value.trim().length > 0
     ? value.trim()
     : undefined;
+}
+
+function setLeaseInfoValue(
+  info: OverviewLeaseInfo,
+  key: keyof OverviewLeaseInfo,
+  value: string | undefined,
+): void {
+  if (value) info[key] = value;
 }
 
 function compareOverviewStatePriority(

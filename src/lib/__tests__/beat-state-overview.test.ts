@@ -317,6 +317,7 @@ describe("beat-state-overview lease metadata", () => {
         }],
         knotsLeaseAgentInfo: {
           provider: "Codex",
+          agent_name: "codex-gpt-5",
           model: "gpt-5",
           model_version: "2026-05-01",
         },
@@ -326,17 +327,23 @@ describe("beat-state-overview lease metadata", () => {
     expect(overviewLeaseInfoForBeat(beat)).toEqual({
       startedAt: "2026-05-04T08:00:00.000Z",
       provider: "Codex",
+      agent: "codex-gpt-5",
       model: "gpt-5",
       version: "2026-05-01",
     });
     expect(
       overviewLeaseInfoForBeat(
         beat,
-        { startedAt: "2026-05-04T09:00:00.000Z", model: "override" },
+        {
+          startedAt: "2026-05-04T09:00:00.000Z",
+          model: "override",
+          sessionId: "session-1",
+        },
       ),
     ).toMatchObject({
       startedAt: "2026-05-04T09:00:00.000Z",
       model: "override",
+      sessionId: "session-1",
     });
     expect(
       overviewLeaseInfoForBeat(makeBeat("queued", "ready_for_planning")),

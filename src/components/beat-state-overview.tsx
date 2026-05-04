@@ -12,7 +12,6 @@ import type {
 import type { Beat } from "@/lib/types";
 import {
   buildOverviewStateTabs,
-  countGroupedBeats,
   DEFAULT_OVERVIEW_STATE_TAB,
   filterOverviewBeats,
   groupOverviewBeatsByState,
@@ -56,6 +55,8 @@ interface BeatStateOverviewScreenProps {
   isAllRepositories: boolean;
   leaseInfoByBeatKey: Record<string, OverviewLeaseInfo>;
   onOpenBeat: (beat: Beat) => void;
+  onFocusLeaseSession: (sessionId: string) => void;
+  onReleaseBeat: (beat: Beat) => void;
   streamingProgress: StreamingProgress;
 }
 
@@ -68,6 +69,8 @@ export function BeatStateOverviewScreen({
   isAllRepositories,
   leaseInfoByBeatKey,
   onOpenBeat,
+  onFocusLeaseSession,
+  onReleaseBeat,
   streamingProgress,
 }: BeatStateOverviewScreenProps) {
   const overviewBeats = useMemo(
@@ -136,6 +139,8 @@ export function BeatStateOverviewScreen({
           isAllRepositories={isAllRepositories}
           leaseInfoByBeatKey={leaseInfoByBeatKey}
           onOpenBeat={onOpenBeat}
+          onFocusLeaseSession={onFocusLeaseSession}
+          onReleaseBeat={onReleaseBeat}
         />
       )}
     </div>
@@ -148,12 +153,16 @@ function BeatStateOverview({
   isAllRepositories,
   leaseInfoByBeatKey,
   onOpenBeat,
+  onFocusLeaseSession,
+  onReleaseBeat,
 }: {
   beats: Beat[];
   showRepoColumn: boolean;
   isAllRepositories: boolean;
   leaseInfoByBeatKey: Record<string, OverviewLeaseInfo>;
   onOpenBeat: (beat: Beat) => void;
+  onFocusLeaseSession: (sessionId: string) => void;
+  onReleaseBeat: (beat: Beat) => void;
 }) {
   const [activeTab, setActiveTab] = useState<OverviewStateTabId>(
     DEFAULT_OVERVIEW_STATE_TAB,
@@ -166,7 +175,6 @@ function BeatStateOverview({
     () => groupOverviewBeatsByState(beats, activeTab),
     [beats, activeTab],
   );
-  const groupedCount = countGroupedBeats(groups);
   const visibleGroups = useMemo(
     () => visibleOverviewGroups(groups),
     [groups],
@@ -191,20 +199,6 @@ function BeatStateOverview({
       className="space-y-3"
       data-testid="beat-state-overview"
     >
-      <div className={
-        "flex flex-wrap items-center justify-between"
-        + " gap-2"
-      }>
-        <h2 className="text-xs font-semibold tracking-tight">
-          State overview
-        </h2>
-        <div className={
-          "rounded-sm border bg-muted/30"
-          + " px-2 py-0.5 text-[10px] text-muted-foreground"
-        }>
-          {groupedCount} beat{groupedCount === 1 ? "" : "s"}
-        </div>
-      </div>
       <BeatStateOverviewTabs
         tabs={tabs}
         activeTab={activeTab}
@@ -232,6 +226,8 @@ function BeatStateOverview({
               isAllRepositories={isAllRepositories}
               leaseInfoByBeatKey={leaseInfoByBeatKey}
               onOpenBeat={onOpenBeat}
+              onFocusLeaseSession={onFocusLeaseSession}
+              onReleaseBeat={onReleaseBeat}
             />
             ))}
           </div>
@@ -249,12 +245,16 @@ function BeatStateColumn({
   isAllRepositories,
   leaseInfoByBeatKey,
   onOpenBeat,
+  onFocusLeaseSession,
+  onReleaseBeat,
 }: {
   group: BeatStateGroup;
   showRepoColumn: boolean;
   isAllRepositories: boolean;
   leaseInfoByBeatKey: Record<string, OverviewLeaseInfo>;
   onOpenBeat: (beat: Beat) => void;
+  onFocusLeaseSession: (sessionId: string) => void;
+  onReleaseBeat: (beat: Beat) => void;
 }) {
   return (
     <section
@@ -298,6 +298,8 @@ function BeatStateColumn({
                 leaseInfoByBeatKey,
               )}
               onOpenBeat={onOpenBeat}
+              onFocusLeaseSession={onFocusLeaseSession}
+              onReleaseBeat={onReleaseBeat}
             />
           ))
         ) : (

@@ -86,7 +86,7 @@ function useBeatsPageState() {
   const isActiveView = beatsView === "active";
   const { activeRepo, registeredRepos } = useAppStore();
   const {
-    terminals,
+    terminals, setActiveSession,
   } = useTerminalStore();
 
   const shippingByBeatId = terminals.reduce<
@@ -157,6 +157,7 @@ function useBeatsPageState() {
     hasRollingAncestor, showRepoColumn,
     agentInfoByBeatId, shippingByBeatId,
     overviewLeaseInfoByBeatKey,
+    setActiveSession,
     activeBeatIds,
     streamingProgress,
     ...bulk, ...actions, ...detail,
@@ -287,6 +288,8 @@ function BeatsViewBody({
           isAllRepositories={!s.activeRepo}
           leaseInfoByBeatKey={s.overviewLeaseInfoByBeatKey}
           onOpenBeat={s.handleOpenBeat}
+          onFocusLeaseSession={s.setActiveSession}
+          onReleaseBeat={s.handleReleaseBeat}
           streamingProgress={s.streamingProgress}
         />
       ) : isDiagnosticsView ? (

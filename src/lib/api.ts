@@ -343,6 +343,25 @@ export function rewindBeat(
 }
 
 /**
+ * Release a stranded active knot by invoking the workflow rollback path.
+ * This is intentionally not a generic state mutation: the server calls
+ * `kno rollback` for the beat's repository scope.
+ */
+export function rollbackBeat(
+  id: string,
+  reason?: string,
+  repo?: string,
+): Promise<BdResult<void>> {
+  const body: Record<string, unknown> = {};
+  if (reason !== undefined) body.reason = reason;
+  if (repo) body._repo = repo;
+  return request<void>(`${BASE}/${id}/rollback`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+/**
  * Descriptive correction: reopen a terminal beat into its profile's
  * retakeState for regression investigation. Invokes kno's idiomatic
  * force flag at the backend.

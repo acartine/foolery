@@ -13,7 +13,7 @@ export function buildOverviewLeaseInfoByBeatKey(
   for (const terminal of terminals) {
     if (terminal.status !== "running") continue;
     const agentInfo = agentInfoMap.get(terminal.sessionId);
-    const info = terminalLeaseInfo(terminal.startedAt, agentInfo);
+    const info = terminalLeaseInfo(terminal, agentInfo);
     for (const beatId of terminalBeatIds(terminal)) {
       byKey[beatId] = info;
       if (terminal.repoPath) {
@@ -26,13 +26,18 @@ export function buildOverviewLeaseInfoByBeatKey(
 }
 
 function terminalLeaseInfo(
-  startedAt: string,
+  terminal: ActiveTerminal,
   agentInfo: TerminalSessionAgentInfo | undefined,
 ): OverviewLeaseInfo {
   return {
-    startedAt,
+    startedAt: terminal.startedAt,
+    sessionId: terminal.sessionId,
+    ...(terminal.repoPath ? { repoPath: terminal.repoPath } : {}),
     ...(agentInfo?.agentProvider
       ? { provider: agentInfo.agentProvider }
+      : {}),
+    ...(agentInfo?.agentName
+      ? { agent: agentInfo.agentName }
       : {}),
     ...(agentInfo?.agentModel
       ? { model: agentInfo.agentModel }
