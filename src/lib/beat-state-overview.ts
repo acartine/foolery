@@ -40,6 +40,8 @@ export interface OverviewStateTabSummary {
 
 export type OverviewSizingColumnCounts =
   Partial<Record<OverviewStateTabId, number>>;
+export type OverviewIntroducedColumnStates =
+  Partial<Record<OverviewStateTabId, string[]>>;
 
 export const DEFAULT_OVERVIEW_STATE_TAB: OverviewStateTabId =
   "work_items";
@@ -281,6 +283,93 @@ export function visibleOverviewGroups(
   return groups.filter((group) => group.beats.length > 0);
 }
 
+export function renderableOverviewGroups(
+  tabId: OverviewStateTabId,
+  groups: readonly BeatStateGroup[],
+  introducedStates: readonly string[],
+): BeatStateGroup[] {
+  const introduced = new Set(introducedStates);
+  const byState = new Map(
+    groups.map((group) => [group.state, group] as const),
+  );
+
+  for (const state of introduced) {
+    if (byState.has(state)) continue;
+    byState.set(state, {
+      state,
+      required: false,
+      beats: [],
+    });
+  }
+
+  return [...byState.values()]
+    .filter((group) =>
+      group.beats.length > 0 || introduced.has(group.state)
+    )
+    .sort((left, right) =>
+      compareOverviewStatePriority(tabId, left.state, right.state)
+    );
+}
+
+export function shouldShowOverviewColumnHideControl(
+  group: BeatStateGroup,
+): boolean {
+  return group.beats.length === 0;
+}
+
+export function nextOverviewIntroducedColumnStates(
+  currentStates: readonly string[] | undefined,
+  groups: readonly BeatStateGroup[],
+): string[] {
+  const next = new Set(currentStates ?? []);
+
+  for (const group of groups) {
+    if (group.beats.length > 0) next.add(group.state);
+  }
+
+  return [...next];
+}
+
+export function nextOverviewIntroducedColumns(
+  current: OverviewIntroducedColumnStates,
+  tabId: OverviewStateTabId,
+  groups: readonly BeatStateGroup[],
+): OverviewIntroducedColumnStates {
+  const nextStates = nextOverviewIntroducedColumnStates(
+    current[tabId],
+    groups,
+  );
+  if (sameStringArray(current[tabId] ?? [], nextStates)) {
+    return current;
+  }
+  return {
+    ...current,
+    [tabId]: nextStates,
+  };
+}
+
+export function hideOverviewIntroducedColumn(
+  current: OverviewIntroducedColumnStates,
+  tabId: OverviewStateTabId,
+  state: string,
+): OverviewIntroducedColumnStates {
+  const nextStates = (current[tabId] ?? []).filter(
+    (currentState) => currentState !== state,
+  );
+  if (sameStringArray(current[tabId] ?? [], nextStates)) {
+    return current;
+  }
+  if (nextStates.length === 0) {
+    const next = { ...current };
+    delete next[tabId];
+    return next;
+  }
+  return {
+    ...current,
+    [tabId]: nextStates,
+  };
+}
+
 export function overviewColumnWidthPx(
   availableWidth: number,
   sizingColumnCount: number,
@@ -359,6 +448,14 @@ function setLeaseInfoValue(
   value: string | undefined,
 ): void {
   if (value) info[key] = value;
+}
+
+function sameStringArray(
+  left: readonly string[],
+  right: readonly string[],
+): boolean {
+  if (left.length !== right.length) return false;
+  return left.every((value, index) => value === right[index]);
 }
 
 function compareOverviewStatePriority(

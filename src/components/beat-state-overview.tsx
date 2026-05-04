@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -15,11 +17,15 @@ import {
   DEFAULT_OVERVIEW_STATE_TAB,
   filterOverviewBeats,
   groupOverviewBeatsByState,
+  hideOverviewIntroducedColumn,
+  nextOverviewIntroducedColumns,
   overviewColumnWidthPx,
-  visibleOverviewGroups,
+  renderableOverviewGroups,
+  shouldShowOverviewColumnHideControl,
 } from "@/lib/beat-state-overview";
 import type {
   BeatStateGroup,
+  OverviewIntroducedColumnStates,
   OverviewLeaseInfo,
   OverviewStateTabId,
 } from "@/lib/beat-state-overview";
@@ -175,9 +181,17 @@ function BeatStateOverview({
     () => groupOverviewBeatsByState(beats, activeTab),
     [beats, activeTab],
   );
+  const introducedColumns = useOverviewIntroducedColumns({
+    tabId: activeTab,
+    groups,
+  });
   const visibleGroups = useMemo(
-    () => visibleOverviewGroups(groups),
-    [groups],
+    () => renderableOverviewGroups(
+      activeTab,
+      groups,
+      introducedColumns.introducedStates,
+    ),
+    [activeTab, groups, introducedColumns.introducedStates],
   );
   const visibleColumnCount = visibleGroups.length;
   const scrollportRef = useRef<HTMLDivElement | null>(null);
@@ -228,6 +242,7 @@ function BeatStateOverview({
               onOpenBeat={onOpenBeat}
               onFocusLeaseSession={onFocusLeaseSession}
               onReleaseBeat={onReleaseBeat}
+              onHideEmptyColumn={introducedColumns.onHideEmptyColumn}
             />
             ))}
           </div>
@@ -247,6 +262,7 @@ function BeatStateColumn({
   onOpenBeat,
   onFocusLeaseSession,
   onReleaseBeat,
+  onHideEmptyColumn,
 }: {
   group: BeatStateGroup;
   showRepoColumn: boolean;
@@ -255,7 +271,10 @@ function BeatStateColumn({
   onOpenBeat: (beat: Beat) => void;
   onFocusLeaseSession: (sessionId: string) => void;
   onReleaseBeat: (beat: Beat) => void;
+  onHideEmptyColumn: (state: string) => void;
 }) {
+  const showHideControl = shouldShowOverviewColumnHideControl(group);
+
   return (
     <section
       className={
@@ -278,13 +297,32 @@ function BeatStateColumn({
             }
           />
         </div>
-        <span className={
-          "flex h-4 shrink-0 items-center rounded-sm bg-background"
-          + " px-1.5 text-[9px] leading-none tabular-nums"
-          + " text-muted-foreground"
-        }>
-          {group.beats.length}
-        </span>
+        <div className="flex shrink-0 items-center gap-1">
+          {showHideControl && (
+            <button
+              type="button"
+              className={
+                "rounded-sm px-1 text-[9px] leading-4"
+                + " text-muted-foreground hover:bg-background"
+                + " hover:text-foreground"
+              }
+              data-testid="beat-state-empty-column-hide"
+              aria-label={
+                `Hide empty ${overviewColumnLabel(group.state)} column`
+              }
+              onClick={() => onHideEmptyColumn(group.state)}
+            >
+              Hide
+            </button>
+          )}
+          <span className={
+            "flex h-4 items-center rounded-sm bg-background"
+            + " px-1.5 text-[9px] leading-none tabular-nums"
+            + " text-muted-foreground"
+          }>
+            {group.beats.length}
+          </span>
+        </div>
       </div>
       <div className="divide-y divide-border/60">
         {group.beats.length > 0 ? (
@@ -314,6 +352,49 @@ function BeatStateColumn({
       </div>
     </section>
   );
+}
+
+function useOverviewIntroducedColumns({
+  tabId,
+  groups,
+}: {
+  tabId: OverviewStateTabId;
+  groups: readonly BeatStateGroup[];
+}): {
+  introducedStates: readonly string[];
+  onHideEmptyColumn: (state: string) => void;
+} {
+  const [introducedColumns, setIntroducedColumns] =
+    useState<OverviewIntroducedColumnStates>({});
+  const currentIntroducedColumns = nextOverviewIntroducedColumns(
+    introducedColumns,
+    tabId,
+    groups,
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setIntroducedColumns((current) =>
+        nextOverviewIntroducedColumns(current, tabId, groups)
+      );
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [tabId, groups]);
+
+  const onHideEmptyColumn = useCallback((state: string) => {
+    setIntroducedColumns((current) =>
+      hideOverviewIntroducedColumn(current, tabId, state)
+    );
+  }, [tabId]);
+
+  return {
+    introducedStates: currentIntroducedColumns[tabId] ?? [],
+    onHideEmptyColumn,
+  };
 }
 
 function OverviewDegradedBanner(
@@ -362,4 +443,8 @@ const OVERVIEW_STATE_LABELS: Record<string, string> = {
 
 function overviewStateLabel(state: string): string | undefined {
   return OVERVIEW_STATE_LABELS[state];
+}
+
+function overviewColumnLabel(state: string): string {
+  return overviewStateLabel(state) ?? state.replaceAll("_", " ");
 }
