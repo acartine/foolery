@@ -28,6 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDisplayVersion } from "@/lib/version-display";
+import type { VersionStatusData } from "@/lib/version-status-client";
 import { buildBeatFocusHref } from "@/lib/beat-navigation";
 import type { BeatsViewId, VersionBannerData } from "./app-header-hooks";
 
@@ -138,11 +139,14 @@ function renderBannerUpdateLabel(
 export function HeaderBranding(props: {
   activeBeatId: string | null;
   activeRepo: string | null;
+  versionStatus: VersionStatusData | null;
+  onVersionStatus: (status: VersionStatusData) => void;
   router: ReturnType<typeof useRouter>;
   searchParams: ReturnType<typeof useSearchParams>;
 }) {
   const {
-    activeBeatId, activeRepo, router, searchParams,
+    activeBeatId, activeRepo, versionStatus,
+    onVersionStatus, router, searchParams,
   } = props;
   return (
     <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -159,7 +163,10 @@ export function HeaderBranding(props: {
       >
         <FooleryWordmark className="h-[42px] w-auto text-clay-600 dark:text-paper-100" />
       </button>
-      <VersionBadge />
+      <VersionBadge
+        installedVersion={versionStatus?.installedVersion ?? null}
+        onVersionStatus={onVersionStatus}
+      />
       <RepoSwitcher />
       {activeBeatId && (
         <button
@@ -295,6 +302,8 @@ function ViewTab(props: {
 export function HeaderToolbar(props: {
   activeBeatId: string | null;
   activeRepo: string | null;
+  versionStatus: VersionStatusData | null;
+  onVersionStatus: (status: VersionStatusData) => void;
   router: ReturnType<typeof useRouter>;
   searchParams: ReturnType<typeof useSearchParams>;
   onOpenSettings: () => void;
@@ -302,8 +311,8 @@ export function HeaderToolbar(props: {
   viewSwitcher: React.ReactNode;
 }) {
   const {
-    activeBeatId, activeRepo, router,
-    searchParams, onOpenSettings,
+    activeBeatId, activeRepo, versionStatus,
+    onVersionStatus, router, searchParams, onOpenSettings,
     isBeatsRoute, viewSwitcher,
   } = props;
   return (
@@ -311,6 +320,8 @@ export function HeaderToolbar(props: {
       <HeaderBranding
         activeBeatId={activeBeatId}
         activeRepo={activeRepo}
+        versionStatus={versionStatus}
+        onVersionStatus={onVersionStatus}
         router={router}
         searchParams={searchParams}
       />

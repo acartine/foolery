@@ -15,11 +15,31 @@ import {
   readHotkeyHelpOpen,
   toggleHotkeyHelpOpen,
 } from "@/lib/hotkey-help-state";
+import {
+  fetchVersionStatus,
+  type VersionStatusData,
+} from "@/lib/version-status-client";
 
 export type VersionBannerData = {
   installedVersion: string;
   latestVersion: string;
 };
+
+export function buildVersionBannerData(
+  status: VersionStatusData | null,
+): VersionBannerData | null {
+  if (
+    !status?.updateAvailable ||
+    !status.installedVersion ||
+    !status.latestVersion
+  ) {
+    return null;
+  }
+  return {
+    installedVersion: status.installedVersion,
+    latestVersion: status.latestVersion,
+  };
+}
 
 export type BeatsViewId =
   | "setlist" | "overview" | "queues" | "active"
@@ -54,37 +74,20 @@ function isDialogOpen(): boolean {
 // -----------------------------------------------------------
 
 export function useVersionBanner() {
-  const [banner, setBanner] =
-    useState<VersionBannerData | null>(null);
+  const [status, setStatus] =
+    useState<VersionStatusData | null>(null);
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     const ctrl = new AbortController();
     const load = async () => {
       try {
-        const res = await fetch("/api/version", {
-          method: "GET",
+        const next = await fetchVersionStatus({
           signal: ctrl.signal,
         });
-        if (!res.ok) return;
-        const json = (await res.json()) as {
-          ok?: boolean;
-          data?: {
-            installedVersion?: string | null;
-            latestVersion?: string | null;
-            updateAvailable?: boolean;
-          };
-        };
-        if (!json?.data?.updateAvailable) return;
-        const iv = json.data.installedVersion;
-        const lv = json.data.latestVersion;
-        if (!iv || !lv) return;
-        setBanner({
-          installedVersion: iv,
-          latestVersion: lv,
-        });
+        if (next) setStatus(next);
       } catch {
-        // No banner on failed checks.
+        // No banner or badge version update on failed checks.
       }
     };
     void load();
@@ -92,8 +95,11 @@ export function useVersionBanner() {
   }, []);
 
   return {
-    banner, dismissed,
+    status,
+    banner: buildVersionBannerData(status),
+    dismissed,
     dismiss: () => setDismissed(true),
+    setStatus,
   };
 }
 

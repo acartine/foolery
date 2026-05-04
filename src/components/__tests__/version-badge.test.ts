@@ -5,10 +5,12 @@ import type { ReactElement, ReactNode } from "react";
 import {
   checkForUpdates,
   type VersionCheckState,
+  VersionBadgeTrigger,
   VersionPopoverBody,
 } from "@/components/version-badge";
 import { Button } from "@/components/ui/button";
 import type { AppUpdateStatus } from "@/lib/app-update-types";
+import type { VersionStatusData } from "@/lib/version-status-client";
 
 /* --------------------------------------------------------
  * Mock global fetch so we can simulate API responses
@@ -96,6 +98,17 @@ function makeUpdateStatus(
   };
 }
 
+function makeVersionStatus(
+  patch: Partial<VersionStatusData> = {},
+): VersionStatusData {
+  return {
+    installedVersion: "0.5.0",
+    latestVersion: "0.6.0",
+    updateAvailable: true,
+    ...patch,
+  };
+}
+
 /* --------------------------------------------------------
  * checkForUpdates — the core fetch-then-classify logic
  * ------------------------------------------------------ */
@@ -121,6 +134,11 @@ describe("checkForUpdates — status", () => {
       expect(result).toEqual<VersionCheckState>({
         status: "update-available",
         latestVersion: "0.6.0",
+        versionStatus: {
+          installedVersion: "0.5.0",
+          latestVersion: "0.6.0",
+          updateAvailable: true,
+        },
       });
       expect(fetchMock).toHaveBeenCalledWith(
         "/api/version?force=1",
@@ -148,6 +166,11 @@ describe("checkForUpdates — status", () => {
 
       expect(result).toEqual<VersionCheckState>({
         status: "up-to-date",
+        versionStatus: {
+          installedVersion: "0.5.1",
+          latestVersion: "0.5.1",
+          updateAvailable: false,
+        },
       });
     },
   );
@@ -191,6 +214,11 @@ describe("checkForUpdates — status", () => {
 
       expect(result).toEqual<VersionCheckState>({
         status: "up-to-date",
+        versionStatus: {
+          installedVersion: "0.5.0",
+          latestVersion: null,
+          updateAvailable: false,
+        },
       });
     },
   );
@@ -238,13 +266,39 @@ describe("checkForUpdates — fetch options", () => {
   );
 });
 
+describe("VersionBadgeTrigger", () => {
+  it("renders the installed version supplied by shared status", () => {
+    const tree = VersionBadgeTrigger({
+      installedVersion: "0.13.3",
+      onCheck: vi.fn(),
+    });
+
+    expect(flattenText(tree)).toContain("v0.13.3");
+    expect(flattenText(tree)).not.toContain("0.0.0");
+  });
+
+  it("uses a neutral label while the canonical version loads", () => {
+    const tree = VersionBadgeTrigger({
+      installedVersion: null,
+      onCheck: vi.fn(),
+    });
+
+    expect(flattenText(tree)).toBe("version");
+    expect(flattenText(tree)).not.toBe("v");
+  });
+});
+
 describe("VersionPopoverBody", () => {
   it("formats prefixed latest versions without duplicating v", () => {
     const tree = VersionPopoverBody({
       state: {
         status: "update-available",
         latestVersion: "v0.6.2",
+        versionStatus: makeVersionStatus({
+          latestVersion: "v0.6.2",
+        }),
       },
+      installedVersion: "0.5.0",
       updateStatus: makeUpdateStatus("idle"),
       onCheck: vi.fn(),
       onUpdateNow: vi.fn(),
@@ -264,7 +318,11 @@ describe("VersionPopoverBody", () => {
       state: {
         status: "update-available",
         latestVersion: "0.6.2",
+        versionStatus: makeVersionStatus({
+          latestVersion: "0.6.2",
+        }),
       },
+      installedVersion: "0.5.0",
       updateStatus: makeUpdateStatus("idle"),
       onCheck: vi.fn(),
       onUpdateNow: vi.fn(),
@@ -282,7 +340,11 @@ describe("VersionPopoverBody", () => {
       state: {
         status: "update-available",
         latestVersion: "0.6.2",
+        versionStatus: makeVersionStatus({
+          latestVersion: "0.6.2",
+        }),
       },
+      installedVersion: "0.5.0",
       updateStatus: makeUpdateStatus("restarting"),
       onCheck: vi.fn(),
       onUpdateNow: vi.fn(),

@@ -12,18 +12,30 @@ import {
 } from "@/components/version-update-action";
 import type { AppUpdateStatus } from "@/lib/app-update-types";
 import { formatDisplayVersion } from "@/lib/version-display";
-
-const APP_VERSION =
-  process.env.NEXT_PUBLIC_APP_VERSION ?? "0.0.0";
-const DISPLAY_APP_VERSION =
-  formatDisplayVersion(APP_VERSION);
+import {
+  fetchVersionStatus,
+  type VersionStatusData,
+} from "@/lib/version-status-client";
 
 export type VersionCheckState =
   | { status: "idle" }
   | { status: "checking" }
-  | { status: "up-to-date" }
-  | { status: "update-available"; latestVersion: string }
+  | {
+      status: "up-to-date";
+      versionStatus: VersionStatusData;
+    }
+  | {
+      status: "update-available";
+      latestVersion: string;
+      versionStatus: VersionStatusData;
+    }
   | { status: "error"; message: string };
+
+function displayInstalledVersion(
+  installedVersion: string | null,
+): string {
+  return formatDisplayVersion(installedVersion, "version");
+}
 
 /**
  * Fetch the version endpoint and return the resolved
@@ -32,40 +44,35 @@ export type VersionCheckState =
 export async function checkForUpdates(
   signal?: AbortSignal,
 ): Promise<VersionCheckState> {
-  const res = await fetch("/api/version?force=1", {
-    method: "GET",
+  const versionStatus = await fetchVersionStatus({
+    force: true,
     signal,
   });
-  if (!res.ok) {
+  if (!versionStatus) {
     return {
       status: "error",
       message: "Version check failed",
     };
   }
-  const json = (await res.json()) as {
-    ok?: boolean;
-    data?: {
-      installedVersion?: string | null;
-      latestVersion?: string | null;
-      updateAvailable?: boolean;
-    };
-  };
   if (
-    json?.data?.updateAvailable &&
-    json.data.latestVersion
+    versionStatus.updateAvailable &&
+    versionStatus.latestVersion
   ) {
     return {
       status: "update-available",
-      latestVersion: json.data.latestVersion,
+      latestVersion: versionStatus.latestVersion,
+      versionStatus,
     };
   }
-  return { status: "up-to-date" };
+  return { status: "up-to-date", versionStatus };
 }
 
 /**
  * Hook that manages the version-check lifecycle.
  */
-export function useVersionCheck() {
+export function useVersionCheck(
+  onVersionStatus?: (status: VersionStatusData) => void,
+) {
   const [state, setState] =
     useState<VersionCheckState>({ status: "idle" });
 
@@ -74,6 +81,9 @@ export function useVersionCheck() {
     setState({ status: "checking" });
     try {
       const result = await checkForUpdates();
+      if ("versionStatus" in result) {
+        onVersionStatus?.(result.versionStatus);
+      }
       setState(result);
     } catch {
       setState({
@@ -81,17 +91,51 @@ export function useVersionCheck() {
         message: "Version check failed",
       });
     }
-  }, [state.status]);
+  }, [onVersionStatus, state.status]);
 
   return { state, check } as const;
+}
+
+export function VersionBadgeTrigger(props: {
+  installedVersion: string | null;
+  onCheck: () => void;
+}) {
+  const displayVersion =
+    displayInstalledVersion(props.installedVersion);
+  return (
+    <button
+      type="button"
+      className="version-badge group relative inline-flex cursor-pointer select-none items-center"
+      title={`Foolery ${displayVersion} — click to check for updates`}
+      onClick={props.onCheck}
+    >
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 rounded-md bg-[length:200%_200%] bg-[linear-gradient(135deg,transparent_30%,oklch(0.65_0.15_250)_45%,oklch(0.7_0.18_300)_55%,transparent_70%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:animate-[shimmer_2s_ease-in-out_infinite]"
+      />
+      <span className="relative z-10 inline-flex items-center gap-1 rounded-[5px] bg-muted/60 px-1.5 py-0.5 ring-1 ring-border/50 transition-all duration-300 group-hover:bg-muted/80 group-hover:ring-transparent">
+        <span
+          aria-hidden="true"
+          className="inline-block size-1.5 rounded-full bg-moss-500 shadow-[0_0_4px_oklch(0.7_0.2_160)] transition-shadow duration-300 group-hover:shadow-[0_0_8px_oklch(0.7_0.2_160)]"
+        />
+        <span className="font-mono text-[10px] font-medium leading-none tracking-wider text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
+          {displayVersion}
+        </span>
+      </span>
+    </button>
+  );
 }
 
 /**
  * Cinematic version badge beside the app logo.
  * Clicking opens a popover to check for updates.
  */
-export function VersionBadge() {
-  const { state, check } = useVersionCheck();
+export function VersionBadge(props: {
+  installedVersion: string | null;
+  onVersionStatus: (status: VersionStatusData) => void;
+}) {
+  const { state, check } =
+    useVersionCheck(props.onVersionStatus);
   const { status, triggerUpdate } =
     useVersionUpdateAction();
 
@@ -102,27 +146,10 @@ export function VersionBadge() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button
-          type="button"
-          className="version-badge group relative inline-flex cursor-pointer select-none items-center"
-          title={`Foolery ${DISPLAY_APP_VERSION} — click to check for updates`}
-          onClick={check}
-        >
-          {/* Animated gradient border layer */}
-          <span
-            aria-hidden="true"
-            className="absolute inset-0 rounded-md bg-[length:200%_200%] bg-[linear-gradient(135deg,transparent_30%,oklch(0.65_0.15_250)_45%,oklch(0.7_0.18_300)_55%,transparent_70%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:animate-[shimmer_2s_ease-in-out_infinite]"
-          />
-          <span className="relative z-10 inline-flex items-center gap-1 rounded-[5px] bg-muted/60 px-1.5 py-0.5 ring-1 ring-border/50 transition-all duration-300 group-hover:bg-muted/80 group-hover:ring-transparent">
-            <span
-              aria-hidden="true"
-              className="inline-block size-1.5 rounded-full bg-moss-500 shadow-[0_0_4px_oklch(0.7_0.2_160)] transition-shadow duration-300 group-hover:shadow-[0_0_8px_oklch(0.7_0.2_160)]"
-            />
-            <span className="font-mono text-[10px] font-medium leading-none tracking-wider text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
-              {DISPLAY_APP_VERSION}
-            </span>
-          </span>
-        </button>
+        <VersionBadgeTrigger
+          installedVersion={props.installedVersion}
+          onCheck={check}
+        />
       </PopoverTrigger>
 
       <PopoverContent
@@ -131,6 +158,7 @@ export function VersionBadge() {
       >
         <VersionPopoverBody
           state={state}
+          installedVersion={props.installedVersion}
           updateStatus={status}
           onCheck={check}
           onUpdateNow={handleUpdateNow}
@@ -146,19 +174,21 @@ export function VersionBadge() {
 
 export function VersionPopoverBody(props: {
   state: VersionCheckState;
+  installedVersion: string | null;
   updateStatus: AppUpdateStatus;
   onCheck: () => void;
   onUpdateNow: () => void;
 }) {
   const {
-    state, updateStatus, onCheck, onUpdateNow,
+    state, installedVersion, updateStatus,
+    onCheck, onUpdateNow,
   } = props;
 
   if (state.status === "idle") {
     return (
       <div className="flex flex-col items-center gap-2 text-sm">
         <p className="text-muted-foreground">
-          {DISPLAY_APP_VERSION}
+          {displayInstalledVersion(installedVersion)}
         </p>
         <Button
           size="sm"

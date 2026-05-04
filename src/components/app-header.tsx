@@ -178,6 +178,8 @@ export function AppHeader() {
           <HeaderToolbar
             activeBeatId={s.activeBeatId}
             activeRepo={s.activeRepo}
+            versionStatus={s.vb.status}
+            onVersionStatus={s.vb.setStatus}
             router={s.router}
             searchParams={s.searchParams}
             onOpenSettings={() =>
