@@ -5,6 +5,11 @@ import {
   useMemo,
   useState,
 } from "react";
+import {
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CheckCheck,
@@ -43,6 +48,9 @@ import {
 import {
   StaleBeatDialogList,
 } from "@/components/stale-beat-grooming-dialog-list";
+import {
+  StaleBeatGroomingDispatchHelper,
+} from "@/components/stale-beat-grooming-dispatch-helper";
 import type {
   StaleBeatGroomingAgentOption,
   StaleBeatGroomingReviewRecord,
@@ -63,6 +71,9 @@ export function StaleBeatGroomingDialog({
   isAllRepositories,
   onOpenBeat,
 }: StaleBeatGroomingDialogProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const [nowMs] = useState(() => Date.now());
   const staleBeats = useMemo(
@@ -114,28 +125,23 @@ export function StaleBeatGroomingDialog({
     });
     mutation.mutate(request);
   };
+  const handleOpenDispatchSettings = () => {
+    setOpen(false);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("settings", "dispatch");
+    const query = params.toString();
+    router.replace(`${pathname}${query ? `?${query}` : ""}`, {
+      scroll: false,
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          type="button"
-          size="sm"
-          variant={staleBeats.length > 0 ? "secondary" : "outline"}
-          className="h-8 gap-1.5"
-          data-testid="stale-beats-dialog-trigger"
-        >
-          <Sparkles className="size-3.5" />
-          <span>Stale Beats</span>
-          <Badge variant="outline" className="h-4 rounded-sm text-[10px]">
-            {staleBeats.length}
-          </Badge>
-          {queuedCount > 0 && (
-            <Badge className="h-4 rounded-sm text-[10px]">
-              Queued {queuedCount}
-            </Badge>
-          )}
-        </Button>
+        <StaleBeatDialogTrigger
+          staleCount={staleBeats.length}
+          queuedCount={queuedCount}
+        />
       </DialogTrigger>
       <StaleBeatGroomingDialogContent
         staleBeats={staleBeats}
@@ -153,6 +159,7 @@ export function StaleBeatGroomingDialog({
         onSelectOldest={() => selectOldestFive(staleBeats, setSelectedKeys)}
         onClear={() => setSelectedKeys(new Set())}
         onReview={handleReview}
+        onOpenDispatchSettings={handleOpenDispatchSettings}
         onToggle={(key) => toggleSelected(key, setSelectedKeys)}
         onOpenBeat={(beat) => {
           setOpen(false);
@@ -160,6 +167,35 @@ export function StaleBeatGroomingDialog({
         }}
       />
     </Dialog>
+  );
+}
+
+function StaleBeatDialogTrigger({
+  staleCount,
+  queuedCount,
+}: {
+  staleCount: number;
+  queuedCount: number;
+}) {
+  return (
+    <Button
+      type="button"
+      size="sm"
+      variant={staleCount > 0 ? "secondary" : "outline"}
+      className="h-8 gap-1.5"
+      data-testid="stale-beats-dialog-trigger"
+    >
+      <Sparkles className="size-3.5" />
+      <span>Stale Beats</span>
+      <Badge variant="outline" className="h-4 rounded-sm text-[10px]">
+        {staleCount}
+      </Badge>
+      {queuedCount > 0 && (
+        <Badge className="h-4 rounded-sm text-[10px]">
+          Queued {queuedCount}
+        </Badge>
+      )}
+    </Button>
   );
 }
 
@@ -179,6 +215,7 @@ function StaleBeatGroomingDialogContent({
   onSelectOldest,
   onClear,
   onReview,
+  onOpenDispatchSettings,
   onToggle,
   onOpenBeat,
 }: {
@@ -197,6 +234,7 @@ function StaleBeatGroomingDialogContent({
   onSelectOldest: () => void;
   onClear: () => void;
   onReview: () => void;
+  onOpenDispatchSettings: () => void;
   onToggle: (key: string) => void;
   onOpenBeat: (beat: Beat) => void;
 }) {
@@ -225,6 +263,7 @@ function StaleBeatGroomingDialogContent({
         onSelectOldest={onSelectOldest}
         onClear={onClear}
         onReview={onReview}
+        onOpenDispatchSettings={onOpenDispatchSettings}
         canReview={canReview}
       />
       <StaleBeatDialogList
@@ -251,6 +290,7 @@ function DialogControls({
   onSelectOldest,
   onClear,
   onReview,
+  onOpenDispatchSettings,
 }: {
   agents: StaleBeatGroomingAgentOption[];
   agentId: string;
@@ -263,6 +303,7 @@ function DialogControls({
   onSelectOldest: () => void;
   onClear: () => void;
   onReview: () => void;
+  onOpenDispatchSettings: () => void;
 }) {
   return (
     <div className="grid gap-2 border-y border-border/70 py-2">
@@ -287,9 +328,9 @@ function DialogControls({
           </SelectContent>
         </Select>
         {defaultError && (
-          <span className="min-w-0 text-xs text-destructive">
-            {defaultError}
-          </span>
+          <StaleBeatGroomingDispatchHelper
+            onOpenDispatchSettings={onOpenDispatchSettings}
+          />
         )}
       </div>
       <div className="flex flex-wrap items-center gap-2">

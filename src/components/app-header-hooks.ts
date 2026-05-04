@@ -147,14 +147,15 @@ export function useSettingsSheet(
   router: ReturnType<typeof useRouter>,
 ) {
   const param = searchParams.get("settings");
-  const fromUrl = param === "repos";
+  const urlSection = settingsSectionFromParam(param);
+  const fromUrl = urlSection !== null;
   const [open, setOpen] = useState(fromUrl);
   const [section, setSection] =
-    useState<SettingsSection>(fromUrl ? "repos" : null);
+    useState<SettingsSection>(urlSection);
 
   const effectiveOpen = open || fromUrl;
   const effectiveSection: SettingsSection =
-    fromUrl ? "repos" : section;
+    urlSection ?? section;
 
   function handleOpenChange(next: boolean) {
     setOpen(next);
@@ -183,6 +184,15 @@ export function useSettingsSheet(
     effectiveOpen, effectiveSection,
     handleOpenChange, openToRepos,
   };
+}
+
+export function settingsSectionFromParam(
+  param: string | null,
+): SettingsSection {
+  if (param === "repos" || param === "dispatch") {
+    return param;
+  }
+  return null;
 }
 
 export function useBeatsViewSetter(

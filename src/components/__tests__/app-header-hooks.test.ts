@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildVersionBannerData,
+  settingsSectionFromParam,
 } from "@/components/app-header-hooks";
 
 describe("buildVersionBannerData", () => {
@@ -21,5 +22,17 @@ describe("buildVersionBannerData", () => {
       latestVersion: null,
       updateAvailable: true,
     })).toBeNull();
+  });
+});
+
+describe("settingsSectionFromParam", () => {
+  it("allows supported settings sections", () => {
+    expect(settingsSectionFromParam("repos")).toBe("repos");
+    expect(settingsSectionFromParam("dispatch")).toBe("dispatch");
+  });
+
+  it("ignores unknown settings sections", () => {
+    expect(settingsSectionFromParam("agents")).toBeNull();
+    expect(settingsSectionFromParam(null)).toBeNull();
   });
 });

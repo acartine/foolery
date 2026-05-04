@@ -32,7 +32,7 @@ import type {
   DispatchMode,
 } from "@/lib/schemas";
 
-export type SettingsSection = "repos" | null;
+export type SettingsSection = "repos" | "dispatch" | null;
 
 interface SettingsSheetProps {
   open: boolean;
@@ -320,8 +320,8 @@ export function SettingsSheet({
     useState<SettingsTab>("repos");
 
   useEffect(() => {
-    if (open && initialSection === "repos") {
-      setActiveTab("repos");
+    if (open && initialSection) {
+      setActiveTab(initialSection);
     }
   }, [open, initialSection]);
 
