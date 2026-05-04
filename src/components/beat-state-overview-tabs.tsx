@@ -37,7 +37,7 @@ export function BeatStateOverviewTabs({
           <span
             className={
               "rounded-sm bg-background px-1.5 py-0.5"
-              + " text-[10px] tabular-nums text-muted-foreground"
+              + " text-[9px] tabular-nums text-muted-foreground"
             }
           >
             {tab.count}
@@ -50,8 +50,8 @@ export function BeatStateOverviewTabs({
 
 function tabClassName(active: boolean): string {
   return [
-    "inline-flex h-7 shrink-0 items-center gap-1.5 rounded-sm",
-    "border px-2 text-[11px] font-medium transition-colors",
+    "inline-flex h-6 shrink-0 items-center gap-1.5 rounded-sm",
+    "border px-2 text-[10px] font-medium transition-colors",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
     active
       ? "border-clay-300 bg-clay-100 text-clay-800"

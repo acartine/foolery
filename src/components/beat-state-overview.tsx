@@ -1,7 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import {
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { AlertTriangle } from "lucide-react";
+import type {
+  CSSProperties,
+} from "react";
 import type { Beat } from "@/lib/types";
 import {
   buildOverviewStateTabs,
@@ -9,29 +16,33 @@ import {
   DEFAULT_OVERVIEW_STATE_TAB,
   filterOverviewBeats,
   groupOverviewBeatsByState,
-  overviewBeatLabel,
-  overviewLeaseInfoForBeat,
+  overviewColumnWidthPx,
+  visibleOverviewGroups,
 } from "@/lib/beat-state-overview";
 import type {
   BeatStateGroup,
   OverviewLeaseInfo,
   OverviewStateTabId,
 } from "@/lib/beat-state-overview";
-import { displayBeatLabel } from "@/lib/beat-display";
 import { BeatStateBadge } from "@/components/beat-state-badge";
-import { BeatPriorityBadge } from "@/components/beat-priority-badge";
-import { BeatTypeBadge } from "@/components/beat-type-badge";
 import { RepoSwitchLoadingState } from "@/components/repo-switch-loading-state";
 import {
   StreamingProgressBar,
 } from "@/components/streaming-progress-bar";
-import { relativeTime } from "@/components/beat-column-time";
 import type {
   StreamingProgress,
 } from "@/app/beats/use-streaming-progress";
 import {
   BeatStateOverviewTabs,
 } from "@/components/beat-state-overview-tabs";
+import {
+  BeatOverviewTile,
+  leaseInfoForOverviewTile,
+  overviewTileKey,
+} from "@/components/beat-overview-tile";
+import {
+  useElementWidth,
+} from "@/components/use-element-width";
 
 interface BeatStateOverviewScreenProps {
   isLoading: boolean;
@@ -153,6 +164,19 @@ function BeatStateOverview({
     [beats, activeTab],
   );
   const groupedCount = countGroupedBeats(groups);
+  const visibleGroups = useMemo(
+    () => visibleOverviewGroups(groups),
+    [groups],
+  );
+  const scrollportRef = useRef<HTMLDivElement | null>(null);
+  const scrollportWidth = useElementWidth(scrollportRef);
+  const columnWidth = overviewColumnWidthPx(
+    scrollportWidth,
+    visibleGroups.length,
+  );
+  const gridStyle = {
+    "--overview-column-width": `${columnWidth}px`,
+  } as CSSProperties;
 
   return (
     <div
@@ -163,12 +187,12 @@ function BeatStateOverview({
         "flex flex-wrap items-center justify-between"
         + " gap-2"
       }>
-        <h2 className="text-sm font-semibold tracking-tight">
+        <h2 className="text-xs font-semibold tracking-tight">
           State overview
         </h2>
         <div className={
           "rounded-sm border bg-muted/30"
-          + " px-2 py-0.5 text-[11px] text-muted-foreground"
+          + " px-2 py-0.5 text-[10px] text-muted-foreground"
         }>
           {groupedCount} beat{groupedCount === 1 ? "" : "s"}
         </div>
@@ -178,22 +202,34 @@ function BeatStateOverview({
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
-      <div className="overflow-x-auto pb-2">
-        <div className={
-          "grid min-w-full grid-flow-col"
-          + " auto-cols-[minmax(7rem,calc((100%_-_4.5rem)/10))] gap-2"
-        }>
-          {groups.map((group) => (
-            <BeatStateColumn
-              key={group.state}
-            group={group}
-            showRepoColumn={showRepoColumn}
-            isAllRepositories={isAllRepositories}
-            leaseInfoByBeatKey={leaseInfoByBeatKey}
-            onOpenBeat={onOpenBeat}
-          />
-          ))}
-        </div>
+      <div
+        className="overflow-x-auto pb-2"
+        data-testid="beat-state-overview-scrollport"
+        ref={scrollportRef}
+      >
+        {visibleGroups.length > 0 ? (
+          <div
+            className={
+              "grid min-w-full grid-flow-col"
+              + " auto-cols-[var(--overview-column-width)] gap-2"
+            }
+            data-testid="beat-state-overview-grid"
+            style={gridStyle}
+          >
+            {visibleGroups.map((group) => (
+              <BeatStateColumn
+                key={group.state}
+              group={group}
+              showRepoColumn={showRepoColumn}
+              isAllRepositories={isAllRepositories}
+              leaseInfoByBeatKey={leaseInfoByBeatKey}
+              onOpenBeat={onOpenBeat}
+            />
+            ))}
+          </div>
+        ) : (
+          <OverviewEmptyState label="No beats in this group." />
+        )}
       </div>
     </div>
   );
@@ -221,22 +257,22 @@ function BeatStateColumn({
       data-testid={`beat-state-group-${group.state}`}
     >
       <div className={
-        "flex h-8 items-center justify-between gap-2"
-        + " border-b border-border/70 bg-muted/35 px-2"
+        "flex min-h-8 items-start justify-between gap-1.5"
+        + " border-b border-border/70 bg-muted/35 px-2 py-1"
       }>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <BeatStateBadge
             state={group.state}
             label={overviewStateLabel(group.state)}
             className={
-              "h-4 max-w-full justify-start truncate"
-              + " rounded-sm px-1 text-[10px]"
+              "h-auto max-w-full justify-start whitespace-normal"
+              + " rounded-sm px-1 py-0.5 text-[9px] leading-[1.05]"
             }
           />
         </div>
         <span className={
           "rounded-sm bg-background px-1.5 py-0.5"
-          + " text-[10px] tabular-nums text-muted-foreground"
+          + " text-[9px] tabular-nums text-muted-foreground"
         }>
           {group.beats.length}
         </span>
@@ -249,7 +285,7 @@ function BeatStateColumn({
               beat={beat}
               showRepoColumn={showRepoColumn}
               isAllRepositories={isAllRepositories}
-              leaseInfo={leaseInfoForTile(
+              leaseInfo={leaseInfoForOverviewTile(
                 beat,
                 leaseInfoByBeatKey,
               )}
@@ -258,7 +294,7 @@ function BeatStateColumn({
           ))
         ) : (
           <div
-            className="px-2 py-2 text-[10px] text-muted-foreground"
+            className="px-2 py-2 text-[9px] text-muted-foreground"
             data-testid="beat-state-empty-column"
           >
             No beats
@@ -269,117 +305,6 @@ function BeatStateColumn({
   );
 }
 
-function BeatOverviewTile({
-  beat,
-  showRepoColumn,
-  isAllRepositories,
-  leaseInfo,
-  onOpenBeat,
-}: {
-  beat: Beat;
-  showRepoColumn: boolean;
-  isAllRepositories: boolean;
-  leaseInfo: OverviewLeaseInfo | null;
-  onOpenBeat: (beat: Beat) => void;
-}) {
-  const repoLabel = showRepoColumn
-    ? repoDisplayName(beat)
-    : null;
-  const contextItems = overviewContextItems(beat, repoLabel);
-
-  return (
-    <button
-      type="button"
-      className={
-        "block w-full px-2 py-1.5 text-left"
-        + " transition-colors hover:bg-muted/35"
-        + " focus-visible:outline-none"
-        + " focus-visible:ring-2 focus-visible:ring-ring"
-      }
-      data-testid="beat-overview-tile"
-      title={beat.title}
-      onClick={() => onOpenBeat(beat)}
-    >
-      <div className="flex min-w-0 items-center justify-between gap-2">
-        <span className={
-          "min-w-0 truncate font-mono text-[10px]"
-          + " leading-4 text-muted-foreground"
-        }>
-          {overviewBeatLabel(beat, isAllRepositories)}
-        </span>
-        <BeatPriorityBadge
-          priority={beat.priority}
-          className="h-4 rounded-sm px-1 text-[10px]"
-        />
-      </div>
-      <div className="mt-0.5 line-clamp-2 text-xs font-medium leading-snug">
-        {beat.title}
-      </div>
-      <div className="mt-1 flex min-w-0 flex-wrap items-center gap-1">
-        <BeatTypeBadge
-          type={beat.type}
-          className={
-            "h-4 max-w-[8.5rem] rounded-sm px-1"
-            + " text-[10px] [&>svg]:size-2.5"
-          }
-        />
-        <span className="text-[10px] leading-4 text-muted-foreground">
-          {relativeTime(beat.updated)}
-        </span>
-      </div>
-      {contextItems.length > 0 && (
-        <div className={
-          "mt-0.5 flex min-w-0 flex-wrap gap-x-1.5"
-          + " gap-y-0.5 text-[10px] leading-4 text-muted-foreground"
-        }>
-          {contextItems.map((item) => (
-            <span
-              key={item}
-              className="max-w-full truncate"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
-      )}
-      {leaseInfo && (
-        <LeaseInfoLine info={leaseInfo} />
-      )}
-    </button>
-  );
-}
-
-function LeaseInfoLine({ info }: { info: OverviewLeaseInfo }) {
-  const parts = [
-    info.startedAt ? `Lease ${relativeTime(info.startedAt)}` : null,
-    info.provider,
-    info.model,
-    info.version,
-  ].filter(Boolean);
-
-  if (parts.length === 0) return null;
-
-  return (
-    <div
-      className={
-        "mt-0.5 flex min-w-0 flex-wrap gap-x-1.5"
-        + " gap-y-0.5 text-[10px] leading-4 text-ochre-700"
-        + " dark:text-ochre-100"
-      }
-      data-testid="beat-overview-lease-info"
-    >
-      {parts.map((part) => (
-        <span
-          key={part}
-          className="max-w-full truncate"
-        >
-          {part}
-        </span>
-      ))}
-    </div>
-  );
-}
-
 function OverviewDegradedBanner(
   { message }: { message: string | null },
 ) {
@@ -387,7 +312,7 @@ function OverviewDegradedBanner(
     <div className={
       "mb-2 flex items-center gap-2 rounded-md"
       + " border border-feature-400 bg-feature-100"
-      + " px-3 py-2 text-sm text-feature-700"
+      + " px-3 py-2 text-xs text-feature-700"
       + " dark:border-feature-700"
       + " dark:bg-feature-700 dark:text-feature-100"
     }>
@@ -405,34 +330,11 @@ function OverviewEmptyState(
   return (
     <div className={
       "flex items-center justify-center"
-      + " py-6 text-sm text-muted-foreground"
+      + " py-6 text-xs text-muted-foreground"
     }>
       {label}
     </div>
   );
-}
-
-function repoDisplayName(
-  beat: Beat,
-): string | null {
-  const record = beat as Beat & {
-    _repoName?: unknown;
-    _repoPath?: unknown;
-  };
-  if (
-    typeof record._repoName === "string"
-    && record._repoName.trim().length > 0
-  ) {
-    return record._repoName.trim();
-  }
-  if (
-    typeof record._repoPath === "string"
-    && record._repoPath.trim().length > 0
-  ) {
-    const path = record._repoPath.trim();
-    return path.split("/").filter(Boolean).pop() ?? path;
-  }
-  return null;
 }
 
 const OVERVIEW_STATE_LABELS: Record<string, string> = {
@@ -449,36 +351,4 @@ const OVERVIEW_STATE_LABELS: Record<string, string> = {
 
 function overviewStateLabel(state: string): string | undefined {
   return OVERVIEW_STATE_LABELS[state];
-}
-
-function overviewContextItems(
-  beat: Beat,
-  repoLabel: string | null,
-): string[] {
-  const items: string[] = [];
-  if (beat.parent) {
-    items.push(`Parent ${displayBeatLabel(beat.parent)}`);
-  }
-  if (repoLabel) {
-    items.push(repoLabel);
-  }
-  return items;
-}
-
-function leaseInfoForTile(
-  beat: Beat,
-  leaseInfoByBeatKey: Record<string, OverviewLeaseInfo>,
-): OverviewLeaseInfo | null {
-  const byTile = leaseInfoByBeatKey[overviewTileKey(beat)];
-  const byId = leaseInfoByBeatKey[beat.id];
-  return overviewLeaseInfoForBeat(beat, byTile ?? byId);
-}
-
-function overviewTileKey(
-  beat: Beat,
-): string {
-  const record = beat as Beat & { _repoPath?: unknown };
-  return typeof record._repoPath === "string"
-    ? `${record._repoPath}:${beat.id}`
-    : beat.id;
 }

@@ -9,8 +9,10 @@ import {
   isOverviewBeat,
   normalizeOverviewState,
   overviewBeatLabel,
+  overviewColumnWidthPx,
   overviewLeaseInfoForBeat,
   overviewTabForState,
+  visibleOverviewGroups,
 } from "@/lib/beat-state-overview";
 import type { Beat } from "@/lib/types";
 
@@ -220,6 +222,27 @@ describe("beat-state-overview tabs", () => {
       { state: "deferred", required: true, beats: [] },
       { state: "shipped", required: true, beats: [] },
     ]);
+  });
+
+  it("filters empty columns from the visible overview rail", () => {
+    const groups = groupOverviewBeatsByState([
+      makeBeat("plan", "planning"),
+      makeBeat("impl", "implementation"),
+    ]);
+
+    expect(visibleOverviewGroups(groups).map((group) => group.state)).toEqual([
+      "planning",
+      "implementation",
+    ]);
+  });
+
+  it("sizes visible columns from available width and visible count", () => {
+    expect(overviewColumnWidthPx(1200, 3)).toBe(300);
+    expect(overviewColumnWidthPx(1200, 10)).toBe(109);
+    expect(overviewColumnWidthPx(240, 10)).toBe(80);
+    expect(overviewColumnWidthPx(2000, 2)).toBe(320);
+    expect(overviewColumnWidthPx(0, 2)).toBe(160);
+    expect(overviewColumnWidthPx(1200, 0)).toBe(160);
   });
 });
 

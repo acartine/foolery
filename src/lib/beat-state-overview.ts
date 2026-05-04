@@ -37,6 +37,9 @@ export interface OverviewStateTabSummary {
 
 export const DEFAULT_OVERVIEW_STATE_TAB: OverviewStateTabId =
   "work_items";
+const OVERVIEW_COLUMN_MIN_WIDTH_PX = 80;
+const OVERVIEW_COLUMN_MAX_WIDTH_PX = 320;
+const OVERVIEW_COLUMN_FALLBACK_WIDTH_PX = 160;
 
 const WORK_ITEM_OVERVIEW_STATES = [
   "ready_for_planning",
@@ -223,6 +226,25 @@ export function countGroupedBeats(
   return groups.reduce(
     (total, group) => total + group.beats.length,
     0,
+  );
+}
+
+export function visibleOverviewGroups(
+  groups: readonly BeatStateGroup[],
+): BeatStateGroup[] {
+  return groups.filter((group) => group.beats.length > 0);
+}
+
+export function overviewColumnWidthPx(
+  availableWidth: number,
+  visibleColumnCount: number,
+): number {
+  if (visibleColumnCount <= 0) return OVERVIEW_COLUMN_FALLBACK_WIDTH_PX;
+  if (availableWidth <= 0) return OVERVIEW_COLUMN_FALLBACK_WIDTH_PX;
+  const rawWidth = Math.floor(availableWidth / (visibleColumnCount + 1));
+  return Math.min(
+    OVERVIEW_COLUMN_MAX_WIDTH_PX,
+    Math.max(OVERVIEW_COLUMN_MIN_WIDTH_PX, rawWidth),
   );
 }
 
