@@ -12,6 +12,7 @@ export const DISPATCH_WORKFLOW_BUNDLE_ID = "work_sdlc";
 export const SHARED_DISPATCH_POOL_TARGET_IDS = [
   "orchestration",
   "scope_refinement",
+  "stale_grooming",
 ] as const;
 
 export const LEGACY_STEP_POOL_TARGET_IDS = [
@@ -107,6 +108,10 @@ const STEP_META: Record<
     label: "Scope Refinement",
     description: "Agent refines newly created beats after creation",
   },
+  stale_grooming: {
+    label: "Stale Grooming",
+    description: "Agent reviews stale backlog beats for relevance",
+  },
   design: {
     label: "Design",
     description: "Agent drafts the execution plan",
@@ -165,6 +170,22 @@ const SHARED_GROUPS: ReadonlyArray<DispatchPoolTargetGroupDefinition> = [
       groupDescription:
         "Shared bundled refinement targets used after beat creation",
       legacyTargetId: "scope_refinement",
+    }],
+  },
+  {
+    id: "shared__stale_grooming",
+    label: "Stale Grooming",
+    description:
+      "Shared backlog grooming target used for stale beat review",
+    targets: [{
+      id: "stale_grooming",
+      label: STEP_META.stale_grooming.label,
+      description: STEP_META.stale_grooming.description,
+      groupId: "shared__stale_grooming",
+      groupLabel: "Stale Grooming",
+      groupDescription:
+        "Shared backlog grooming target used for stale beat review",
+      legacyTargetId: "stale_grooming",
     }],
   },
 ];
@@ -350,6 +371,15 @@ export function scopeRefinementDispatchTarget(): DispatchPoolTargetDefinition {
     "scope_refinement",
     "Scope Refinement",
     STEP_META.scope_refinement.description,
+  );
+}
+
+export function staleGroomingDispatchTarget(): DispatchPoolTargetDefinition {
+  return buildLegacyTarget(
+    "stale_grooming",
+    "stale_grooming",
+    "Stale Grooming",
+    STEP_META.stale_grooming.description,
   );
 }
 

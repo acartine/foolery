@@ -22,6 +22,7 @@ const EMPTY_POOLS: PoolsSettings = {
   shipment: [],
   shipment_review: [],
   scope_refinement: [],
+  stale_grooming: [],
 };
 
 describe("resolvePoolAgent workflow targets", () => {

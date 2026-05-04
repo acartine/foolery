@@ -31,7 +31,7 @@ import {
 import { DEFAULT_SCOPE_REFINEMENT_PROMPT } from "@/lib/scope-refinement-defaults";
 
 const DEFAULT_ACTIONS = {
-  take: "", scene: "", scopeRefinement: "",
+  take: "", scene: "", scopeRefinement: "", staleGrooming: "",
 };
 
 const DEFAULT_POOLS = {
@@ -40,6 +40,7 @@ const DEFAULT_POOLS = {
   implementation: [], implementation_review: [],
   shipment: [], shipment_review: [],
   scope_refinement: [],
+  stale_grooming: [],
 };
 
 const DEFAULT_SETTINGS = {
@@ -117,12 +118,14 @@ describe("loadSettings", () => {
         'take = "claude"',
         'scene = "claude-opus"',
         'scopeRefinement = "codex"',
+        'staleGrooming = "codex"',
       ].join("\n"),
     );
     const settings = await loadSettings();
     expect(settings.actions.take).toBe("");
     expect(settings.actions.scene).toBe("claude-opus");
     expect(settings.actions.scopeRefinement).toBe("");
+    expect(settings.actions.staleGrooming).toBe("");
   });
 
   it("prunes orphan pool entries whose agent ids aren't registered", async () => {
@@ -264,7 +267,7 @@ describe("backfillMissingSettingsDefaults", () => {
         'maxClaimsPerQueueType = 10',
         'terminalLightTheme = false',
         '[actions]', 'take = ""', 'scene = ""',
-        'scopeRefinement = ""',
+        'scopeRefinement = ""', 'staleGrooming = ""',
         '[backend]', 'type = "cli"',
         '[defaults]',
         'profileId = ""',
@@ -276,6 +279,7 @@ describe("backfillMissingSettingsDefaults", () => {
         'implementation = []', 'implementation_review = []',
         'shipment = []', 'shipment_review = []',
         'scope_refinement = []',
+        'stale_grooming = []',
       ].join("\n"),
     );
     const result = await backfillMissingSettingsDefaults();

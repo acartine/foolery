@@ -105,7 +105,7 @@ const { loadSettingsMock, stubDispatchSettings } = vi.hoisted(() => {
         version: "4.6",
       },
     },
-    actions: { take: "", scene: "", scopeRefinement: "" },
+    actions: { take: "", scene: "", scopeRefinement: "", staleGrooming: "" },
     pools: {
       orchestration: pool,
       planning: pool,

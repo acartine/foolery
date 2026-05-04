@@ -26,7 +26,9 @@ export interface StaleBeatSummary {
   title: string;
   state: string;
   ageDays: number;
+  createdAgeDays: number | null;
   created: string;
+  updated: string;
   repoPath?: string;
   repoName?: string;
   beat: Beat;
@@ -38,9 +40,23 @@ export interface StaleBeatReviewTarget {
 }
 
 export interface StaleBeatReviewRequest {
-  agentId: string;
+  agentId?: string;
   targets: StaleBeatReviewTarget[];
-  modelOverride?: string;
+}
+
+export interface StaleBeatGroomingAgentOption {
+  id: string;
+  label: string;
+  command: string;
+  model?: string;
+  vendor?: string;
+  provider?: string;
+}
+
+export interface StaleBeatGroomingOptions {
+  agents: StaleBeatGroomingAgentOption[];
+  defaultAgentId?: string;
+  defaultError?: string;
 }
 
 export type StaleBeatReviewStatus =
@@ -65,7 +81,6 @@ export interface StaleBeatGroomingReviewRecord {
   queuedAt: number;
   agentId: string;
   repoPath?: string;
-  modelOverride?: string;
   startedAt?: number;
   completedAt?: number;
   error?: string;
@@ -79,5 +94,44 @@ export interface EnqueueStaleBeatGroomingResponse {
     repoPath?: string;
   }>;
   agentId: string;
-  modelOverride?: string;
+}
+
+export interface StaleBeatGroomingActiveJob {
+  jobId: string;
+  beatId: string;
+  agentId: string;
+  startedAt: number;
+  repoPath?: string;
+}
+
+export interface StaleBeatGroomingFailure {
+  jobId: string;
+  beatId: string;
+  reason: string;
+  timestamp: number;
+  repoPath?: string;
+}
+
+export interface StaleBeatGroomingCompletion {
+  jobId: string;
+  beatId: string;
+  timestamp: number;
+  decision?: StaleGroomingDecision;
+  repoPath?: string;
+}
+
+export interface StaleBeatGroomingWorkerHealth {
+  workerCount: number;
+  activeJobs: StaleBeatGroomingActiveJob[];
+  totalCompleted: number;
+  totalFailed: number;
+  recentFailures: StaleBeatGroomingFailure[];
+  recentCompletions: StaleBeatGroomingCompletion[];
+  uptimeMs: number | null;
+}
+
+export interface StaleBeatGroomingStatus {
+  queueSize: number;
+  reviews: StaleBeatGroomingReviewRecord[];
+  worker: StaleBeatGroomingWorkerHealth;
 }

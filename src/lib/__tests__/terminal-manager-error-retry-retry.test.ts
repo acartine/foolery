@@ -157,7 +157,7 @@ const threeAgentPool = [
 const advancedSettingsWithTwoAgents = {
   dispatchMode: "advanced",
   maxClaimsPerQueueType: 10,
-  actions: { take: "", scene: "", scopeRefinement: "" },
+  actions: { take: "", scene: "", scopeRefinement: "", staleGrooming: "" },
   pools: {
     orchestration: threeAgentPool,
     planning: threeAgentPool,
@@ -188,7 +188,7 @@ const advancedSettingsWithTwoAgents = {
 const advancedSettingsOneAgent = {
   dispatchMode: "advanced",
   maxClaimsPerQueueType: 10,
-  actions: { take: "", scene: "", scopeRefinement: "" },
+  actions: { take: "", scene: "", scopeRefinement: "", staleGrooming: "" },
   pools: {
     orchestration: [{ agentId: "agent-a", weight: 1 }],
     planning: [{ agentId: "agent-a", weight: 1 }],
@@ -198,6 +198,7 @@ const advancedSettingsOneAgent = {
     shipment: [{ agentId: "agent-a", weight: 1 }],
     shipment_review: [{ agentId: "agent-a", weight: 1 }],
     scope_refinement: [{ agentId: "agent-a", weight: 1 }],
+    stale_grooming: [{ agentId: "agent-a", weight: 1 }],
   },
   agents: {
     "agent-a": {

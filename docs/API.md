@@ -8,6 +8,7 @@ Reference for agent clients automating Foolery operations. All endpoints live un
 - [Authentication](#authentication)
 - [Common Patterns](#common-patterns)
 - [Beats (Work Items)](#beats-work-items)
+- [Stale Beat Grooming](#stale-beat-grooming)
 - [Dependencies](#dependencies)
 - [Wave Planning](#wave-planning)
 - [Terminal Sessions](#terminal-sessions)
@@ -327,6 +328,66 @@ Response:
 ```json
 { "ok": true, "data": { "survivorId": "beat-keep", "consumedId": "beat-absorb" } }
 ```
+
+---
+
+## Stale Beat Grooming
+
+Stale beat grooming is advisory-only. It reviews beats whose `updated` time is
+older than the threshold and records an AI judgment; it does not close, rewrite,
+or move beats automatically.
+
+### List Stale Beats
+
+```
+GET /api/beats/stale-grooming
+```
+
+Query parameters:
+- `_repo` — repository path
+- `scope=all` — list stale beats across registered repos when `_repo` is absent
+- `ageDays` — threshold in days; default is `7`
+- `limit` — maximum stale beats to return
+
+### Queue Reviews
+
+```
+POST /api/beats/stale-grooming/reviews
+```
+
+Use explicit targets:
+
+```json
+{
+  "agentId": "codex-gpt-5-4",
+  "targets": [{ "beatId": "foolery-1234", "repoPath": "/repo" }]
+}
+```
+
+Or ask the API to queue the oldest stale beats:
+
+```json
+{
+  "mode": "oldest",
+  "limit": 5,
+  "_repo": "/repo"
+}
+```
+
+Omit `agentId` to use the configured stale grooming action or
+`pools.stale_grooming`; pass any configured agent id to override it.
+
+### Review Status
+
+```
+GET /api/beats/stale-grooming/status
+GET /api/beats/stale-grooming/reviews
+GET /api/beats/stale-grooming/options
+```
+
+`status` returns queue depth, active worker jobs, recent completions, recent
+failures, and review records. `options` returns every configured model/agent and
+the dispatch-selected default.
 
 ---
 

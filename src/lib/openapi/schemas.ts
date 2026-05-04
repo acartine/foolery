@@ -366,6 +366,7 @@ const coreSchemas = {
           take: { type: "string" },
           scene: { type: "string" },
           scopeRefinement: { type: "string" },
+          staleGrooming: { type: "string" },
         },
       },
       backend: {
@@ -404,6 +405,7 @@ const coreSchemas = {
           shipment: { type: "array", items: { $ref: "#/components/schemas/PoolEntry" } },
           shipment_review: { type: "array", items: { $ref: "#/components/schemas/PoolEntry" } },
           scope_refinement: { type: "array", items: { $ref: "#/components/schemas/PoolEntry" } },
+          stale_grooming: { type: "array", items: { $ref: "#/components/schemas/PoolEntry" } },
         },
       },
       dispatchMode: { type: "string", enum: ["basic", "advanced"] },

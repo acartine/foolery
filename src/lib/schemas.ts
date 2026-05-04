@@ -143,8 +143,9 @@ const AGENT_ID_CONVENTION
 const POOL_STEP_NAMES
   = "Canonical workflow step keys: `orchestration`, `planning`, "
   + "`plan_review`, `implementation`, `implementation_review`, `shipment`, "
-  + "`shipment_review`, `scope_refinement`. Additional step names are "
-  + "permitted for custom workflows (pool map accepts any string key).";
+  + "`shipment_review`, `scope_refinement`, `stale_grooming`. Additional "
+  + "step names are permitted for custom workflows (pool map accepts any "
+  + "string key).";
 
 const SCOPE_REFINEMENT_PLACEHOLDERS
   = "Supports `{{title}}`, `{{description}}`, `{{acceptance}}` placeholders, "
@@ -226,11 +227,16 @@ export const actionAgentMappingsSchema = z
       "Agent id for the Scope Refinement action. Empty string means "
       + "unassigned. Used only when `dispatchMode = \"basic\"`.",
     ),
+    staleGrooming: z.string().default("").describe(
+      "Agent id for the Stale Grooming action. Empty string means "
+      + "unassigned. Used only when `dispatchMode = \"basic\"`.",
+    ),
   })
   .default({
     take: "",
     scene: "",
     scopeRefinement: "",
+    staleGrooming: "",
   })
   .describe(
     "One-agent-per-action mapping used when `dispatchMode = \"basic\"`. "
@@ -337,6 +343,8 @@ export const poolsSettingsSchema = z
       .describe("Pool for shipment-review gates."),
     scope_refinement: z.array(poolEntrySchema).default([])
       .describe("Pool for scope-refinement steps."),
+    stale_grooming: z.array(poolEntrySchema).default([])
+      .describe("Pool for stale backlog grooming reviews."),
   })
   .catchall(z.array(poolEntrySchema))
   .default({
@@ -348,6 +356,7 @@ export const poolsSettingsSchema = z
     shipment: [],
     shipment_review: [],
     scope_refinement: [],
+    stale_grooming: [],
   })
   .describe(
     `Weighted dispatch pools keyed by workflow step. ${POOL_STEP_NAMES} `
@@ -400,6 +409,7 @@ type BasePoolsSettings = {
   shipment: PoolEntry[];
   shipment_review: PoolEntry[];
   scope_refinement: PoolEntry[];
+  stale_grooming: PoolEntry[];
 };
 
 export type PoolsSettings = BasePoolsSettings

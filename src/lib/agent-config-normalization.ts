@@ -243,6 +243,7 @@ const ACTION_KEYS = [
   "take",
   "scene",
   "scopeRefinement",
+  "staleGrooming",
 ] as const;
 
 function pruneOrphanActionRefs(

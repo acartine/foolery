@@ -4,7 +4,6 @@ export interface StaleBeatGroomingJob {
   agentId: string;
   createdAt: number;
   repoPath?: string;
-  modelOverride?: string;
 }
 
 interface QueueState {
@@ -36,9 +35,6 @@ export function enqueueStaleBeatGroomingJob(
     agentId: input.agentId,
     createdAt: Date.now(),
     ...(input.repoPath ? { repoPath: input.repoPath } : {}),
-    ...(input.modelOverride
-      ? { modelOverride: input.modelOverride }
-      : {}),
   };
   state.jobs.push(job);
   return job;

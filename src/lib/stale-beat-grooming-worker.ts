@@ -9,9 +9,22 @@ import {
 import {
   recordStaleBeatGroomingQueued,
 } from "@/lib/stale-beat-grooming-store";
+import {
+  getStaleBeatGroomingWorkerHealth,
+  recordStaleBeatGroomingPickup,
+  recordStaleBeatGroomingRelease,
+  recordStaleBeatGroomingWorkerCompleted,
+  recordStaleBeatGroomingWorkerFailed,
+  recordStaleBeatGroomingWorkerStarted,
+  recordStaleBeatGroomingWorkerStopped,
+} from "@/lib/stale-beat-grooming-worker-state";
 import type {
   StaleBeatReviewTarget,
 } from "@/lib/stale-beat-grooming-types";
+
+export {
+  getStaleBeatGroomingWorkerHealth,
+};
 
 const g = globalThis as typeof globalThis & {
   __staleBeatGroomingWorkerRunning?: boolean;
@@ -20,7 +33,6 @@ const g = globalThis as typeof globalThis & {
 export function enqueueStaleBeatGroomingReview(input: {
   target: StaleBeatReviewTarget;
   agentId: string;
-  modelOverride?: string;
 }): { id: string; beatId: string; repoPath?: string } {
   const job = enqueueStaleBeatGroomingJob({
     beatId: input.target.beatId,
@@ -28,18 +40,12 @@ export function enqueueStaleBeatGroomingReview(input: {
     ...(input.target.repoPath
       ? { repoPath: input.target.repoPath }
       : {}),
-    ...(input.modelOverride
-      ? { modelOverride: input.modelOverride }
-      : {}),
   });
   recordStaleBeatGroomingQueued({
     jobId: job.id,
     beatId: job.beatId,
     agentId: job.agentId,
     ...(job.repoPath ? { repoPath: job.repoPath } : {}),
-    ...(job.modelOverride
-      ? { modelOverride: job.modelOverride }
-      : {}),
   });
   startStaleBeatGroomingWorker();
   return {
@@ -52,6 +58,7 @@ export function enqueueStaleBeatGroomingReview(input: {
 export function startStaleBeatGroomingWorker(): void {
   if (g.__staleBeatGroomingWorkerRunning) return;
   g.__staleBeatGroomingWorkerRunning = true;
+  recordStaleBeatGroomingWorkerStarted();
   void drainQueue().catch((error) => {
     console.warn(
       `[stale-grooming] worker stopped unexpectedly: ${
@@ -59,6 +66,7 @@ export function startStaleBeatGroomingWorker(): void {
       }`,
     );
     g.__staleBeatGroomingWorkerRunning = false;
+    recordStaleBeatGroomingWorkerStopped();
   });
 }
 
@@ -66,7 +74,21 @@ async function drainQueue(): Promise<void> {
   while (getStaleBeatGroomingQueueSize() > 0) {
     const job = dequeueStaleBeatGroomingJob();
     if (!job) continue;
-    await processStaleBeatGroomingJob(job);
+    recordStaleBeatGroomingPickup(0, job);
+    const outcome = await processStaleBeatGroomingJob(job);
+    recordStaleBeatGroomingRelease(0);
+    if (outcome.ok) {
+      recordStaleBeatGroomingWorkerCompleted({
+        job,
+        result: outcome.result,
+      });
+    } else {
+      recordStaleBeatGroomingWorkerFailed({
+        job,
+        reason: outcome.error ?? "unknown failure",
+      });
+    }
   }
   g.__staleBeatGroomingWorkerRunning = false;
+  recordStaleBeatGroomingWorkerStopped();
 }

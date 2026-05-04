@@ -42,8 +42,8 @@ import {
   useOverviewColumnWatermark,
 } from "@/components/use-overview-column-watermark";
 import {
-  StaleBeatGroomingPanel,
-} from "@/components/stale-beat-grooming-panel";
+  StaleBeatGroomingDialog,
+} from "@/components/stale-beat-grooming-dialog";
 import {
   OverviewStateMatrix,
 } from "@/components/beat-state-overview-matrix";
@@ -205,31 +205,28 @@ function BeatStateOverview({
   } as CSSProperties;
 
   return (
-    <div
-      className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]"
-      data-testid="beat-state-overview"
-    >
-      <OverviewStateMatrix
-        ref={scrollportRef}
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        visibleGroups={visibleGroups}
-        gridStyle={gridStyle}
-        showRepoColumn={showRepoColumn}
-        isAllRepositories={isAllRepositories}
-        leaseInfoByBeatKey={leaseInfoByBeatKey}
-        onOpenBeat={onOpenBeat}
-        onFocusLeaseSession={onFocusLeaseSession}
-        onReleaseBeat={onReleaseBeat}
-        onHideEmptyColumn={introducedColumns.onHideEmptyColumn}
-      />
-      <StaleBeatGroomingPanel
-        beats={beats}
-        isAllRepositories={isAllRepositories}
-        onOpenBeat={onOpenBeat}
-      />
-    </div>
+    <OverviewStateMatrix
+      ref={scrollportRef}
+      tabs={tabs}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      visibleGroups={visibleGroups}
+      gridStyle={gridStyle}
+      showRepoColumn={showRepoColumn}
+      isAllRepositories={isAllRepositories}
+      leaseInfoByBeatKey={leaseInfoByBeatKey}
+      onOpenBeat={onOpenBeat}
+      onFocusLeaseSession={onFocusLeaseSession}
+      onReleaseBeat={onReleaseBeat}
+      onHideEmptyColumn={introducedColumns.onHideEmptyColumn}
+      toolbarEnd={(
+        <StaleBeatGroomingDialog
+          beats={beats}
+          isAllRepositories={isAllRepositories}
+          onOpenBeat={onOpenBeat}
+        />
+      )}
+    />
   );
 }
 

@@ -100,7 +100,7 @@ const { stubDispatchSettings } = vi.hoisted(() => {
         model: "gpt-5.4-codex",
       },
     },
-    actions: { take: "", scene: "", scopeRefinement: "" },
+    actions: { take: "", scene: "", scopeRefinement: "", staleGrooming: "" },
     pools: {
       orchestration: pool,
       planning: pool,

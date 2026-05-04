@@ -31,6 +31,7 @@ const ACTION_LABELS: Record<ActionName, string> = {
   take: "Take",
   scene: "Scene",
   scopeRefinement: "Scope Refinement",
+  staleGrooming: "Stale Grooming",
 };
 
 type PoolModes = Partial<

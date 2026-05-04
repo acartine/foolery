@@ -45,6 +45,7 @@ const POOL_STEPS = [
   "shipment",
   "shipment_review",
   "scope_refinement",
+  "stale_grooming",
 ] as const;
 
 describe("foolerySettingsSchema → JSON Schema", () => {

@@ -207,6 +207,7 @@ const ACTION_NAMES: readonly ActionName[] = [
   "take",
   "scene",
   "scopeRefinement",
+  "staleGrooming",
 ];
 
 export interface SwapActionsAgentResult {

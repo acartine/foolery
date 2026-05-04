@@ -116,7 +116,7 @@ const { stubDispatchSettings } = vi.hoisted(() => {
   const settings = {
     dispatchMode: "advanced",
     agents: { codex: agent, "codex-alt": agent },
-    actions: { take: "", scene: "", scopeRefinement: "" },
+    actions: { take: "", scene: "", scopeRefinement: "", staleGrooming: "" },
     pools: {
       orchestration: pool, planning: pool, plan_review: pool,
       implementation: pool, implementation_review: pool,

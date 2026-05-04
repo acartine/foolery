@@ -10,7 +10,6 @@ import type {
 type ReviewInput = StaleBeatReviewTarget & {
   jobId: string;
   agentId: string;
-  modelOverride?: string;
 };
 
 const g = globalThis as typeof globalThis & {
@@ -46,9 +45,6 @@ export function recordStaleBeatGroomingQueued(
     queuedAt: Date.now(),
     agentId: input.agentId,
     ...(input.repoPath ? { repoPath: input.repoPath } : {}),
-    ...(input.modelOverride
-      ? { modelOverride: input.modelOverride }
-      : {}),
   };
   reviewState().set(key, record);
   return record;

@@ -59,6 +59,7 @@ const DEFAULTS: SettingsData = {
     take: "",
     scene: "",
     scopeRefinement: "",
+    staleGrooming: "",
   },
   backend: {
     type: "auto",
@@ -80,6 +81,7 @@ const DEFAULTS: SettingsData = {
     shipment: [],
     shipment_review: [],
     scope_refinement: [],
+    stale_grooming: [],
   },
   dispatchMode: "basic",
   maxConcurrentSessions: 5,

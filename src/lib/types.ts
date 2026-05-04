@@ -374,7 +374,8 @@ export interface RegisteredAgent {
 export type ActionName =
   | "take"
   | "scene"
-  | "scopeRefinement";
+  | "scopeRefinement"
+  | "staleGrooming";
 
 export type SettingsPoolTargetId = string;
 

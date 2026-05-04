@@ -18,11 +18,20 @@ import {
 import type {
   StaleBeatGroomingJob,
 } from "@/lib/stale-beat-grooming-queue";
+import type {
+  StaleBeatGroomingResult,
+} from "@/lib/stale-beat-grooming-types";
 import type { Beat } from "@/lib/types";
+
+export interface StaleBeatGroomingJobOutcome {
+  ok: boolean;
+  result?: StaleBeatGroomingResult;
+  error?: string;
+}
 
 export async function processStaleBeatGroomingJob(
   job: StaleBeatGroomingJob,
-): Promise<void> {
+): Promise<StaleBeatGroomingJobOutcome> {
   const target = {
     beatId: job.beatId,
     ...(job.repoPath ? { repoPath: job.repoPath } : {}),
@@ -32,7 +41,6 @@ export async function processStaleBeatGroomingJob(
     const beat = await loadBeat(job);
     const agent = await resolveStaleBeatGroomingAgent({
       agentId: job.agentId,
-      modelOverride: job.modelOverride,
     });
     const prompt = buildStaleBeatGroomingPrompt({
       beat,
@@ -48,11 +56,13 @@ export async function processStaleBeatGroomingJob(
       throw new Error("agent returned unparseable grooming output");
     }
     recordStaleBeatGroomingCompleted(target, result);
+    return { ok: true, result };
   } catch (error) {
     const message = error instanceof Error
       ? error.message
       : String(error);
     recordStaleBeatGroomingFailed(target, message);
+    return { ok: false, error: message };
   }
 }
 

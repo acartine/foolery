@@ -53,6 +53,12 @@ const ACTION_DEFS: ActionDef[] = [
     description: "Refine new beats after creation",
     icon: Sparkles,
   },
+  {
+    name: "staleGrooming",
+    label: "Stale Grooming",
+    description: "Review stale backlog beats",
+    icon: Sparkles,
+  },
 ];
 
 export function SettingsActionsSection({

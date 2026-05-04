@@ -32,6 +32,7 @@ async function setDefaultAgentForActions(
     take: agentId,
     scene: agentId,
     scopeRefinement: agentId,
+    staleGrooming: agentId,
   };
   return saveActions(mappings);
 }

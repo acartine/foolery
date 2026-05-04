@@ -109,7 +109,7 @@ const baseSettings: FoolerySettings = {
       version: "5.5",
     },
   },
-  actions: { take: "", scene: "", scopeRefinement: "" },
+  actions: { take: "", scene: "", scopeRefinement: "", staleGrooming: "" },
   pools: {
     planning: [
       { agentId: "claude", weight: 1 },

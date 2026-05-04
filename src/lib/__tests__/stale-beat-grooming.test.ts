@@ -4,6 +4,7 @@ import {
   getStaleBeatSummaries,
   isStaleBeat,
   staleBeatAgeDays,
+  selectOldestStaleBeatSummaries,
   staleBeatTargetKey,
 } from "@/lib/stale-beat-grooming";
 import type { Beat } from "@/lib/types";
@@ -29,7 +30,7 @@ function makeBeat(
 }
 
 describe("stale beat grooming age rules", () => {
-  it("treats beats as stale only when created more than 7 days ago", () => {
+  it("treats beats as stale only when updated more than 7 days ago", () => {
     expect(
       isStaleBeat(
         makeBeat("old", "2026-05-02T23:59:59.999Z"),
@@ -38,7 +39,9 @@ describe("stale beat grooming age rules", () => {
     ).toBe(true);
     expect(
       isStaleBeat(
-        makeBeat("exact", "2026-05-03T00:00:00.000Z"),
+        makeBeat("fresh", "2026-04-01T00:00:00.000Z", {
+          updated: "2026-05-09T00:00:00.000Z",
+        }),
         NOW_MS,
       ),
     ).toBe(false);
@@ -76,6 +79,45 @@ describe("stale beat grooming age rules", () => {
 });
 
 describe("stale beat grooming summaries and payloads", () => {
+  it("orders stale beats by last-updated age descending", () => {
+    const freshest = makeBeat("freshest", "2026-04-01T00:00:00.000Z", {
+      updated: "2026-05-01T00:00:00.000Z",
+    });
+    const oldest = makeBeat("oldest", "2026-04-01T00:00:00.000Z", {
+      updated: "2026-04-20T00:00:00.000Z",
+    });
+    const middle = makeBeat("middle", "2026-04-01T00:00:00.000Z", {
+      updated: "2026-04-25T00:00:00.000Z",
+    });
+
+    expect(
+      getStaleBeatSummaries([freshest, oldest, middle], NOW_MS)
+        .map((summary) => summary.beatId),
+    ).toEqual(["oldest", "middle", "freshest"]);
+  });
+
+  it("selects the oldest stale subset for small grooming batches", () => {
+    const summaries = getStaleBeatSummaries(
+      [
+        makeBeat("a", "2026-04-01T00:00:00.000Z", {
+          updated: "2026-04-01T00:00:00.000Z",
+        }),
+        makeBeat("b", "2026-04-01T00:00:00.000Z", {
+          updated: "2026-04-02T00:00:00.000Z",
+        }),
+        makeBeat("c", "2026-04-01T00:00:00.000Z", {
+          updated: "2026-04-03T00:00:00.000Z",
+        }),
+      ],
+      NOW_MS,
+    );
+
+    expect(
+      selectOldestStaleBeatSummaries(summaries, 2)
+        .map((summary) => summary.beatId),
+    ).toEqual(["a", "b"]);
+  });
+
   it("builds stable repo-qualified keys for all-repo overview beats", () => {
     const beat = makeBeat("foolery-1", "2026-05-01T00:00:00.000Z", {
       _repoPath: "/tmp/repo",
@@ -91,6 +133,7 @@ describe("stale beat grooming summaries and payloads", () => {
         repoPath: "/tmp/repo",
         repoName: "repo",
         ageDays: 9,
+        createdAgeDays: 9,
       },
     ]);
   });
@@ -121,11 +164,9 @@ describe("stale beat grooming summaries and payloads", () => {
         summaries,
         selectedKeys,
         agentId: " codex ",
-        modelOverride: " gpt-5.5 ",
       }),
     ).toEqual({
       agentId: "codex",
-      modelOverride: "gpt-5.5",
       targets: [
         {
           beatId: "selected",

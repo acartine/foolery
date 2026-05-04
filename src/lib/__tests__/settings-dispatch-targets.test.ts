@@ -15,7 +15,8 @@ describe("settings dispatch targets", () => {
 
     expect(groups[0]?.label).toBe("Execution Planning");
     expect(groups[1]?.label).toBe("Scope Refinement");
-    expect(groups[2]?.label).toBe("Autopilot");
+    expect(groups[2]?.label).toBe("Stale Grooming");
+    expect(groups[3]?.label).toBe("Autopilot");
     expect(groups.at(-1)?.label).toBe("Semiauto (no planning)");
   });
 

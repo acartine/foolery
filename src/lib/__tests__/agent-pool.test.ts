@@ -191,6 +191,7 @@ describe("resolvePoolAgent", () => {
     shipment: [],
     shipment_review: [],
     scope_refinement: [],
+    stale_grooming: [],
   };
 
   it("returns null when no pool is configured for step", () => {
@@ -398,23 +399,22 @@ describe("getSwappableSourceAgentIds", () => {
 });
 
 describe("swapActionsAgent", () => {
-  const baseActions: ActionAgentMappings = {
-    take: "claude",
-    scene: "sonnet",
-    scopeRefinement: "claude",
-  };
+  const baseActions: ActionAgentMappings = { take: "claude", scene: "sonnet",
+    scopeRefinement: "claude", staleGrooming: "claude" };
 
   it("swaps the source agent across all mapped actions", () => {
     const result = swapActionsAgent(baseActions, "claude", "codex");
-    expect(result.affectedActions).toBe(2);
+    expect(result.affectedActions).toBe(3);
     expect(result.updates).toEqual({
       take: "codex",
       scopeRefinement: "codex",
+      staleGrooming: "codex",
     });
     expect(result.updatedActions).toEqual({
       take: "codex",
       scene: "sonnet",
       scopeRefinement: "codex",
+      staleGrooming: "codex",
     });
   });
 
@@ -434,11 +434,8 @@ describe("swapActionsAgent", () => {
 });
 
 describe("countDispatchAgentOccurrences", () => {
-  const actions: ActionAgentMappings = {
-    take: "claude",
-    scene: "sonnet",
-    scopeRefinement: "claude",
-  };
+  const actions: ActionAgentMappings = { take: "claude", scene: "sonnet",
+    scopeRefinement: "claude", staleGrooming: "claude" };
 
   const pools: PoolsSettings = {
     orchestration: [],
@@ -453,13 +450,14 @@ describe("countDispatchAgentOccurrences", () => {
     shipment: [],
     shipment_review: [{ agentId: "claude", weight: 2 }],
     scope_refinement: [{ agentId: "claude", weight: 1 }],
+    stale_grooming: [{ agentId: "claude", weight: 1 }],
   };
 
   it("counts global action and pool occurrences for a source agent", () => {
     expect(countDispatchAgentOccurrences(actions, pools, "claude")).toEqual({
-      affectedActions: 2,
-      affectedEntries: 5,
-      affectedSteps: 4,
+      affectedActions: 3,
+      affectedEntries: 6,
+      affectedSteps: 5,
     });
   });
 
@@ -485,12 +483,13 @@ describe("swapPoolsAgent", () => {
     shipment: [{ agentId: "codex", weight: 1 }],
     shipment_review: [],
     scope_refinement: [{ agentId: "claude", weight: 5 }],
+    stale_grooming: [{ agentId: "claude", weight: 1 }],
   };
 
   it("swaps the source agent across all workflow steps that contain it", () => {
     const result = swapPoolsAgent(basePools, "claude", "codex");
-    expect(result.affectedEntries).toBe(4);
-    expect(result.affectedSteps).toBe(4);
+    expect(result.affectedEntries).toBe(5);
+    expect(result.affectedSteps).toBe(5);
     expect(result.updates).toEqual({
       planning: [{ agentId: "codex", weight: 1 }],
       implementation: [
@@ -499,6 +498,7 @@ describe("swapPoolsAgent", () => {
       ],
       implementation_review: [{ agentId: "codex", weight: 4 }],
       scope_refinement: [{ agentId: "codex", weight: 5 }],
+      stale_grooming: [{ agentId: "codex", weight: 1 }],
     });
     expect(result.updatedPools).toEqual({
       orchestration: [],
@@ -509,6 +509,7 @@ describe("swapPoolsAgent", () => {
       shipment: [{ agentId: "codex", weight: 1 }],
       shipment_review: [],
       scope_refinement: [{ agentId: "codex", weight: 5 }],
+      stale_grooming: [{ agentId: "codex", weight: 1 }],
     });
   });
 
@@ -544,6 +545,7 @@ describe("swapPoolsAgent", () => {
       shipment: [{ agentId: "codex", weight: 1 }],
       shipment_review: [{ agentId: "claude", weight: 4 }],
       scope_refinement: [{ agentId: "claude", weight: 5 }],
+      stale_grooming: [],
     };
 
     const result = swapPoolsAgent(pools, "claude", "codex");
@@ -559,6 +561,7 @@ describe("swapPoolsAgent", () => {
       shipment: [{ agentId: "codex", weight: 1 }],
       shipment_review: [{ agentId: "codex", weight: 4 }],
       scope_refinement: [{ agentId: "codex", weight: 5 }],
+      stale_grooming: [],
     });
   });
 });

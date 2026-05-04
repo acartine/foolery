@@ -20,6 +20,7 @@ import {
   dispatchWorkflowGroups,
   dispatchWorkflowPoolTargets,
   scopeRefinementDispatchTarget,
+  staleGroomingDispatchTarget,
   type DispatchPoolTargetDefinition,
 } from "@/lib/settings-dispatch-targets";
 import type { RegisteredAgent } from "@/lib/types";
@@ -130,7 +131,6 @@ export function SettingsPoolsSection({
 }: PoolsSectionProps) {
   const agentIds = Object.keys(agents);
   const groups = dispatchWorkflowGroups();
-  const scopeRefinement = scopeRefinementDispatchTarget();
   const [activeId, setActiveId] = useState(groups[0]?.id ?? "");
 
   async function persistPoolUpdate(nextPools: PoolsSettings, updates: Partial<PoolsSettings>) {
@@ -186,13 +186,12 @@ export function SettingsPoolsSection({
         disabled={disabled}
         onApply={handleBulkApply}
       />
-      <TargetPoolEditor
-        target={scopeRefinement}
-        entries={poolEntriesForTarget(pools, scopeRefinement)}
+      <SharedPoolEditors
+        pools={pools}
         agents={agents}
         agentIds={agentIds}
         disabled={disabled}
-        onChange={(entries) => handleTargetPoolChange(scopeRefinement, entries)}
+        onTargetPoolChange={handleTargetPoolChange}
       />
       <Tabs value={activeId} onValueChange={setActiveId}>
         <TabsList className="w-full">
@@ -224,5 +223,43 @@ export function SettingsPoolsSection({
         ))}
       </Tabs>
     </div>
+  );
+}
+
+function SharedPoolEditors({
+  pools,
+  agents,
+  agentIds,
+  disabled,
+  onTargetPoolChange,
+}: {
+  pools: PoolsSettings;
+  agents: Record<string, RegisteredAgent>;
+  agentIds: string[];
+  disabled?: boolean;
+  onTargetPoolChange: (
+    target: DispatchPoolTargetDefinition,
+    entries: PoolEntry[],
+  ) => Promise<void>;
+}) {
+  const targets = [
+    scopeRefinementDispatchTarget(),
+    staleGroomingDispatchTarget(),
+  ];
+
+  return (
+    <>
+      {targets.map((target) => (
+        <TargetPoolEditor
+          key={target.id}
+          target={target}
+          entries={poolEntriesForTarget(pools, target)}
+          agents={agents}
+          agentIds={agentIds}
+          disabled={disabled}
+          onChange={(entries) => onTargetPoolChange(target, entries)}
+        />
+      ))}
+    </>
   );
 }

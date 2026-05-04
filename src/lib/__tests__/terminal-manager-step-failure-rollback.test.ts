@@ -120,7 +120,7 @@ const { loadSettingsMock, stubDispatchSettings } = vi.hoisted(() => {
         label: "Codex",
       },
     },
-    actions: { take: "", scene: "", scopeRefinement: "" },
+    actions: { take: "", scene: "", scopeRefinement: "", staleGrooming: "" },
     pools: {
       orchestration: pool,
       planning: pool,

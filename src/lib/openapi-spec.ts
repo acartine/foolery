@@ -17,6 +17,9 @@ import {
 import { settingsPaths } from "@/lib/openapi/paths-settings";
 import { registryPaths, systemPaths } from "@/lib/openapi/paths-system";
 import { approvalsPaths } from "@/lib/openapi/paths-approvals";
+import {
+  staleGroomingPaths,
+} from "@/lib/openapi/paths-stale-grooming";
 
 export const openApiSpec = {
   openapi: "3.1.0",
@@ -40,6 +43,7 @@ export const openApiSpec = {
     { name: "Settings", description: "Application and agent configuration" },
     { name: "Registry", description: "Repository registration and browsing" },
     { name: "Scope refinement", description: "AI scope-refinement jobs, worker health, and queue status" },
+    { name: "Stale grooming", description: "AI stale beat reviews, queue status, and model options" },
     { name: "System", description: "Diagnostics, version, capabilities, workflows, and history" },
   ],
   paths: {
@@ -51,6 +55,7 @@ export const openApiSpec = {
     ...terminalPaths,
     ...approvalsPaths,
     ...orchestrationPaths,
+    ...staleGroomingPaths,
     ...settingsPaths,
     ...registryPaths,
     ...systemPaths,

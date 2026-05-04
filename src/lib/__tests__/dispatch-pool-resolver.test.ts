@@ -94,7 +94,7 @@ describe("resolveDispatchAgent", () => {
         model: "gpt-5.4",
       },
     },
-    actions: { take: "", scene: "", scopeRefinement: "" },
+    actions: { take: "", scene: "", scopeRefinement: "", staleGrooming: "" },
     pools: {
       orchestration: [],
       planning: [],
@@ -104,6 +104,7 @@ describe("resolveDispatchAgent", () => {
       shipment: [],
       shipment_review: [],
       scope_refinement: [],
+      stale_grooming: [],
       evaluating: [
         { agentId: "claude-opus-4-7", weight: 1 },
         { agentId: "codex-gpt-5-4", weight: 1 },

@@ -5,6 +5,7 @@ import {
 } from "react";
 import type {
   CSSProperties,
+  ReactNode,
 } from "react";
 import type { Beat } from "@/lib/types";
 import {
@@ -38,11 +39,12 @@ interface OverviewStateMatrixProps {
   onFocusLeaseSession: (sessionId: string) => void;
   onReleaseBeat: (beat: Beat) => void;
   onHideEmptyColumn: (state: string) => void;
+  toolbarEnd?: ReactNode;
 }
 
 type OverviewStateGridProps = Omit<
   OverviewStateMatrixProps,
-  "tabs" | "activeTab" | "onTabChange"
+  "tabs" | "activeTab" | "onTabChange" | "toolbarEnd"
 >;
 
 export const OverviewStateMatrix = forwardRef<
@@ -54,11 +56,14 @@ export const OverviewStateMatrix = forwardRef<
 ) {
   return (
     <div className="min-w-0 space-y-3">
-      <BeatStateOverviewTabs
-        tabs={props.tabs}
-        activeTab={props.activeTab}
-        onTabChange={props.onTabChange}
-      />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <BeatStateOverviewTabs
+          tabs={props.tabs}
+          activeTab={props.activeTab}
+          onTabChange={props.onTabChange}
+        />
+        {props.toolbarEnd}
+      </div>
       <div
         className="overflow-x-auto pb-2"
         data-testid="beat-state-overview-scrollport"

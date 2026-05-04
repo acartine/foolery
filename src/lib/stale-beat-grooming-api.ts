@@ -1,11 +1,15 @@
 import type { BdResult } from "@/lib/types";
 import type {
   EnqueueStaleBeatGroomingResponse,
+  StaleBeatGroomingOptions,
   StaleBeatGroomingReviewRecord,
+  StaleBeatGroomingStatus,
   StaleBeatReviewRequest,
+  StaleBeatSummary,
 } from "@/lib/stale-beat-grooming-types";
 
-const BASE = "/api/beats/stale-grooming/reviews";
+const ROOT = "/api/beats/stale-grooming";
+const REVIEWS = `${ROOT}/reviews`;
 
 async function request<T>(
   url: string,
@@ -30,14 +34,32 @@ async function request<T>(
 export function fetchStaleBeatGroomingReviews(): Promise<
   BdResult<StaleBeatGroomingReviewRecord[]>
 > {
-  return request<StaleBeatGroomingReviewRecord[]>(BASE);
+  return request<StaleBeatGroomingReviewRecord[]>(REVIEWS);
 }
 
 export function enqueueStaleBeatGroomingReviews(
   input: StaleBeatReviewRequest,
 ): Promise<BdResult<EnqueueStaleBeatGroomingResponse>> {
-  return request<EnqueueStaleBeatGroomingResponse>(BASE, {
+  return request<EnqueueStaleBeatGroomingResponse>(REVIEWS, {
     method: "POST",
     body: JSON.stringify(input),
   });
+}
+
+export function fetchStaleBeatGroomingOptions(): Promise<
+  BdResult<StaleBeatGroomingOptions>
+> {
+  return request<StaleBeatGroomingOptions>(`${ROOT}/options`);
+}
+
+export function fetchStaleBeatGroomingStatus(): Promise<
+  BdResult<StaleBeatGroomingStatus>
+> {
+  return request<StaleBeatGroomingStatus>(`${ROOT}/status`);
+}
+
+export function fetchStaleBeats(): Promise<
+  BdResult<{ staleBeats: StaleBeatSummary[]; count: number }>
+> {
+  return request<{ staleBeats: StaleBeatSummary[]; count: number }>(ROOT);
 }

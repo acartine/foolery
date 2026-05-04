@@ -6,14 +6,22 @@ import {
   StaleBeatGroomingFailureError,
 } from "@/lib/stale-beat-grooming-agent";
 import {
+  STALE_BEAT_AGE_DAYS,
+} from "@/lib/stale-beat-grooming-types";
+import {
   listStaleBeatGroomingReviews,
 } from "@/lib/stale-beat-grooming-store";
+import {
+  listStaleBeatSummariesForApi,
+} from "@/lib/stale-beat-grooming-list";
 import {
   enqueueStaleBeatGroomingReview,
 } from "@/lib/stale-beat-grooming-worker";
 import type {
   StaleBeatReviewTarget,
+  StaleBeatReviewStatus,
 } from "@/lib/stale-beat-grooming-types";
+import type { AgentTarget } from "@/lib/types-agent-target";
 
 const reviewTargetSchema = z.object({
   beatId: z.string().trim().min(1),
@@ -21,15 +29,27 @@ const reviewTargetSchema = z.object({
 });
 
 const reviewRequestSchema = z.object({
-  agentId: z.string().trim().min(1),
-  modelOverride: z.string().trim().min(1).optional(),
-  targets: z.array(reviewTargetSchema).min(1).max(50),
+  agentId: z.string().trim().min(1).optional(),
+  targets: z.array(reviewTargetSchema).min(1).max(50).optional(),
+  mode: z.enum(["oldest"]).optional(),
+  limit: z.coerce.number().int().positive().max(50).default(5),
+  _repo: z.string().trim().min(1).optional(),
+  scope: z.string().trim().optional(),
+  ageDays: z.coerce.number().int().positive().max(3650)
+    .default(STALE_BEAT_AGE_DAYS),
+}).refine((body) =>
+  body.targets?.length || body.mode === "oldest", {
+  message: "provide targets or mode=\"oldest\"",
 });
 
-export async function GET() {
+export async function GET(request?: NextRequest) {
+  const status = request?.nextUrl.searchParams.get("status");
+  const reviews = listStaleBeatGroomingReviews().filter((review) =>
+    isReviewStatus(status) ? review.status === status : true
+  );
   return NextResponse.json({
     ok: true,
-    data: listStaleBeatGroomingReviews(),
+    data: reviews,
   });
 }
 
@@ -38,16 +58,15 @@ export async function POST(request: NextRequest) {
     const body = reviewRequestSchema.parse(
       await request.json(),
     );
-    await assertStaleBeatGroomingAgent({
+    const agent = await assertStaleBeatGroomingAgent({
       agentId: body.agentId,
-      modelOverride: body.modelOverride,
     });
-    const targets = await canonicalizeTargets(body.targets);
+    const agentId = resolvedAgentId(agent, body.agentId);
+    const targets = await reviewTargets(body);
     const jobs = targets.map((target) =>
       enqueueStaleBeatGroomingReview({
         target,
-        agentId: body.agentId,
-        modelOverride: body.modelOverride,
+        agentId,
       })
     );
     return NextResponse.json({
@@ -58,15 +77,30 @@ export async function POST(request: NextRequest) {
           beatId: job.beatId,
           ...(job.repoPath ? { repoPath: job.repoPath } : {}),
         })),
-        agentId: body.agentId,
-        ...(body.modelOverride
-          ? { modelOverride: body.modelOverride }
-          : {}),
+        agentId,
       },
     });
   } catch (error) {
     return groomingErrorResponse(error);
   }
+}
+
+async function reviewTargets(
+  body: z.infer<typeof reviewRequestSchema>,
+): Promise<StaleBeatReviewTarget[]> {
+  if (body.mode === "oldest") {
+    const summaries = await listStaleBeatSummariesForApi({
+      repoPath: body._repo,
+      scope: body.scope,
+      ageDays: body.ageDays,
+      limit: body.limit,
+    });
+    return summaries.map((summary) => ({
+      beatId: summary.beatId,
+      ...(summary.repoPath ? { repoPath: summary.repoPath } : {}),
+    }));
+  }
+  return canonicalizeTargets(body.targets ?? []);
 }
 
 async function canonicalizeTargets(
@@ -88,6 +122,30 @@ async function canonicalizeTargets(
       };
     }),
   );
+}
+
+function resolvedAgentId(
+  agent: AgentTarget,
+  requestedAgentId?: string,
+): string {
+  const agentId = agent.agentId ?? requestedAgentId?.trim();
+  if (!agentId) {
+    throw new StaleBeatGroomingFailureError(
+      "stale grooming resolved an agent without an agent id; "
+        + "check actions.staleGrooming or pools.stale_grooming",
+      503,
+    );
+  }
+  return agentId;
+}
+
+function isReviewStatus(
+  value: string | null | undefined,
+): value is StaleBeatReviewStatus {
+  return value === "queued"
+    || value === "running"
+    || value === "completed"
+    || value === "failed";
 }
 
 function groomingErrorResponse(error: unknown): NextResponse {

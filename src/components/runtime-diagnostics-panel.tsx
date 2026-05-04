@@ -24,6 +24,9 @@ import {
 } from "@/lib/client-perf";
 import type { ClientPerfEvent } from "@/lib/perf-events";
 import { ScopeRefinementDiagnosticsCard } from "@/components/scope-refinement-diagnostics-card";
+import {
+  StaleBeatGroomingDiagnosticsCard,
+} from "@/components/stale-beat-grooming-diagnostics-card";
 
 export function RuntimeDiagnosticsPanel() {
   const [snapshot, setSnapshot] = useState(() => getDiagnosticsSnapshot());
@@ -55,6 +58,7 @@ export function RuntimeDiagnosticsPanel() {
           </CardContent>
         </Card>
         <ScopeRefinementDiagnosticsCard />
+        <StaleBeatGroomingDiagnosticsCard />
       </div>
     );
   }
@@ -118,6 +122,7 @@ export function RuntimeDiagnosticsPanel() {
       </Card>
 
       <ScopeRefinementDiagnosticsCard />
+      <StaleBeatGroomingDiagnosticsCard />
     </div>
   );
 }

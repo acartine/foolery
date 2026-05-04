@@ -2,7 +2,6 @@ import {
   isOverviewBeat,
   overviewTabForBeat,
 } from "@/lib/beat-state-overview";
-import { compareBeatsByPriorityThenUpdated } from "@/lib/beat-sort";
 import type { Beat } from "@/lib/types";
 import {
   STALE_BEAT_AGE_DAYS,
@@ -30,6 +29,16 @@ export function beatRepoName(beat: Beat): string | undefined {
 }
 
 export function staleBeatAgeDays(
+  beat: Pick<Beat, "updated">,
+  nowMs: number,
+): number | null {
+  const updatedMs = Date.parse(beat.updated);
+  if (!Number.isFinite(updatedMs)) return null;
+  if (!Number.isFinite(nowMs)) return null;
+  return Math.max(0, Math.floor((nowMs - updatedMs) / MS_PER_DAY));
+}
+
+export function staleBeatCreatedAgeDays(
   beat: Pick<Beat, "created">,
   nowMs: number,
 ): number | null {
@@ -46,30 +55,38 @@ export function isStaleBeat(
 ): boolean {
   if (!isOverviewBeat(beat)) return false;
   if (overviewTabForBeat(beat) === "terminated") return false;
-  const createdMs = Date.parse(beat.created);
-  if (!Number.isFinite(createdMs)) return false;
-  return nowMs - createdMs > ageDays * MS_PER_DAY;
+  const updatedMs = Date.parse(beat.updated);
+  if (!Number.isFinite(updatedMs)) return false;
+  return nowMs - updatedMs > ageDays * MS_PER_DAY;
 }
 
 export function getStaleBeatSummaries(
   beats: readonly Beat[],
   nowMs: number,
+  ageDays = STALE_BEAT_AGE_DAYS,
 ): StaleBeatSummary[] {
   return beats
-    .filter((beat) => isStaleBeat(beat, nowMs))
-    .sort(compareBeatsByPriorityThenUpdated)
+    .filter((beat) => isStaleBeat(beat, nowMs, ageDays))
+    .sort(compareBeatsByOldestUpdated)
     .map((beat) => staleBeatSummary(beat, nowMs))
     .filter((summary): summary is StaleBeatSummary =>
       summary !== null);
 }
 
+export function selectOldestStaleBeatSummaries(
+  summaries: readonly StaleBeatSummary[],
+  limit: number,
+): StaleBeatSummary[] {
+  if (!Number.isFinite(limit) || limit <= 0) return [];
+  return summaries.slice(0, Math.floor(limit));
+}
+
 export function buildStaleBeatReviewRequest(input: {
   summaries: readonly StaleBeatSummary[];
   selectedKeys: ReadonlySet<string>;
-  agentId: string;
-  modelOverride?: string;
+  agentId?: string;
 }): StaleBeatReviewRequest {
-  const agentId = input.agentId.trim();
+  const agentId = input.agentId?.trim();
   const targets = input.summaries
     .filter((summary) => input.selectedKeys.has(summary.key))
     .map((summary) => ({
@@ -78,11 +95,9 @@ export function buildStaleBeatReviewRequest(input: {
         ? { repoPath: summary.repoPath }
         : {}),
     }));
-  const modelOverride = input.modelOverride?.trim();
   return {
-    agentId,
     targets,
-    ...(modelOverride ? { modelOverride } : {}),
+    ...(agentId ? { agentId } : {}),
   };
 }
 
@@ -92,6 +107,7 @@ function staleBeatSummary(
 ): StaleBeatSummary | null {
   const ageDays = staleBeatAgeDays(beat, nowMs);
   if (ageDays === null) return null;
+  const createdAgeDays = staleBeatCreatedAgeDays(beat, nowMs);
   const repoPath = beatRepoPath(beat);
   const target = { beatId: beat.id, repoPath };
   return {
@@ -100,13 +116,33 @@ function staleBeatSummary(
     title: beat.title,
     state: beat.state,
     ageDays,
+    createdAgeDays,
     created: beat.created,
+    updated: beat.updated,
     beat,
     ...(repoPath ? { repoPath } : {}),
     ...(beatRepoName(beat)
       ? { repoName: beatRepoName(beat) }
       : {}),
   };
+}
+
+function compareBeatsByOldestUpdated(
+  left: Beat,
+  right: Beat,
+): number {
+  const leftUpdated = Date.parse(left.updated);
+  const rightUpdated = Date.parse(right.updated);
+  const leftTime = Number.isFinite(leftUpdated)
+    ? leftUpdated
+    : Number.POSITIVE_INFINITY;
+  const rightTime = Number.isFinite(rightUpdated)
+    ? rightUpdated
+    : Number.POSITIVE_INFINITY;
+  if (leftTime !== rightTime) return leftTime - rightTime;
+  const titleOrder = left.title.localeCompare(right.title);
+  if (titleOrder !== 0) return titleOrder;
+  return left.id.localeCompare(right.id);
 }
 
 function cleanString(value: unknown): string | undefined {
