@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import type { Beat } from "@/lib/types";
 import {
+  buildOverviewStateTabs,
   countGroupedBeats,
+  DEFAULT_OVERVIEW_STATE_TAB,
   filterOverviewBeats,
   groupOverviewBeatsByState,
   overviewBeatLabel,
@@ -13,6 +15,7 @@ import {
 import type {
   BeatStateGroup,
   OverviewLeaseInfo,
+  OverviewStateTabId,
 } from "@/lib/beat-state-overview";
 import { displayBeatLabel } from "@/lib/beat-display";
 import { BeatStateBadge } from "@/components/beat-state-badge";
@@ -26,6 +29,9 @@ import { relativeTime } from "@/components/beat-column-time";
 import type {
   StreamingProgress,
 } from "@/app/beats/use-streaming-progress";
+import {
+  BeatStateOverviewTabs,
+} from "@/components/beat-state-overview-tabs";
 
 interface BeatStateOverviewScreenProps {
   isLoading: boolean;
@@ -135,9 +141,16 @@ function BeatStateOverview({
   leaseInfoByBeatKey: Record<string, OverviewLeaseInfo>;
   onOpenBeat: (beat: Beat) => void;
 }) {
-  const groups = useMemo(
-    () => groupOverviewBeatsByState(beats),
+  const [activeTab, setActiveTab] = useState<OverviewStateTabId>(
+    DEFAULT_OVERVIEW_STATE_TAB,
+  );
+  const tabs = useMemo(
+    () => buildOverviewStateTabs(beats),
     [beats],
+  );
+  const groups = useMemo(
+    () => groupOverviewBeatsByState(beats, activeTab),
+    [beats, activeTab],
   );
   const groupedCount = countGroupedBeats(groups);
 
@@ -148,7 +161,7 @@ function BeatStateOverview({
     >
       <div className={
         "flex flex-wrap items-center justify-between"
-        + " gap-2 border-b border-border/70 pb-2"
+        + " gap-2"
       }>
         <h2 className="text-sm font-semibold tracking-tight">
           State overview
@@ -160,10 +173,15 @@ function BeatStateOverview({
           {groupedCount} beat{groupedCount === 1 ? "" : "s"}
         </div>
       </div>
+      <BeatStateOverviewTabs
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
       <div className="overflow-x-auto pb-2">
         <div className={
           "grid min-w-full grid-flow-col"
-          + " auto-cols-[minmax(8.5rem,calc((100%_-_3.5rem)/8))] gap-2"
+          + " auto-cols-[minmax(7rem,calc((100%_-_4.5rem)/10))] gap-2"
         }>
           {groups.map((group) => (
             <BeatStateColumn
@@ -210,7 +228,10 @@ function BeatStateColumn({
           <BeatStateBadge
             state={group.state}
             label={overviewStateLabel(group.state)}
-            className="h-4 max-w-full truncate rounded-sm px-1 text-[10px]"
+            className={
+              "h-4 max-w-full justify-start truncate"
+              + " rounded-sm px-1 text-[10px]"
+            }
           />
         </div>
         <span className={
@@ -415,6 +436,7 @@ function repoDisplayName(
 }
 
 const OVERVIEW_STATE_LABELS: Record<string, string> = {
+  ready_for_exploration: "Ready Exploration",
   ready_for_plan_review: "Ready Plan Review",
   ready_for_implementation: "Ready Impl",
   ready_for_implementation_review: "Ready Impl Review",
@@ -422,6 +444,7 @@ const OVERVIEW_STATE_LABELS: Record<string, string> = {
   ready_for_shipment: "Ready Shipment",
   ready_for_shipment_review: "Ready Ship Review",
   shipment_review: "Shipment Review",
+  ready_to_evaluate: "Ready Evaluate",
 };
 
 function overviewStateLabel(state: string): string | undefined {

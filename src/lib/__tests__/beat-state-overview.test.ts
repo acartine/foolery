@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildOverviewStateTabs,
   countGroupedBeats,
   filterOverviewBeats,
   groupBeatsByState,
@@ -9,6 +10,7 @@ import {
   normalizeOverviewState,
   overviewBeatLabel,
   overviewLeaseInfoForBeat,
+  overviewTabForState,
 } from "@/lib/beat-state-overview";
 import type { Beat } from "@/lib/types";
 
@@ -109,8 +111,11 @@ describe("beat-state-overview display rules", () => {
 
     expect(isOverviewBeat(work)).toBe(true);
     expect(isOverviewBeat(lease)).toBe(false);
-    expect(isOverviewBeat(shipped)).toBe(false);
-    expect(filterOverviewBeats([work, lease, shipped])).toEqual([work]);
+    expect(isOverviewBeat(shipped)).toBe(true);
+    expect(filterOverviewBeats([work, lease, shipped])).toEqual([
+      work,
+      shipped,
+    ]);
   });
 
   it("adds required empty columns for the overview matrix", () => {
@@ -144,6 +149,77 @@ describe("beat-state-overview display rules", () => {
     expect(overviewBeatLabel(beat, false)).toBe("2.1.3");
     expect(overviewBeatLabel(withoutAlias, true)).toBe("foolery-bd05");
     expect(overviewBeatLabel(withoutAlias, false)).toBe("bd05");
+  });
+});
+
+describe("beat-state-overview tabs", () => {
+  it("classifies overview states into tab groups", () => {
+    expect(overviewTabForState("ready_for_exploration")).toBe(
+      "exploration",
+    );
+    expect(overviewTabForState("ready_to_evaluate")).toBe("gates");
+    expect(overviewTabForState("deferred")).toBe("terminated");
+    expect(overviewTabForState("shipped")).toBe("terminated");
+    expect(overviewTabForState("implementation")).toBe("work_items");
+    expect(overviewTabForState("custom_state")).toBe("work_items");
+  });
+
+  it("builds tab counts without counting lease records", () => {
+    const tabs = buildOverviewStateTabs([
+      makeBeat("work", "implementation"),
+      makeBeat("explore", "ready_for_exploration"),
+      makeBeat("gate", "ready_to_evaluate"),
+      makeBeat("ship", "shipped"),
+      makeBeat("lease", "lease_active", { type: "lease" }),
+    ]);
+
+    expect(tabs.map((tab) => [tab.id, tab.count])).toEqual([
+      ["work_items", 1],
+      ["exploration", 1],
+      ["gates", 1],
+      ["terminated", 1],
+    ]);
+  });
+
+  it("groups required columns for non-work overview tabs", () => {
+    const beats = [
+      makeBeat("explore", "ready_for_exploration"),
+      makeBeat("gate", "ready_to_evaluate"),
+      makeBeat("ship", "shipped"),
+    ];
+
+    expect(
+      groupOverviewBeatsByState(beats, "exploration")
+        .map((group) => group.state),
+    ).toEqual(["ready_for_exploration"]);
+    expect(
+      groupOverviewBeatsByState(beats, "gates")
+        .map((group) => group.state),
+    ).toEqual(["ready_to_evaluate"]);
+
+    const terminated = groupOverviewBeatsByState(beats, "terminated");
+    expect(terminated.map((group) => group.state)).toEqual([
+      "abandoned",
+      "deferred",
+      "shipped",
+    ]);
+    expect(
+      terminated.find((group) => group.state === "shipped")?.beats[0]?.id,
+    ).toBe("ship");
+  });
+
+  it("keeps required special-tab columns when those tabs are empty", () => {
+    expect(groupOverviewBeatsByState([], "exploration")).toMatchObject([
+      { state: "ready_for_exploration", required: true, beats: [] },
+    ]);
+    expect(groupOverviewBeatsByState([], "gates")).toMatchObject([
+      { state: "ready_to_evaluate", required: true, beats: [] },
+    ]);
+    expect(groupOverviewBeatsByState([], "terminated")).toMatchObject([
+      { state: "abandoned", required: true, beats: [] },
+      { state: "deferred", required: true, beats: [] },
+      { state: "shipped", required: true, beats: [] },
+    ]);
   });
 });
 

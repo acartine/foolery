@@ -19,7 +19,26 @@ export interface OverviewLeaseInfo {
   version?: string;
 }
 
-const REQUIRED_OVERVIEW_STATES = [
+export const OVERVIEW_STATE_TABS = [
+  { id: "work_items", label: "Work Items" },
+  { id: "exploration", label: "Exploration" },
+  { id: "gates", label: "Gates" },
+  { id: "terminated", label: "Terminated" },
+] as const;
+
+export type OverviewStateTabId =
+  (typeof OVERVIEW_STATE_TABS)[number]["id"];
+
+export interface OverviewStateTabSummary {
+  id: OverviewStateTabId;
+  label: string;
+  count: number;
+}
+
+export const DEFAULT_OVERVIEW_STATE_TAB: OverviewStateTabId =
+  "work_items";
+
+const WORK_ITEM_OVERVIEW_STATES = [
   "ready_for_planning",
   "planning",
   "ready_for_plan_review",
@@ -32,8 +51,25 @@ const REQUIRED_OVERVIEW_STATES = [
   "shipment",
   "ready_for_shipment_review",
   "shipment_review",
-  "deferred",
 ] as const;
+
+const OVERVIEW_TAB_REQUIRED_STATES: Record<
+  OverviewStateTabId,
+  readonly string[]
+> = {
+  work_items: WORK_ITEM_OVERVIEW_STATES,
+  exploration: ["ready_for_exploration"],
+  gates: ["ready_to_evaluate"],
+  terminated: ["abandoned", "deferred", "shipped"],
+};
+
+const OVERVIEW_STATE_TAB_OVERRIDES = new Map<string, OverviewStateTabId>([
+  ["ready_for_exploration", "exploration"],
+  ["ready_to_evaluate", "gates"],
+  ["abandoned", "terminated"],
+  ["deferred", "terminated"],
+  ["shipped", "terminated"],
+]);
 
 const ACTIVE_OVERVIEW_STATES = new Set<string>([
   "planning",
@@ -43,8 +79,6 @@ const ACTIVE_OVERVIEW_STATES = new Set<string>([
   "shipment",
   "shipment_review",
 ]);
-
-const HIDDEN_OVERVIEW_STATES = new Set<string>(["shipped"]);
 
 export function normalizeOverviewState(
   state: string | null | undefined,
@@ -80,15 +114,19 @@ export function groupBeatsByState(
 
 export function groupOverviewBeatsByState(
   beats: readonly Beat[],
+  tabId: OverviewStateTabId = DEFAULT_OVERVIEW_STATE_TAB,
 ): BeatStateGroup[] {
+  const tabBeats = beats.filter((beat) =>
+    overviewTabForState(beat.state) === tabId
+  );
   const groups = new Map(
-    groupBeatsByState(beats).map((group) => [
+    groupBeatsByState(tabBeats).map((group) => [
       group.state,
       group,
     ]),
   );
 
-  for (const state of REQUIRED_OVERVIEW_STATES) {
+  for (const state of OVERVIEW_TAB_REQUIRED_STATES[tabId]) {
     const existing = groups.get(state);
     groups.set(state, {
       state,
@@ -98,23 +136,47 @@ export function groupOverviewBeatsByState(
   }
 
   return [...groups.values()].sort((left, right) =>
-    compareWorkflowStatePriority(left.state, right.state)
+    compareOverviewStatePriority(tabId, left.state, right.state)
   );
 }
 
 export function isOverviewBeat(beat: Beat): boolean {
-  return (
-    beat.type.trim().toLowerCase() !== "lease"
-    && !HIDDEN_OVERVIEW_STATES.has(
-      normalizeOverviewState(beat.state),
-    )
-  );
+  return beat.type.trim().toLowerCase() !== "lease";
 }
 
 export function filterOverviewBeats(
   beats: readonly Beat[],
 ): Beat[] {
   return beats.filter(isOverviewBeat);
+}
+
+export function overviewTabForState(
+  state: string | null | undefined,
+): OverviewStateTabId {
+  return OVERVIEW_STATE_TAB_OVERRIDES.get(
+    normalizeOverviewState(state),
+  ) ?? DEFAULT_OVERVIEW_STATE_TAB;
+}
+
+export function buildOverviewStateTabs(
+  beats: readonly Beat[],
+): OverviewStateTabSummary[] {
+  const counts: Record<OverviewStateTabId, number> = {
+    work_items: 0,
+    exploration: 0,
+    gates: 0,
+    terminated: 0,
+  };
+
+  for (const beat of beats) {
+    if (!isOverviewBeat(beat)) continue;
+    counts[overviewTabForState(beat.state)] += 1;
+  }
+
+  return OVERVIEW_STATE_TABS.map((tab) => ({
+    ...tab,
+    count: counts[tab.id],
+  }));
 }
 
 export function isOverviewActiveState(
@@ -194,4 +256,21 @@ function cleanString(value: unknown): string | undefined {
   return typeof value === "string" && value.trim().length > 0
     ? value.trim()
     : undefined;
+}
+
+function compareOverviewStatePriority(
+  tabId: OverviewStateTabId,
+  left: string,
+  right: string,
+): number {
+  const required = OVERVIEW_TAB_REQUIRED_STATES[tabId];
+  const leftIndex = required.indexOf(left);
+  const rightIndex = required.indexOf(right);
+
+  if (leftIndex !== -1 && rightIndex !== -1) {
+    return leftIndex - rightIndex;
+  }
+  if (leftIndex !== -1) return -1;
+  if (rightIndex !== -1) return 1;
+  return compareWorkflowStatePriority(left, right);
 }
