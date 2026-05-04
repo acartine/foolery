@@ -21,7 +21,6 @@ import {
   nextOverviewIntroducedColumns,
   overviewColumnWidthPx,
   renderableOverviewGroups,
-  shouldShowOverviewColumnHideControl,
 } from "@/lib/beat-state-overview";
 import type {
   BeatStateGroup,
@@ -29,7 +28,6 @@ import type {
   OverviewLeaseInfo,
   OverviewStateTabId,
 } from "@/lib/beat-state-overview";
-import { BeatStateBadge } from "@/components/beat-state-badge";
 import { RepoSwitchLoadingState } from "@/components/repo-switch-loading-state";
 import {
   StreamingProgressBar,
@@ -38,19 +36,17 @@ import type {
   StreamingProgress,
 } from "@/app/beats/use-streaming-progress";
 import {
-  BeatStateOverviewTabs,
-} from "@/components/beat-state-overview-tabs";
-import {
-  BeatOverviewTile,
-  leaseInfoForOverviewTile,
-  overviewTileKey,
-} from "@/components/beat-overview-tile";
-import {
   useElementWidth,
 } from "@/components/use-element-width";
 import {
   useOverviewColumnWatermark,
 } from "@/components/use-overview-column-watermark";
+import {
+  StaleBeatGroomingPanel,
+} from "@/components/stale-beat-grooming-panel";
+import {
+  OverviewStateMatrix,
+} from "@/components/beat-state-overview-matrix";
 
 interface BeatStateOverviewScreenProps {
   isLoading: boolean;
@@ -210,147 +206,30 @@ function BeatStateOverview({
 
   return (
     <div
-      className="space-y-3"
+      className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]"
       data-testid="beat-state-overview"
     >
-      <BeatStateOverviewTabs
+      <OverviewStateMatrix
+        ref={scrollportRef}
         tabs={tabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
+        visibleGroups={visibleGroups}
+        gridStyle={gridStyle}
+        showRepoColumn={showRepoColumn}
+        isAllRepositories={isAllRepositories}
+        leaseInfoByBeatKey={leaseInfoByBeatKey}
+        onOpenBeat={onOpenBeat}
+        onFocusLeaseSession={onFocusLeaseSession}
+        onReleaseBeat={onReleaseBeat}
+        onHideEmptyColumn={introducedColumns.onHideEmptyColumn}
       />
-      <div
-        className="overflow-x-auto pb-2"
-        data-testid="beat-state-overview-scrollport"
-        ref={scrollportRef}
-      >
-        {visibleGroups.length > 0 ? (
-          <div
-            className={
-              "grid min-w-full grid-flow-col"
-              + " auto-cols-[var(--overview-column-width)] gap-2"
-            }
-            data-testid="beat-state-overview-grid"
-            style={gridStyle}
-          >
-            {visibleGroups.map((group) => (
-              <BeatStateColumn
-                key={group.state}
-              group={group}
-              showRepoColumn={showRepoColumn}
-              isAllRepositories={isAllRepositories}
-              leaseInfoByBeatKey={leaseInfoByBeatKey}
-              onOpenBeat={onOpenBeat}
-              onFocusLeaseSession={onFocusLeaseSession}
-              onReleaseBeat={onReleaseBeat}
-              onHideEmptyColumn={introducedColumns.onHideEmptyColumn}
-            />
-            ))}
-          </div>
-        ) : (
-          <OverviewEmptyState label="No beats in this group." />
-        )}
-      </div>
+      <StaleBeatGroomingPanel
+        beats={beats}
+        isAllRepositories={isAllRepositories}
+        onOpenBeat={onOpenBeat}
+      />
     </div>
-  );
-}
-
-function BeatStateColumn({
-  group,
-  showRepoColumn,
-  isAllRepositories,
-  leaseInfoByBeatKey,
-  onOpenBeat,
-  onFocusLeaseSession,
-  onReleaseBeat,
-  onHideEmptyColumn,
-}: {
-  group: BeatStateGroup;
-  showRepoColumn: boolean;
-  isAllRepositories: boolean;
-  leaseInfoByBeatKey: Record<string, OverviewLeaseInfo>;
-  onOpenBeat: (beat: Beat) => void;
-  onFocusLeaseSession: (sessionId: string) => void;
-  onReleaseBeat: (beat: Beat) => void;
-  onHideEmptyColumn: (state: string) => void;
-}) {
-  const showHideControl = shouldShowOverviewColumnHideControl(group);
-
-  return (
-    <section
-      className={
-        "min-w-0 overflow-hidden border border-border/70"
-        + " bg-background"
-      }
-      data-testid={`beat-state-group-${group.state}`}
-    >
-      <div className={
-        "flex min-h-7 items-center justify-between gap-1.5"
-        + " border-b border-border/70 bg-muted/35 px-2 py-1"
-      }>
-        <div className="flex min-h-4 min-w-0 flex-1 items-center">
-          <BeatStateBadge
-            state={group.state}
-            label={overviewStateLabel(group.state)}
-            className={
-              "h-auto max-w-full justify-start whitespace-normal"
-              + " rounded-sm px-1 py-px text-[8px] leading-3"
-            }
-          />
-        </div>
-        <div className="flex shrink-0 items-center gap-1">
-          {showHideControl && (
-            <button
-              type="button"
-              className={
-                "rounded-sm px-1 text-[9px] leading-4"
-                + " text-muted-foreground hover:bg-background"
-                + " hover:text-foreground"
-              }
-              data-testid="beat-state-empty-column-hide"
-              aria-label={
-                `Hide empty ${overviewColumnLabel(group.state)} column`
-              }
-              onClick={() => onHideEmptyColumn(group.state)}
-            >
-              Hide
-            </button>
-          )}
-          <span className={
-            "flex h-4 items-center rounded-sm bg-background"
-            + " px-1.5 text-[9px] leading-none tabular-nums"
-            + " text-muted-foreground"
-          }>
-            {group.beats.length}
-          </span>
-        </div>
-      </div>
-      <div className="divide-y divide-border/60">
-        {group.beats.length > 0 ? (
-          group.beats.map((beat) => (
-            <BeatOverviewTile
-              key={overviewTileKey(beat)}
-              beat={beat}
-              showRepoColumn={showRepoColumn}
-              isAllRepositories={isAllRepositories}
-              leaseInfo={leaseInfoForOverviewTile(
-                beat,
-                leaseInfoByBeatKey,
-              )}
-              onOpenBeat={onOpenBeat}
-              onFocusLeaseSession={onFocusLeaseSession}
-              onReleaseBeat={onReleaseBeat}
-            />
-          ))
-        ) : (
-          <div
-            className="px-2 py-2 text-[9px] text-muted-foreground"
-            data-testid="beat-state-empty-column"
-          >
-            No beats
-          </div>
-        )}
-      </div>
-    </section>
   );
 }
 
@@ -427,24 +306,4 @@ function OverviewEmptyState(
       {label}
     </div>
   );
-}
-
-const OVERVIEW_STATE_LABELS: Record<string, string> = {
-  ready_for_exploration: "Ready Exploration",
-  ready_for_plan_review: "Ready Plan Review",
-  ready_for_implementation: "Ready Impl",
-  ready_for_implementation_review: "Ready Impl Review",
-  implementation_review: "Impl Review",
-  ready_for_shipment: "Ready Shipment",
-  ready_for_shipment_review: "Ready Ship Review",
-  shipment_review: "Shipment Review",
-  ready_to_evaluate: "Ready Evaluate",
-};
-
-function overviewStateLabel(state: string): string | undefined {
-  return OVERVIEW_STATE_LABELS[state];
-}
-
-function overviewColumnLabel(state: string): string {
-  return overviewStateLabel(state) ?? state.replaceAll("_", " ");
 }
