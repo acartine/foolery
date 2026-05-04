@@ -315,6 +315,7 @@ describe("beat-state-overview lease metadata", () => {
           step: "implementation",
           started_at: "2026-05-04T08:00:00.000Z",
         }],
+        knotsLeaseAcquiredAt: "2026-05-04T07:30:00.000Z",
         knotsLeaseAgentInfo: {
           provider: "Codex",
           agent_name: "codex-gpt-5",
@@ -325,7 +326,7 @@ describe("beat-state-overview lease metadata", () => {
     });
 
     expect(overviewLeaseInfoForBeat(beat)).toEqual({
-      startedAt: "2026-05-04T08:00:00.000Z",
+      startedAt: "2026-05-04T07:30:00.000Z",
       provider: "Codex",
       agent: "codex-gpt-5",
       model: "gpt-5",
@@ -348,5 +349,23 @@ describe("beat-state-overview lease metadata", () => {
     expect(
       overviewLeaseInfoForBeat(makeBeat("queued", "ready_for_planning")),
     ).toBeNull();
+  });
+
+  it("does not use action step time as lease acquisition time", () => {
+    const beat = makeBeat("active", "implementation", {
+      metadata: {
+        knotsSteps: [{
+          step: "implementation",
+          started_at: "2026-05-04T08:00:00.000Z",
+        }],
+        knotsLeaseAgentInfo: {
+          provider: "Codex",
+        },
+      },
+    });
+
+    expect(overviewLeaseInfoForBeat(beat)).toEqual({
+      provider: "Codex",
+    });
   });
 });

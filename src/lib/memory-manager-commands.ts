@@ -67,7 +67,7 @@ export async function rollbackBeatState(
   reason?: string,
 ): Promise<void> {
   if (memoryManagerType === "knots") {
-    const cmd = `kno rb ${quoteId(beatId)}`;
+    const cmd = `kno rollback ${quoteId(beatId)} --actor-kind agent`;
     const { exec: execCb } = await import("node:child_process");
     const { promisify } = await import("node:util");
     const execAsync = promisify(execCb);
@@ -104,4 +104,3 @@ export function assertClaimable(
 export function supportsAutoFollowUp(memoryManagerType: MemoryManagerType): boolean {
   return memoryManagerType !== "knots";
 }
-

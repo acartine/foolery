@@ -36,6 +36,12 @@ type KnotLeaseAgentInfo = {
   model_version?: string;
 };
 
+type KnotLeaseMetadata = {
+  agentInfo?: KnotLeaseAgentInfo;
+  leaseId?: string;
+  acquiredAt?: string;
+};
+
 // ── toBeat ──────────────────────────────────────────────────────────
 
 export function toBeat(
@@ -44,6 +50,7 @@ export function toBeat(
   knownIds: ReadonlySet<string>,
   aliasToId: ReadonlyMap<string, string>,
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
+  leaseAcquiredAtById: ReadonlyMap<string, string> = new Map(),
 ): Beat {
   const fallback = workflowsById.values().next()
     .value as MemoryWorkflowDescriptor | undefined;
@@ -55,6 +62,7 @@ export function toBeat(
   const stepEntries = knotStepEntries(knot);
   const invariants = normalizeInvariants(knot.invariants);
   const aliases = collectAliases(knot);
+  const leaseMetadata = knotLeaseMetadata(knot, leaseAcquiredAtById);
 
   const nativeAcceptance =
     typeof knot.acceptance === "string"
@@ -74,6 +82,7 @@ export function toBeat(
       invariants,
       aliases,
       acceptance,
+      leaseMetadata,
     );
   }
 
@@ -87,6 +96,7 @@ export function toBeat(
     invariants,
     aliases,
     acceptance,
+    leaseMetadata,
   );
 }
 
@@ -100,11 +110,11 @@ function toBeatWithoutWorkflow(
   invariants: Invariant[],
   aliases: string[],
   acceptance: string | undefined,
+  leaseMetadata: KnotLeaseMetadata,
 ): Beat {
   const tags = (knot.tags ?? []).filter(
     (tag) => typeof tag === "string" && tag.trim().length > 0
   );
-  const leaseAgentInfo = knotLeaseAgentInfo(knot);
   return {
     id: knot.id,
     title: knot.title,
@@ -143,8 +153,14 @@ function toBeatWithoutWorkflow(
       // exists on a fresh lease). Surfacing it here lets the
       // beat-table renderer show the lease's agent without
       // re-extracting from anywhere — read what Knots stamped.
-      ...(leaseAgentInfo
-        ? { knotsLeaseAgentInfo: leaseAgentInfo }
+      ...(leaseMetadata.agentInfo
+        ? { knotsLeaseAgentInfo: leaseMetadata.agentInfo }
+        : {}),
+      ...(leaseMetadata.leaseId
+        ? { knotsLeaseId: leaseMetadata.leaseId }
+        : {}),
+      ...(leaseMetadata.acquiredAt
+        ? { knotsLeaseAcquiredAt: leaseMetadata.acquiredAt }
         : {}),
     },
   };
@@ -160,11 +176,11 @@ function toBeatWithWorkflow(
   invariants: Invariant[],
   aliases: string[],
   acceptance: string | undefined,
+  leaseMetadata: KnotLeaseMetadata,
 ): Beat {
   const tags = (knot.tags ?? []).filter(
     (tag) => typeof tag === "string" && tag.trim().length > 0
   );
-  const leaseAgentInfo = knotLeaseAgentInfo(knot);
   const rawWorkflowState = normalizeStateForWorkflow(
     knot.state,
     workflow,
@@ -220,10 +236,31 @@ function toBeatWithWorkflow(
       knotsSteps: stepEntries,
       // Surfaced for any knot with a bound lease so the table can
       // render the lease's agent without re-extracting. See above.
-      ...(leaseAgentInfo
-        ? { knotsLeaseAgentInfo: leaseAgentInfo }
+      ...(leaseMetadata.agentInfo
+        ? { knotsLeaseAgentInfo: leaseMetadata.agentInfo }
+        : {}),
+      ...(leaseMetadata.leaseId
+        ? { knotsLeaseId: leaseMetadata.leaseId }
+        : {}),
+      ...(leaseMetadata.acquiredAt
+        ? { knotsLeaseAcquiredAt: leaseMetadata.acquiredAt }
         : {}),
     },
+  };
+}
+
+function knotLeaseMetadata(
+  knot: KnotRecord,
+  leaseAcquiredAtById: ReadonlyMap<string, string>,
+): KnotLeaseMetadata {
+  const leaseId = cleanString(knot.lease_id);
+  const acquiredAt = leaseId
+    ? cleanString(leaseAcquiredAtById.get(leaseId))
+    : undefined;
+  return {
+    agentInfo: knotLeaseAgentInfo(knot),
+    leaseId,
+    acquiredAt,
   };
 }
 
@@ -259,6 +296,12 @@ function copyAgentField(
   if (typeof value === "string" && value.trim().length > 0) {
     info[key] = value.trim();
   }
+}
+
+function cleanString(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : undefined;
 }
 
 // ── Filtering ───────────────────────────────────────────────────────

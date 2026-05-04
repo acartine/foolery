@@ -215,7 +215,7 @@ export function overviewLeaseInfoForBeat(
   setLeaseInfoValue(
     info,
     "startedAt",
-    cleanString(terminalInfo?.startedAt) ?? activeStepStartedAt(beat),
+    cleanString(terminalInfo?.startedAt) ?? beatLeaseAcquiredAt(beat),
   );
   setLeaseInfoValue(
     info,
@@ -314,23 +314,6 @@ export function nextOverviewSizingColumnCounts(
   };
 }
 
-function activeStepStartedAt(beat: Beat): string | undefined {
-  const steps = beat.metadata?.knotsSteps;
-  if (!Array.isArray(steps)) return undefined;
-  const state = normalizeOverviewState(beat.state);
-
-  for (let index = steps.length - 1; index >= 0; index -= 1) {
-    const step = steps[index];
-    if (!step || typeof step !== "object") continue;
-    const record = step as Record<string, unknown>;
-    if (record.step !== state) continue;
-    const startedAt = cleanString(record.started_at);
-    if (startedAt) return startedAt;
-  }
-
-  return undefined;
-}
-
 function leaseAgentInfoString(
   beat: Beat,
   key: string,
@@ -338,6 +321,10 @@ function leaseAgentInfoString(
   const info = beat.metadata?.knotsLeaseAgentInfo;
   if (!info || typeof info !== "object") return undefined;
   return cleanString((info as Record<string, unknown>)[key]);
+}
+
+function beatLeaseAcquiredAt(beat: Beat): string | undefined {
+  return cleanString(beat.metadata?.knotsLeaseAcquiredAt);
 }
 
 function cleanString(value: unknown): string | undefined {

@@ -7,7 +7,12 @@ import { toast } from "sonner";
 import {
   invalidateBeatListQueries,
 } from "@/lib/beat-query-cache";
+import {
+  createPendingBeatRelease,
+  type PendingBeatRelease,
+} from "@/lib/beat-release-optimism";
 import { useScopeRefinementPendingStore } from "@/stores/scope-refinement-pending-store";
+import { useReleasePendingStore } from "@/stores/release-pending-store";
 import { useShipBeat } from "./use-ship-beat";
 import { useSceneManager } from "./use-scene-manager";
 
@@ -63,6 +68,12 @@ export function useBeatActions(
   const markPending = useScopeRefinementPendingStore(
     (s) => s.markPending,
   );
+  const markPendingRelease = useReleasePendingStore(
+    (s) => s.markPendingRelease,
+  );
+  const clearPendingRelease = useReleasePendingStore(
+    (s) => s.clearPendingRelease,
+  );
 
   const resolveRepoForBeat = useCallback(
     (beat: Beat | undefined): string | undefined => {
@@ -92,10 +103,19 @@ export function useBeatActions(
   const handleReleaseBeat = useCallback(
     async (beat: Beat) => {
       await releaseOverviewBeat(
-        beat, resolveRepoForBeat(beat), queryClient,
+        beat,
+        resolveRepoForBeat(beat),
+        queryClient,
+        markPendingRelease,
+        clearPendingRelease,
       );
     },
-    [queryClient, resolveRepoForBeat],
+    [
+      clearPendingRelease,
+      markPendingRelease,
+      queryClient,
+      resolveRepoForBeat,
+    ],
   );
 
   return {
@@ -181,7 +201,17 @@ async function releaseOverviewBeat(
   beat: Beat,
   repoPath: string | undefined,
   queryClient: BeatListQueryClient,
+  markPendingRelease: (release: PendingBeatRelease) => void,
+  clearPendingRelease: (key: string) => void,
 ): Promise<void> {
+  const pendingRelease = createPendingBeatRelease(beat, repoPath);
+  if (!pendingRelease) {
+    toast.error("Release is only available for active workflow states");
+    return;
+  }
+
+  markPendingRelease(pendingRelease);
+
   let result: Awaited<ReturnType<typeof rollbackBeat>>;
   try {
     result = await rollbackBeat(
@@ -190,15 +220,19 @@ async function releaseOverviewBeat(
       repoPath,
     );
   } catch (error) {
+    clearPendingRelease(pendingRelease.key);
+    void invalidateBeatListQueries(queryClient);
     toast.error(error instanceof Error
       ? error.message
       : "Failed to release beat");
     return;
   }
   if (!result.ok) {
+    clearPendingRelease(pendingRelease.key);
+    void invalidateBeatListQueries(queryClient);
     toast.error(result.error ?? "Failed to release beat");
     return;
   }
-  void invalidateBeatListQueries(queryClient);
-  toast.success("Beat released");
+  toast.success("Release sent");
+  await invalidateBeatListQueries(queryClient);
 }

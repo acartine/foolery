@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Beat } from "@/lib/types";
 import type { AgentInfo } from "@/components/beat-columns";
@@ -48,10 +48,15 @@ import {
 import {
   buildOverviewLeaseInfoByBeatKey,
 } from "./overview-lease-info";
+import {
+  applyPendingBeatReleases,
+  settledPendingBeatReleaseKeys,
+} from "@/lib/beat-release-optimism";
 import { useBulkActions } from "./use-bulk-actions";
 import { useBeatActions } from "./use-beat-actions";
 import { useBeatDetail } from "./use-beat-detail";
 import { useBeatsScreenWarmup } from "@/hooks/use-beats-screen-warmup";
+import { useReleasePendingStore } from "@/stores/release-pending-store";
 
 export default function BeatsPage() {
   return (
@@ -121,11 +126,12 @@ function useBeatsPageState() {
     beatsView, searchQuery, shouldLoadBeats, activeRepo,
     registeredRepos, shippingByBeatId,
   });
+  const displayedBeats = useDisplayedBeats(beats);
 
   const showRepoColumn =
     !activeRepo && registeredRepos.length > 1;
   const agentInfoByBeatId = useAgentInfoMap(
-    isActiveView, beats, terminals,
+    isActiveView, displayedBeats, terminals,
   );
   const terminalAgentInfoMap = useTerminalAgentInfoMap();
   const overviewLeaseInfoByBeatKey = useMemo(
@@ -135,14 +141,14 @@ function useBeatsPageState() {
     ),
     [terminals, terminalAgentInfoMap],
   );
-  const bulk = useBulkActions(beats);
+  const bulk = useBulkActions(displayedBeats);
   const actions = useBeatActions(
-    beats, terminals,
+    displayedBeats, terminals,
     shippingByBeatId, hasRollingAncestor,
     activeRepo ?? undefined,
   );
   const detail = useBeatDetail({
-    beats,
+    beats: displayedBeats,
     detailBeatId,
     detailRepo,
     isListView: supportsBeatDetail,
@@ -153,7 +159,7 @@ function useBeatsPageState() {
     supportsBeatDetail,
     isActiveView, activeRepo,
     searchQuery, detailBeatId, detailRepo,
-    beats, isLoading, loadError, isDegradedError,
+    beats: displayedBeats, isLoading, loadError, isDegradedError,
     hasRollingAncestor, showRepoColumn,
     agentInfoByBeatId, shippingByBeatId,
     overviewLeaseInfoByBeatKey,
@@ -162,6 +168,28 @@ function useBeatsPageState() {
     streamingProgress,
     ...bulk, ...actions, ...detail,
   };
+}
+
+function useDisplayedBeats(beats: Beat[]): Beat[] {
+  const pendingReleases = useReleasePendingStore(
+    (s) => s.pendingReleases,
+  );
+  const clearPendingRelease = useReleasePendingStore(
+    (s) => s.clearPendingRelease,
+  );
+  useEffect(() => {
+    const settledKeys = settledPendingBeatReleaseKeys(
+      beats,
+      pendingReleases,
+    );
+    for (const key of settledKeys) {
+      clearPendingRelease(key);
+    }
+  }, [beats, clearPendingRelease, pendingReleases]);
+  return useMemo(
+    () => applyPendingBeatReleases(beats, pendingReleases),
+    [beats, pendingReleases],
+  );
 }
 
 function BeatsPageInner() {

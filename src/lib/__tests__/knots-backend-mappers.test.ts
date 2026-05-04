@@ -33,6 +33,7 @@ function makeKnot(
 
 function mapKnot(
   knot: KnotWithTopLevelLeaseAgent,
+  leaseAcquiredAtById: ReadonlyMap<string, string> = new Map(),
 ) {
   return toBeat(
     knot,
@@ -40,6 +41,7 @@ function mapKnot(
     new Set(),
     new Map(),
     new Map([[workflow.id, workflow]]),
+    leaseAcquiredAtById,
   );
 }
 
@@ -103,5 +105,26 @@ describe("Knots backend mapper lease agent metadata", () => {
     }));
 
     expect(beat.metadata?.knotsLeaseAgentInfo).toBeUndefined();
+  });
+
+  it("surfaces lease acquisition time from the lease record map", () => {
+    const beat = mapKnot(
+      makeKnot({
+        lease_id: "lease-1",
+        step_history: [{
+          step: "implementation",
+          started_at: "2026-05-04T08:00:00.000Z",
+        }],
+      }),
+      new Map([[
+        "lease-1",
+        "2026-05-04T07:30:00.000Z",
+      ]]),
+    );
+
+    expect(beat.metadata?.knotsLeaseId).toBe("lease-1");
+    expect(beat.metadata?.knotsLeaseAcquiredAt).toBe(
+      "2026-05-04T07:30:00.000Z",
+    );
   });
 });

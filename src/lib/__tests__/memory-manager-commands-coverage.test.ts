@@ -124,16 +124,20 @@ describe("quoteId helper (line 9)", () => {
 });
 
 describe("rollbackBeatState", () => {
-  it("uses kno rb with quoted id for knots", async () => {
+  it("uses kno rollback with quoted id for knots", async () => {
     await rollbackBeatState("beat-42", "implementation", "triage", "/tmp", "knots");
     expect(mockExec).toHaveBeenCalledTimes(1);
-    expect(mockExec.mock.calls[0][0]).toBe('kno rb "beat-42"');
+    expect(mockExec.mock.calls[0][0]).toBe(
+      'kno rollback "beat-42" --actor-kind agent',
+    );
   });
 
   it("adds a note when reason is provided for knots", async () => {
     await rollbackBeatState("beat-42", "implementation", "triage", "/tmp", "knots", "flaky test");
     expect(mockExec).toHaveBeenCalledTimes(1);
-    expect(mockExec.mock.calls[0][0]).toBe('kno rb "beat-42"');
+    expect(mockExec.mock.calls[0][0]).toBe(
+      'kno rollback "beat-42" --actor-kind agent',
+    );
     expect(mockUpdateKnot).toHaveBeenCalledOnce();
     expect(mockUpdateKnot).toHaveBeenCalledWith("beat-42", { addNote: "flaky test" }, "/tmp");
   });
@@ -161,18 +165,24 @@ describe("rollbackBeatState", () => {
 
   it("escapes special characters in beatId via JSON.stringify", async () => {
     await rollbackBeatState('id with "quotes" & spaces', "impl", "triage", "/tmp", "knots");
-    expect(mockExec.mock.calls[0][0]).toBe('kno rb "id with \\"quotes\\" & spaces"');
+    expect(mockExec.mock.calls[0][0]).toBe(
+      'kno rollback "id with \\"quotes\\" & spaces" --actor-kind agent',
+    );
   });
 
   it("does not add a note when reason is an empty string for knots", async () => {
     await rollbackBeatState("beat-42", "implementation", "triage", "/tmp", "knots", "");
     expect(mockExec).toHaveBeenCalledTimes(1);
-    expect(mockExec.mock.calls[0][0]).toBe('kno rb "beat-42"');
+    expect(mockExec.mock.calls[0][0]).toBe(
+      'kno rollback "beat-42" --actor-kind agent',
+    );
   });
 
   it("does not add a note when reason is undefined for knots", async () => {
     await rollbackBeatState("beat-42", "implementation", "triage", "/tmp", "knots", undefined);
     expect(mockExec).toHaveBeenCalledTimes(1);
-    expect(mockExec.mock.calls[0][0]).toBe('kno rb "beat-42"');
+    expect(mockExec.mock.calls[0][0]).toBe(
+      'kno rollback "beat-42" --actor-kind agent',
+    );
   });
 });

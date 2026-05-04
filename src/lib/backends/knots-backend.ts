@@ -57,6 +57,7 @@ import {
   listDependenciesImpl, addDependencyImpl, removeDependencyImpl,
   buildParentTakePrompt, buildSingleTakePrompt, buildPollPromptImpl,
 } from "@/lib/backends/knots-backend-prompts";
+import { leaseAcquiredAtByLeaseId } from "@/lib/backends/knots-backend-leases";
 
 // Re-export public constants so existing imports keep working.
 export { BUILTIN_SKILL_PROMPTS } from "@/lib/backends/knots-skill-prompts";
@@ -205,23 +206,20 @@ export class KnotsBackend implements BackendPort {
   private async buildBeatsForRepo(
     repoPath: string,
   ): Promise<BackendResult<Beat[]>> {
-    const workflowMapResult =
-      await this.workflowMapByProfileId(repoPath);
+    const workflowMapResult = await this.workflowMapByProfileId(repoPath);
     if (!workflowMapResult.ok) {
       return propagateError<Beat[]>(workflowMapResult);
     }
-    const workflowMap =
-      workflowMapResult.data ??
-      new Map<string, MemoryWorkflowDescriptor>();
+    const workflowMap = workflowMapResult.data
+      ?? new Map<string, MemoryWorkflowDescriptor>();
 
-    const listResult = fromKnots(
-      await knots.listKnots(repoPath),
-    );
+    const listResult = fromKnots(await knots.listKnots(repoPath));
     if (!listResult.ok) {
       return propagateError<Beat[]>(listResult);
     }
 
     const records = listResult.data ?? [];
+    const leaseAcquiredAtById = await leaseAcquiredAtByLeaseId(repoPath);
     const knownIds = new Set(records.map((record) => record.id));
 
     const aliasToId = new Map<string, string>();
@@ -251,6 +249,7 @@ export class KnotsBackend implements BackendPort {
         knownIds,
         aliasToId,
         workflowMap,
+        leaseAcquiredAtById,
       ),
     );
     return ok(beats);
