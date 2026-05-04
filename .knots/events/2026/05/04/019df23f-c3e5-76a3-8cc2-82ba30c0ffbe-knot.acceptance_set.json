@@ -1,0 +1,9 @@
+{
+  "event_id": "019df23f-c3e5-76a3-8cc2-82ba30c0ffbe",
+  "occurred_at": "2026-05-04T09:09:18.42834Z",
+  "knot_id": "foolery-fbb2",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Overview tabs do not render zero-beat columns; tabs with no beats show a compact empty state instead of empty columns.\n2. Visible overview columns use a dynamic width based on the available overview viewport divided by visible column count plus one, with sane min/max bounds for readability.\n3. Beat tile typography and metadata typography are reduced by one notch relative to the current overview styling.\n4. Column state label pills use a smaller font, wrap when needed, and do not clip their leading text.\n5. Existing tab routing remains intact: Work Items, Exploration, Gates, and Terminated keep their current state ownership.\n6. Browser verification confirms desktop and mobile layouts have no page-level horizontal overflow."
+  }
+}

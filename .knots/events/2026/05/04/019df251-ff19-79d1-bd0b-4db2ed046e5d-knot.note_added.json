@@ -1,0 +1,15 @@
+{
+  "event_id": "019df251-ff19-79d1-bd0b-4db2ed046e5d",
+  "occurred_at": "2026-05-04T09:29:13.241895Z",
+  "knot_id": "foolery-fbb2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. origin/main resolves to e9afe376578c970375ac8c8414b318feea1dbebc and contains the tagged implementation commit. Knot is tagged with branch:codex/fbb2-dynamic-overview-columns plus short and full commit tags. Remote checks completed successfully for the shipped commit: CI 25311402191 success and Coverage Badge 25311402174 success. No invariants are present.",
+    "datetime": "2026-05-04T09:29:13.241895Z",
+    "entry_id": "019df251-ff19-79d1-bd0b-4daff93f2b61",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

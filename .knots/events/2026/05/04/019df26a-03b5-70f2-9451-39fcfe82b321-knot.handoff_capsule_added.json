@@ -1,0 +1,15 @@
+{
+  "event_id": "019df26a-03b5-70f2-9451-39fcfe82b321",
+  "occurred_at": "2026-05-04T09:55:27.285593Z",
+  "knot_id": "foolery-9a05",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review passed: implement in a dedicated worktree; preserve valid tile button semantics and repo-scoped rollback.",
+    "datetime": "2026-05-04T09:55:27.285593Z",
+    "entry_id": "019df26a-03b5-70f2-9451-39e99d07c5d6",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

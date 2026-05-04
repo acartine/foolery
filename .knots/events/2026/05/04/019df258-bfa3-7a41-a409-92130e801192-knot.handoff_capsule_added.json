@@ -1,0 +1,15 @@
+{
+  "event_id": "019df258-bfa3-7a41-a409-92130e801192",
+  "occurred_at": "2026-05-04T09:36:35.747466Z",
+  "knot_id": "foolery-b47c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan approved for implementation: add max-one-sixth cap, per-tab sizing watermarks, two-column pressure promotion, focused tests, and browser verification.",
+    "datetime": "2026-05-04T09:36:35.747466Z",
+    "entry_id": "019df258-bfa3-7a41-a409-920f5865123f",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019df258-bfa3-7a41-a409-91fa7b3cac8a",
+  "occurred_at": "2026-05-04T09:36:35.747466Z",
+  "knot_id": "foolery-b47c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approved. The plan directly addresses the jitter concern by separating rendered visible columns from sizing pressure, capping width at one sixth of the scrollport, and keeping watermark state scoped per tab. Test coverage targets the pure sizing rules and the existing hidden-empty behavior remains unchanged. No invariants are present.",
+    "datetime": "2026-05-04T09:36:35.747466Z",
+    "entry_id": "019df258-bfa3-7a41-a409-91e0a2581c3c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

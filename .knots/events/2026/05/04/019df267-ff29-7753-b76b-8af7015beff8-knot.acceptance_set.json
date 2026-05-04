@@ -1,0 +1,9 @@
+{
+  "event_id": "019df267-ff29-7753-b76b-8af7015beff8",
+  "occurred_at": "2026-05-04T09:53:15.025918Z",
+  "knot_id": "foolery-9a05",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The beat overview no longer renders the redundant `State overview` heading/count row above the tab list.\n2. Active lease metadata displays lease age plus provider/agent, model, and version fields when those values are available.\n3. Active lease tiles show a terminal focus action when a matching terminal session is available.\n4. Active lease tiles show a `Release` action when no matching terminal session is available.\n5. The `Release` action invokes the existing rollback mechanism for the correct beat and repository scope.\n6. Existing overview grouping, column sizing, tab counts, id display, and beat opening behavior remain intact."
+  }
+}

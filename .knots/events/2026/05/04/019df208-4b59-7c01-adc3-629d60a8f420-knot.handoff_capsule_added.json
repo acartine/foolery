@@ -1,0 +1,15 @@
+{
+  "event_id": "019df208-4b59-7c01-adc3-629d60a8f420",
+  "occurred_at": "2026-05-04T08:08:43.097136Z",
+  "knot_id": "foolery-2f19",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approved. Proceed to implementation on a feature branch: update overview helpers, component, page props, and focused tests; verify full gates and browser layout.",
+    "datetime": "2026-05-04T08:08:43.097136Z",
+    "entry_id": "019df208-4b59-7c01-adc3-62869c63ea36",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

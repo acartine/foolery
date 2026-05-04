@@ -1,0 +1,15 @@
+{
+  "event_id": "019df24e-9250-73c0-84c3-1914cffcb5e1",
+  "occurred_at": "2026-05-04T09:25:28.784426Z",
+  "knot_id": "foolery-fbb2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented dynamic overview sizing in e9afe376: overview tabs now render only non-empty state groups, grid columns use scrollport width / (visible columns + 1) with 80-320px bounds, overview typography is reduced one notch, and state pills are smaller/wrappable. Verification passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build. Browser checks: in-app Work Items 4 visible columns, 0 empty columns, 192px width; Terminated 3 columns at 241px; Gates 1 column clamped at 320px; label class includes whitespace-normal text-[9px]. Headless desktop/mobile overflow metrics stayed within viewport.",
+    "datetime": "2026-05-04T09:25:28.784426Z",
+    "entry_id": "019df24e-9250-73c0-84c3-190570dd5ea1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

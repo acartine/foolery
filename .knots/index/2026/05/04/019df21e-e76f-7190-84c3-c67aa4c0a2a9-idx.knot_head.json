@@ -1,0 +1,21 @@
+{
+  "event_id": "019df21e-e76f-7190-84c3-c67aa4c0a2a9",
+  "occurred_at": "2026-05-04T08:33:24.847419Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2f19",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Refine beat overview annotations",
+    "type": "work",
+    "updated_at": "2026-05-04T08:33:24.847419Z",
+    "workflow_id": "work_sdlc"
+  }
+}

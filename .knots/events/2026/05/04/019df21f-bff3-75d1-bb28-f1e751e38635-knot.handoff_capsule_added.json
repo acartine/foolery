@@ -1,0 +1,15 @@
+{
+  "event_id": "019df21f-bff3-75d1-bb28-f1e751e38635",
+  "occurred_at": "2026-05-04T08:34:20.275467Z",
+  "knot_id": "foolery-8c78",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete: implement tab classification helpers, tabbed overview UI, narrower columns, focused tests, then browser/full-gate verification.",
+    "datetime": "2026-05-04T08:34:20.275467Z",
+    "entry_id": "019df21f-bff3-75d1-bb28-f1d64fef1cee",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019df1de-39af-7c33-b6ff-24251ed95450",
+  "occurred_at": "2026-05-04T07:22:46.063777Z",
+  "knot_id": "foolery-2475",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approved. The plan is complete and feasible for a scoped UI prototype. It preserves existing views and detail behavior, avoids drag/drop kanban semantics, and includes quality gates plus hermetic grouping coverage. Implementation should explicitly ensure `/beats?view=overview` does not inherit queue/active default state filters, otherwise it would not show all beat states.",
+    "datetime": "2026-05-04T07:22:46.063777Z",
+    "entry_id": "019df1de-39af-7c33-b6ff-2416cba63e43",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

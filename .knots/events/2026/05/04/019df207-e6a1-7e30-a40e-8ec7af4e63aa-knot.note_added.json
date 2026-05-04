@@ -1,0 +1,15 @@
+{
+  "event_id": "019df207-e6a1-7e30-a40e-8ec7af4e63aa",
+  "occurred_at": "2026-05-04T08:08:17.313082Z",
+  "knot_id": "foolery-2f19",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan:\n1. Add overview-specific helpers in `src/lib/beat-state-overview.ts`: required state columns, hidden states (`shipped`), active-state detection, full/short overview labels, and grouping that emits empty required columns while preserving unknown/extra states when beats exist.\n2. Update `src/components/beat-state-overview.tsx` to render empty state columns, suppress shipped, use full ids/aliases only when All Repositories is selected, and add a compact lease metadata line for active-state tiles. Lease age will come from the active step start time or active terminal start time; provider/model/version will come from canonical lease agent info when present.\n3. Update `src/app/beats/page.tsx` to pass an explicit All Repositories flag and terminal-derived lease info into the overview. Keep the existing lightbox-only click behavior and no drag/drop affordances.\n4. Extend `src/lib/__tests__/beat-state-overview.test.ts` for shipped filtering, required empty columns, full-vs-short labels, active-state detection, and lease metadata extraction.\n5. Run `bun run lint`, `bunx tsc --noEmit`, `bun run test`, `bun run build`, then verify `/beats?view=overview&state=queued` in desktop/mobile browser.\n\nComplexity: medium-small UI/data-shaping pass.\nRisks: active lease metadata is only displayable when available in beat metadata or active terminal state; the UI should omit missing fields rather than fabricating placeholders. Empty columns increase horizontal width, so overflow must remain contained inside the overview rail.",
+    "datetime": "2026-05-04T08:08:17.313082Z",
+    "entry_id": "019df207-e6a1-7e30-a40e-8eb694fc5c5b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

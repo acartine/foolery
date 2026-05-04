@@ -1,0 +1,9 @@
+{
+  "event_id": "019df23f-c3e1-79e0-8543-97897f5fa17e",
+  "occurred_at": "2026-05-04T09:09:18.42834Z",
+  "knot_id": "foolery-fbb2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nRefine the tabbed beat overview so each tab hides empty columns, sizes visible columns dynamically using roughly total viewport width divided by visible column count plus one, and reduces typography density by one notch. Column label pills should use a smaller font and wrap instead of clipping.\n\nVerification:\n1. Run `bun run lint` and expect success.\n2. Run `bunx tsc --noEmit` and expect success.\n3. Run `bun run test` and expect success.\n4. Run `bun run build` and expect success.\n5. Open `http://localhost:4137/beats?view=overview&state=queued` with All Repositories selected and confirm each overview tab hides columns with zero beats, visible column width follows the viewport/(visible columns + 1) rule, tile fonts are one notch smaller, column label pills are smaller and can wrap, and desktop/mobile have no page-level horizontal overflow.\n\nConstraints:\nKeep the overview read-only and keep existing tab taxonomy, all-repo full ids, single-repo abbreviated ids, lease-record filtering, and active lease info behavior."
+  }
+}

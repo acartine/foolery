@@ -1,0 +1,15 @@
+{
+  "event_id": "019df1ed-b671-7d80-b117-4d26195ffa14",
+  "occurred_at": "2026-05-04T07:39:41.041721Z",
+  "knot_id": "foolery-2475",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. Verified local `main` and `origin/main` both resolve to fd6b433688e15fad445879131119474ec62b05c8, and the commit is contained by local main, origin/main, and the shipped feature branch. The knot has commit and branch tags for the shipped artifact. GitHub Actions for the main push completed successfully: CI 25306895225 and Coverage Badge 25306895228. Shipped code satisfies the accepted scope and no regressions were found in the local or remote gates.",
+    "datetime": "2026-05-04T07:39:41.041721Z",
+    "entry_id": "019df1ed-b671-7d80-b117-4d154bbdf0bb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

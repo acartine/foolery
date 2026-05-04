@@ -1,0 +1,21 @@
+{
+  "event_id": "019df203-308a-7f03-a360-0835e3611e4a",
+  "occurred_at": "2026-05-04T08:03:08.554673Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-363f",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Tighten beat overview columns",
+    "type": "work",
+    "updated_at": "2026-05-04T08:03:08.554673Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019df265-96fc-73a0-aa2f-4fc751b5c61b",
+  "occurred_at": "2026-05-04T09:50:37.308161Z",
+  "knot_id": "foolery-b47c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review signed off. Shipped on origin/main at 88fce3f68969355e953e064a7ace4bfe19c0148a with CI and Coverage Badge green.",
+    "datetime": "2026-05-04T09:50:37.308161Z",
+    "entry_id": "019df265-96fc-73a0-aa2f-4fbc9c4d9afb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

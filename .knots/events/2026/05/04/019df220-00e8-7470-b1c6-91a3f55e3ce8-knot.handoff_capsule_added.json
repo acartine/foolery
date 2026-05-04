@@ -1,0 +1,15 @@
+{
+  "event_id": "019df220-00e8-7470-b1c6-91a3f55e3ce8",
+  "occurred_at": "2026-05-04T08:34:36.90431Z",
+  "knot_id": "foolery-8c78",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan approved for implementation: add tab grouping helpers/UI, narrow columns, extend overview tests, verify gates and browser behavior.",
+    "datetime": "2026-05-04T08:34:36.90431Z",
+    "entry_id": "019df220-00e8-7470-b1c6-91970cd0c8b3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

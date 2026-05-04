@@ -1,0 +1,9 @@
+{
+  "event_id": "019df267-ff24-7393-9a83-57f80add2ce7",
+  "occurred_at": "2026-05-04T09:53:15.025918Z",
+  "knot_id": "foolery-9a05",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nRefine the beat overview by removing the redundant State overview/count header row, expanding active lease rows with provider/agent/model/version metadata, and adding an action that focuses the matching terminal session when available or releases the beat by rolling it back when no session exists.\n\nVerification:\n1. Run `bun run lint` and expect success.\n2. Run `bunx tsc --noEmit` and expect success.\n3. Run `bun run test` and expect success.\n4. Run `bun run build` and expect success.\n5. Open `http://localhost:4137/beats?view=overview&state=queued` with All Repositories selected and confirm the redundant State overview/count row is gone, tabs remain, active lease tiles show lease age plus provider/agent/model/version metadata, and the tile shows either a focus-session action or a Release action when no terminal session exists.\n6. For the Release action, verify the client calls the existing rollback path for the beat/repo scope rather than inventing a new state mutation.\n\nConstraints:\nKeep the overview read-only except for the explicit Release action. Preserve existing tabs, hidden empty columns, all-repo full ids, single-repo abbreviated ids, lease filtering, active lease info behavior, and column sizing behavior."
+  }
+}

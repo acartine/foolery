@@ -1,0 +1,9 @@
+{
+  "event_id": "019df21f-6f87-7b42-bbf2-096a63816fb9",
+  "occurred_at": "2026-05-04T08:33:59.678869Z",
+  "knot_id": "foolery-8c78",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nMake the beat overview easier to scan by narrowing the column rail further and adding tabs that group states into Work Items, Exploration, Gates, and Terminated. Terminated contains abandoned, deferred, and shipped. Exploration contains Ready For Exploration. Gates contains Ready To Evaluate. Work Items contains the remaining visible workflow states.\n\nVerification:\n1. Run `bun run lint` and expect success.\n2. Run `bunx tsc --noEmit` and expect success.\n3. Run `bun run test` and expect success.\n4. Run `bun run build` and expect success.\n5. Open `http://localhost:4137/beats?view=overview&state=queued` with All Repositories selected and confirm the overview has Work Items, Exploration, Gates, and Terminated tabs; columns are narrower than the previous roughly 145px layout; Ready For Exploration appears only in Exploration; Ready To Evaluate appears only in Gates; abandoned/deferred/shipped appear only in Terminated; the rest appear in Work Items; and mobile keeps page-level horizontal overflow contained.\n\nConstraints:\nKeep the overview read-only and compact. Preserve full repo-scoped ids in All Repositories and abbreviated ids in single-repo scope. Continue showing active lease info where available."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019df21b-7e5b-7513-8c92-54d6b23b9cbb",
+  "occurred_at": "2026-05-04T08:29:41.339338Z",
+  "knot_id": "foolery-2f19",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved for shipment. Merge branch codex/2f19-overview-annotations commit 28cedb557f444696776b2b7ea78826f0179fc0ca to main and verify remote main CI.",
+    "datetime": "2026-05-04T08:29:41.339338Z",
+    "entry_id": "019df21b-7e5b-7513-8c92-54c3264f541f",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

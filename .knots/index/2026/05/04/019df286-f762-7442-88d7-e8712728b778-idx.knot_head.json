@@ -1,0 +1,21 @@
+{
+  "event_id": "019df286-f762-7442-88d7-e8712728b778",
+  "occurred_at": "2026-05-04T10:27:04.674943Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9a05",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Refine overview lease actions",
+    "type": "work",
+    "updated_at": "2026-05-04T10:27:04.674943Z",
+    "workflow_id": "work_sdlc"
+  }
+}

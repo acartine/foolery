@@ -1,0 +1,15 @@
+{
+  "event_id": "019df22b-4181-7301-929c-37485c78a82a",
+  "occurred_at": "2026-05-04T08:46:54.337583Z",
+  "knot_id": "foolery-8c78",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete. Fast-forwarded main from 28cedb557f444696776b2b7ea78826f0179fc0ca to 32bc14ed41391936403389f909e2dbdbc9fb3226 and pushed HEAD:main to origin/main. Local merge printed the known sync warning about 1 active lease during post-merge sync, but git merge and push both succeeded. Remote checks for commit 32bc14ed41391936403389f909e2dbdbc9fb3226 are green: CI 25309616871 success and Coverage Badge 25309616867 success; CI emitted non-failing coverage regression annotations.",
+    "datetime": "2026-05-04T08:46:54.337583Z",
+    "entry_id": "019df22b-4181-7301-929c-373e468777b0",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

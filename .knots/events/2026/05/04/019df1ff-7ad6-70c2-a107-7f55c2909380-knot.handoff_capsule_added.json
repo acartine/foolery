@@ -1,0 +1,15 @@
+{
+  "event_id": "019df1ff-7ad6-70c2-a107-7f55c2909380",
+  "occurred_at": "2026-05-04T07:59:05.430292Z",
+  "knot_id": "foolery-363f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Branch: `codex/363f-beat-overview-columns`. Commit: `9f4dc40701685f7426ddc82e06483dfa12c54e00`. Review the compact columned overview in `src/components/beat-state-overview.tsx`; verification and browser checks are green.",
+    "datetime": "2026-05-04T07:59:05.430292Z",
+    "entry_id": "019df1ff-7ad6-70c2-a107-7f457454ee87",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

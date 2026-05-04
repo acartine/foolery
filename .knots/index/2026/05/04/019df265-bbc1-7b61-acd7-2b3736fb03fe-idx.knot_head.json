@@ -1,0 +1,21 @@
+{
+  "event_id": "019df265-bbc1-7b61-acd7-2b3736fb03fe",
+  "occurred_at": "2026-05-04T09:50:46.721917Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b47c",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Stabilize overview column sizing",
+    "type": "work",
+    "updated_at": "2026-05-04T09:50:46.721917Z",
+    "workflow_id": "work_sdlc"
+  }
+}

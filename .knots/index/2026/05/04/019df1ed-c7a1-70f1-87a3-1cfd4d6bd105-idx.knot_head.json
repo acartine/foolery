@@ -1,0 +1,21 @@
+{
+  "event_id": "019df1ed-c7a1-70f1-87a3-1cfd4d6bd105",
+  "occurred_at": "2026-05-04T07:39:45.441408Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2475",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Prototype beat state overview",
+    "type": "work",
+    "updated_at": "2026-05-04T07:39:45.441408Z",
+    "workflow_id": "work_sdlc"
+  }
+}

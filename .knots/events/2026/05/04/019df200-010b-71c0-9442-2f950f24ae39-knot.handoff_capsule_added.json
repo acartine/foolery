@@ -1,0 +1,15 @@
+{
+  "event_id": "019df200-010b-71c0-9442-2f950f24ae39",
+  "occurred_at": "2026-05-04T07:59:39.787694Z",
+  "knot_id": "foolery-363f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved for branch `codex/363f-beat-overview-columns` commit `9f4dc40701685f7426ddc82e06483dfa12c54e00`. Proceed to shipment: integrate to `main`, push `origin/main`, verify final status/CI if available.",
+    "datetime": "2026-05-04T07:59:39.787694Z",
+    "entry_id": "019df200-010b-71c0-9442-2f876d6c2f34",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

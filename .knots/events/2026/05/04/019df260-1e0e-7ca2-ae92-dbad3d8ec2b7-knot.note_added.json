@@ -1,0 +1,15 @@
+{
+  "event_id": "019df260-1e0e-7ca2-ae92-dbad3d8ec2b7",
+  "occurred_at": "2026-05-04T09:44:38.670342Z",
+  "knot_id": "foolery-b47c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented overview column sizing stabilization in 88fce3f6. Changes: column width now caps at one sixth of the overview scrollport; sizing uses a separate per-tab watermark count; when visible columns exceed the tab watermark, the watermark promotes to visible + 2; when visible columns decrease, the watermark remains sticky. Added useOverviewColumnWatermark hook and focused tests for cap, pressure promotion, no-grow after decrease, and tab independence. Verification passed: targeted lint/test, browser/in-app check on localhost:4137, desktop/mobile metric harness, bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-05-04T09:44:38.670342Z",
+    "entry_id": "019df260-1e0e-7ca2-ae92-db979da2dcb7",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

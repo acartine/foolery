@@ -1,0 +1,17 @@
+{
+  "event_id": "019df205-48b7-7111-8bb1-5b9d4d93aa14",
+  "occurred_at": "2026-05-04T08:05:25.814784Z",
+  "knot_id": "foolery-2f19",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nIncorporate the latest overview annotations: show unabbreviated knot ids when All Repositories is selected, include expected empty workflow-state columns, hide shipped beats from the overview, and show lease metadata on active-state tiles when available.\n\nVerification:\n1. Run `bun run lint` and expect success.\n2. Run `bunx tsc --noEmit` and expect success.\n3. Run `bun run test` and expect success.\n4. Run `bun run build` and expect success.\n5. Open `http://localhost:4137/beats?view=overview&state=queued` with All Repositories selected and confirm ids are unabbreviated, Ready For Plan Review / Ready For Impl Review / Shipment / Ready For Shipment / Ready For Shipment Review columns are present even when empty or sparse, shipped is absent, active tiles show lease info when available, and no lease records appear as beats.\n\nConstraints:\nKeep the overview an inspection surface, not a kanban board. Preserve compact column density and contained mobile horizontal scrolling.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Refine beat overview annotations",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

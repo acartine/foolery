@@ -1,0 +1,15 @@
+{
+  "event_id": "019df21b-041a-7de0-b763-e74867f80cd8",
+  "occurred_at": "2026-05-04T08:29:10.042545Z",
+  "knot_id": "foolery-2f19",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete on branch codex/2f19-overview-annotations at commit 28cedb557f444696776b2b7ea78826f0179fc0ca. Changes: overview now targets roughly eight compact columns across desktop with 8.5rem minimum columns; All Repositories shows full repo-scoped ids; required empty review/shipment columns are injected; shipped beats are hidden; active-state tiles show honest lease age/provider/model/version when metadata exists; mobile header wrapping prevents page-level overflow. Verification passed: bun run lint; bunx tsc --noEmit; bun run test (247 files, 2665 passed, 11 skipped, 42 todo); bun run build. Browser verification at 1269x985 and 390x844 confirmed required annotated columns present, Shipped column absent, full ids visible in All Repositories, lease rows render, desktop shows 8 overview columns at about 145px each, and mobile document scroll width stays within viewport.",
+    "datetime": "2026-05-04T08:29:10.042545Z",
+    "entry_id": "019df21b-041a-7de0-b763-e73c700dfd77",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

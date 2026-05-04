@@ -1,0 +1,15 @@
+{
+  "event_id": "019df264-a4d4-77a1-81b5-efea277e08c6",
+  "occurred_at": "2026-05-04T09:49:35.316054Z",
+  "knot_id": "foolery-b47c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete. Pushed reviewed commit 88fce3f68969355e953e064a7ace4bfe19c0148a to origin/main via fast-forward from e9afe376. Remote checks are green: CI run 25312283225 succeeded and Coverage Badge run 25312283214 succeeded. CI emitted coverage regression annotations but the configured check passed.",
+    "datetime": "2026-05-04T09:49:35.316054Z",
+    "entry_id": "019df264-a4d4-77a1-81b5-efd75ce7c8cb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

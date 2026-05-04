@@ -1,0 +1,15 @@
+{
+  "event_id": "019df286-88b3-72b3-bab4-475dd04cad84",
+  "occurred_at": "2026-05-04T10:26:36.339562Z",
+  "knot_id": "foolery-9a05",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete. Pushed reviewed branch codex/9a05-overview-lease-actions to origin/main as f9364012191b1d179d2f1b0e6e538153ee06642d (fast-forward from 88fce3f68969355e953e064a7ace4bfe19c0148a). Remote checks on main passed: GitHub Actions CI run 25313803832 succeeded and Coverage Badge run 25313803837 succeeded. CI reported non-failing coverage-regression annotations, but conclusion was success.",
+    "datetime": "2026-05-04T10:26:36.339562Z",
+    "entry_id": "019df286-88b3-72b3-bab4-4742797af831",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

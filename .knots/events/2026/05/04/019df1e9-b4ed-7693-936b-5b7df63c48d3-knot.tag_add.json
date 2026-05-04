@@ -1,0 +1,9 @@
+{
+  "event_id": "019df1e9-b4ed-7693-936b-5b7df63c48d3",
+  "occurred_at": "2026-05-04T07:35:18.509708Z",
+  "knot_id": "foolery-2475",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/2475-beat-state-overview"
+  }
+}

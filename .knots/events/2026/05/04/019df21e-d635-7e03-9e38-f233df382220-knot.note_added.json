@@ -1,0 +1,15 @@
+{
+  "event_id": "019df21e-d635-7e03-9e38-f233df382220",
+  "occurred_at": "2026-05-04T08:33:20.437184Z",
+  "knot_id": "foolery-2f19",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. Verified local main and origin/main both point at shipped commit 28cedb557f444696776b2b7ea78826f0179fc0ca, working tree is clean, commit and branch tags are present on the knot, and remote checks are green: CI 25309019513 success and Coverage Badge 25309019496 success. No shipped regressions or invariant issues found.",
+    "datetime": "2026-05-04T08:33:20.437184Z",
+    "entry_id": "019df21e-d635-7e03-9e38-f22746fe242b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

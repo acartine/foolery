@@ -1,0 +1,34 @@
+{
+  "event_id": "019df1ed-b67a-7090-af1d-d1522881e22e",
+  "occurred_at": "2026-05-04T07:39:41.041721Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2475",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Prototype beat state overview",
+    "type": "work",
+    "updated_at": "2026-05-04T07:39:41.041721Z",
+    "workflow_id": "work_sdlc"
+  }
+}

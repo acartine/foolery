@@ -1,0 +1,15 @@
+{
+  "event_id": "019df21f-bff3-75d1-bb28-f1cfc18cdb9a",
+  "occurred_at": "2026-05-04T08:34:20.275467Z",
+  "knot_id": "foolery-8c78",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan:\n1. Update overview state helpers to classify states into Work Items, Exploration, Gates, and Terminated. Keep lease-type beats filtered out, but no longer hide shipped globally; instead route shipped into Terminated. Add required state lists per tab so Exploration/Gates/Terminated show their expected columns even when empty.\n2. Update the overview component to render compact tab controls with per-tab counts, filter displayed columns by selected tab, and tighten the grid floor below 8.5rem while preserving readable tile content. Default to Work Items.\n3. Keep existing all-repositories/full-id, single-repo abbreviated-id, active lease info, and empty-column behaviors. Make state-label compaction tab-aware where long labels would crowd narrower columns.\n4. Extend focused overview helper tests for state classification, tab grouping/counts, shipped-in-Terminated behavior, required empty tab columns, and preserved label/lease behavior.\n5. Verify with focused lint/tests, full repo gates, and browser checks at desktop/mobile confirming tabs, state routing, narrower visible columns, and no page overflow.\n\nComplexity: medium-small UI/data-shaping pass.\nRisks: tab counts must be computed from filtered overview beats without lease beats; Work Items must include future/unknown states without accidentally swallowing explicit Exploration/Gates/Terminated states.",
+    "datetime": "2026-05-04T08:34:20.275467Z",
+    "entry_id": "019df21f-bff3-75d1-bb28-f1b6ac458519",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019df203-2094-7d12-a666-364bb4603bc3",
+  "occurred_at": "2026-05-04T08:03:04.468619Z",
+  "knot_id": "foolery-363f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. Main is live at `9f4dc40701685f7426ddc82e06483dfa12c54e00`; CI and Coverage Badge are green; knot is ready for SHIPPED.",
+    "datetime": "2026-05-04T08:03:04.468619Z",
+    "entry_id": "019df203-2094-7d12-a666-36300d8981b3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

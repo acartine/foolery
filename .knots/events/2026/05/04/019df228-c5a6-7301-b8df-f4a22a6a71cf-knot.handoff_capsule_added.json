@@ -1,0 +1,15 @@
+{
+  "event_id": "019df228-c5a6-7301-b8df-f4a22a6a71cf",
+  "occurred_at": "2026-05-04T08:44:11.558265Z",
+  "knot_id": "foolery-8c78",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved for shipment. Merge branch codex/8c78-overview-tabs commit 32bc14ed41391936403389f909e2dbdbc9fb3226 to main and verify remote CI.",
+    "datetime": "2026-05-04T08:44:11.558265Z",
+    "entry_id": "019df228-c5a6-7301-b8df-f49e67e83f2a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

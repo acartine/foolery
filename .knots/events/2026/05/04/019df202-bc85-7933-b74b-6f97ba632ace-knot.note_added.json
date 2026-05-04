@@ -1,0 +1,15 @@
+{
+  "event_id": "019df202-bc85-7933-b74b-6f97ba632ace",
+  "occurred_at": "2026-05-04T08:02:38.853875Z",
+  "knot_id": "foolery-363f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete. Fast-forward merged `origin/codex/363f-beat-overview-columns` into `/Users/cartine/foolery` main and pushed `HEAD:main` to `origin/main`. Final shipped commit is `9f4dc40701685f7426ddc82e06483dfa12c54e00`; local `main` and `origin/main` both resolve to that commit.\n\nRemote CI on main:\n- CI run `25307803513`: completed success. It emitted warning annotations for existing coverage regression thresholds, but the workflow passed.\n- Coverage Badge run `25307803528`: completed success.\n\nNote: the post-merge hook printed `error: sync error: 1 active lease(s) found; terminate leases before syncing`; the git fast-forward merge and push both succeeded.",
+    "datetime": "2026-05-04T08:02:38.853875Z",
+    "entry_id": "019df202-bc85-7933-b74b-6f8e320aaf51",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

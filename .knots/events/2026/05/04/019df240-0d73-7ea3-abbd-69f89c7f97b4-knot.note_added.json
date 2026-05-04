@@ -1,0 +1,15 @@
+{
+  "event_id": "019df240-0d73-7ea3-abbd-69f89c7f97b4",
+  "occurred_at": "2026-05-04T09:09:37.267003Z",
+  "knot_id": "foolery-fbb2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan:\n1. Update overview grouping/rendering so the full tab count still includes all non-lease beats, but the active tab renders only non-empty groups. If every group is empty, render a compact tab-level empty state instead of zero-count columns.\n2. Add a measured scrollport/container width hook or equivalent DOM measurement in the overview component. Compute column width as clamp(min, floor(availableWidth / (visibleColumnCount + 1)), max), and feed it into the grid auto-column style so it updates with tab changes and resize.\n3. Reduce overview tile type scale by one notch: id/meta/lease/repo text from 10px to 9px, title from xs to 11px, badges/pills down one notch where practical. Keep layout stable and legible.\n4. Make column state labels smaller and wrappable: allow normal whitespace, leading text preserved, left aligned, fixed header height removed or increased enough for two lines.\n5. Extend focused tests for hiding empty groups while retaining tab counts/routing and dynamic helper behavior if extracted; verify with browser metrics for visible column count, width formula, tabs, and no desktop/mobile page overflow.\n\nComplexity: medium-small UI refinement.\nRisks: very few visible columns could become too wide without max bounds; many columns could become too narrow without min bounds. Use clamp boundaries and verify in Work Items and Terminated tabs.",
+    "datetime": "2026-05-04T09:09:37.267003Z",
+    "entry_id": "019df240-0d73-7ea3-abbd-69edeb5b3bcc",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

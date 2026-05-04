@@ -1,0 +1,15 @@
+{
+  "event_id": "019df21e-d635-7e03-9e38-f2505eda1305",
+  "occurred_at": "2026-05-04T08:33:20.437184Z",
+  "knot_id": "foolery-2f19",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. Commit 28cedb557f444696776b2b7ea78826f0179fc0ca is live on origin/main with green checks.",
+    "datetime": "2026-05-04T08:33:20.437184Z",
+    "entry_id": "019df21e-d635-7e03-9e38-f24fa0da1c9d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

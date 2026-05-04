@@ -1,0 +1,15 @@
+{
+  "event_id": "019df227-ee3e-7ab0-b67a-d6103093c43b",
+  "occurred_at": "2026-05-04T08:43:16.414186Z",
+  "knot_id": "foolery-8c78",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation ready for review. Branch codex/8c78-overview-tabs has commit 32bc14ed41391936403389f909e2dbdbc9fb3226 with all local gates and browser checks passed.",
+    "datetime": "2026-05-04T08:43:16.414186Z",
+    "entry_id": "019df227-ee3e-7ab0-b67a-d6037c64ac0a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

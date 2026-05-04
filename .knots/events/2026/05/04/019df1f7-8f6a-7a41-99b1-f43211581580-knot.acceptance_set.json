@@ -1,0 +1,9 @@
+{
+  "event_id": "019df1f7-8f6a-7a41-99b1-f43211581580",
+  "occurred_at": "2026-05-04T07:50:26.391269Z",
+  "knot_id": "foolery-363f",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. `/beats?view=overview` renders visible columns grouped by beat state.\n2. Overview tiles are denser than the prior stacked-card prototype and show id/alias, title, priority, type, updated time, and parent/repo context when present.\n3. The overview remains non-kanban: no draggable cards, no drop zones, and clicking a tile only opens the existing beat detail lightbox.\n4. Browser verification confirms desktop and mobile layouts have no page-level horizontal overflow.\n5. Lease-type beats are filtered out of the overview surface."
+  }
+}

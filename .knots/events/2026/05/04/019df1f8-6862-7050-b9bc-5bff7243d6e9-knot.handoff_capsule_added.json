@@ -1,0 +1,15 @@
+{
+  "event_id": "019df1f8-6862-7050-b9bc-5bff7243d6e9",
+  "occurred_at": "2026-05-04T07:51:21.954883Z",
+  "knot_id": "foolery-363f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan approved. Proceed with implementation in the dedicated worktree, targeting dense state columns for `/beats?view=overview` and preserving lease filtering plus detail-lightbox-only interaction.",
+    "datetime": "2026-05-04T07:51:21.954883Z",
+    "entry_id": "019df1f8-6862-7050-b9bc-5be61bf77ab0",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

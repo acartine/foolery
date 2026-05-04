@@ -1,0 +1,15 @@
+{
+  "event_id": "019df269-c442-7753-a4fe-08892498abc5",
+  "occurred_at": "2026-05-04T09:55:11.04207Z",
+  "knot_id": "foolery-9a05",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning notes:\n- Remove the redundant overview title/count row and let tabs carry the state counts.\n- Extend overview lease info with terminal session identity and agent metadata so active tiles can show age, provider/agent, model, and version.\n- Add a tile-level lease action: focus the matching terminal session when sessionId is known; otherwise call the repo-scoped rollback API from a Release button.\n- Preserve tab grouping, hidden empty columns, column watermark sizing, id display rules, and beat-open behavior.",
+    "datetime": "2026-05-04T09:55:11.04207Z",
+    "entry_id": "019df269-c442-7753-a4fe-08750ef6712b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

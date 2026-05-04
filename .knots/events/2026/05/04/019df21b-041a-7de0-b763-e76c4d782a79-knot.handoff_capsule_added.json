@@ -1,0 +1,15 @@
+{
+  "event_id": "019df21b-041a-7de0-b763-e76c4d782a79",
+  "occurred_at": "2026-05-04T08:29:10.042545Z",
+  "knot_id": "foolery-2f19",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation ready for review. Branch codex/2f19-overview-annotations has commit 28cedb557f444696776b2b7ea78826f0179fc0ca and all gates/browser checks passed.",
+    "datetime": "2026-05-04T08:29:10.042545Z",
+    "entry_id": "019df21b-041a-7de0-b763-e751afaf9a16",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

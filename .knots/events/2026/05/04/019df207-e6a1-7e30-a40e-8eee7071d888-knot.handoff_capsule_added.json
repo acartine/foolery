@@ -1,0 +1,15 @@
+{
+  "event_id": "019df207-e6a1-7e30-a40e-8eee7071d888",
+  "occurred_at": "2026-05-04T08:08:17.313082Z",
+  "knot_id": "foolery-2f19",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete for annotation pass. Implement required empty state columns, shipped exclusion, all-repos full ids, and best-effort active lease metadata without fabricating missing fields.",
+    "datetime": "2026-05-04T08:08:17.313082Z",
+    "entry_id": "019df207-e6a1-7e30-a40e-8ed9d8114326",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019df1ff-7ad6-70c2-a107-7f1779eb032a",
+  "occurred_at": "2026-05-04T07:59:05.430292Z",
+  "knot_id": "foolery-363f",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/363f-beat-overview-columns"
+  }
+}

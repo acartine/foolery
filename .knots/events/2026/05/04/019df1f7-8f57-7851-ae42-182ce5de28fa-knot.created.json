@@ -1,0 +1,17 @@
+{
+  "event_id": "019df1f7-8f57-7851-ae42-182ce5de28fa",
+  "occurred_at": "2026-05-04T07:50:26.391269Z",
+  "knot_id": "foolery-363f",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nPrototype a denser beat overview screen that uses one compact column per beat state, while keeping it clearly non-kanban: no drag affordances, no drop lanes, and no workflow-moving interaction.\n\nVerification:\n1. Run `bun run lint` and expect success.\n2. Run `bunx tsc --noEmit` and expect success.\n3. Run `bun run test` and expect success.\n4. Run `bun run build` and expect success.\n5. Open `http://localhost:4137/beats?view=overview&state=queued` and confirm the overview renders as dense state columns on desktop, remains usable on mobile, and does not expose lease beats.\n\nConstraints:\nUse the existing dedicated worktree/dev server when possible so the in-app browser can hot-reload. Keep the overview an inspection surface, not a kanban board.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Tighten beat overview columns",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

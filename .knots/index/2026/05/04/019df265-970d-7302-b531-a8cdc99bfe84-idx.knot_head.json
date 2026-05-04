@@ -1,0 +1,34 @@
+{
+  "event_id": "019df265-970d-7302-b531-a8cdc99bfe84",
+  "occurred_at": "2026-05-04T09:50:37.308161Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b47c",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Stabilize overview column sizing",
+    "type": "work",
+    "updated_at": "2026-05-04T09:50:37.308161Z",
+    "workflow_id": "work_sdlc"
+  }
+}

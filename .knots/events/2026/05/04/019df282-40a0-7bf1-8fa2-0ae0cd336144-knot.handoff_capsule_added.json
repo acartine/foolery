@@ -1,0 +1,15 @@
+{
+  "event_id": "019df282-40a0-7bf1-8fa2-0ae0cd336144",
+  "occurred_at": "2026-05-04T10:21:55.744836Z",
+  "knot_id": "foolery-9a05",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete on branch codex/9a05-overview-lease-actions. Commits: 01c3f5be266b1dc1be0d38127e5f62d43ac38622 and f9364012. Latest pass fixed column header alignment, removed lease metadata labels/placeholders, styled Release/Focus session as action pills, and mapped non-empty top-level lease_agent metadata. Browser checked at /beats?view=overview&state=queued. Gates passed: bun run lint; bunx tsc --noEmit; bun run test; bun run build. Also reported upstream Knots lease metadata JSON issue as knots-e935.",
+    "datetime": "2026-05-04T10:21:55.744836Z",
+    "entry_id": "019df282-40a0-7bf1-8fa2-0ad3ebd9c6fd",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019df205-48c4-7202-9479-d26b8cf35a62",
+  "occurred_at": "2026-05-04T08:05:25.814784Z",
+  "knot_id": "foolery-2f19",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. In All Repositories scope, overview tiles display full knot ids or aliases; in single-repo scope they keep the abbreviated label.\n2. The overview includes the expected planning, review, implementation, shipment, and ready-for-review state columns even when a state has no visible beats.\n3. Shipped beats are excluded from the overview.\n4. Tiles in active states (`planning`, `plan_review`, `implementation`, `implementation_review`, `shipment`, `shipment_review`) surface lease age, provider, model, and version when lease metadata is available.\n5. Browser verification confirms desktop and mobile layouts have no page-level horizontal overflow and lease-type beats remain filtered out."
+  }
+}

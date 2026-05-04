@@ -1,0 +1,9 @@
+{
+  "event_id": "019df21f-6f8c-7141-84fe-c34babfd489d",
+  "occurred_at": "2026-05-04T08:33:59.678869Z",
+  "knot_id": "foolery-8c78",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The overview exposes tabs labeled Work Items, Exploration, Gates, and Terminated with beat counts for each tab.\n2. Work Items excludes `ready_for_exploration`, `ready_to_evaluate`, `abandoned`, `deferred`, and `shipped`, and includes the remaining visible states.\n3. Exploration shows `ready_for_exploration`; Gates shows `ready_to_evaluate`; Terminated shows `abandoned`, `deferred`, and `shipped`, including required empty columns when a tab has no beats for those states.\n4. Overview columns are narrower than the prior 8.5rem floor and target approximately eight to ten columns on a desktop viewport while staying readable.\n5. Existing overview behaviors still hold: All Repositories displays full ids or aliases, single-repo scope abbreviates ids, lease-type beats are filtered out, and active-state lease info renders when metadata is available.\n6. Browser verification confirms no page-level horizontal overflow on desktop or mobile."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019df258-363f-7301-aab0-7a2e91e9190b",
+  "occurred_at": "2026-05-04T09:36:00.575604Z",
+  "knot_id": "foolery-b47c",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nRefine the tabbed beat overview column sizing so columns never exceed one sixth of the visible overview area and do not jitter larger when transient active-state columns become empty. The overview should remember a low watermark for each tab: once the tab has had to size for more visible columns, it keeps sizing as if at least that many columns remain, with new shrink pressure sizing as if two additional columns appeared.\n\nVerification:\n1. Run `bun run lint` and expect success.\n2. Run `bunx tsc --noEmit` and expect success.\n3. Run `bun run test` and expect success.\n4. Run `bun run build` and expect success.\n5. Open `http://localhost:4137/beats?view=overview&state=queued` with All Repositories selected and confirm visible columns are no wider than one sixth of the overview scrollport.\n6. In a browser-level sizing harness, simulate visible-column counts increasing and then decreasing within a tab and confirm the computed width shrinks using the two-column pressure rule and does not expand until the tab is reset.\n\nConstraints:\nKeep existing tabs, hidden empty columns, all-repo full ids, single-repo abbreviated ids, lease filtering, and active lease info behavior. Keep the overview read-only and avoid page-level horizontal overflow on desktop and mobile.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Stabilize overview column sizing",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

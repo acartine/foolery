@@ -1,0 +1,15 @@
+{
+  "event_id": "019df203-2094-7d12-a666-3621457403bd",
+  "occurred_at": "2026-05-04T08:03:04.468619Z",
+  "knot_id": "foolery-363f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review: Approved. Verified `main` and `origin/main` both point at `9f4dc40701685f7426ddc82e06483dfa12c54e00`; the commit is contained by local main, origin/main, and the feature branch. Knot tags include both `commit:9f4dc40701685f7426ddc82e06483dfa12c54e00` and `branch:codex/363f-beat-overview-columns`. GitHub Actions for the shipped commit completed successfully: CI `25307803513` and Coverage Badge `25307803528`. The shipped code remains scoped to the compact non-kanban state-column overview and preserves lease filtering. No shipment blockers found.",
+    "datetime": "2026-05-04T08:03:04.468619Z",
+    "entry_id": "019df203-2094-7d12-a666-361ccd199f26",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

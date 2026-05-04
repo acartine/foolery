@@ -1,0 +1,15 @@
+{
+  "event_id": "019df227-ee3e-7ab0-b67a-d5f46bd173c1",
+  "occurred_at": "2026-05-04T08:43:16.414186Z",
+  "knot_id": "foolery-8c78",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete on branch codex/8c78-overview-tabs at commit 32bc14ed41391936403389f909e2dbdbc9fb3226. Changes: added Work Items, Exploration, Gates, and Terminated tabs with counts; routed ready_for_exploration to Exploration, ready_to_evaluate to Gates, abandoned/deferred/shipped to Terminated, and all remaining visible states to Work Items; narrowed overview columns to a 7rem floor targeting ten columns on desktop; preserved all-repos full ids, single-repo abbreviated ids, lease-record filtering, and active lease info. Verification passed: bun run lint; bunx tsc --noEmit; bun run test (247 files, 2669 passed, 11 skipped, 42 todo); bun run build. Browser checks confirmed Work Items/Exploration/Gates/Terminated routing, 119px columns with 10 visible desktop groups, no page-level overflow at 1269x985 or 390x844, full ids in All Repositories, and corrected left-aligned clipped state badges.",
+    "datetime": "2026-05-04T08:43:16.414186Z",
+    "entry_id": "019df227-ee3e-7ab0-b67a-d5e81be40440",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

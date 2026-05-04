@@ -1,0 +1,15 @@
+{
+  "event_id": "019df26a-03b5-70f2-9451-39d6d8cb20f3",
+  "occurred_at": "2026-05-04T09:55:27.285593Z",
+  "knot_id": "foolery-9a05",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review:\nThe plan is complete and feasible. It covers the header removal, richer lease metadata, terminal focus fallback behavior, repo-scoped Release rollback, and preserves the existing overview grouping/sizing/id behavior. Tests should cover enriched lease mapping, API helper/route rollback plumbing, and tile actions where practical.",
+    "datetime": "2026-05-04T09:55:27.285593Z",
+    "entry_id": "019df26a-03b5-70f2-9451-39c1994561ff",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

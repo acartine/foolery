@@ -1,0 +1,15 @@
+{
+  "event_id": "019df258-7556-7bb3-a854-84650263f89e",
+  "occurred_at": "2026-05-04T09:36:16.726381Z",
+  "knot_id": "foolery-b47c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan ready: pure sizing helpers plus per-tab React watermark state, focused tests, browser overflow and width verification.",
+    "datetime": "2026-05-04T09:36:16.726381Z",
+    "entry_id": "019df258-7556-7bb3-a854-845cb0f75dca",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019df1ed-42d3-7051-bedb-389d6cff9a8f",
+  "occurred_at": "2026-05-04T07:39:11.443118Z",
+  "knot_id": "foolery-2475",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment artifact: remote main at fd6b433688e15fad445879131119474ec62b05c8. Source branch: codex/2475-beat-state-overview. Remote verification: CI run 25306895225 succeeded; Coverage Badge run 25306895228 succeeded. Local worktree server for manual verification is running at http://localhost:4137/beats?view=overview.",
+    "datetime": "2026-05-04T07:39:11.443118Z",
+    "entry_id": "019df1ed-42d3-7051-bedb-388b105b3712",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

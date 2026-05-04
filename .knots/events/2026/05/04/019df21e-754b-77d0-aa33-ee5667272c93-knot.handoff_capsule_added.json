@@ -1,0 +1,15 @@
+{
+  "event_id": "019df21e-754b-77d0-aa33-ee5667272c93",
+  "occurred_at": "2026-05-04T08:32:55.627763Z",
+  "knot_id": "foolery-2f19",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete on origin/main at 28cedb557f444696776b2b7ea78826f0179fc0ca. Remote CI and Coverage Badge succeeded; proceed to shipment review.",
+    "datetime": "2026-05-04T08:32:55.627763Z",
+    "entry_id": "019df21e-754b-77d0-aa33-ee4ce5f5e493",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

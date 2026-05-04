@@ -1,0 +1,21 @@
+{
+  "event_id": "019df22b-f646-7b23-8636-0c98f11c65b2",
+  "occurred_at": "2026-05-04T08:47:40.614463Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-8c78",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Tabbed beat overview groups",
+    "type": "work",
+    "updated_at": "2026-05-04T08:47:40.614463Z",
+    "workflow_id": "work_sdlc"
+  }
+}

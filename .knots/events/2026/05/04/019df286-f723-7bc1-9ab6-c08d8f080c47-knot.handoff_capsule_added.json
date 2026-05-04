@@ -1,0 +1,15 @@
+{
+  "event_id": "019df286-f723-7bc1-9ab6-c08d8f080c47",
+  "occurred_at": "2026-05-04T10:27:04.611483Z",
+  "knot_id": "foolery-9a05",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. Verified origin/main and HEAD are f9364012191b1d179d2f1b0e6e538153ee06642d, worktree is clean, both implementation commits are tagged on the knot, and remote GitHub Actions runs on main succeeded: CI 25313803832 and Coverage Badge 25313803837. No shipment regressions found.",
+    "datetime": "2026-05-04T10:27:04.611483Z",
+    "entry_id": "019df286-f723-7bc1-9ab6-c077e9480a54",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

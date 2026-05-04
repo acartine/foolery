@@ -1,0 +1,15 @@
+{
+  "event_id": "019df269-c442-7753-a4fe-08a112d4adcb",
+  "occurred_at": "2026-05-04T09:55:11.04207Z",
+  "knot_id": "foolery-9a05",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan ready: remove overview header row; enrich lease info from active terminals; refactor tile interactions to support focus/release without breaking beat open; use existing rollback mechanism with repo scope.",
+    "datetime": "2026-05-04T09:55:11.04207Z",
+    "entry_id": "019df269-c442-7753-a4fe-0891dafe5441",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

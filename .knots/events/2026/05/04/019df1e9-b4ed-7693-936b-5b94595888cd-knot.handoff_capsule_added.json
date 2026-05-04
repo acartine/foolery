@@ -1,0 +1,15 @@
+{
+  "event_id": "019df1e9-b4ed-7693-936b-5b94595888cd",
+  "occurred_at": "2026-05-04T07:35:18.509708Z",
+  "knot_id": "foolery-2475",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation artifact ready. Branch: codex/2475-beat-state-overview. Commit: fd6b433688e15fad445879131119474ec62b05c8. Summary: added `/beats?view=overview`, a non-draggable state-grouped overview of visible beats; wired the Overview header tab and view cycle; prevented overview from inheriting queue/active state filters; excluded internal lease records from the overview surface; preserved existing beat detail lightbox behavior; fixed mobile header overflow by making the view switcher a contained horizontal scroll row on small screens. Verification: bun install --frozen-lockfile, bun run lint, bunx tsc --noEmit, bun run test, bun run build, Playwright desktop/mobile check at http://localhost:4137/beats?view=overview with no horizontal page overflow and no lease rows.",
+    "datetime": "2026-05-04T07:35:18.509708Z",
+    "entry_id": "019df1e9-b4ed-7693-936b-5b895e7f21ee",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

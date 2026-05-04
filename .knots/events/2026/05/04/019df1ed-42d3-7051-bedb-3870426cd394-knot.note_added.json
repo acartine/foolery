@@ -1,0 +1,15 @@
+{
+  "event_id": "019df1ed-42d3-7051-bedb-3870426cd394",
+  "occurred_at": "2026-05-04T07:39:11.443118Z",
+  "knot_id": "foolery-2475",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete. Merged branch `codex/2475-beat-state-overview` to `main` by fast-forward and pushed remote `main` to commit fd6b433688e15fad445879131119474ec62b05c8. Verified `origin/main` and local `HEAD` match that commit. GitHub Actions passed for the pushed main commit: CI run 25306895225 succeeded, Coverage Badge run 25306895228 succeeded. CI emitted coverage-regression annotations but the workflow completed successfully. Post-merge git hook reported active Knots leases during sync, but the Git merge and remote push succeeded and remote main is at the shipped commit.",
+    "datetime": "2026-05-04T07:39:11.443118Z",
+    "entry_id": "019df1ed-42d3-7051-bedb-386c25c25164",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

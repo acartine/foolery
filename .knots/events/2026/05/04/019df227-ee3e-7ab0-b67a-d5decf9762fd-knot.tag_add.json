@@ -1,0 +1,9 @@
+{
+  "event_id": "019df227-ee3e-7ab0-b67a-d5decf9762fd",
+  "occurred_at": "2026-05-04T08:43:16.414186Z",
+  "knot_id": "foolery-8c78",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/8c78-overview-tabs"
+  }
+}

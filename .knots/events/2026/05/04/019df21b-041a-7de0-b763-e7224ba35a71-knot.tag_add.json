@@ -1,0 +1,9 @@
+{
+  "event_id": "019df21b-041a-7de0-b763-e7224ba35a71",
+  "occurred_at": "2026-05-04T08:29:10.042545Z",
+  "knot_id": "foolery-2f19",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/2f19-overview-annotations"
+  }
+}

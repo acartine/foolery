@@ -1,0 +1,15 @@
+{
+  "event_id": "019df1f8-224b-7a82-8f4a-7ec3758816fa",
+  "occurred_at": "2026-05-04T07:51:04.011037Z",
+  "knot_id": "foolery-363f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning completed for a denser columned beat overview. Next action should implement the compact state-column UI in `src/components/beat-state-overview.tsx`, preserve non-kanban behavior, then run full gates and browser verification.",
+    "datetime": "2026-05-04T07:51:04.011037Z",
+    "entry_id": "019df1f8-224b-7a82-8f4a-7eb35a84edb5",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

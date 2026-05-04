@@ -1,0 +1,37 @@
+{
+  "event_id": "019df286-a8eb-7653-9b35-c8180cd7a3a2",
+  "occurred_at": "2026-05-04T10:26:44.587628Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9a05",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Refine overview lease actions",
+    "type": "work",
+    "updated_at": "2026-05-04T10:26:44.587628Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019df286-88f4-7391-9617-27681a4c6ff2"
+  }
+}
