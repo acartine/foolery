@@ -1,0 +1,15 @@
+{
+  "event_id": "019df66d-2f7d-7793-a3f6-256776f901ae",
+  "occurred_at": "2026-05-05T04:37:23.965161Z",
+  "knot_id": "foolery-4b66",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete\n\nBranch: codex/4b66-stale-beats-overview\nCommit: da0b66f7\n\nChanges:\n- Fixed src/components/stale-beat-grooming-dialog.tsx by forwarding DialogTrigger asChild props through StaleBeatDialogTrigger into Button, restoring Radix trigger click handling while preserving the extracted trigger component.\n- Added src/stories/stale-beat-grooming-dialog.stories.tsx with a browser interaction story that clicks data-testid=\"stale-beats-dialog-trigger\" and asserts data-testid=\"stale-beat-grooming-dialog\" becomes visible.\n\nValidation passed:\n- bun run lint\n- bunx tsc --noEmit\n- bun run test\n- bun run test:storybook\n- bun run build",
+    "datetime": "2026-05-05T04:37:23.965161Z",
+    "entry_id": "019df66d-2f7d-7793-a3f6-255551fce764",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019df66d-2f7d-7793-a3f6-2542fcec350f",
+  "occurred_at": "2026-05-05T04:37:23.965161Z",
+  "knot_id": "foolery-4b66",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/4b66-stale-beats-overview"
+  }
+}

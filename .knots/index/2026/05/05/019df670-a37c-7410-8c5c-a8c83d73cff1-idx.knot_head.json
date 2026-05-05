@@ -1,0 +1,34 @@
+{
+  "event_id": "019df670-a37c-7410-8c5c-a8c83d73cff1",
+  "occurred_at": "2026-05-05T04:41:10.258287Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4b66",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Fix stale beats overview button",
+    "type": "work",
+    "updated_at": "2026-05-05T04:41:10.258287Z",
+    "workflow_id": "work_sdlc"
+  }
+}

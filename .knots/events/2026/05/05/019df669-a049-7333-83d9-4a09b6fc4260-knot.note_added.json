@@ -1,0 +1,15 @@
+{
+  "event_id": "019df669-a049-7333-83d9-4a09b6fc4260",
+  "occurred_at": "2026-05-05T04:33:30.697796Z",
+  "knot_id": "foolery-4b66",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approved\n\nThe plan is complete, correct, and feasible. It identifies the likely regression in src/components/stale-beat-grooming-dialog.tsx: DialogTrigger asChild injects trigger props into StaleBeatDialogTrigger, but the extracted component drops them instead of forwarding/spreading them to Button. That directly explains a visible Stale Beats button that no longer opens the dialog.\n\nThe implementation scope is appropriately small, preserves the recent dispatch-helper refactor, and the proposed validation targets the actual event-composition behavior that failed. No invariants, security, performance, or maintainability concerns found.",
+    "datetime": "2026-05-05T04:33:30.697796Z",
+    "entry_id": "019df669-a049-7333-83d9-49fae889ca77",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

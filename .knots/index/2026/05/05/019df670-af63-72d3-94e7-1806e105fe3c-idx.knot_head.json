@@ -1,0 +1,21 @@
+{
+  "event_id": "019df670-af63-72d3-94e7-1806e105fe3c",
+  "occurred_at": "2026-05-05T04:41:13.315762Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4b66",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix stale beats overview button",
+    "type": "work",
+    "updated_at": "2026-05-05T04:41:13.315762Z",
+    "workflow_id": "work_sdlc"
+  }
+}

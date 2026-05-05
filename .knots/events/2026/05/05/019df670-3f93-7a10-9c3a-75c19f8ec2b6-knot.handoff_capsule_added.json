@@ -1,0 +1,15 @@
+{
+  "event_id": "019df670-3f93-7a10-9c3a-75c19f8ec2b6",
+  "occurred_at": "2026-05-05T04:40:44.691449Z",
+  "knot_id": "foolery-4b66",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment handoff\n\nShipped to remote main.\nCommit: da0b66f762c05d857762781497c38487a3a7a846\nSource branch: codex/4b66-stale-beats-overview\nRemote CI: CI run 25358137696 success; Coverage Badge run 25358137503 success.\n\nChange restores the overview Stale Beats dialog trigger by forwarding DialogTrigger asChild props through StaleBeatDialogTrigger and adds a Storybook browser interaction test for the click-to-open behavior.",
+    "datetime": "2026-05-05T04:40:44.691449Z",
+    "entry_id": "019df670-3f93-7a10-9c3a-75bb3dad9173",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

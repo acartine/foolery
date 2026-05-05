@@ -1,0 +1,15 @@
+{
+  "event_id": "019df670-a372-7781-96c4-1b2fcdf5cd35",
+  "occurred_at": "2026-05-05T04:41:10.258287Z",
+  "knot_id": "foolery-4b66",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved\n\nVerified shipped result on main:\n- Local main HEAD is da0b66f7 fix: restore stale beats dialog trigger.\n- origin/main resolves to da0b66f762c05d857762781497c38487a3a7a846.\n- GitHub Actions CI run 25358137696 completed successfully.\n- GitHub Actions Coverage Badge run 25358137503 completed successfully.\n- Knot tags include commit:da0b66f7 and branch:codex/4b66-stale-beats-overview.\n- Knot has no invariants.\n\nFinal sign-off: shipped code matches the requested stale-beats overview trigger fix and includes browser-level regression coverage. No dependent-system regression found.",
+    "datetime": "2026-05-05T04:41:10.258287Z",
+    "entry_id": "019df670-a372-7781-96c4-1b165341bd1c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019df661-4447-70f1-9077-c596d0c3736d",
+  "occurred_at": "2026-05-05T04:24:22.842259Z",
+  "knot_id": "foolery-4b66",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Fix the recent regression where the stale beats button on the overview tab does not open the stale beat grooming dialog. Work in an isolated git worktree, preserve kno workflow semantics, add or update focused tests, and run the relevant validation gates before reporting back."
+  }
+}

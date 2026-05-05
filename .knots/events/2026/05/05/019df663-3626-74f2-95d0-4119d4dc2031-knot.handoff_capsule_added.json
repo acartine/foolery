@@ -1,0 +1,15 @@
+{
+  "event_id": "019df663-3626-74f2-95d0-4119d4dc2031",
+  "occurred_at": "2026-05-05T04:26:30.310561Z",
+  "knot_id": "foolery-4b66",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff for implementation\n- Knot 4b66 is planned only; current workflow boundary did not authorize code changes in this session.\n- Likely fix: src/components/stale-beat-grooming-dialog.tsx, make StaleBeatDialogTrigger pass through Radix DialogTrigger asChild props to Button. The regression was introduced by commit 394b9068 when the direct Button child was replaced with a custom component that drops injected trigger props.\n- Use worktree /Users/cartine/foolery-4b66-stale-beats-overview, branch codex/4b66-stale-beats-overview, then bun install --frozen-lockfile.\n- Verify by clicking the overview Stale Beats trigger and confirming the dialog renders; run lint, tsc, unit tests, and build before any commit/push.",
+    "datetime": "2026-05-05T04:26:30.310561Z",
+    "entry_id": "019df663-3626-74f2-95d0-410e8d1e5037",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
