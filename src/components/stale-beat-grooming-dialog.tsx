@@ -5,6 +5,9 @@ import {
   useMemo,
   useState,
 } from "react";
+import type {
+  ComponentProps,
+} from "react";
 import {
   usePathname,
   useRouter,
@@ -51,6 +54,9 @@ import {
 import {
   StaleBeatGroomingDispatchHelper,
 } from "@/components/stale-beat-grooming-dispatch-helper";
+import {
+  cn,
+} from "@/lib/utils";
 import type {
   StaleBeatGroomingAgentOption,
   StaleBeatGroomingReviewRecord,
@@ -170,19 +176,24 @@ export function StaleBeatGroomingDialog({
   );
 }
 
+type StaleBeatDialogTriggerProps = ComponentProps<typeof Button> & {
+  staleCount: number;
+  queuedCount: number;
+};
+
 function StaleBeatDialogTrigger({
   staleCount,
   queuedCount,
-}: {
-  staleCount: number;
-  queuedCount: number;
-}) {
+  className,
+  ...props
+}: StaleBeatDialogTriggerProps) {
   return (
     <Button
+      {...props}
       type="button"
       size="sm"
       variant={staleCount > 0 ? "secondary" : "outline"}
-      className="h-8 gap-1.5"
+      className={cn("h-8 gap-1.5", className)}
       data-testid="stale-beats-dialog-trigger"
     >
       <Sparkles className="size-3.5" />
