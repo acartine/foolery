@@ -18,7 +18,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { browseDirectory } from "@/lib/registry-api";
 import type { DirEntry } from "@/lib/types";
-import { getMemoryManagerLabel, listKnownMemoryManagers } from "@/lib/memory-managers";
+import {
+  getMemoryManagerLabel,
+  listKnownMemoryManagers,
+} from "@/lib/memory-managers";
 
 interface DirectoryBrowserProps {
   open: boolean;
@@ -29,6 +32,21 @@ interface DirectoryBrowserProps {
 const SUPPORTED_TYPES = listKnownMemoryManagers()
   .map((m) => m.type)
   .join(", ");
+
+export const directoryBrowserLayoutClasses = {
+  dialog:
+    "max-w-2xl max-h-[calc(100vh-4rem)] flex flex-col " +
+    "gap-3 overflow-y-auto",
+  header: "shrink-0",
+  pathForm: "flex shrink-0 gap-2",
+  searchInput: "shrink-0",
+  breadcrumb:
+    "flex min-h-5 shrink-0 items-center gap-1 overflow-x-auto " +
+    "overflow-y-hidden text-sm text-muted-foreground",
+  upRow: "flex shrink-0 gap-2",
+  list: "flex-1 overflow-y-auto rounded-md border min-h-[300px]",
+  footer: "flex shrink-0 justify-end gap-2 pt-2",
+} as const;
 
 function filterEntries(entries: DirEntry[], search: string) {
   if (!search) return entries;
@@ -53,11 +71,11 @@ function BreadcrumbNav({
   onNavigate: (path: string) => void;
 }) {
   return (
-    <div className="flex items-center gap-1 text-sm text-muted-foreground overflow-x-auto">
+    <div className={directoryBrowserLayoutClasses.breadcrumb}>
       <button
         type="button"
         onClick={onHome}
-        className="hover:text-foreground"
+        className="shrink-0 hover:text-foreground"
       >
         <Home className="size-4" />
       </button>
@@ -67,13 +85,15 @@ function BreadcrumbNav({
         return (
           <span
             key={segmentPath}
-            className="flex items-center gap-1"
+            className="flex shrink-0 items-center gap-1"
           >
             <ChevronRight className="size-3" />
             <button
               type="button"
               onClick={() => onNavigate(segmentPath)}
-              className="hover:text-foreground hover:underline"
+              className={
+                "whitespace-nowrap hover:text-foreground hover:underline"
+              }
             >
               {segment}
             </button>
@@ -157,7 +177,7 @@ function DirectoryEntryList({
   const placeholderClass =
     "flex items-center justify-center py-12 text-muted-foreground";
   return (
-    <div className="flex-1 overflow-y-auto border rounded-md min-h-[300px]">
+    <div className={directoryBrowserLayoutClasses.list}>
       {loading ? (
         <div className={placeholderClass}>Loading...</div>
       ) : entries.length === 0 ? (
@@ -191,7 +211,7 @@ function DialogFooter({
   disabled: boolean;
 }) {
   return (
-    <div className="flex justify-end gap-2 pt-2">
+    <div className={directoryBrowserLayoutClasses.footer}>
       <Button variant="outline" onClick={onCancel}>
         Cancel
       </Button>
@@ -199,6 +219,46 @@ function DialogFooter({
         Select
       </Button>
     </div>
+  );
+}
+
+function PathControls({
+  pathInput,
+  search,
+  onPathInputChange,
+  onSearchChange,
+  onSubmit,
+}: {
+  pathInput: string;
+  search: string;
+  onPathInputChange: (path: string) => void;
+  onSearchChange: (search: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+}) {
+  return (
+    <>
+      <form
+        onSubmit={onSubmit}
+        className={directoryBrowserLayoutClasses.pathForm}
+      >
+        <Input
+          value={pathInput}
+          onChange={(e) => onPathInputChange(e.target.value)}
+          placeholder="Enter path..."
+          className="flex-1"
+        />
+        <Button type="submit" variant="outline" size="sm">
+          Go
+        </Button>
+      </form>
+
+      <Input
+        value={search}
+        onChange={(e) => onSearchChange(e.target.value)}
+        placeholder="Filter directories or memory manager type..."
+        className={directoryBrowserLayoutClasses.searchInput}
+      />
+    </>
   );
 }
 
@@ -262,30 +322,20 @@ export function DirectoryBrowser({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
-        <DialogHeader>
+      <DialogContent className={directoryBrowserLayoutClasses.dialog}>
+        <DialogHeader className={directoryBrowserLayoutClasses.header}>
           <DialogTitle>Browse for Repository</DialogTitle>
           <p className="text-xs text-muted-foreground">
             Supported memory managers: {SUPPORTED_TYPES}
           </p>
         </DialogHeader>
 
-        <form onSubmit={handlePathSubmit} className="flex gap-2">
-          <Input
-            value={pathInput}
-            onChange={(e) => setPathInput(e.target.value)}
-            placeholder="Enter path..."
-            className="flex-1"
-          />
-          <Button type="submit" variant="outline" size="sm">
-            Go
-          </Button>
-        </form>
-
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Filter directories or memory manager type..."
+        <PathControls
+          pathInput={pathInput}
+          search={search}
+          onPathInputChange={setPathInput}
+          onSearchChange={setSearch}
+          onSubmit={handlePathSubmit}
         />
 
         <BreadcrumbNav
@@ -294,7 +344,7 @@ export function DirectoryBrowser({
           onNavigate={navigateTo}
         />
 
-        <div className="flex gap-2">
+        <div className={directoryBrowserLayoutClasses.upRow}>
           <Button variant="ghost" size="sm" onClick={navigateUp}>
             <ChevronLeft className="size-4 mr-1" /> Up
           </Button>
