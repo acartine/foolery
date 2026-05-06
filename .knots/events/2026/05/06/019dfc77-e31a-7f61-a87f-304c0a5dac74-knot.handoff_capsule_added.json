@@ -1,0 +1,15 @@
+{
+  "event_id": "019dfc77-e31a-7f61-a87f-304c0a5dac74",
+  "occurred_at": "2026-05-06T08:46:48.602482Z",
+  "knot_id": "foolery-7770",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment artifact: origin/main at 7465239565c37d13f3e1ac719b9d508a744c45df. Feature branch codex/7770-overview-tags remains pushed at the same commit. Local and remote gates passed; CI warnings were non-fatal coverage-regression annotations.",
+    "datetime": "2026-05-06T08:46:48.602482Z",
+    "entry_id": "019dfc77-e31a-7f61-a87f-3037a69ea58c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

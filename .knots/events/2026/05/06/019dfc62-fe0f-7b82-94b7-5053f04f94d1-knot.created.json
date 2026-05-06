@@ -1,0 +1,17 @@
+{
+  "event_id": "019dfc62-fe0f-7b82-94b7-5053f04f94d1",
+  "occurred_at": "2026-05-06T08:23:59.247694Z",
+  "knot_id": "foolery-7770",
+  "type": "knot.created",
+  "data": {
+    "body": "Update the Foolery beats overview to display beat tags, add tag and setlist filtering, and show each setlist option with the knot id plus the first 40 characters of the setlist title.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Show beat tags and overview filters",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

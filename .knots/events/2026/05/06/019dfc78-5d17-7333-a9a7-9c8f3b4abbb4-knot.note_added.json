@@ -1,0 +1,15 @@
+{
+  "event_id": "019dfc78-5d17-7333-a9a7-9c8f3b4abbb4",
+  "occurred_at": "2026-05-06T08:47:19.831407Z",
+  "knot_id": "foolery-7770",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review result: approved. Verified origin/main resolves to 7465239565c37d13f3e1ac719b9d508a744c45df, local main is clean and aligned with origin/main, the implementation commit is tagged on the knot, and the branch tag is present. Remote CI run 25425297594 and Coverage Badge run 25425297575 both completed successfully for the shipped commit. No invariants were listed, and no dependent-system regressions were found during shipment review.",
+    "datetime": "2026-05-06T08:47:19.831407Z",
+    "entry_id": "019dfc78-5d17-7333-a9a7-9c73ea5dca6c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

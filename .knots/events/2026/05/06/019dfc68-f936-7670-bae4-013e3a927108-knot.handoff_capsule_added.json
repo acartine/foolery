@@ -1,0 +1,15 @@
+{
+  "event_id": "019dfc68-f936-7670-bae4-013e3a927108",
+  "occurred_at": "2026-05-06T08:30:31.221933Z",
+  "knot_id": "foolery-43ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete. Branch: codex/43ee-repo-browser-clipping. Commit: 2525f03c96abcb0483cfe066f6cfdd063cef9848. Root cause: BreadcrumbNav was a shrinkable flex child inside the repository browser dialog; with the dialog height constrained and the directory list reserving 300px, the breadcrumb collapsed to 0px height and its Home/~ children bled out above the Up button. Fix: gave the breadcrumb and fixed controls non-shrinking layout classes, let the dialog use a viewport-aware max-height with vertical scrolling, preserved the directory list scroll region, and added a hermetic layout class regression test. Validation: bun run lint, bunx tsc --noEmit, bun run test, bun run build, and Playwright modal metrics/screenshot all passed.",
+    "datetime": "2026-05-06T08:30:31.221933Z",
+    "entry_id": "019dfc68-f936-7670-bae4-012def54685b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

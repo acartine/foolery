@@ -1,0 +1,15 @@
+{
+  "event_id": "019dfc73-a57f-72b0-ab8c-df75f4049639",
+  "occurred_at": "2026-05-06T08:42:10.687595Z",
+  "knot_id": "foolery-7770",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete. Branch: codex/7770-overview-tags. Commit: 7465239565c37d13f3e1ac719b9d508a744c45df. Pushed to origin/codex/7770-overview-tags. Changes: overview tiles render cleaned user-visible beat tags; overview has tag and setlist multi-select filters; setlist options are loaded from plan summaries per repo and labelled with plan id plus the first 40 characters of the setlist objective/summary; combined filtering is OR within each category and AND across tag/setlist categories. Validation passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-05-06T08:42:10.687595Z",
+    "entry_id": "019dfc73-a57f-72b0-ab8c-df68c9b3f496",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

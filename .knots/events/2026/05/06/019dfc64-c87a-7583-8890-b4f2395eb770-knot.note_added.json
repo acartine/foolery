@@ -1,0 +1,15 @@
+{
+  "event_id": "019dfc64-c87a-7583-8890-b4f2395eb770",
+  "occurred_at": "2026-05-06T08:25:56.602643Z",
+  "knot_id": "foolery-7770",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning metadata correction: foolery-9bb8 was created as an implementation follow-up and tagged parent:7770, but the direct parent_of edge was removed because hierarchy progress rules block foolery-7770 from reaching plan_review while the child remains in ready_for_planning. Treat foolery-9bb8 as the referenced implementation follow-up, not a blocking child.",
+    "datetime": "2026-05-06T08:25:56.602643Z",
+    "entry_id": "019dfc64-c87a-7583-8890-b4ea649ba51a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

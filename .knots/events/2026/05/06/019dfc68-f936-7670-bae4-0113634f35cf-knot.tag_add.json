@@ -1,0 +1,9 @@
+{
+  "event_id": "019dfc68-f936-7670-bae4-0113634f35cf",
+  "occurred_at": "2026-05-06T08:30:31.221933Z",
+  "knot_id": "foolery-43ee",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/43ee-repo-browser-clipping"
+  }
+}

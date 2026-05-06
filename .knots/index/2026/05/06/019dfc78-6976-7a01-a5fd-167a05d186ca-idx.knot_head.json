@@ -1,0 +1,21 @@
+{
+  "event_id": "019dfc78-6976-7a01-a5fd-167a05d186ca",
+  "occurred_at": "2026-05-06T08:47:22.998256Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7770",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Show beat tags and overview filters",
+    "type": "work",
+    "updated_at": "2026-05-06T08:47:22.998256Z",
+    "workflow_id": "work_sdlc"
+  }
+}

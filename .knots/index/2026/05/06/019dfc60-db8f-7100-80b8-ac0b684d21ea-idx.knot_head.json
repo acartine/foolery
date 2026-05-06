@@ -1,0 +1,47 @@
+{
+  "event_id": "019dfc60-db8f-7100-80b8-ac0b684d21ea",
+  "occurred_at": "2026-05-06T08:21:39.338624Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-43ee",
+    "next_step_metadata": {
+      "action_kind": "produce",
+      "action_state": "implementation",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "plan_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Fix repository browser clipping",
+    "type": "work",
+    "updated_at": "2026-05-06T08:21:39.338624Z",
+    "workflow_id": "work_sdlc"
+  }
+}

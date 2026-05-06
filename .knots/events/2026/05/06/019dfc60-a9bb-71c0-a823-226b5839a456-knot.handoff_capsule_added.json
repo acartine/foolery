@@ -1,0 +1,15 @@
+{
+  "event_id": "019dfc60-a9bb-71c0-a823-226b5839a456",
+  "occurred_at": "2026-05-06T08:21:26.587806Z",
+  "knot_id": "foolery-43ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planned approach for 43ee: isolate in a worktree, fix DirectoryBrowser breadcrumb/Up layout so no clipped breadcrumb row appears, validate with full project quality gates and browser visual verification.",
+    "datetime": "2026-05-06T08:21:26.587806Z",
+    "entry_id": "019dfc60-a9bb-71c0-a823-225199e4cdf4",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

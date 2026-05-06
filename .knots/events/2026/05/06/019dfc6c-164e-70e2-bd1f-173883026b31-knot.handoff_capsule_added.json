@@ -1,0 +1,15 @@
+{
+  "event_id": "019dfc6c-164e-70e2-bd1f-173883026b31",
+  "occurred_at": "2026-05-06T08:33:55.278721Z",
+  "knot_id": "foolery-43ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipped to remote main. Commit: 2525f03c96abcb0483cfe066f6cfdd063cef9848. CI: success (25424759651). Coverage Badge: success (25424759641).",
+    "datetime": "2026-05-06T08:33:55.278721Z",
+    "entry_id": "019dfc6c-164e-70e2-bd1f-172d43d0fc79",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

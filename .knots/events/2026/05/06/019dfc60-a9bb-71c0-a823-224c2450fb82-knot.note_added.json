@@ -1,0 +1,15 @@
+{
+  "event_id": "019dfc60-a9bb-71c0-a823-224c2450fb82",
+  "occurred_at": "2026-05-06T08:21:26.587806Z",
+  "knot_id": "foolery-43ee",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan:\n1. Work in a dedicated branch/worktree from main and install worktree dependencies with bun install --frozen-lockfile.\n2. Inspect src/components/directory-browser.tsx and reproduce the screenshot around the Browse for Repository modal. The likely suspect is the breadcrumb strip between the filter input and Up button: it is an overflow-x-auto row with no stable height/vertical padding, so the global scrollbar styling/browser scrollport can leave the breadcrumb text and icons clipped.\n3. Fix the modal layout locally by giving the breadcrumb/navigation area stable, visible dimensions and/or grouping it with the Up action so the breadcrumb cannot be partially hidden. Keep existing navigation/filtering behavior.\n4. Add focused coverage if an existing component/source test pattern can assert the intended structure. Avoid broad unrelated UI refactors.\n5. Validate with lint, typecheck, unit tests, build, and a browser visual check of the repository browser.\n\nComplexity: small UI layout fix in one component, with low behavioral risk.\nRisks: visual regression depends on actual browser rendering, so a Playwright screenshot/manual browser check is required in addition to static tests.",
+    "datetime": "2026-05-06T08:21:26.587806Z",
+    "entry_id": "019dfc60-a9bb-71c0-a823-2236561a4195",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019dfc64-133f-7652-abb9-1b38a413b540",
+  "occurred_at": "2026-05-06T08:25:10.196244Z",
+  "knot_id": "foolery-9bb8",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "Overview tiles show beat tags when labels are present. Overview can be filtered by tags, by setlists, or both together. Setlist filter labels include the plan knot id and the first 40 characters of the setlist title or summary. Filtering preserves state-tab behavior and empty-state messaging. Focused unit/component tests cover tag extraction, setlist label formatting, and filtering semantics."
+  }
+}

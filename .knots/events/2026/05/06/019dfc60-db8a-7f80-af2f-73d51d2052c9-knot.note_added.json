@@ -1,0 +1,15 @@
+{
+  "event_id": "019dfc60-db8a-7f80-af2f-73d51d2052c9",
+  "occurred_at": "2026-05-06T08:21:39.338624Z",
+  "knot_id": "foolery-43ee",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review: approved. The plan is complete and feasible, scopes the change to src/components/directory-browser.tsx, preserves existing repository selection behavior, and includes full quality gates plus browser visual verification for the screenshot-specific layout regression. No invariants are listed on the knot.",
+    "datetime": "2026-05-06T08:21:39.338624Z",
+    "entry_id": "019dfc60-db8a-7f80-af2f-73c9b5d37ab5",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

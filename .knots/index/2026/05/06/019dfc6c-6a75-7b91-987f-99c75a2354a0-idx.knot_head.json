@@ -1,0 +1,21 @@
+{
+  "event_id": "019dfc6c-6a75-7b91-987f-99c75a2354a0",
+  "occurred_at": "2026-05-06T08:34:16.821925Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-43ee",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix repository browser clipping",
+    "type": "work",
+    "updated_at": "2026-05-06T08:34:16.821925Z",
+    "workflow_id": "work_sdlc"
+  }
+}

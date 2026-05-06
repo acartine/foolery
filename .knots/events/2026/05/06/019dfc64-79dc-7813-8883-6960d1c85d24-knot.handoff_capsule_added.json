@@ -1,0 +1,15 @@
+{
+  "event_id": "019dfc64-79dc-7813-8883-6960d1c85d24",
+  "occurred_at": "2026-05-06T08:25:36.476577Z",
+  "knot_id": "foolery-7770",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning action complete for foolery-7770. Created child knot foolery-9bb8 and linked it with parent_of for the implementation work. Recommended next action: claim foolery-9bb8 or advance the parent through its review gate, then implement in a dedicated git worktree. Key targets are overview tile tag badges, local tag/setlist filter controls, plan-summary-backed setlist options labelled with id plus first 40 title characters, and focused helper tests. No code edits were made in this planning action.",
+    "datetime": "2026-05-06T08:25:36.476577Z",
+    "entry_id": "019dfc64-79dc-7813-8883-695eeb9e219d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

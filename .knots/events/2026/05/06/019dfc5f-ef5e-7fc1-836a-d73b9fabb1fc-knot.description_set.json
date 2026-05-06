@@ -1,0 +1,9 @@
+{
+  "event_id": "019dfc5f-ef5e-7fc1-836a-d73b9fabb1fc",
+  "occurred_at": "2026-05-06T08:20:38.870219Z",
+  "knot_id": "foolery-43ee",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nFix the repository browser modal so no partially hidden/clipped row or control appears between the directory filter and the Up navigation. Identify the root cause and keep the Browse for Repository dialog visually stable while preserving navigation and filtering.\n\nVerification:\n1. Open Browse for Repository, enter ~, and confirm the area above Up shows no clipped text or stray row.\n2. Confirm the Up control, directory rows, and memory manager badges remain aligned and usable while scrolling.\n3. Run bun run lint, bunx tsc --noEmit, bun run test, and bun run build successfully.\n\nConstraints:\nUse the existing component structure and styling patterns. Do implementation work in a dedicated worktree. No PR workflow."
+  }
+}

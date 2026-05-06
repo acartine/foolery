@@ -1,0 +1,17 @@
+{
+  "event_id": "019dfc64-1334-7801-86ef-2b576107ccac",
+  "occurred_at": "2026-05-06T08:25:10.196244Z",
+  "knot_id": "foolery-9bb8",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement Foolery overview changes: render user-visible Beat.labels as compact tags on overview tiles; add overview controls for filtering by one or more tags and by one or more setlists; combine tag and setlist filters so either category can be used alone or together; populate setlist options from plan summaries and label each option as '<knot id> <first 40 chars of title/summary>'; use plan beatIds for membership matching by id or alias; keep all files under repo size limits; cover helper behavior and component rendering with focused tests.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Implement overview tags and filters",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

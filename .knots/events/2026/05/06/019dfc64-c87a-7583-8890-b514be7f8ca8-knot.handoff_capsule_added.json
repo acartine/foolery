@@ -1,0 +1,15 @@
+{
+  "event_id": "019dfc64-c87a-7583-8890-b514be7f8ca8",
+  "occurred_at": "2026-05-06T08:25:56.602643Z",
+  "knot_id": "foolery-7770",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning action complete for foolery-7770. Implementation follow-up exists as foolery-9bb8 with tag parent:7770; it is intentionally not linked as a direct child because that blocks the parent planning transition. Recommended next action: after plan review, claim/create the implementation work in a dedicated git worktree and follow the attached plan. No code edits were made in this planning action.",
+    "datetime": "2026-05-06T08:25:56.602643Z",
+    "entry_id": "019dfc64-c87a-7583-8890-b50126cc4774",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019dfc5f-ef69-7112-9f80-833e645cd8ab",
+  "occurred_at": "2026-05-06T08:20:38.870219Z",
+  "knot_id": "foolery-43ee",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The Browse for Repository dialog no longer renders a partially obscured directory/status row between the filter input and Up control.\n2. The fix is rooted in the directory browser layout rather than hiding unrelated content elsewhere.\n3. The repository browser remains keyboard/click navigable and the directory list remains scrollable.\n4. lint, typecheck, test, and build pass."
+  }
+}

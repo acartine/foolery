@@ -1,0 +1,15 @@
+{
+  "event_id": "019dfc6c-6a40-7121-b76a-3e8b1876737d",
+  "occurred_at": "2026-05-06T08:34:16.768537Z",
+  "knot_id": "foolery-43ee",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review: approved. Verified local main and origin/main both resolve to 2525f03c96abcb0483cfe066f6cfdd063cef9848. The shipped commit is present on main and origin/main. Knot tags include commit:2525f03c96abcb0483cfe066f6cfdd063cef9848 and branch:codex/43ee-repo-browser-clipping. No invariants are listed. GitHub Actions verification for the shipped commit: CI 25424759651 success; Coverage Badge 25424759641 success. No regressions found in shipment review.",
+    "datetime": "2026-05-06T08:34:16.768537Z",
+    "entry_id": "019dfc6c-6a40-7121-b76a-3e7fce5739ef",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
