@@ -6,6 +6,7 @@ import {
   overviewBeatLabel,
   overviewLeaseInfoForBeat,
 } from "@/lib/beat-state-overview";
+import { overviewVisibleBeatTags } from "@/lib/beat-state-overview-filters";
 import { displayBeatLabel } from "@/lib/beat-display";
 import { BeatPriorityBadge } from "@/components/beat-priority-badge";
 import { BeatTypeBadge } from "@/components/beat-type-badge";
@@ -32,6 +33,7 @@ export function BeatOverviewTile({
     ? repoDisplayName(beat)
     : null;
   const contextItems = overviewContextItems(beat, repoLabel);
+  const tags = overviewVisibleBeatTags(beat);
 
   return (
     <div
@@ -94,6 +96,9 @@ export function BeatOverviewTile({
             ))}
           </div>
         )}
+        {tags.length > 0 && (
+          <OverviewTagBadges tags={tags} />
+        )}
       </button>
       {leaseInfo && (
         <LeaseInfoBlock
@@ -103,6 +108,29 @@ export function BeatOverviewTile({
           onReleaseBeat={onReleaseBeat}
         />
       )}
+    </div>
+  );
+}
+
+function OverviewTagBadges({ tags }: { tags: readonly string[] }) {
+  return (
+    <div className="mt-1 flex min-w-0 flex-wrap gap-1">
+      {tags.map((tag) => (
+        <span
+          key={tag}
+          className={
+            "max-w-full truncate rounded-sm border"
+            + " border-lake-200 bg-lake-50 px-1 py-px"
+            + " text-[8px] leading-3 text-lake-700"
+            + " dark:border-lake-700/70 dark:bg-lake-900/40"
+            + " dark:text-lake-100"
+          }
+          data-testid="beat-overview-tag"
+          title={tag}
+        >
+          {tag}
+        </span>
+      ))}
     </div>
   );
 }

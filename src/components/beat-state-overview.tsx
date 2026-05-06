@@ -28,6 +28,10 @@ import type {
   OverviewLeaseInfo,
   OverviewStateTabId,
 } from "@/lib/beat-state-overview";
+import type {
+  OverviewSetlistFilterOption,
+  OverviewTagFilterOption,
+} from "@/lib/beat-state-overview-filters";
 import { RepoSwitchLoadingState } from "@/components/repo-switch-loading-state";
 import {
   StreamingProgressBar,
@@ -47,6 +51,12 @@ import {
 import {
   OverviewStateMatrix,
 } from "@/components/beat-state-overview-matrix";
+import {
+  BeatOverviewFilterToolbar,
+} from "@/components/beat-overview-filter-toolbar";
+import {
+  useBeatOverviewFilters,
+} from "@/components/use-beat-overview-filters";
 
 interface BeatStateOverviewScreenProps {
   isLoading: boolean;
@@ -169,13 +179,24 @@ function BeatStateOverview({
   const [activeTab, setActiveTab] = useState<OverviewStateTabId>(
     DEFAULT_OVERVIEW_STATE_TAB,
   );
+  const {
+    tagOptions,
+    setlistOptions,
+    selectedTagSet,
+    selectedSetlistSet,
+    setlistsLoading,
+    filteredBeats,
+    handleTagCheckedChange,
+    handleSetlistCheckedChange,
+    handleClearFilters,
+  } = useBeatOverviewFilters(beats);
   const tabs = useMemo(
-    () => buildOverviewStateTabs(beats),
-    [beats],
+    () => buildOverviewStateTabs(filteredBeats),
+    [filteredBeats],
   );
   const groups = useMemo(
-    () => groupOverviewBeatsByState(beats, activeTab),
-    [beats, activeTab],
+    () => groupOverviewBeatsByState(filteredBeats, activeTab),
+    [filteredBeats, activeTab],
   );
   const introducedColumns = useOverviewIntroducedColumns({
     tabId: activeTab,
@@ -220,13 +241,67 @@ function BeatStateOverview({
       onReleaseBeat={onReleaseBeat}
       onHideEmptyColumn={introducedColumns.onHideEmptyColumn}
       toolbarEnd={(
-        <StaleBeatGroomingDialog
+        <OverviewToolbarEnd
           beats={beats}
           isAllRepositories={isAllRepositories}
           onOpenBeat={onOpenBeat}
+          tagOptions={tagOptions}
+          setlistOptions={setlistOptions}
+          selectedTagSet={selectedTagSet}
+          selectedSetlistSet={selectedSetlistSet}
+          setlistsLoading={setlistsLoading}
+          onTagCheckedChange={handleTagCheckedChange}
+          onSetlistCheckedChange={handleSetlistCheckedChange}
+          onClearFilters={handleClearFilters}
         />
       )}
     />
+  );
+}
+
+function OverviewToolbarEnd({
+  beats,
+  isAllRepositories,
+  onOpenBeat,
+  tagOptions,
+  setlistOptions,
+  selectedTagSet,
+  selectedSetlistSet,
+  setlistsLoading,
+  onTagCheckedChange,
+  onSetlistCheckedChange,
+  onClearFilters,
+}: {
+  beats: Beat[];
+  isAllRepositories: boolean;
+  onOpenBeat: (beat: Beat) => void;
+  tagOptions: readonly OverviewTagFilterOption[];
+  setlistOptions: readonly OverviewSetlistFilterOption[];
+  selectedTagSet: ReadonlySet<string>;
+  selectedSetlistSet: ReadonlySet<string>;
+  setlistsLoading: boolean;
+  onTagCheckedChange: (tagId: string, checked: boolean) => void;
+  onSetlistCheckedChange: (setlistId: string, checked: boolean) => void;
+  onClearFilters: () => void;
+}) {
+  return (
+    <div className="flex min-w-0 flex-wrap items-center justify-end gap-1">
+      <BeatOverviewFilterToolbar
+        tagOptions={tagOptions}
+        setlistOptions={setlistOptions}
+        selectedTagIds={selectedTagSet}
+        selectedSetlistIds={selectedSetlistSet}
+        setlistsLoading={setlistsLoading}
+        onTagCheckedChange={onTagCheckedChange}
+        onSetlistCheckedChange={onSetlistCheckedChange}
+        onClearFilters={onClearFilters}
+      />
+      <StaleBeatGroomingDialog
+        beats={beats}
+        isAllRepositories={isAllRepositories}
+        onOpenBeat={onOpenBeat}
+      />
+    </div>
   );
 }
 
