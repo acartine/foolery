@@ -1,0 +1,9 @@
+{
+  "event_id": "019e0372-d370-76c3-add3-5781ad21097f",
+  "occurred_at": "2026-05-07T17:18:37.409734Z",
+  "knot_id": "foolery-af11",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Every completed stale grooming job appends a handoff capsule that says the beat was groomed because it was stale and includes the decision, rationale, agent id, job id, and any suggested reshape fields.\n2. Appending the stale grooming handoff capsule updates the knot updated/lastUpdated timestamp for `still_do`, `reshape`, and `drop` outcomes.\n3. A `still_do` result performs no beat title/description/acceptance/state change beyond the handoff capsule and timestamp update.\n4. A `reshape` result applies non-empty `suggestedTitle`, `suggestedDescription`, and `suggestedAcceptance` to the beat through the canonical backend update path, and records the applied changes in the handoff capsule.\n5. A `drop` result marks the knot abandoned through the canonical backend/Knots operation and records that action in the handoff capsule.\n6. Failed or unparseable stale grooming jobs do not mutate the beat, abandon it, or append a success capsule; they continue to record a failed review.\n7. Regression tests cover all three decisions and verify that stale grooming remains observable through the reviews/status APIs after applying the workflow action."
+  }
+}

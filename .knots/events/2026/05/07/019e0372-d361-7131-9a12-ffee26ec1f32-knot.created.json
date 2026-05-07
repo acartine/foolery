@@ -1,0 +1,17 @@
+{
+  "event_id": "019e0372-d361-7131-9a12-ffee26ec1f32",
+  "occurred_at": "2026-05-07T17:18:37.409734Z",
+  "knot_id": "foolery-af11",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nTurn stale beat grooming from an advisory-only review into an applied workflow. When Foolery receives a stale grooming result, it must append a handoff capsule explaining that the beat was groomed because it was stale, include the agent decision and rationale, update the knot last-updated timestamp through the canonical Knots/Foolery backend path, and then apply the grooming decision: keep `still_do` as a capsule-only acknowledgement, apply `reshape` fields to the beat, and mark `drop` results as abandoned.\n\nVerification:\n1. Run targeted stale grooming tests with `bun run test -- src/lib/__tests__/stale-beat-grooming*.test.ts` and confirm completed reviews append a handoff capsule for `still_do`, `reshape`, and `drop`.\n2. Add or update tests proving the handoff capsule update changes the knot updated/lastUpdated timestamp for every completed grooming decision.\n3. Add or update tests proving `reshape` applies `suggestedTitle`, `suggestedDescription`, and `suggestedAcceptance` through the canonical backend update path when present.\n4. Add or update tests proving `drop` marks the knot abandoned through the canonical Knots/Foolery close/abandon path rather than only recording an advisory result.\n5. Manually inspect or mock `GET /api/beats/stale-grooming/status` after a completed job and confirm the review result is still visible after the workflow action succeeds.\n\nConstraints:\nUse Knots/Foolery canonical backend operations; do not mutate workflow files or stored knot data directly. Do not move knots to terminal states except for the explicit stale grooming `drop` outcome described here. Always append the handoff capsule before or atomically with the decision action so stale grooming provenance is not lost. Preserve the existing review result API shape unless a compatible extension is needed.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Execute stale grooming outcomes",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
