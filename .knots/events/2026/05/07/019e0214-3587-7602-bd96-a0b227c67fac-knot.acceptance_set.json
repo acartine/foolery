@@ -1,0 +1,9 @@
+{
+  "event_id": "019e0214-3587-7602-bd96-a0b227c67fac",
+  "occurred_at": "2026-05-07T10:55:39.3781Z",
+  "knot_id": "foolery-aecb",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Stale grooming no longer reports agent execution timeouts as `scope refinement agent timed out after 600s`; stale grooming timeout errors must name stale grooming.\n2. Stale grooming timeout duration is controlled independently from scope refinement or is explicitly represented by a shared generic prompt-runner timeout with subsystem-specific error labels.\n3. Stale grooming server logs for spawn, first byte, timeout, close, and failure paths are distinguishable from scope refinement logs by tag or subsystem field.\n4. `GET /api/beats/stale-grooming/status` records timeout failures with stale-grooming-specific error text for failed reviews.\n5. Regression tests cover a stale grooming hung-agent timeout and prove scope refinement timeout behavior remains intact."
+  }
+}

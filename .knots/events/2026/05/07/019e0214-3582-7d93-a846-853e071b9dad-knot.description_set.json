@@ -1,0 +1,9 @@
+{
+  "event_id": "019e0214-3582-7d93-a846-853e071b9dad",
+  "occurred_at": "2026-05-07T10:55:39.3781Z",
+  "knot_id": "foolery-aecb",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nMake stale beat grooming own its agent execution timeout and failure reporting instead of reusing scope-refinement-specific timeout labels. Stale grooming should fail loudly with stale-grooming-specific logs, review errors, and user-visible status when its agent subprocess hangs, and the timeout should be configurable or intentionally documented separately from scope refinement.\n\nVerification:\n1. Run the stale grooming unit tests with `bun run test -- src/lib/__tests__/stale-beat-grooming*.test.ts` and confirm a simulated hung agent fails with a stale-grooming-specific timeout message.\n2. Run `bun run test -- src/lib/__tests__/scope-refinement*.test.ts` and confirm scope refinement still enforces its existing timeout behavior.\n3. Trigger or mock `POST /api/beats/stale-grooming/reviews` for a stale beat with a hanging agent and confirm `GET /api/beats/stale-grooming/status` records the failed review with a message that names stale grooming, not scope refinement.\n4. Inspect server logs for the timeout path and confirm emitted log tags use `[stale-grooming]` or another stale-grooming-specific marker rather than only `[scope-refinement]`.\n\nConstraints:\nDo not change the Knots workflow graph or terminal-state behavior. Keep the fix scoped to stale grooming/scope-refinement prompt execution boundaries and tests. Reuse shared subprocess helpers if useful, but do not leave stale grooming errors labeled as scope refinement failures."
+  }
+}
