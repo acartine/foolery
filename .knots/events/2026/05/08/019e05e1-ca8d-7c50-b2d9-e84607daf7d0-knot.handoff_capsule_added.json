@@ -1,0 +1,15 @@
+{
+  "event_id": "019e05e1-ca8d-7c50-b2d9-e84607daf7d0",
+  "occurred_at": "2026-05-08T04:39:04.077478Z",
+  "knot_id": "foolery-aecb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "# Handoff: planning → plan_review (foolery-aecb)\n\n## What's planned\n\nExtract the spawn / wire / timer plumbing from\n`src/lib/scope-refinement-prompt.ts` into a generic\n`src/lib/agent-prompt-runner.ts` keyed on `subsystem` + `subsystemLabel` +\n`timeoutMs` + `noOutputWarnMs`. Both subsystems then call it with their own\nlabels:\n\n- Scope refinement keeps `[scope-refinement]` log tags and the existing\n  `scope refinement agent timed out after 600s` error string. `PROMPT_TIMEOUT_MS`\n  stays exported.\n- Stale grooming gets `STALE_GROOMING_PROMPT_TIMEOUT_MS` (independent constant)\n  and emits `[stale-grooming]` log tags plus\n  `stale grooming agent timed out after Ns` error text.\n\n`stale-beat-grooming-job-runner.ts` swaps its `runScopeRefinementPrompt`\nimport for a new `runStaleBeatGroomingPrompt` exported from\n`stale-beat-grooming-prompt.ts`.\n\n## Verification hooks (mapped to acceptance criteria)\n\n1. AC1, AC4, AC5 — new\n   `src/lib/__tests__/stale-beat-grooming-job-runner-timeout.test.ts` mocks\n   `node:child_process.spawn`, advances fake timers past 600s, and asserts the\n   recorded review failure matches `/stale grooming agent timed out after 600s/`\n   and does NOT match `/scope refinement/i`.\n2. AC2 — `STALE_GROOMING_PROMPT_TIMEOUT_MS` lives in\n   `stale-beat-grooming-prompt.ts`, separate from `PROMPT_TIMEOUT_MS`.\n3. AC3 — log tags emit `[stale-grooming][spawn] ...`; verified via the manual\n   POST→status→log probe in step 6 of the plan.\n4. AC5 (no regression) — existing\n   `processScopeRefinementJob: timeout` test stays green; an explicit\n   `/scope refinement agent timed out/` assertion is added to lock the label.\n\n## Risks the implementer should watch\n\n- Behavior parity for scope refinement — the existing 600s timeout test is the\n  canary; do not modify its expectations.\n- Timer-cleanup branches in `safeResolve` / `safeReject`: easy to lose a\n  `clearTimeout` during the lift.\n- File / function / line caps (500 / 100 / 100) per project ESLint config.\n\n## Out of scope\n\n- Knots workflow graph (boundary).\n- Stale-grooming review state machine, queue, worker loop.\n- Subprocess spawn flags or agent adapter wiring.",
+    "datetime": "2026-05-08T04:39:04.077478Z",
+    "entry_id": "019e05e1-ca8d-7c50-b2d9-e8339b1d7882",
+    "model": "Opus",
+    "username": "Claude",
+    "version": "4.7"
+  }
+}

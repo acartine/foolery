@@ -1,0 +1,37 @@
+{
+  "event_id": "019e05ed-55b9-7142-8495-67b6d65e8390",
+  "occurred_at": "2026-05-08T04:51:40.601755Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-aecb",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Fix stale grooming timeout ownership",
+    "type": "work",
+    "updated_at": "2026-05-08T04:51:40.601755Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019e05ed-2a04-7b80-a08f-15bb43dfa5d7"
+  }
+}

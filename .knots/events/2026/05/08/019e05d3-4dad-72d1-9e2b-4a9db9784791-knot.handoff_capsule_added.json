@@ -1,0 +1,15 @@
+{
+  "event_id": "019e05d3-4dad-72d1-9e2b-4a9db9784791",
+  "occurred_at": "2026-05-08T04:23:14.605954Z",
+  "knot_id": "foolery-af11",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete for stale grooming outcome execution. Proposed implementation adds a stale-grooming outcome application layer that appends a provenance handoff capsule for every successful result, updates lastUpdated through canonical backend operations, applies reshape fields through backend.update, and routes drop to an abandoned-state backend/Knots operation. Risks called out: choosing the correct canonical abandoned transition instead of shipped-oriented close(), and avoiding partial success if capsule append or mutation fails.",
+    "datetime": "2026-05-08T04:23:14.605954Z",
+    "entry_id": "019e05d3-4dad-72d1-9e2b-4a8939ce2903",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019e05e8-1b2c-7092-81d9-c8a59d136738",
+  "occurred_at": "2026-05-08T04:45:57.932159Z",
+  "knot_id": "foolery-aecb",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:foolery-aecb-stale-grooming-timeout"
+  }
+}
