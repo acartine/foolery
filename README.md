@@ -12,6 +12,13 @@ Foolery helps you capture work, break it down, dispatch agents, review what they
 <table align="center">
   <tr>
     <td align="center">
+      <a href="docs/screenshots/overview-20260508.png">
+        <img src="docs/screenshots/overview-20260508.png" width="160" alt="Overview" />
+      </a>
+      <br />
+      <sub><b>Overview</b></sub>
+    </td>
+    <td align="center">
       <a href="docs/screenshots/queues-20260427.png">
         <img src="docs/screenshots/queues-20260427.png" width="160" alt="Queues View" />
       </a>
@@ -26,14 +33,21 @@ Foolery helps you capture work, break it down, dispatch agents, review what they
       <sub><b>Active</b></sub>
     </td>
     <td align="center">
+      <a href="docs/screenshots/setlist-20260508.png">
+        <img src="docs/screenshots/setlist-20260508.png" width="160" alt="Setlist" />
+      </a>
+      <br />
+      <sub><b>Setlist</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
       <a href="docs/screenshots/retakes-20260427.png">
         <img src="docs/screenshots/retakes-20260427.png" width="160" alt="Retakes" />
       </a>
       <br />
       <sub><b>Retakes</b></sub>
     </td>
-  </tr>
-  <tr>
     <td align="center">
       <a href="docs/screenshots/history-20260427.png">
         <img src="docs/screenshots/history-20260427.png" width="160" alt="History" />
@@ -138,6 +152,12 @@ Assign weighted agent pools to each workflow step: Planning, Plan Review, Implem
 
 ## Flow & Features
 
+### Overview
+
+A kanban-style read across your entire project portfolio. See in-flight status across every connected repo in one place — what is queued, active, in review, and recently shipped — without flipping between repositories.
+
+![Overview view](docs/screenshots/overview-20260508.png)
+
 ### Queues
 
 The default view. All beats queued and ready for action — filter by type, priority, or free-text search. Select rows with spacebar, bulk-update fields, drill into inline summaries, and trigger agent sessions on any beat. Create new beats with Shift+N.
@@ -149,6 +169,12 @@ The default view. All beats queued and ready for action — filter by type, prio
 Beats currently in progress. See which agents are working, their model, version, and state at a glance. The Active view adds Agent, Model, and Version columns so you can monitor running work.
 
 ![Active view](docs/screenshots/active-20260427.png)
+
+### Setlist
+
+Visualize and interact with execution plans. Setlist lays out the wave-and-step structure of a Scene so you can see the dependency-aware order of work, inspect each beat in context, and act on the plan without leaving the view.
+
+![Setlist view](docs/screenshots/setlist-20260508.png)
 
 ### Retakes
 
