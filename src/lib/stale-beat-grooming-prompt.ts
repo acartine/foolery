@@ -1,4 +1,6 @@
 import { z } from "zod/v4";
+import { runAgentPrompt } from "@/lib/agent-prompt-runner";
+import type { AgentTarget } from "@/lib/types-agent-target";
 import type { Beat } from "@/lib/types";
 import {
   STALE_GROOMING_DECISIONS,
@@ -8,6 +10,25 @@ import type {
 } from "@/lib/stale-beat-grooming-types";
 
 const STALE_GROOMING_JSON_TAG = "stale_beat_grooming_json";
+
+export const STALE_GROOMING_PROMPT_TIMEOUT_MS = 600_000;
+const STALE_GROOMING_NO_OUTPUT_WARN_MS = 120_000;
+
+export function runStaleBeatGroomingPrompt(
+  prompt: string,
+  repoPath: string | undefined,
+  agent: AgentTarget,
+): Promise<string> {
+  return runAgentPrompt({
+    subsystem: "stale-grooming",
+    subsystemLabel: "stale grooming",
+    timeoutMs: STALE_GROOMING_PROMPT_TIMEOUT_MS,
+    noOutputWarnMs: STALE_GROOMING_NO_OUTPUT_WARN_MS,
+    prompt,
+    agent,
+    ...(repoPath ? { repoPath } : {}),
+  });
+}
 
 const staleGroomingOutputSchema = z.object({
   decision: z.enum(STALE_GROOMING_DECISIONS),

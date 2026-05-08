@@ -6,15 +6,13 @@ import {
 import {
   buildStaleBeatGroomingPrompt,
   parseStaleBeatGroomingOutput,
+  runStaleBeatGroomingPrompt,
 } from "@/lib/stale-beat-grooming-prompt";
 import {
   recordStaleBeatGroomingCompleted,
   recordStaleBeatGroomingFailed,
   recordStaleBeatGroomingRunning,
 } from "@/lib/stale-beat-grooming-store";
-import {
-  runScopeRefinementPrompt,
-} from "@/lib/scope-refinement-prompt";
 import type {
   StaleBeatGroomingJob,
 } from "@/lib/stale-beat-grooming-queue";
@@ -46,7 +44,7 @@ export async function processStaleBeatGroomingJob(
       beat,
       ageDays: staleBeatAgeDays(beat, Date.now()) ?? 0,
     });
-    const raw = await runScopeRefinementPrompt(
+    const raw = await runStaleBeatGroomingPrompt(
       prompt,
       job.repoPath,
       agent,

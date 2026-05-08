@@ -265,6 +265,8 @@ describe("processScopeRefinementJob: timeout", () => {
 
   it("kills child and re-enqueues after 600s", async () => {
     vi.useFakeTimers();
+    const warn = vi.spyOn(console, "warn")
+      .mockImplementation(() => {});
     const child = new EventEmitter() as MockChild;
     child.stdout = new EventEmitter();
     child.stderr = new EventEmitter();
@@ -291,6 +293,15 @@ describe("processScopeRefinementJob: timeout", () => {
     expect(child.kill).toHaveBeenCalledWith("SIGKILL");
     expect(mockUpdate).not.toHaveBeenCalled();
     expect(getScopeRefinementQueueSize()).toBe(1);
+    const allWarn = warn.mock.calls
+      .map((call) => String(call[0]))
+      .join("\n");
+    expect(allWarn).toMatch(
+      /scope refinement agent timed out after 600s/,
+    );
+    expect(allWarn).not.toMatch(/stale grooming/i);
+    expect(allWarn).toMatch(/\[scope-refinement\]/);
+    warn.mockRestore();
   });
 
   it("does not trigger at old 180s timeout", async () => {
