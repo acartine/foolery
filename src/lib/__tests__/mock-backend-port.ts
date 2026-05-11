@@ -469,6 +469,18 @@ function applyUpdate(beat: Beat, input: UpdateBeatInput): void {
   if (input.due !== undefined) beat.due = input.due;
   if (input.acceptance !== undefined) beat.acceptance = input.acceptance;
   if (input.notes !== undefined) beat.notes = input.notes;
+  if (input.addHandoffCapsule !== undefined) {
+    const metadata = beat.metadata ?? {};
+    const current = metadata.knotsHandoffCapsules;
+    const capsules = Array.isArray(current) ? current : [];
+    beat.metadata = {
+      ...metadata,
+      knotsHandoffCapsules: [
+        ...capsules,
+        { content: input.addHandoffCapsule },
+      ],
+    };
+  }
   if (input.estimate !== undefined) beat.estimate = input.estimate;
 }
 

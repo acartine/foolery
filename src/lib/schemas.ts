@@ -65,6 +65,7 @@ export const updateBeatSchema = z.object({
   due: z.string().optional(),
   acceptance: z.string().optional(),
   notes: z.string().optional(),
+  addHandoffCapsule: z.string().optional(),
   estimate: z.number().int().positive().optional(),
   addInvariants: z.array(invariantSchema).optional(),
   removeInvariants: z.array(invariantSchema).optional(),

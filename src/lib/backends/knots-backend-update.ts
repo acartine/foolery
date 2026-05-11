@@ -128,6 +128,9 @@ export function buildUpdatePatch(
     patch.removeTags = input.removeLabels;
   }
   if (input.notes !== undefined) patch.addNote = input.notes;
+  if (input.addHandoffCapsule !== undefined) {
+    patch.addHandoffCapsule = input.addHandoffCapsule;
+  }
   patch.addInvariants = serializeInvariants(input.addInvariants);
   patch.removeInvariants = serializeInvariants(
     input.removeInvariants,
@@ -180,6 +183,7 @@ export function hasPatchFields(patch: KnotUpdateInput): boolean {
     (patch.addTags?.length ?? 0) > 0 ||
     (patch.removeTags?.length ?? 0) > 0 ||
     patch.addNote !== undefined ||
+    patch.addHandoffCapsule !== undefined ||
     (patch.addInvariants?.length ?? 0) > 0 ||
     (patch.removeInvariants?.length ?? 0) > 0 ||
     patch.clearInvariants === true

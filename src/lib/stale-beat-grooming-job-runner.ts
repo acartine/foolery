@@ -9,6 +9,9 @@ import {
   runStaleBeatGroomingPrompt,
 } from "@/lib/stale-beat-grooming-prompt";
 import {
+  applyStaleBeatGroomingOutcome,
+} from "@/lib/stale-beat-grooming-outcomes";
+import {
   recordStaleBeatGroomingCompleted,
   recordStaleBeatGroomingFailed,
   recordStaleBeatGroomingRunning,
@@ -53,6 +56,7 @@ export async function processStaleBeatGroomingJob(
     if (!result) {
       throw new Error("agent returned unparseable grooming output");
     }
+    await applyStaleBeatGroomingOutcome({ job, result });
     recordStaleBeatGroomingCompleted(target, result);
     return { ok: true, result };
   } catch (error) {
