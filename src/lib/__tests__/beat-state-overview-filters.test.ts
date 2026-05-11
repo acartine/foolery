@@ -89,6 +89,24 @@ describe("beat-state-overview filters", () => {
     );
   });
 
+  it("falls back to the setlist id when no title text exists", () => {
+    const plan = makePlan("foolery-plan", ["a"], "   ", " ");
+
+    expect(formatOverviewSetlistFilterLabel(plan)).toBe("foolery-plan");
+  });
+
+  it("uses repo-aware setlist option ids", () => {
+    const [option] = buildOverviewSetlistFilterOptions([
+      makePlan("foolery-plan", ["a"]),
+    ], "/repo/a");
+
+    expect(option).toMatchObject({
+      id: "/repo/a:foolery-plan",
+      planId: "foolery-plan",
+      repoPath: "/repo/a",
+    });
+  });
+
   it("filters by tags, setlists, and their intersection", () => {
     const beats = [
       makeBeat("a", ["api"], {
