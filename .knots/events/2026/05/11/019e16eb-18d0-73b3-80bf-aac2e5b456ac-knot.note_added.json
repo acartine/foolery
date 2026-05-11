@@ -1,0 +1,15 @@
+{
+  "event_id": "019e16eb-18d0-73b3-80bf-aac2e5b456ac",
+  "occurred_at": "2026-05-11T12:02:46.608371Z",
+  "knot_id": "foolery-0f8e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review: approved. The release hardening plan is complete and feasible, and the validation strategy covers the release race that caused the failure. Addendum from user request: keep the Claude-facing copy of the ship-release skill synchronized by copying the hardened .agents/skills/ship-release/SKILL.md into .claude/skills/ship-release/SKILL.md and committing/pushing that follow-up as part of implementation.",
+    "datetime": "2026-05-11T12:02:46.608371Z",
+    "entry_id": "019e16eb-18d0-73b3-80bf-aabcb0514b58",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019e16ed-0115-7133-97c4-ca31ab4c5487",
+  "occurred_at": "2026-05-11T12:04:51.605948Z",
+  "knot_id": "foolery-0f8e",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/0f8e-claude-ship-release-skill"
+  }
+}

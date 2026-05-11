@@ -1,0 +1,15 @@
+{
+  "event_id": "019e16ef-b0da-7020-8f06-c289a46bb1a9",
+  "occurred_at": "2026-05-11T12:07:47.674343Z",
+  "knot_id": "foolery-0f8e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete. Fast-forwarded local main from 69ecbe66 to 9e36cc4c, merging origin/codex/0f8e-claude-ship-release-skill. Pushed main to origin. Remote checks for 9e36cc4c passed: CI run 25669056552 succeeded and Coverage Badge run 25669056583 succeeded. CI produced coverage-regression annotations, but they were warnings and the check conclusion was success.",
+    "datetime": "2026-05-11T12:07:47.674343Z",
+    "entry_id": "019e16ef-b0da-7020-8f06-c2747be13d7b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019e16ed-6718-7573-bf36-f4070b06a08a",
+  "occurred_at": "2026-05-11T12:05:17.720231Z",
+  "knot_id": "foolery-0f8e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review: approved. Reviewed origin/codex/0f8e-claude-ship-release-skill against origin/main. The branch changes only .claude/skills/ship-release/SKILL.md. Verified the Claude skill and .agents skill are identical by diff and SHA-256 (48237d15e0119ca4cd1bf54da6f9b6b72272f0fd111e274509abb28fb492fc38). Prior handoff recorded all sanity gates passing: diff --check, lint, typecheck, unit tests, and build. No regressions or workflow-policy concerns found.",
+    "datetime": "2026-05-11T12:05:17.720231Z",
+    "entry_id": "019e16ed-6718-7573-bf36-f3f329553de2",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

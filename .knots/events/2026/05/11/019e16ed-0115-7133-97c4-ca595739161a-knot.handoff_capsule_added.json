@@ -1,0 +1,15 @@
+{
+  "event_id": "019e16ed-0115-7133-97c4-ca595739161a",
+  "occurred_at": "2026-05-11T12:04:51.605948Z",
+  "knot_id": "foolery-0f8e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation branch: codex/0f8e-claude-ship-release-skill\nCommit: 9e36cc4c docs(release): sync claude ship-release skill\n\nCopied .agents/skills/ship-release/SKILL.md into .claude/skills/ship-release/SKILL.md so Claude agents receive the hardened release procedure. Verified the two files are byte-identical with diff. Validation passed: git diff --check, bun run lint, bunx tsc --noEmit, bun run test, bun run build. Branch pushed to origin.",
+    "datetime": "2026-05-11T12:04:51.605948Z",
+    "entry_id": "019e16ed-0115-7133-97c4-ca48f2ff1346",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

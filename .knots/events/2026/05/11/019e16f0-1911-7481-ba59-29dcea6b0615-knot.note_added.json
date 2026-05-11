@@ -1,0 +1,15 @@
+{
+  "event_id": "019e16f0-1911-7481-ba59-29dcea6b0615",
+  "occurred_at": "2026-05-11T12:08:14.353039Z",
+  "knot_id": "foolery-0f8e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review: approved. origin/main and local main both resolve to 9e36cc4c84100ad767868e3cf93a3bd58fb88b18. .agents/skills/ship-release/SKILL.md and .claude/skills/ship-release/SKILL.md are identical on main. GitHub checks for 9e36cc4c are completed successfully: ci=success and coverage=success. Tagged both shipped commits on the knot: 69ecbe66 and 9e36cc4c. No PR workflow was used.",
+    "datetime": "2026-05-11T12:08:14.353039Z",
+    "entry_id": "019e16f0-1911-7481-ba59-29c196aa1d4c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

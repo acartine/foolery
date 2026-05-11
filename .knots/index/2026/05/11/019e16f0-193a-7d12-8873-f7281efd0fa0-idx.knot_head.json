@@ -1,0 +1,34 @@
+{
+  "event_id": "019e16f0-193a-7d12-8873-f7281efd0fa0",
+  "occurred_at": "2026-05-11T12:08:14.353039Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-0f8e",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Harden release sync",
+    "type": "work",
+    "updated_at": "2026-05-11T12:08:14.353039Z",
+    "workflow_id": "work_sdlc"
+  }
+}

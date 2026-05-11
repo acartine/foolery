@@ -1,0 +1,21 @@
+{
+  "event_id": "019e16f0-283e-7831-8348-7dca2b772391",
+  "occurred_at": "2026-05-11T12:08:18.238342Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-0f8e",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Harden release sync",
+    "type": "work",
+    "updated_at": "2026-05-11T12:08:18.238342Z",
+    "workflow_id": "work_sdlc"
+  }
+}
