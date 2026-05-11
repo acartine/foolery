@@ -1,0 +1,9 @@
+{
+  "event_id": "019e16e1-729e-7e63-8000-4a59ad79e7f8",
+  "occurred_at": "2026-05-11T11:52:14.232488Z",
+  "knot_id": "foolery-0f8e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nMake the release script resilient to active main branch movement by syncing and validating the target branch before any version bump, commit, tag, push, or GitHub release mutation.\n\nVerification:\n1. bun run lint passes.\n2. bunx tsc --noEmit passes.\n3. bun run test passes.\n4. bun run build passes.\n5. A dry-run release from a branch behind its upstream refuses to mutate and prints a clear remediation.\n\nConstraints:\nDo not introduce a PR workflow. Preserve existing release CLI flags and artifact waiting behavior."
+  }
+}

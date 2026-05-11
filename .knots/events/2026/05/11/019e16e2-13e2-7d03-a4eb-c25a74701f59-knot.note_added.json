@@ -1,0 +1,15 @@
+{
+  "event_id": "019e16e2-13e2-7d03-a4eb-c25a74701f59",
+  "occurred_at": "2026-05-11T11:52:55.522229Z",
+  "knot_id": "foolery-0f8e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan:\n1. Add preflight checks to scripts/release.sh before version mutation: fetch target/tags, require a clean worktree, require an attached HEAD on FOOLERY_RELEASE_TARGET, require upstream tracking, and require local HEAD to equal upstream.\n2. Make the failure messages explicit about the remediation: switch branch, commit/stash changes, or pull/rebase before rerunning.\n3. Preserve existing dry-run, bump, GitHub release, and artifact wait behavior once preflight passes.\n4. Verify with the full release quality gates plus a targeted dry-run/stale-branch scenario.",
+    "datetime": "2026-05-11T11:52:55.522229Z",
+    "entry_id": "019e16e2-13e2-7d03-a4eb-c2432a02eb59",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

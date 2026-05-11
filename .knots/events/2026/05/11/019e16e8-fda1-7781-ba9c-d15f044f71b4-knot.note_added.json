@@ -1,0 +1,15 @@
+{
+  "event_id": "019e16e8-fda1-7781-ba9c-d15f044f71b4",
+  "occurred_at": "2026-05-11T12:00:28.576352Z",
+  "knot_id": "foolery-0f8e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented and pushed to origin/main in commit 69ecbe66.\n\nChanged scripts/release.sh to:\n- require attached target branch, clean worktree, and configured upstream;\n- fetch upstream + tags before version calculation;\n- fail dry-runs before mutation when the branch is behind;\n- fast-forward a clean behind branch for real releases before gates;\n- run final release quality gates inside the script;\n- publish branch and tag with one atomic push;\n- on push races, fetch, rebase, retag, rerun gates, and retry.\n\nChanged .agents/skills/ship-release/SKILL.md to require main sync before preview/gates and to document the script-owned final safety path.\n\nVerification passed: bash -n, shellcheck, targeted temporary git race simulation, clean release dry-run, bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-05-11T12:00:28.576352Z",
+    "entry_id": "019e16e8-fda1-7781-ba9c-d14f1dc3eea1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

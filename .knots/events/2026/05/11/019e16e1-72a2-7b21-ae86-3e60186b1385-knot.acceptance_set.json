@@ -1,0 +1,9 @@
+{
+  "event_id": "019e16e1-72a2-7b21-ae86-3e60186b1385",
+  "occurred_at": "2026-05-11T11:52:14.232488Z",
+  "knot_id": "foolery-0f8e",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. scripts/release.sh verifies the release target branch is current with its upstream before mutating package.json or Git state.\n2. scripts/release.sh refuses releases from dirty worktrees, detached HEAD, wrong branches, diverged branches, or behind-upstream branches with clear error messages.\n3. Existing release behavior remains unchanged for a clean target branch that is current with origin/main.\n4. Quality gates pass before pushing the fix to origin/main."
+  }
+}
