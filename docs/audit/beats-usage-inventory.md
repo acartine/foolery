@@ -226,7 +226,7 @@ Uses `listBeads()` from `@/lib/bd`.
 
 | Export | Purpose |
 |--------|---------|
-| `listDirectory()` | List directory entries; marks entries with `.beads/` as `isBeadsRepo: true` |
+| `listDirectory()` | List directory entries; records detected memory-manager type |
 
 ---
 
@@ -261,8 +261,8 @@ Components in `src/components/` that consume or display beads data.
 | `src/components/command-palette.tsx` | Global command palette with bead search | `fetchBeads`, navigates to bead IDs |
 | `src/components/search-bar.tsx` | Search bar for beads | Search query passed to bead list |
 | `src/components/terminal-panel.tsx` | Terminal panel for agent sessions | `ActiveTerminal` with `beatId`, `beatIds` |
-| `src/components/directory-browser.tsx` | Browse directories; identifies beads repos | `DirEntry.isBeadsRepo` |
-| `src/components/repo-registry.tsx` | Manage registered repos | `RegisteredRepo[]` (repos containing `.beads/`) |
+| `src/components/directory-browser.tsx` | Browse directories; identifies supported memory-manager repos | `DirEntry.memoryManagerType` |
+| `src/components/repo-registry.tsx` | Manage registered repos | `RegisteredRepo[]` |
 | `src/components/settings-actions-section.tsx` | Settings for action-to-agent mappings | References bead actions (take, scene, direct, scopeRefinement) |
 | `src/components/settings-repos-section.tsx` | Settings for repo management | `RegisteredRepo[]` |
 | `src/components/url-state-sync.tsx` | Sync URL params to Zustand store | Bead filter state (status, type, priority) |
@@ -335,7 +335,7 @@ Shell scripts that reference `bd` or beads.
 
 | Path | Purpose | bd Commands Used |
 |------|---------|-----------------|
-| `scripts/setup.sh` (retired 2026-04-21) | Legacy interactive repo/agent config wizard. Replaced by `.claude/skills/foolery-configure/SKILL.md` handed to an agent CLI by `install.sh`'s `setup_cmd`. | Scanned for `.beads/` directories; no direct `bd` invocations |
+| `scripts/setup.sh` (retired 2026-04-21) | Legacy interactive repo/agent config wizard. Replaced by `.claude/skills/foolery-configure/SKILL.md` handed to an agent CLI by `install.sh`'s `setup_cmd`. | Scanned for memory-manager marker directories; no direct `bd` invocations |
 | `scripts/install.sh` | Foolery installer | Checks `bd` is on PATH (line 1207) |
 | `scripts/agent-wizard.sh` (retired 2026-04-21) | Legacy agent discovery wizard. Replaced by the `foolery-configure` skill flow. | Referenced bead actions in prompts ("execute single bead", "multi-bead orchestration") |
 
@@ -343,17 +343,9 @@ Shell scripts that reference `bd` or beads.
 
 ## Config / Infrastructure
 
-Configuration and infrastructure files that reference beads.
-
-| Path | Purpose |
-|------|---------|
-| `.beads/config.yaml` | Beads repository configuration: sync-branch (`beads-sync`), git-remote, daemon, JSONL settings |
-| `.beads/metadata.json` | Database metadata: backend=dolt, embedded mode, database name (`beads_foolery`) |
-| `.beads/issues.jsonl` | JSONL issue database (source of truth for beads data) |
-| `.beads/.gitignore` | Ignores SQLite DBs, daemon files, Dolt database, merge artifacts, sync state |
-| `.beads/README.md` | Beads directory documentation |
-| `.gitattributes` | Custom merge driver: `.beads/issues.jsonl merge=beads` |
-| `.claude/settings.local.json` | Claude Code local settings (may reference beads repo paths) |
+No repo-local Beads tracking artifacts are expected. Foolery still supports
+Beads-backed repositories, but this repository's own work tracking is managed
+through Knots.
 
 ---
 

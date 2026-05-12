@@ -72,9 +72,6 @@ storybook-static
 # local git worktrees
 /.worktrees/
 
-# bd worktree
-codex-release-wrapper/
-
 # knots local store
 /.knots/
 

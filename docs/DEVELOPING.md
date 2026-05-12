@@ -479,7 +479,6 @@ Foolery builds on top of memory managers like [Knots](https://github.com/acartin
 
 Additional guidelines for Foolery:
 
-- **Don't modify `.beads/issues.jsonl`** in commits. This is the project's issue database and will cause merge conflicts.
 - **Run quality gates before pushing**: `bun run test && bun run lint && npx tsc --noEmit`.
 - **Prefer editing existing files** over creating new ones.
 - **No PRs required by default** -- this repo pushes directly to `main` unless a PR workflow is explicitly requested. See `CLAUDE.md` for the full agent workflow.
@@ -544,6 +543,5 @@ Publishing a GitHub release triggers `release-runtime-artifact`, which builds an
 
 - [Project Manifest](MANIFEST.md) -- architecture, API docs, component inventory
 - [Settings Guide](SETTINGS.md) -- how settings work and how to add new ones
-- [Beads Dolt Hook Setup](BEADS_DOLT_HOOKS.md) -- local hook setup for Dolt-native Beads sync
 - [Knots](https://github.com/acartine/knots) -- primary memory manager backend
 - [Beads CLI](https://github.com/steveyegge/beads) -- alternative memory manager backend
