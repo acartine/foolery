@@ -1,0 +1,9 @@
+{
+  "event_id": "019e1696-e053-7910-ae81-95198f68d2c1",
+  "occurred_at": "2026-05-11T10:30:47.123024926Z",
+  "knot_id": "foolery-9bb8",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-9bb8-overview-filters-inrepo"
+  }
+}

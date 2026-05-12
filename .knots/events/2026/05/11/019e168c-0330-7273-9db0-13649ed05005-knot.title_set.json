@@ -1,0 +1,10 @@
+{
+  "event_id": "019e168c-0330-7273-9db0-13649ed05005",
+  "occurred_at": "2026-05-11T10:18:55.152477483Z",
+  "knot_id": "foolery-1f6e",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Diagnostics - Stale Grooming detail",
+    "to": "Stale Grooming: surface agent diagnostics on hung sessions"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019e168c-0330-7273-9db0-1374203d065a",
+  "occurred_at": "2026-05-11T10:18:55.152477483Z",
+  "knot_id": "foolery-1f6e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When an agent session hangs with no output, the stale-grooming detail view shows no context about what is stuck or for how long. Extend the stale-grooming detail panel to display: the launched agent's name and version, the timestamp of the last recorded output, and the elapsed time since the session was flagged as stale. This gives operators the minimum information needed to identify hung sessions and decide whether to intervene."
+  }
+}

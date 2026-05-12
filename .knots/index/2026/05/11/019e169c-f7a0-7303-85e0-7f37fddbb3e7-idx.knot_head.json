@@ -1,0 +1,21 @@
+{
+  "event_id": "019e169c-f7a0-7303-85e0-7f37fddbb3e7",
+  "occurred_at": "2026-05-11T10:37:26.304003858Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9bb8",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement overview tags and filters",
+    "type": "work",
+    "updated_at": "2026-05-11T10:37:26.304003858Z",
+    "workflow_id": "work_sdlc"
+  }
+}

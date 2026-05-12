@@ -1,0 +1,9 @@
+{
+  "event_id": "019e16a2-7bfc-72c0-aa44-6ae8dbaf5139",
+  "occurred_at": "2026-05-11T10:43:27.868200573Z",
+  "knot_id": "foolery-1f6e",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-1f6e-stale-diagnostics"
+  }
+}

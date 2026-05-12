@@ -1,0 +1,15 @@
+{
+  "event_id": "019e168d-f5ce-7f60-a83c-80917021a3db",
+  "occurred_at": "2026-05-11T10:21:02.798616937Z",
+  "knot_id": "foolery-9bf4",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Correction: user_complete_plan",
+    "datetime": "2026-05-11T10:21:02.798616937Z",
+    "entry_id": "019e168d-f5ce-7f60-a83c-80895270109c",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

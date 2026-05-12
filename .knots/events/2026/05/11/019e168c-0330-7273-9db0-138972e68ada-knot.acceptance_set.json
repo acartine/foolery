@@ -1,0 +1,9 @@
+{
+  "event_id": "019e168c-0330-7273-9db0-138972e68ada",
+  "occurred_at": "2026-05-11T10:18:55.152477483Z",
+  "knot_id": "foolery-1f6e",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The stale-grooming detail panel displays the agent name and version string for the affected session.\n2. Last-output timestamp is shown as both an absolute time and a relative label (e.g. \"14 minutes ago\").\n3. Elapsed time since the session was marked stale is shown and refreshes on panel reload.\n4. All three fields are present only on sessions in a stale state; healthy sessions are unaffected.\n5. Fields render correctly when any value is unavailable (e.g. agent version unknown) — no blank panel or crash.\n\nValidation: Use Playwright MCP (`mcp__playwright__browser_snapshot`, `mcp__playwright__browser_take_screenshot`) to open a stale session's detail panel and assert the agent name, last-output time, and stale-duration fields are present and non-empty in the rendered DOM."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019e169e-4510-7300-8dea-68375d51632f",
+  "occurred_at": "2026-05-11T10:38:51.664942821Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-af11",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Execute stale grooming outcomes",
+    "type": "work",
+    "updated_at": "2026-05-11T10:38:51.664942821Z",
+    "workflow_id": "work_sdlc"
+  }
+}

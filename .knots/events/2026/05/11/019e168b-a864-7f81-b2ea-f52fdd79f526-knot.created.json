@@ -1,0 +1,17 @@
+{
+  "event_id": "019e168b-a864-7f81-b2ea-f52fdd79f526",
+  "occurred_at": "2026-05-11T10:18:31.908464084Z",
+  "knot_id": "foolery-1f6e",
+  "type": "knot.created",
+  "data": {
+    "body": "We seem to have problems with certain agent prompts simply hanging.  Show the agent launched (name, versiion etc.,) and other meaningful info - last otuput time, etc.  we need to make this stop failing so hard.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Diagnostics - Stale Grooming detail",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

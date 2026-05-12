@@ -1,0 +1,15 @@
+{
+  "event_id": "019e168e-8c41-7883-b1ab-088b0a358a17",
+  "occurred_at": "2026-05-11T10:21:41.313847379Z",
+  "knot_id": "foolery-9bb8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan attached for implementing overview tags and filters. Recommended implementation touches only overview helper/component files: add/keep pure filter helpers in src/lib/beat-state-overview-filters.ts, wire local selected tag/setlist state through src/components/use-beat-overview-filters.ts, load per-repo plan summaries in src/components/use-overview-setlist-filter-options.ts, render compact multi-select controls in src/components/beat-overview-filter-toolbar.tsx, pass filtered beats into existing overview tab/group logic in src/components/beat-state-overview.tsx, and render visible label badges in src/components/beat-overview-tile.tsx. Tests should focus on helper semantics plus tile rendering; run focused tests and then lint/typecheck/full test/build. No child knots planned.",
+    "datetime": "2026-05-11T10:21:41.313847379Z",
+    "entry_id": "019e168e-8c41-7883-b1ab-0876fd2da41c",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

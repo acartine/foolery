@@ -1,0 +1,9 @@
+{
+  "event_id": "019e168b-a865-7c31-96b6-8c2f48da7812",
+  "occurred_at": "2026-05-11T10:18:31.908464084Z",
+  "knot_id": "foolery-1f6e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "We seem to have problems with certain agent prompts simply hanging.  Show the agent launched (name, versiion etc.,) and other meaningful info - last otuput time, etc.  we need to make this stop failing so hard."
+  }
+}

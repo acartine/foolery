@@ -1,0 +1,37 @@
+{
+  "event_id": "019e1698-8c38-7783-a952-5c2cb3a11d5e",
+  "occurred_at": "2026-05-11T10:32:36.664054198Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-af11",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Execute stale grooming outcomes",
+    "type": "work",
+    "updated_at": "2026-05-11T10:32:36.664054198Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019e1698-487f-7080-b284-0f7b3441e6ca"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019e1694-6364-75c0-8600-7e31f47ab9a2",
+  "occurred_at": "2026-05-11T10:28:04.068110906Z",
+  "knot_id": "foolery-af11",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented stale grooming outcome execution. Branch: worktree-foolery-af11-stale-grooming-2. Commit: 9d05db813c009ba8d61bc4c0afcbf2e0d993f65d. Summary: successful stale grooming jobs now append a stale-provenance handoff capsule through backend.update, still_do performs no other mutation, reshape applies suggested title/description/acceptance through backend.update, drop marks the beat abandoned through backend.markTerminal, and status/review observability is preserved. Verification: targeted stale grooming tests, lint, typecheck, full unit tests, and production build all passed.",
+    "datetime": "2026-05-11T10:28:04.068110906Z",
+    "entry_id": "019e1694-6364-75c0-8600-7e2cb2dbcd85",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

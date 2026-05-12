@@ -1,0 +1,21 @@
+{
+  "event_id": "019e16bb-dc17-7631-8746-238b6aec8aab",
+  "occurred_at": "2026-05-11T11:11:10.871216061Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1f6e",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Stale Grooming: surface agent diagnostics on hung sessions",
+    "type": "work",
+    "updated_at": "2026-05-11T11:11:10.871216061Z",
+    "workflow_id": "work_sdlc"
+  }
+}
