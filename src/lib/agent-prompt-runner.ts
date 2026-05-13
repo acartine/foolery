@@ -350,6 +350,7 @@ function spawnAndWire(
   const child = spawn(built.command, built.args, {
     cwd,
     env: process.env,
+    stdio: ["ignore", "pipe", "pipe"],
   });
   const pid = child.pid ?? "?";
   console.log(
