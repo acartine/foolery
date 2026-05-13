@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2157-00cf-7663-899d-0692573dd9c2",
+  "occurred_at": "2026-05-13T12:36:50.511821Z",
+  "knot_id": "foolery-2eec",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The Overview board for the `work_sdlc` workflow currently hides terminal-state columns on first load. This change makes all columns visible by default, merges the three terminal states (Shipped, Deferred, Abandoned) into a single \"Terminated\" column, and adds per-column hide controls plus a \"Restore all columns\" button.\n\nSpecific changes:\n- On first load (no saved preferences), every workflow column is visible, including Terminated.\n- Shipped, Deferred, and Abandoned cards are co-located in one \"Terminated\" column instead of three separate columns.\n- Each card in the Terminated column renders a small state badge (\"Shipped\", \"Deferred\", \"Abandoned\") using distinct colors — Shipped is visually prominent (green), while Deferred and Abandoned use muted, distinguishable tones.\n- Each column header includes a hide control (icon button). Clicking it collapses that column without affecting others.\n- A \"Restore all columns\" button appears whenever one or more columns are hidden; clicking it restores all hidden columns at once.\n- Column visibility is persisted in localStorage so the layout survives a page refresh."
+  }
+}

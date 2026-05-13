@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2162-6c00-7840-9faf-9e63109c7fa3",
+  "occurred_at": "2026-05-13T12:49:18.820151Z",
+  "knot_id": "foolery-9bc7",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Ensure overview column header titles are never clipped; allow title, Hide button, and count to wrap vertically when columns are narrow."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019e2156-363d-7571-b4e1-38cf870f02af",
+  "occurred_at": "2026-05-13T12:35:58.653844Z",
+  "knot_id": "foolery-2eec",
+  "type": "knot.created",
+  "data": {
+    "body": "To make it easier for users to understand and more \"Jira-like\"  just show all columns in the work_sdlc workflow, but create a combined \"Terminated\" column for the terminated states.  Terminated items should show the terminated state, along with a color-coded cue of the component so that the Shipped items standout.\n\nYou should be able to hide whatever column you want, and there should be a button to \"restore all\" to bring back hidden columns.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Overview: Always show all columns by default, including Terminated (Shipped, Deferred, Abandoned)",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

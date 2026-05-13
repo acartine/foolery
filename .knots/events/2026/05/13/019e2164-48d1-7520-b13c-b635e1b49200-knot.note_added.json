@@ -1,0 +1,15 @@
+{
+  "event_id": "019e2164-48d1-7520-b13c-b635e1b49200",
+  "occurred_at": "2026-05-13T12:51:20.91381Z",
+  "knot_id": "foolery-9bc7",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Patched overview state column headers: title badge can shrink/wrap with visible overflow, header row wraps, and Hide/count controls can wrap instead of clipping the state title. Verified lint, typecheck, unit tests, build, and browser smoke at /beats.",
+    "datetime": "2026-05-13T12:51:20.91381Z",
+    "entry_id": "019e2164-48d1-7520-b13c-b620eb358655",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

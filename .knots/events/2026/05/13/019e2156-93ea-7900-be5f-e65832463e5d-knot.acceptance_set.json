@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2156-93ea-7900-be5f-e65832463e5d",
+  "occurred_at": "2026-05-13T12:36:22.634306Z",
+  "knot_id": "foolery-2eec",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. On initial load (no saved preferences), the Overview board displays every workflow column including Terminated. No column is hidden by default.\n2. Shipped, Deferred, and Abandoned items appear together in a single \"Terminated\" column rather than separate columns.\n3. Each card in the Terminated column shows a visible state label (e.g. \"Shipped\", \"Deferred\", \"Abandoned\").\n4. The three terminal states use distinct colors: Shipped is visually prominent (e.g. green) and clearly distinguishable from Deferred and Abandoned.\n5. Every column has a hide control (e.g. a dismiss or eye icon in the column header). Clicking it removes that column from the board without affecting other columns.\n6. When at least one column is hidden, a \"Restore all columns\" button is visible. Clicking it makes all hidden columns reappear.\n7. When no columns are hidden, the \"Restore all columns\" button is absent or disabled.\n8. Column visibility state persists across page refreshes (localStorage or equivalent).\n\nValidation via Playwright MCP:\n- Navigate to the Overview board and assert all columns are present including Terminated.\n- Assert Shipped/Deferred/Abandoned cards appear inside the Terminated column with correct state labels and visually distinct badge colors.\n- Hide two columns via their controls; assert they disappear and the \"Restore all\" button appears.\n- Click \"Restore all\"; assert all columns reappear and the button disappears.\n- Reload the page; assert column visibility matches the last saved state."
+  }
+}

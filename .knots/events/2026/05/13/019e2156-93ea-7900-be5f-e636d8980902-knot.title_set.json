@@ -1,0 +1,10 @@
+{
+  "event_id": "019e2156-93ea-7900-be5f-e636d8980902",
+  "occurred_at": "2026-05-13T12:36:22.634306Z",
+  "knot_id": "foolery-2eec",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Overview: Always show all columns by default, including Terminated (Shipped, Deferred, Abandoned)",
+    "to": "Overview: Show all columns by default with combined Terminated column and hide/restore controls"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2156-3645-7420-91da-03203fed72d1",
+  "occurred_at": "2026-05-13T12:35:58.653844Z",
+  "knot_id": "foolery-2eec",
+  "type": "knot.description_set",
+  "data": {
+    "description": "To make it easier for users to understand and more \"Jira-like\"  just show all columns in the work_sdlc workflow, but create a combined \"Terminated\" column for the terminated states.  Terminated items should show the terminated state, along with a color-coded cue of the component so that the Shipped items standout.\n\nYou should be able to hide whatever column you want, and there should be a button to \"restore all\" to bring back hidden columns."
+  }
+}

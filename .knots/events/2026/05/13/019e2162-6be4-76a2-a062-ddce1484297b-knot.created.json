@@ -1,0 +1,17 @@
+{
+  "event_id": "019e2162-6be4-76a2-a062-ddce1484297b",
+  "occurred_at": "2026-05-13T12:49:18.820151Z",
+  "knot_id": "foolery-9bc7",
+  "type": "knot.created",
+  "data": {
+    "body": "Ensure overview column header titles are never clipped; allow title, Hide button, and count to wrap vertically when columns are narrow.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Fix overview column header wrapping",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2156-93ea-7900-be5f-e64837c7538b",
+  "occurred_at": "2026-05-13T12:36:22.634306Z",
+  "knot_id": "foolery-2eec",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The Overview board for the `work_sdlc` workflow currently hides terminal-state columns. Change the default so all columns are visible on first load, and group the terminal states (Shipped, Deferred, Abandoned) into a single \"Terminated\" column. Each card in the Terminated column must display its specific state as a label, with a distinct color per state so Shipped items stand out at a glance. Users may hide any column via a per-column control, and a \"Restore all columns\" button must re-show every hidden column."
+  }
+}
