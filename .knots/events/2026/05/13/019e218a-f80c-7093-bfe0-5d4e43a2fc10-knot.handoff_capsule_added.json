@@ -1,0 +1,15 @@
+{
+  "event_id": "019e218a-f80c-7093-bfe0-5d4e43a2fc10",
+  "occurred_at": "2026-05-13T13:33:36.13999Z",
+  "knot_id": "foolery-cd5e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Stale grooming handoff\n\nBeat was groomed because it was stale.\nDecision: still_do\nRationale: This is still product-relevant because it closes an operator observability gap in a live runtime path: today the watchdog can arm, fire, or be cleared without a clear log trail. The requested logging is narrowly scoped, low risk, and directly supports diagnosing silent-kill incidents, so the beat remains worth doing as written.\nAgent: codex-gpt-5-4-mini\nJob: stale-grooming-1\nRepo: /Users/cartine/foolery\nAction: acknowledged only; no beat fields changed.",
+    "datetime": "2026-05-13T13:33:36.13999Z",
+    "entry_id": "019e218a-f80c-7093-bfe0-5d3bfcf1b363",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}
