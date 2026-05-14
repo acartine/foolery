@@ -1,0 +1,50 @@
+{
+  "event_id": "019e2619-6290-7022-8526-28e31e0f3f8b",
+  "occurred_at": "2026-05-14T10:47:38.384065041Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-cd5e",
+    "next_step_metadata": {
+      "action_kind": "gate",
+      "action_state": "implementation_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "implementation",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Log watchdog arm and cancel events in interactive session runtime",
+    "type": "work",
+    "updated_at": "2026-05-14T10:47:38.384065041Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019e2619-2015-7ce2-878e-c30397c8d6dc"
+  }
+}

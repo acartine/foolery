@@ -1,0 +1,15 @@
+{
+  "event_id": "019e2619-8133-78b1-a4aa-7d809b4e9e37",
+  "occurred_at": "2026-05-14T10:47:46.227885933Z",
+  "knot_id": "foolery-36d2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Stale grooming handoff\n\nBeat was groomed because it was stale.\nDecision: drop\nRationale: Every acceptance criterion is already shipped. `src/lib/stale-beat-grooming.ts` provides the injected-clock age helper; `src/components/stale-beat-grooming-dialog.tsx` + `-trigger.tsx` + `-list.tsx` cover the count badge, beat list, and beat-detail opening; empty/loading states are handled inside the dialog. The implementation chose a toolbar trigger + modal dialog over a persistent right-side rail, but that is a resolved design decision, not a gap. Twelve library files and the full job-running pipeline exist. There is nothing left to build.\nAgent: claude-claude-sonnet-4-6\nJob: stale-grooming-1\nRepo: /home/cartine/foolery\nAction: marked abandoned.",
+    "datetime": "2026-05-14T10:47:46.227885933Z",
+    "entry_id": "019e2619-8133-78b1-a4aa-7d72c18043f4",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

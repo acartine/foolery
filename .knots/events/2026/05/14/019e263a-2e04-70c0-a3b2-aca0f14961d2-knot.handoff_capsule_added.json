@@ -1,0 +1,15 @@
+{
+  "event_id": "019e263a-2e04-70c0-a3b2-aca0f14961d2",
+  "occurred_at": "2026-05-14T11:23:27.620930953Z",
+  "knot_id": "foolery-3ji.5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Stale grooming handoff\n\nBeat was groomed because it was stale.\nDecision: reshape\nRationale: The underlying need is still plausible, but the beat is too implementation-specific and underspecified for the current product. Foolery already has a direct install flow and release/channel tooling, so this should be reframed around whether Homebrew is an intended supported distribution channel, plus what ships with it (formula/tap, update path, docs, and maintenance ownership).\nAgent: codex-gpt-5-4-mini\nJob: stale-grooming-8\nRepo: /home/cartine/foolery\nSuggested title: Add a supported Homebrew distribution channel\nSuggested description: Evaluate and implement Homebrew as an officially supported installation path for Foolery, separate from the existing direct Git/install.sh flow. Define the packaging, update story, and documentation needed to keep the Homebrew path maintainable.\nSuggested acceptance: - A Homebrew formula or tap exists for Foolery.\n- `brew install` installs a working Foolery CLI on supported macOS systems.\n- The Homebrew path is documented alongside the direct install path.\n- The update/reinstall story for Homebrew is defined and verified.\n- The support/ownership burden for maintaining the formula is explicit.\nApplied reshape fields: title, description, acceptance",
+    "datetime": "2026-05-14T11:23:27.620930953Z",
+    "entry_id": "019e263a-2e04-70c0-a3b2-ac91f59983c6",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

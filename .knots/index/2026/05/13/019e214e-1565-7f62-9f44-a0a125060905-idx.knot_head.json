@@ -1,0 +1,21 @@
+{
+  "event_id": "019e214e-1565-7f62-9f44-a0a125060905",
+  "occurred_at": "2026-05-13T12:27:05.943509778Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9v09.2",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Publish OpenAPI document endpoint",
+    "type": "work",
+    "updated_at": "2026-05-13T12:27:05.943509778Z",
+    "workflow_id": "work_sdlc"
+  }
+}

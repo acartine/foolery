@@ -1,0 +1,9 @@
+{
+  "event_id": "019e263c-3a21-7df2-9087-5a746e982b90",
+  "occurred_at": "2026-05-14T11:25:41.778458003Z",
+  "knot_id": "foolery-8202",
+  "type": "knot.description_set",
+  "data": {
+    "description": "in a standalone doc, explain how to set up with systemctl, binding to a specific itnerface (0.0.0.0 not ercommended, local network ip or tailscale ip recommended)."
+  }
+}

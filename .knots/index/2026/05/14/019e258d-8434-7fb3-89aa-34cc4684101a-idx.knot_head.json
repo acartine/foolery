@@ -1,0 +1,50 @@
+{
+  "event_id": "019e258d-8434-7fb3-89aa-34cc4684101a",
+  "occurred_at": "2026-05-14T08:14:51.956610566Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5afb",
+    "next_step_metadata": {
+      "action_kind": "gate",
+      "action_state": "implementation_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "implementation",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "diagnostics: move recent runtime events below scope refinement worker and stale grooming components",
+    "type": "work",
+    "updated_at": "2026-05-14T08:14:51.956610566Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019e2575-96db-7992-98ee-0ac4f210e785"
+  }
+}

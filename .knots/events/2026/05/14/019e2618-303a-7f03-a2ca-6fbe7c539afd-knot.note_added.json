@@ -1,0 +1,15 @@
+{
+  "event_id": "019e2618-303a-7f03-a2ca-6fbe7c539afd",
+  "occurred_at": "2026-05-14T10:46:19.962621914Z",
+  "knot_id": "foolery-cd5e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning note for watchdog arm/cancel logging\n\nScope: implement a narrow observability change in the interactive session runtime only. No child knots are needed.\n\nImplementation steps:\n1. In src/lib/agent-session-runtime-helpers.ts, update doResetWatchdog after the existing early returns and timer replacement logic so every successful watchdog arm emits console.log with the existing tag: [terminal-manager] [watchdog] armed pid=<child.pid or unknown> timeoutMs=<ms>. Keep the fire log unchanged and preserve the current behavior that no arm occurs for null watchdogTimeoutMs or completed HTTP sessions.\n2. In src/lib/agent-session-runtime.ts, update the dispose closure to log only when state.watchdogTimer is truthy immediately before or after clearTimeout. The line should use the same structured tag and fields: [terminal-manager] [watchdog] cancelled pid=<known pid or unknown> timeoutMs=<configured timeout>. Because dispose currently has no child parameter, either add minimal state to remember the last watchdog pid/timeout when arming, or introduce a small helper that can log from state/config without changing the public runtime API. Prefer the smallest change that avoids broad signature churn.\n3. Ensure dispose still sets state.watchdogTimer = null and state.stdinClosed = true, and emits no cancel log when watchdogTimer is already null.\n\nTest strategy:\n1. Extend src/lib/__tests__/terminal-manager-watchdog-e2e.test.ts or add a companion watchdog spec using the existing fake timer setup and console.log spy.\n2. Assert that creating/wiring a runtime with watchdogTimeoutMs=50 produces an arm log containing [terminal-manager] [watchdog], armed, pid=77777, and timeoutMs=50. Account for multiple arms from stdout/stderr wiring by finding a matching line rather than asserting exact call count.\n3. Assert that runtime.dispose() while the watchdog is active emits a cancel log containing [terminal-manager] [watchdog], cancelled, pid=77777, and timeoutMs=50.\n4. Assert that dispose emits no cancel log after the watchdog has already fired and nulled state.watchdogTimer, or in a fresh runtime where no watchdog was armed.\n5. Run bun run test, with special attention that the existing watchdog firing e2e assertions continue to pass unchanged.\n\nComplexity/risk: Low. The behavioral surface is logging only, but there is one small design risk around the dispose path lacking a child argument. Keep any additional state minimal and internal to SessionRuntimeState so the public runtime interface remains stable. Avoid changing timeout semantics or process termination flow.",
+    "datetime": "2026-05-14T10:46:19.962621914Z",
+    "entry_id": "019e2618-303a-7f03-a2ca-6fae3a4340d5",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

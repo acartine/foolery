@@ -1,0 +1,21 @@
+{
+  "event_id": "019e2621-7726-75f0-b083-fd3956b3af94",
+  "occurred_at": "2026-05-14T10:56:27.9429472Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-cd5e",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Log watchdog arm and cancel events in interactive session runtime",
+    "type": "work",
+    "updated_at": "2026-05-14T10:56:27.9429472Z",
+    "workflow_id": "work_sdlc"
+  }
+}

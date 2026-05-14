@@ -1,0 +1,21 @@
+{
+  "event_id": "019e2662-4b56-71a2-ad61-52bb302caffb",
+  "occurred_at": "2026-05-14T12:07:16.566397321Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6122",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Conditional restart recommendation in foolery update output",
+    "type": "work",
+    "updated_at": "2026-05-14T12:07:16.566397321Z",
+    "workflow_id": "work_sdlc"
+  }
+}

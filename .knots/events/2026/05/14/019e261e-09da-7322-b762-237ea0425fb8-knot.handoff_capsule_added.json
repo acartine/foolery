@@ -1,0 +1,15 @@
+{
+  "event_id": "019e261e-09da-7322-b762-237ea0425fb8",
+  "occurred_at": "2026-05-14T10:52:43.354321517Z",
+  "knot_id": "foolery-9v09.3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Stale grooming handoff\n\nBeat was groomed because it was stale.\nDecision: drop\nRationale: docs/API.md already exists and fully covers every item in the description: domain overview, agent-oriented workflows, multi-repo _repo usage, and error handling conventions. The beat has been completed without being formally closed.\nAgent: claude-claude-sonnet-4-6\nJob: stale-grooming-4\nRepo: /home/cartine/foolery\nAction: marked abandoned.",
+    "datetime": "2026-05-14T10:52:43.354321517Z",
+    "entry_id": "019e261e-09da-7322-b762-2364ca7b0ef6",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

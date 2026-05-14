@@ -1,0 +1,9 @@
+{
+  "event_id": "019e265d-00f1-7312-833a-1f1ce77d3428",
+  "occurred_at": "2026-05-14T12:01:29.841133863Z",
+  "knot_id": "foolery-8202",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-8202-debian-service"
+  }
+}

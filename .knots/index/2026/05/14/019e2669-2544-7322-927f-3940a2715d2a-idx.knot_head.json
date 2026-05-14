@@ -1,0 +1,21 @@
+{
+  "event_id": "019e2669-2544-7322-927f-3940a2715d2a",
+  "occurred_at": "2026-05-14T12:14:45.572195128Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-77d8",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add default profile setting for new beat creation",
+    "type": "work",
+    "updated_at": "2026-05-14T12:14:45.572195128Z",
+    "workflow_id": "work_sdlc"
+  }
+}

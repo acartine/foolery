@@ -1,0 +1,15 @@
+{
+  "event_id": "019e2622-d6fa-7ca2-b783-a713d442799b",
+  "occurred_at": "2026-05-14T10:57:58.010640625Z",
+  "knot_id": "foolery-9725",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Correction: Stale grooming decision: drop",
+    "datetime": "2026-05-14T10:57:58.010640625Z",
+    "entry_id": "019e2622-d6fa-7ca2-b783-a7073b0d7ae4",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

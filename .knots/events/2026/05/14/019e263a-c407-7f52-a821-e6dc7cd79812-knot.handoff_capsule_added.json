@@ -1,0 +1,15 @@
+{
+  "event_id": "019e263a-c407-7f52-a821-e6dc7cd79812",
+  "occurred_at": "2026-05-14T11:24:06.02307705Z",
+  "knot_id": "foolery-9v09.4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Stale grooming handoff\n\nBeat was groomed because it was stale.\nDecision: drop\nRationale: `docs/MANIFEST.md` already points to the canonical API locations (`/api/openapi.json` and `docs/API.md`), so the requested replacement appears to be done. Keeping this beat would add no product value and would just duplicate existing documentation work.\nAgent: codex-gpt-5-4-mini\nJob: stale-grooming-10\nRepo: /home/cartine/foolery\nAction: marked abandoned.",
+    "datetime": "2026-05-14T11:24:06.02307705Z",
+    "entry_id": "019e263a-c407-7f52-a821-e6c5a354ee04",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

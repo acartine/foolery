@@ -1,0 +1,37 @@
+{
+  "event_id": "019e2594-cca6-7110-a79d-145b6579aa92",
+  "occurred_at": "2026-05-14T08:22:49.254561554Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e070",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Diagnostics: show selected agent, model, and version in scope refinement worker",
+    "type": "work",
+    "updated_at": "2026-05-14T08:22:49.254561554Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019e2594-a612-7bc0-bbc6-8765d066d641"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019e261c-b772-72b0-9b74-1ce3c2346e9a",
+  "occurred_at": "2026-05-14T10:51:16.722720072Z",
+  "knot_id": "foolery-cd5e",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-cd5e-watchdog-logs"
+  }
+}

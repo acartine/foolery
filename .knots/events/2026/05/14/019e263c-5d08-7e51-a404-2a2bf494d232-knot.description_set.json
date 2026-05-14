@@ -1,0 +1,9 @@
+{
+  "event_id": "019e263c-5d08-7e51-a404-2a2bf494d232",
+  "occurred_at": "2026-05-14T11:25:50.728612322Z",
+  "knot_id": "foolery-8202",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Create a standalone documentation page that explains how to run Foolery as a systemd service on Debian Linux. The doc should cover systemctl-based setup and explain how to bind the service to a specific network interface or IP address. It should recommend using a local network IP or a Tailscale IP, and note that binding to `0.0.0.0` is not recommended."
+  }
+}

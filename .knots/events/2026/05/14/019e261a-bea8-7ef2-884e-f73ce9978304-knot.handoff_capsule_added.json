@@ -1,0 +1,15 @@
+{
+  "event_id": "019e261a-bea8-7ef2-884e-f73ce9978304",
+  "occurred_at": "2026-05-14T10:49:07.496691081Z",
+  "knot_id": "foolery-3b78",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Stale grooming handoff\n\nBeat was groomed because it was stale.\nDecision: drop\nRationale: The feature is fully implemented. All four acceptance criteria are satisfied: (1) /api/beats/stale-grooming/options fetches registered agents and the dialog enforces selection before enqueueing; (2) model override is supported via the dispatch helper and review request payload; (3) stale-beat-grooming-dialog-list.tsx renders status and results inline per beat; (4) the job runner and store track state without touching beat workflow states, and the status endpoint supports polling. Six components, four API routes, thirteen library modules, nine unit/route tests, and two Storybook stories are all in place. Nothing in the acceptance criteria remains unbuilt.\nAgent: claude-claude-sonnet-4-6\nJob: stale-grooming-2\nRepo: /home/cartine/foolery\nAction: marked abandoned.",
+    "datetime": "2026-05-14T10:49:07.496691081Z",
+    "entry_id": "019e261a-bea8-7ef2-884e-f72e7a064db1",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019e259d-c93b-7520-a7eb-a80679f6c60d",
+  "occurred_at": "2026-05-14T08:32:38.203413356Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5afb",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "diagnostics: move recent runtime events below scope refinement worker and stale grooming components",
+    "type": "work",
+    "updated_at": "2026-05-14T08:32:38.203413356Z",
+    "workflow_id": "work_sdlc"
+  }
+}

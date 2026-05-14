@@ -1,0 +1,15 @@
+{
+  "event_id": "019e261b-6d6d-7d21-b205-1b9ce5b7ebc3",
+  "occurred_at": "2026-05-14T10:49:52.237098972Z",
+  "knot_id": "foolery-6b74",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Stale grooming handoff\n\nBeat was groomed because it was stale.\nDecision: drop\nRationale: The beat describes infrastructure that already exists in the codebase: the POST /beats/stale-grooming/ route, all three decision types (still_do/reshape/drop) in stale-beat-grooming-types.ts, an in-memory job queue with enqueue/dequeue, an async worker with health monitoring, and a status endpoint. The acceptance criteria are fully satisfied by the current implementation. This beat was never advanced to a terminal state after the work was completed, making it stale in the tracker rather than in value. No new implementation is needed.\nAgent: claude-claude-sonnet-4-6\nJob: stale-grooming-3\nRepo: /home/cartine/foolery\nAction: marked abandoned.",
+    "datetime": "2026-05-14T10:49:52.237098972Z",
+    "entry_id": "019e261b-6d6d-7d21-b205-1b852bb32408",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

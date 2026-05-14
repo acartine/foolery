@@ -1,0 +1,9 @@
+{
+  "event_id": "019e263d-387e-7cb2-8bd0-97996f7350f1",
+  "occurred_at": "2026-05-14T11:26:46.910463948Z",
+  "knot_id": "foolery-77d8",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. A 'Default profile' selector is present in the settings panel, populated with all profiles available from `kno profile list`.\n2. Saving the setting persists the chosen profile name to the Foolery settings store and survives app restart.\n3. Opening the new-beat dialog pre-selects the saved default profile; if no default is configured the existing fallback behaviour is unchanged.\n4. If the saved profile no longer exists in `kno profile list`, the selector shows a visible error and the new-beat dialog falls back gracefully without silently substituting another profile.\n5. No hardcoded profile name strings are introduced; profile options are always derived from the live `kno profile list` output."
+  }
+}

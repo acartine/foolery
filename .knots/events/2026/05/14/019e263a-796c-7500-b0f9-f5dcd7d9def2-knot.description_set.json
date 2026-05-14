@@ -1,0 +1,9 @@
+{
+  "event_id": "019e263a-796c-7500-b0f9-f5dcd7d9def2",
+  "occurred_at": "2026-05-14T11:23:46.924716017Z",
+  "knot_id": "foolery-9v09.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Audit the current Foolery API surface against `/api/openapi.json`, fill any missing routes or schema details, and add regression coverage so the spec stays aligned with request/response shapes, examples, and error responses as the API evolves."
+  }
+}

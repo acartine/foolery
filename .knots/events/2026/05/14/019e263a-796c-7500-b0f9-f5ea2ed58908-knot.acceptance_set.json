@@ -1,0 +1,9 @@
+{
+  "event_id": "019e263a-796c-7500-b0f9-f5ea2ed58908",
+  "occurred_at": "2026-05-14T11:23:46.924716017Z",
+  "knot_id": "foolery-9v09.1",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- `/api/openapi.json` includes every currently shipped API route\n- Each documented route has request/response schemas and representative examples where applicable\n- Error responses are documented for all non-2xx surfaces that the API exposes\n- Regression tests fail when a new route or schema change is added without updating the OpenAPI spec"
+  }
+}

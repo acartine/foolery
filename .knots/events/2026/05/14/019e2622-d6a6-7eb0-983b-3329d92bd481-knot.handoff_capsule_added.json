@@ -1,0 +1,15 @@
+{
+  "event_id": "019e2622-d6a6-7eb0-983b-3329d92bd481",
+  "occurred_at": "2026-05-14T10:57:57.926335075Z",
+  "knot_id": "foolery-9725",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Stale grooming handoff\n\nBeat was groomed because it was stale.\nDecision: drop\nRationale: The feature is already shipped. Optimistic release updates are fully implemented via release-pending-store.ts (Zustand store), beat-release-optimism.ts (optimism logic with markPendingRelease/applyPendingBeatReleases), and useDisplayedBeats in page.tsx. The overview repaints immediately on Release click and reconciles with server truth — exactly what this beat specifies.\nAgent: claude-claude-sonnet-4-6\nJob: stale-grooming-7\nRepo: /home/cartine/foolery\nAction: marked abandoned.",
+    "datetime": "2026-05-14T10:57:57.926335075Z",
+    "entry_id": "019e2622-d6a6-7eb0-983b-331a227cdf81",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

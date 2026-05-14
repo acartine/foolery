@@ -1,0 +1,15 @@
+{
+  "event_id": "019e263a-796c-7500-b0f9-f60fe25b0ac6",
+  "occurred_at": "2026-05-14T11:23:46.924716017Z",
+  "knot_id": "foolery-9v09.1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Stale grooming handoff\n\nBeat was groomed because it was stale.\nDecision: reshape\nRationale: The repo already serves an OpenAPI 3.1 spec at `/api/openapi.json`, and the spec is modularized and tested. So the original “author the contract” framing is stale: the useful work now is keeping that contract complete and synchronized with the live API surface, especially as routes and schemas evolve. This beat still matters, but it should focus on coverage gaps, examples, and regression protection rather than creating the spec from scratch.\nAgent: codex-gpt-5-4-mini\nJob: stale-grooming-9\nRepo: /home/cartine/foolery\nSuggested title: Keep Foolery OpenAPI contract in sync with live API routes\nSuggested description: Audit the current Foolery API surface against `/api/openapi.json`, fill any missing routes or schema details, and add regression coverage so the spec stays aligned with request/response shapes, examples, and error responses as the API evolves.\nSuggested acceptance: - `/api/openapi.json` includes every currently shipped API route\n- Each documented route has request/response schemas and representative examples where applicable\n- Error responses are documented for all non-2xx surfaces that the API exposes\n- Regression tests fail when a new route or schema change is added without updating the OpenAPI spec\nApplied reshape fields: title, description, acceptance",
+    "datetime": "2026-05-14T11:23:46.924716017Z",
+    "entry_id": "019e263a-796c-7500-b0f9-f5f3809b159f",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

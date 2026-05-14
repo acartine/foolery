@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2618-45a9-7fb1-bfda-55a3ada7e48d",
+  "occurred_at": "2026-05-14T10:46:25.449438453Z",
+  "knot_id": "foolery-cc2d",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-cc2d-diag-local"
+  }
+}

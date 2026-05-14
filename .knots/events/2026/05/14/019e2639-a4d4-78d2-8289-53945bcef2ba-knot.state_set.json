@@ -1,0 +1,13 @@
+{
+  "event_id": "019e2639-a4d4-78d2-8289-53945bcef2ba",
+  "occurred_at": "2026-05-14T11:22:52.500016174Z",
+  "knot_id": "foolery-qbor",
+  "type": "knot.state_set",
+  "data": {
+    "force": true,
+    "from": "implementing",
+    "profile_id": "autopilot",
+    "to": "abandoned",
+    "workflow_id": "work_sdlc"
+  }
+}

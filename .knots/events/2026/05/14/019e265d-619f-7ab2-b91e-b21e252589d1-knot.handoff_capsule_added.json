@@ -1,0 +1,15 @@
+{
+  "event_id": "019e265d-619f-7ab2-b91e-b21e252589d1",
+  "occurred_at": "2026-05-14T12:01:54.591929361Z",
+  "knot_id": "foolery-8202",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Branch: worktree-foolery-8202-debian-service\nCommit: 1bd2263d\n\nAdded `docs/debian-systemd-service.md`: a standalone guide for running\nFoolery as a user-level systemd service on Debian. Covers writing the\n`foolery.service` unit, install/start/enable with `systemctl`, verifying\nthe bind address with `ss -ltnp`, day-to-day systemctl commands, and\ncommon troubleshooting.\n\nThe doc explicitly recommends a Tailscale IP (preferred) or LAN IP for\n`FOOLERY_HOST`, and calls out that `0.0.0.0` is not recommended because\nFoolery has no built-in auth.\n\nAlso added a one-line index entry in `docs/README.md`.\n\nDoc-only change. `bun run lint`, `bun x tsc --noEmit`, `bun run test`\n(2761 passed / 268 files), and `bun run build` all pass.",
+    "datetime": "2026-05-14T12:01:54.591929361Z",
+    "entry_id": "019e265d-619f-7ab2-b91e-b20415b215aa",
+    "model": "Opus",
+    "username": "Claude",
+    "version": "4.7"
+  }
+}

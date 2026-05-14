@@ -1,0 +1,21 @@
+{
+  "event_id": "019e2639-a4e2-7491-bffa-472debe7e24b",
+  "occurred_at": "2026-05-14T11:22:52.500016174Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-qbor",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "app should check for new versions periodically",
+    "type": "work",
+    "updated_at": "2026-05-14T11:22:52.500016174Z",
+    "workflow_id": "work_sdlc"
+  }
+}

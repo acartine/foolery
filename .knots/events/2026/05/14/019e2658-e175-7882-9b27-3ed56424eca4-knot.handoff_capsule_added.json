@@ -1,0 +1,15 @@
+{
+  "event_id": "019e2658-e175-7882-9b27-3ed56424eca4",
+  "occurred_at": "2026-05-14T11:56:59.637245207Z",
+  "knot_id": "foolery-77d8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. Existing `defaults.profileId` and Defaults-tab selector are already present, but UI/API currently hardcode `autopilot` fallbacks and silently substitute choices. Implement by centralizing live-profile default resolution, comparing saved ids against `listWorkflows()`/`kno profile list` data, showing a visible stale-profile error in settings, preselecting valid saved defaults in `CreateBeatDialog`, and making `POST /api/beats` read settings at creation time when no explicit profile is provided. Add resolver, UI, and API/helper tests; run install plus lint/typecheck/test/build in the implementation worktree.",
+    "datetime": "2026-05-14T11:56:59.637245207Z",
+    "entry_id": "019e2658-e175-7882-9b27-3ec4622f038c",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

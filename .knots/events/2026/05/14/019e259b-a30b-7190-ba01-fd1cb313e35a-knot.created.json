@@ -1,0 +1,17 @@
+{
+  "event_id": "019e259b-a30b-7190-ba01-fd1cb313e35a",
+  "occurred_at": "2026-05-14T08:30:17.355544076Z",
+  "knot_id": "foolery-46f6",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "lease",
+    "state": "lease_ready",
+    "title": "Lease: foolery:terminal_manager_take:term-1778746489578-vfsm6p",
+    "type": "lease",
+    "workflow_id": "lease_sdlc"
+  }
+}

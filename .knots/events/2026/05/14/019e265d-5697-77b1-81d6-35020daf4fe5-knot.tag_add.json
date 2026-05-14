@@ -1,0 +1,9 @@
+{
+  "event_id": "019e265d-5697-77b1-81d6-35020daf4fe5",
+  "occurred_at": "2026-05-14T12:01:51.767270273Z",
+  "knot_id": "foolery-6122",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-6122-restart-recommendation-2"
+  }
+}

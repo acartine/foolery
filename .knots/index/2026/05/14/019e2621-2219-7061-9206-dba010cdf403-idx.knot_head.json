@@ -1,0 +1,37 @@
+{
+  "event_id": "019e2621-2219-7061-9206-dba010cdf403",
+  "occurred_at": "2026-05-14T10:56:06.169623065Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2eec",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Overview: Default all-columns-visible layout with merged Terminated column and hide/restore controls",
+    "type": "work",
+    "updated_at": "2026-05-14T10:56:06.169623065Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019e2620-da0f-7c42-8e78-c6fc4ba4b336"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "event_id": "019e263a-796c-7500-b0f9-f5c437dec938",
+  "occurred_at": "2026-05-14T11:23:46.924716017Z",
+  "knot_id": "foolery-9v09.1",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Author OpenAPI 3.1 contract for Foolery API",
+    "to": "Keep Foolery OpenAPI contract in sync with live API routes"
+  }
+}

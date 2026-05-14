@@ -1,0 +1,15 @@
+{
+  "event_id": "019e265d-a017-7602-841e-ac1c85735dc1",
+  "occurred_at": "2026-05-14T12:02:10.583640567Z",
+  "knot_id": "foolery-6122",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: worktree-foolery-6122-restart-recommendation-2\nCommit: ac4b977a\nSummary: suppresses the installer/update manual restart warning only when running on Debian Linux and systemctl can resolve foolery.service (system or user unit). Keeps the existing warning for Debian without the service and non-Debian Linux.\nVerification: bun run lint; bun run tsc --noEmit (bunx unavailable); bun run test; bun run test:manual -- src/lib/__manual_tests__/install-restart-recommendation.test.ts; bun run build.",
+    "datetime": "2026-05-14T12:02:10.583640567Z",
+    "entry_id": "019e265d-a017-7602-841e-ac0e457b958a",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

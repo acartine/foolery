@@ -1,0 +1,15 @@
+{
+  "event_id": "019e261c-b772-72b0-9b74-1d0aa1166326",
+  "occurred_at": "2026-05-14T10:51:16.722720072Z",
+  "knot_id": "foolery-cd5e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: worktree-foolery-cd5e-watchdog-logs\nCommit: d860589a\nSummary: added structured watchdog console.log events for arm and dispose cancellation, preserving the existing timeout fire behavior. Tests now assert armed/cancelled logs include the watchdog tag, pid=77777, and timeoutMs=50, and assert dispose emits no cancel log after the watchdog has already fired.\nVerification: bun run lint; bun x tsc --noEmit (bunx unavailable in this shell); bun run test; bun run build.",
+    "datetime": "2026-05-14T10:51:16.722720072Z",
+    "entry_id": "019e261c-b772-72b0-9b74-1cf8600b2ee0",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

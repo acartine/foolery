@@ -1,0 +1,21 @@
+{
+  "event_id": "019e259b-cd1b-76d1-964d-c53ded3e72a7",
+  "occurred_at": "2026-05-14T08:30:28.123058394Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9bc7",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix overview column header wrapping",
+    "type": "work",
+    "updated_at": "2026-05-14T08:30:28.123058394Z",
+    "workflow_id": "work_sdlc"
+  }
+}

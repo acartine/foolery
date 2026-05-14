@@ -1,0 +1,9 @@
+{
+  "event_id": "019e263a-2e04-70c0-a3b2-ac8d7663bfc4",
+  "occurred_at": "2026-05-14T11:23:27.620930953Z",
+  "knot_id": "foolery-3ji.5",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- A Homebrew formula or tap exists for Foolery.\n- `brew install` installs a working Foolery CLI on supported macOS systems.\n- The Homebrew path is documented alongside the direct install path.\n- The update/reinstall story for Homebrew is defined and verified.\n- The support/ownership burden for maintaining the formula is explicit."
+  }
+}

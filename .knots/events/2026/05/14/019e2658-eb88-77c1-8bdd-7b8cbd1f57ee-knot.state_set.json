@@ -1,0 +1,17 @@
+{
+  "event_id": "019e2658-eb88-77c1-8bdd-7b8cbd1f57ee",
+  "occurred_at": "2026-05-14T11:57:02.216819444Z",
+  "knot_id": "foolery-77d8",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "agent_model": "GPT",
+    "agent_name": "Codex",
+    "agent_version": "5.5",
+    "force": false,
+    "from": "planning",
+    "profile_id": "autopilot",
+    "to": "ready_for_plan_review",
+    "workflow_id": "work_sdlc"
+  }
+}

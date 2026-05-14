@@ -1,0 +1,21 @@
+{
+  "event_id": "019e2619-818d-7921-ae7b-21b1b1fc91f3",
+  "occurred_at": "2026-05-14T10:47:46.304520293Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-36d2",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Add stale grooming overview rail",
+    "type": "work",
+    "updated_at": "2026-05-14T10:47:46.304520293Z",
+    "workflow_id": "work_sdlc"
+  }
+}

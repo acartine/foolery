@@ -1,0 +1,9 @@
+{
+  "event_id": "019e263c-8b55-7430-b6ec-3435a0b15436",
+  "occurred_at": "2026-05-14T11:26:02.57302144Z",
+  "knot_id": "foolery-6122",
+  "type": "knot.description_set",
+  "data": {
+    "description": "update the foolery update output to see only recommend foolery restart IF\n\n- it's not debian linux or\n- foolery is not registered as service in systemctl"
+  }
+}

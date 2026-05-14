@@ -1,0 +1,21 @@
+{
+  "event_id": "019e261e-0a3b-74b2-95e2-3f6ef163fe9e",
+  "occurred_at": "2026-05-14T10:52:43.439000697Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9v09.3",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Write /docs/API.md workflow guide",
+    "type": "work",
+    "updated_at": "2026-05-14T10:52:43.439000697Z",
+    "workflow_id": "work_sdlc"
+  }
+}

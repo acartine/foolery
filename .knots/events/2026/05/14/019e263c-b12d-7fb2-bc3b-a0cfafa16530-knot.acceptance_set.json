@@ -1,0 +1,9 @@
+{
+  "event_id": "019e263c-b12d-7fb2-bc3b-a0cfafa16530",
+  "occurred_at": "2026-05-14T11:26:12.269676602Z",
+  "knot_id": "foolery-6122",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- On Debian Linux with foolery registered as a systemd service: update output does NOT include a manual restart recommendation\n- On Debian Linux without foolery registered as a systemd service: update output includes the restart recommendation\n- On non-Debian Linux or non-Linux OS: update output includes the restart recommendation\n- No change to any other part of the update output"
+  }
+}

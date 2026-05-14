@@ -1,0 +1,15 @@
+{
+  "event_id": "019e2622-3207-7622-9766-fb70c6e5ff05",
+  "occurred_at": "2026-05-14T10:57:15.783204709Z",
+  "knot_id": "foolery-2e97",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Stale grooming handoff\n\nBeat was groomed because it was stale.\nDecision: drop\nRationale: Every implementation violation listed under 'What's wrong' has been remediated: `normalizeOpenCodeModel` exists and is wired into `normalizeAgentIdentity` with explicit logic to prevent the binary-version leak; `to-active-agent-info.ts` was deleted; `terminal-store.ts` was refactored to store only `knotsLeaseId` with an explanatory docblock; `use-agent-info-map.ts` no longer re-normalizes; `beat-table-metadata.tsx` uses single canonical keys per field; `buildAgentLabel` is gone. The test files for AC-1 (`agent-identity-opencode.test.ts`) and AC-9 (`knots-lease-roundtrip.test.ts`) exist, and `docs/knots-agent-identity-contract.md` exists for AC-8. The beat is stranded in `ready_for_planning` because it was never advanced as the fixes landed across prior commits. There is no remaining implementation work to start.\nAgent: claude-claude-sonnet-4-6\nJob: stale-grooming-6\nRepo: /home/cartine/foolery\nAction: marked abandoned.",
+    "datetime": "2026-05-14T10:57:15.783204709Z",
+    "entry_id": "019e2622-3207-7622-9766-fb6b3ae9daf4",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

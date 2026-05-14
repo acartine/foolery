@@ -1,0 +1,21 @@
+{
+  "event_id": "019e263a-c466-7aa2-964e-14e2360b1744",
+  "occurred_at": "2026-05-14T11:24:06.10616486Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9v09.4",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Replace MANIFEST.md API section with canonical links",
+    "type": "work",
+    "updated_at": "2026-05-14T11:24:06.10616486Z",
+    "workflow_id": "work_sdlc"
+  }
+}

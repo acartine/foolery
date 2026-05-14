@@ -1,0 +1,9 @@
+{
+  "event_id": "019e258e-9036-76a3-a985-fdb0d33142f4",
+  "occurred_at": "2026-05-14T08:16:00.56631727Z",
+  "knot_id": "foolery-5afb",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-5afb-diagnostics-local"
+  }
+}

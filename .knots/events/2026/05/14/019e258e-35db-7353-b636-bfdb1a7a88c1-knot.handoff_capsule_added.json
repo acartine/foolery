@@ -1,0 +1,15 @@
+{
+  "event_id": "019e258e-35db-7353-b636-bfdb1a7a88c1",
+  "occurred_at": "2026-05-14T08:15:37.435971862Z",
+  "knot_id": "foolery-9bc7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. Implement in `src/components/beat-state-overview-matrix.tsx`: make the overview column header grow/wrap vertically at narrow column widths, keep the title badge wrapping locally, and make Hide/count controls wrap instead of forcing overflow. Avoid global `BeatStateBadge` changes. Verify narrow and full-width layout with browser overflow assertions plus repo quality gates.",
+    "datetime": "2026-05-14T08:15:37.435971862Z",
+    "entry_id": "019e258e-35db-7353-b636-bfc66892a16b",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

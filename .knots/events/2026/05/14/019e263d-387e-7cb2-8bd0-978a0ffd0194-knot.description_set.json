@@ -1,0 +1,9 @@
+{
+  "event_id": "019e263d-387e-7cb2-8bd0-978a0ffd0194",
+  "occurred_at": "2026-05-14T11:26:46.910463948Z",
+  "knot_id": "foolery-77d8",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Users currently have no way to persist a preferred workflow profile — every new beat defaults to the same hardcoded choice, forcing manual selection each time. Add a setting in the Foolery configuration UI (settings panel) that lets users choose which profile is selected by default when creating a new beat. The chosen value should be read at beat-creation time and pre-populate the profile picker."
+  }
+}

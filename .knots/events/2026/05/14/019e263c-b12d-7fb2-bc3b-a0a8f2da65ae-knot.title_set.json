@@ -1,0 +1,10 @@
+{
+  "event_id": "019e263c-b12d-7fb2-bc3b-a0a8f2da65ae",
+  "occurred_at": "2026-05-14T11:26:12.269676602Z",
+  "knot_id": "foolery-6122",
+  "type": "knot.title_set",
+  "data": {
+    "from": "enhance foolery update instructions",
+    "to": "Conditional restart recommendation in foolery update output"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019e2597-d4cd-7733-a7af-3e4d31238dc8",
+  "occurred_at": "2026-05-14T08:26:07.94963384Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e070",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Diagnostics: show selected agent, model, and version in scope refinement worker",
+    "type": "work",
+    "updated_at": "2026-05-14T08:26:07.94963384Z",
+    "workflow_id": "work_sdlc"
+  }
+}

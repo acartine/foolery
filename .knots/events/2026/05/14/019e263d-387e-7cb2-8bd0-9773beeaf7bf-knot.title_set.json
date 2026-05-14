@@ -1,0 +1,10 @@
+{
+  "event_id": "019e263d-387e-7cb2-8bd0-9773beeaf7bf",
+  "occurred_at": "2026-05-14T11:26:46.910463948Z",
+  "knot_id": "foolery-77d8",
+  "type": "knot.title_set",
+  "data": {
+    "from": "add config in settings to choose the default Profile when creating new beats",
+    "to": "Add default profile setting for new beat creation"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019e2622-326b-71e0-b8e4-74de3829817c",
+  "occurred_at": "2026-05-14T10:57:15.869971358Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2e97",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Canonical agent metadata: single extraction, lease-stamped, never re-derived",
+    "type": "work",
+    "updated_at": "2026-05-14T10:57:15.869971358Z",
+    "workflow_id": "work_sdlc"
+  }
+}

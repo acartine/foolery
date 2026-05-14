@@ -1,0 +1,21 @@
+{
+  "event_id": "019e2620-35a4-7b20-a18f-44517423b4b5",
+  "occurred_at": "2026-05-14T10:55:05.623647493Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5fc5",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Preserve state-level owners from Knots profile in Foolery runtime queue derivation",
+    "type": "work",
+    "updated_at": "2026-05-14T10:55:05.623647493Z",
+    "workflow_id": "work_sdlc"
+  }
+}

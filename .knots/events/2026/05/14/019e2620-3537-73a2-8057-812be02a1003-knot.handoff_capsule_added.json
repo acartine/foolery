@@ -1,0 +1,15 @@
+{
+  "event_id": "019e2620-3537-73a2-8057-812be02a1003",
+  "occurred_at": "2026-05-14T10:55:05.527678422Z",
+  "knot_id": "foolery-5fc5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Stale grooming handoff\n\nBeat was groomed because it was stale.\nDecision: drop\nRationale: The bug no longer exists. State-level ownership from Knots profiles is correctly preserved end-to-end: normalizeStateOwners() extracts profile.owners.states with explicit precedence (knots-backend-workflows.ts:56-76), stateOwners is stored on the MemoryWorkflowDescriptor (line 257), and workflowOwnerKindForState() returns the explicit state-level owner before falling back to step-level (workflows-runtime.ts:190-194). A regression test already covers this (custom-workflow-claimability.test.ts:110-113 asserts stateOwners mapping). The beat was never started (31 days in ready_for_planning) and describes work that is already done.\nAgent: claude-claude-sonnet-4-6\nJob: stale-grooming-5\nRepo: /home/cartine/foolery\nAction: marked abandoned.",
+    "datetime": "2026-05-14T10:55:05.527678422Z",
+    "entry_id": "019e2620-3537-73a2-8057-811844c70d7f",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019e2618-3b6c-7a70-8904-7b6731d1d9fc",
+  "occurred_at": "2026-05-14T10:46:22.828336172Z",
+  "knot_id": "foolery-cd5e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan attached for a narrow watchdog observability change. Implement arm logging in doResetWatchdog, cancel logging in runtime.dispose only when an active watchdog timer exists, and add local watchdog tests that spy on console.log for armed/cancelled lines with pid and timeoutMs. No child knots needed. Main risk is dispose lacking a child argument, so keep any added runtime state minimal and internal; do not alter watchdog firing semantics.",
+    "datetime": "2026-05-14T10:46:22.828336172Z",
+    "entry_id": "019e2618-3b6c-7a70-8904-7b5343fe3d79",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019e2663-d272-7751-8284-bd5fe227cec4",
+  "occurred_at": "2026-05-14T12:08:56.690291023Z",
+  "knot_id": "foolery-77d8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation complete. Default workflow profile is persisted via the existing defaults.profileId setting and applied at all beat-creation paths through a shared resolver (src/lib/profile-defaults.ts:resolveDefaultProfile). Settings UI shows a visible error when the saved profile is no longer in the live kno profile list. CreateBeatDialog and POST /api/beats both consult settings at creation time and fall back to the first live workflow with no hardcoded autopilot fallback remaining. Tests: src/lib/__tests__/profile-defaults.test.ts (resolver) and src/lib/__tests__/beats-route-default-profile.test.ts (API). Lint, typecheck, full test suite (2772 pass), and build all green. Review artifact: branch worktree-foolery-77d8-default-profile pushed to origin.",
+    "datetime": "2026-05-14T12:08:56.690291023Z",
+    "entry_id": "019e2663-d272-7751-8284-bd4d33b0e64a",
+    "model": "Opus",
+    "username": "Claude",
+    "version": "4.7"
+  }
+}

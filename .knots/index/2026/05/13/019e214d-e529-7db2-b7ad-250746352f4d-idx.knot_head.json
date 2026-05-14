@@ -1,0 +1,21 @@
+{
+  "event_id": "019e214d-e529-7db2-b7ad-250746352f4d",
+  "occurred_at": "2026-05-13T12:26:53.594531285Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-f219",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Investigate OpenCode label on maestro-5711",
+    "type": "work",
+    "updated_at": "2026-05-13T12:26:53.594531285Z",
+    "workflow_id": "work_sdlc"
+  }
+}

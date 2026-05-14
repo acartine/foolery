@@ -1,0 +1,15 @@
+{
+  "event_id": "019e2614-bf52-7cb0-bf8d-498b9df2a96e",
+  "occurred_at": "2026-05-14T10:42:34.450945884Z",
+  "knot_id": "foolery-2eec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. Implement in a dedicated worktree and run bun install --frozen-lockfile before checks. Primary files: src/lib/beat-state-overview.ts for merged terminal grouping and pure visibility helpers, src/components/beat-state-overview.tsx for localStorage-backed hidden-column state plus restore control, src/components/beat-state-overview-matrix.tsx for per-column icon hide controls and Terminated label, and src/components/beat-overview-tile.tsx for optional terminal state badges. Update focused tests in src/lib/__tests__/beat-state-overview.test.ts and src/components/__tests__/beat-state-overview-matrix-header.test.ts; validate with Playwright MCP per acceptance criteria. No child knots needed.",
+    "datetime": "2026-05-14T10:42:34.450945884Z",
+    "entry_id": "019e2614-bf52-7cb0-bf8d-497d1b7960c6",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

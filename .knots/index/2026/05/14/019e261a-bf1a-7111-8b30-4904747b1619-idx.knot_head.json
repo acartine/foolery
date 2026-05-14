@@ -1,0 +1,21 @@
+{
+  "event_id": "019e261a-bf1a-7111-8b30-4904747b1619",
+  "occurred_at": "2026-05-14T10:49:07.596150489Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3b78",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Wire stale grooming controls and status",
+    "type": "work",
+    "updated_at": "2026-05-14T10:49:07.596150489Z",
+    "workflow_id": "work_sdlc"
+  }
+}
