@@ -140,7 +140,7 @@ function BeatStateColumn({
   return (
     <section
       className={
-        "min-w-0 overflow-hidden border border-border/70"
+        "min-w-0 border border-border/70"
         + " bg-background"
       }
       data-testid={`beat-state-group-${group.state}`}
@@ -150,7 +150,7 @@ function BeatStateColumn({
         showHideControl={showHideControl}
         onHideEmptyColumn={onHideEmptyColumn}
       />
-      <div className="divide-y divide-border/60">
+      <div className="divide-y divide-border/60 overflow-hidden">
         {group.beats.length > 0 ? (
           group.beats.map((beat) => (
             <BeatOverviewTile
@@ -191,10 +191,10 @@ function BeatStateColumnHeader({
 }) {
   return (
     <div className={
-      "flex min-h-7 flex-wrap items-start justify-between gap-1.5"
+      "flex min-h-7 flex-wrap items-start gap-x-1.5 gap-y-0.5"
       + " border-b border-border/70 bg-muted/35 px-2 py-1"
     }>
-      <div className="flex min-w-0 flex-1 basis-14 items-start">
+      <div className="flex min-w-0 flex-1 items-start">
         <BeatStateBadge
           state={group.state}
           label={overviewStateLabel(group.state)}
@@ -224,7 +224,12 @@ function BeatStateColumnCount({
   onHideEmptyColumn: (state: string) => void;
 }) {
   return (
-    <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
+    <div
+      className={
+        "ml-auto flex min-w-0 flex-wrap items-center"
+        + " justify-end gap-x-1 gap-y-0.5"
+      }
+    >
       {showHideControl && (
         <button
           type="button"
