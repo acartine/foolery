@@ -10,6 +10,8 @@ Project documentation for Foolery.
 - **`SETTINGS.md`** — Settings schema and configuration reference
 - **`APPROVALS.md`** — Manual approval-flow harnesses and provider support notes
 - **`backend-extension-guide.md`** — How to add a new `BackendPort` implementation
+- **`debian-systemd-service.md`** — Run Foolery as a systemd service on Debian
+  Linux, including bind-address guidance (Tailscale / LAN, not `0.0.0.0`)
 - **`interactive-agent-session-protocol.md`** — Canonical contract for interactive
   agent session integrations
 - **`adr-knots-compatibility.md`** — Architecture decision record for Knots compatibility layer
