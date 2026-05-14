@@ -108,6 +108,9 @@ export function RuntimeDiagnosticsPanel() {
         ))}
       </div>
 
+      <ScopeRefinementDiagnosticsCard />
+      <StaleBeatGroomingDiagnosticsCard />
+
       <Card>
         <CardHeader>
           <CardTitle>Recent Runtime Events</CardTitle>
@@ -120,9 +123,6 @@ export function RuntimeDiagnosticsPanel() {
           <RecentEventsTable events={snapshot.recentEvents} />
         </CardContent>
       </Card>
-
-      <ScopeRefinementDiagnosticsCard />
-      <StaleBeatGroomingDiagnosticsCard />
     </div>
   );
 }
