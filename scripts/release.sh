@@ -281,7 +281,7 @@ wait_for_artifact_run() {
 verify_release_assets() {
   local tag="$1"
   local tarball_count jq_filter
-  jq_filter='[.assets[].name | select(test("^foolery-runtime-.*\.tar\.gz$"))] | length'
+  jq_filter='[.assets[].name | select(test("^foolery-runtime-.*[.]tar[.]gz$"))] | length'
   tarball_count="$(gh release view "$tag" --json assets --jq "$jq_filter" || true)"
 
   if [[ ! "$tarball_count" =~ ^[0-9]+$ ]] || ((tarball_count < 1)); then
