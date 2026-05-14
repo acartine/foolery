@@ -40,7 +40,7 @@ export interface OverviewStateTabSummary {
 
 export type OverviewSizingColumnCounts =
   Partial<Record<OverviewStateTabId, number>>;
-export type OverviewIntroducedColumnStates =
+export type OverviewHiddenColumnStates =
   Partial<Record<OverviewStateTabId, string[]>>;
 
 export const DEFAULT_OVERVIEW_STATE_TAB: OverviewStateTabId =
@@ -66,6 +66,8 @@ const WORK_ITEM_OVERVIEW_STATES = [
   "shipment_review",
 ] as const;
 
+export const TERMINATED_OVERVIEW_STATE = "terminated" as const;
+
 const OVERVIEW_TAB_REQUIRED_STATES: Record<
   OverviewStateTabId,
   readonly string[]
@@ -73,7 +75,7 @@ const OVERVIEW_TAB_REQUIRED_STATES: Record<
   work_items: WORK_ITEM_OVERVIEW_STATES,
   exploration: ["ready_for_exploration"],
   gates: ["ready_to_evaluate"],
-  terminated: ["abandoned", "deferred", "shipped"],
+  terminated: [TERMINATED_OVERVIEW_STATE],
 };
 
 const OVERVIEW_STATE_TAB_OVERRIDES = new Map<string, OverviewStateTabId>([
@@ -132,6 +134,13 @@ export function groupOverviewBeatsByState(
   const tabBeats = beats.filter((beat) =>
     overviewTabForBeat(beat) === tabId
   );
+  if (tabId === "terminated") {
+    return [{
+      state: TERMINATED_OVERVIEW_STATE,
+      required: true,
+      beats: [...tabBeats].sort(compareBeatsByPriorityThenUpdated),
+    }];
+  }
   const groups = new Map(
     groupBeatsByState(tabBeats).map((group) => [
       group.state,
@@ -284,85 +293,64 @@ export function visibleOverviewGroups(
 }
 
 export function renderableOverviewGroups(
-  tabId: OverviewStateTabId,
   groups: readonly BeatStateGroup[],
-  introducedStates: readonly string[],
+  hiddenStates: readonly string[],
 ): BeatStateGroup[] {
-  const introduced = new Set(introducedStates);
-  const byState = new Map(
-    groups.map((group) => [group.state, group] as const),
-  );
-
-  for (const state of introduced) {
-    if (byState.has(state)) continue;
-    byState.set(state, {
-      state,
-      required: false,
-      beats: [],
-    });
-  }
-
-  return [...byState.values()]
-    .filter((group) =>
-      group.beats.length > 0 || introduced.has(group.state)
-    )
-    .sort((left, right) =>
-      compareOverviewStatePriority(tabId, left.state, right.state)
-    );
+  const hidden = new Set(hiddenStates);
+  return groups.filter((group) => !hidden.has(group.state));
 }
 
 export function shouldShowOverviewColumnHideControl(
-  group: BeatStateGroup,
+  group?: BeatStateGroup,
 ): boolean {
-  return group.beats.length === 0;
+  void group;
+  return true;
 }
 
-export function nextOverviewIntroducedColumnStates(
+export function hideOverviewColumn(
+  current: OverviewHiddenColumnStates,
+  tabId: OverviewStateTabId,
+  state: string,
+): OverviewHiddenColumnStates {
+  const currentStates = current[tabId] ?? [];
+  if (currentStates.includes(state)) return current;
+  return {
+    ...current,
+    [tabId]: [...currentStates, state],
+  };
+}
+
+export function restoreOverviewColumns(
+  current: OverviewHiddenColumnStates,
+  tabId: OverviewStateTabId,
+): OverviewHiddenColumnStates {
+  if (!current[tabId]?.length) return current;
+  const next = { ...current };
+  delete next[tabId];
+  return next;
+}
+
+export function pruneOverviewHiddenColumnStates(
   currentStates: readonly string[] | undefined,
   groups: readonly BeatStateGroup[],
 ): string[] {
-  const next = new Set(currentStates ?? []);
-
-  for (const group of groups) {
-    if (group.beats.length > 0) next.add(group.state);
-  }
-
-  return [...next];
+  const availableStates = new Set(groups.map((group) => group.state));
+  return (currentStates ?? []).filter((state) =>
+    availableStates.has(state)
+  );
 }
 
-export function nextOverviewIntroducedColumns(
-  current: OverviewIntroducedColumnStates,
+export function nextOverviewHiddenColumns(
+  current: OverviewHiddenColumnStates,
   tabId: OverviewStateTabId,
   groups: readonly BeatStateGroup[],
-): OverviewIntroducedColumnStates {
-  const nextStates = nextOverviewIntroducedColumnStates(
+): OverviewHiddenColumnStates {
+  const nextStates = pruneOverviewHiddenColumnStates(
     current[tabId],
     groups,
   );
   if (sameStringArray(current[tabId] ?? [], nextStates)) {
     return current;
-  }
-  return {
-    ...current,
-    [tabId]: nextStates,
-  };
-}
-
-export function hideOverviewIntroducedColumn(
-  current: OverviewIntroducedColumnStates,
-  tabId: OverviewStateTabId,
-  state: string,
-): OverviewIntroducedColumnStates {
-  const nextStates = (current[tabId] ?? []).filter(
-    (currentState) => currentState !== state,
-  );
-  if (sameStringArray(current[tabId] ?? [], nextStates)) {
-    return current;
-  }
-  if (nextStates.length === 0) {
-    const next = { ...current };
-    delete next[tabId];
-    return next;
   }
   return {
     ...current,
@@ -473,4 +461,8 @@ function compareOverviewStatePriority(
   if (leftIndex !== -1) return -1;
   if (rightIndex !== -1) return 1;
   return compareWorkflowStatePriority(left, right);
+}
+
+export function isTerminatedOverviewGroup(state: string): boolean {
+  return state === TERMINATED_OVERVIEW_STATE;
 }

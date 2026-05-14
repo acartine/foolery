@@ -25,7 +25,7 @@ function renderMatrix(groups: BeatStateGroup[]): string {
       onOpenBeat: () => {},
       onFocusLeaseSession: () => {},
       onReleaseBeat: () => {},
-      onHideEmptyColumn: () => {},
+      onHideColumn: () => {},
     }),
   );
 }
@@ -90,7 +90,7 @@ describe("OverviewStateMatrix header wrapping", () => {
     expect(headerClass).not.toMatch(/\bjustify-between\b/);
   });
 
-  it("renders Hide and count inside a shrinkable wrapping container", () => {
+  it("renders hide control and count inside a wrapping container", () => {
     const html = renderMatrix([
       emptyGroup("ready_for_implementation_review"),
     ]);
@@ -98,8 +98,7 @@ describe("OverviewStateMatrix header wrapping", () => {
       html,
       "ready_for_implementation_review",
     );
-    const hideButton =
-      'data-testid="beat-state-empty-column-hide"';
+    const hideButton = 'data-testid="beat-state-column-hide"';
     const hideIdx = section.indexOf(hideButton);
     expect(hideIdx).toBeGreaterThan(0);
     const wrapperStart = section.lastIndexOf("<div", hideIdx);
@@ -112,6 +111,9 @@ describe("OverviewStateMatrix header wrapping", () => {
     expect(wrapperClass).toMatch(/\bflex-wrap\b/);
     expect(wrapperClass).not.toMatch(/\bshrink-0\b/);
     expect(wrapperClass).toMatch(/\bmin-w-0\b/);
+    expect(section).toContain(
+      'aria-label="Hide Ready Impl Review column"',
+    );
   });
 
   it("keeps the title badge able to wrap onto multiple lines", () => {

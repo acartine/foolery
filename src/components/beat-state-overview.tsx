@@ -17,14 +17,15 @@ import {
   DEFAULT_OVERVIEW_STATE_TAB,
   filterOverviewBeats,
   groupOverviewBeatsByState,
-  hideOverviewIntroducedColumn,
-  nextOverviewIntroducedColumns,
+  hideOverviewColumn,
+  nextOverviewHiddenColumns,
   overviewColumnWidthPx,
   renderableOverviewGroups,
+  restoreOverviewColumns,
 } from "@/lib/beat-state-overview";
 import type {
   BeatStateGroup,
-  OverviewIntroducedColumnStates,
+  OverviewHiddenColumnStates,
   OverviewLeaseInfo,
   OverviewStateTabId,
 } from "@/lib/beat-state-overview";
@@ -198,17 +199,16 @@ function BeatStateOverview({
     () => groupOverviewBeatsByState(filteredBeats, activeTab),
     [filteredBeats, activeTab],
   );
-  const introducedColumns = useOverviewIntroducedColumns({
+  const columnVisibility = useOverviewColumnVisibility({
     tabId: activeTab,
     groups,
   });
   const visibleGroups = useMemo(
     () => renderableOverviewGroups(
-      activeTab,
       groups,
-      introducedColumns.introducedStates,
+      columnVisibility.hiddenStates,
     ),
-    [activeTab, groups, introducedColumns.introducedStates],
+    [groups, columnVisibility.hiddenStates],
   );
   const visibleColumnCount = visibleGroups.length;
   const scrollportRef = useRef<HTMLDivElement | null>(null);
@@ -239,7 +239,7 @@ function BeatStateOverview({
       onOpenBeat={onOpenBeat}
       onFocusLeaseSession={onFocusLeaseSession}
       onReleaseBeat={onReleaseBeat}
-      onHideEmptyColumn={introducedColumns.onHideEmptyColumn}
+      onHideColumn={columnVisibility.onHideColumn}
       toolbarEnd={(
         <OverviewToolbarEnd
           beats={beats}
@@ -253,6 +253,8 @@ function BeatStateOverview({
           onTagCheckedChange={handleTagCheckedChange}
           onSetlistCheckedChange={handleSetlistCheckedChange}
           onClearFilters={handleClearFilters}
+          hiddenColumnCount={columnVisibility.hiddenStates.length}
+          onRestoreAllColumns={columnVisibility.onRestoreAllColumns}
         />
       )}
     />
@@ -271,6 +273,8 @@ function OverviewToolbarEnd({
   onTagCheckedChange,
   onSetlistCheckedChange,
   onClearFilters,
+  hiddenColumnCount,
+  onRestoreAllColumns,
 }: {
   beats: Beat[];
   isAllRepositories: boolean;
@@ -283,9 +287,25 @@ function OverviewToolbarEnd({
   onTagCheckedChange: (tagId: string, checked: boolean) => void;
   onSetlistCheckedChange: (setlistId: string, checked: boolean) => void;
   onClearFilters: () => void;
+  hiddenColumnCount: number;
+  onRestoreAllColumns: () => void;
 }) {
   return (
     <div className="flex min-w-0 flex-wrap items-center justify-end gap-1">
+      {hiddenColumnCount > 0 && (
+        <button
+          type="button"
+          className={
+            "h-7 rounded-sm border border-border bg-background"
+            + " px-2 text-[10px] font-medium text-muted-foreground"
+            + " hover:bg-muted hover:text-foreground"
+          }
+          data-testid="beat-state-restore-columns"
+          onClick={onRestoreAllColumns}
+        >
+          Restore all columns
+        </button>
+      )}
       <BeatOverviewFilterToolbar
         tagOptions={tagOptions}
         setlistOptions={setlistOptions}
@@ -305,20 +325,26 @@ function OverviewToolbarEnd({
   );
 }
 
-function useOverviewIntroducedColumns({
+const OVERVIEW_HIDDEN_COLUMNS_STORAGE_KEY =
+  "foolery:beat-overview:hidden-columns:v1";
+
+function useOverviewColumnVisibility({
   tabId,
   groups,
 }: {
   tabId: OverviewStateTabId;
   groups: readonly BeatStateGroup[];
 }): {
-  introducedStates: readonly string[];
-  onHideEmptyColumn: (state: string) => void;
+  hiddenStates: readonly string[];
+  onHideColumn: (state: string) => void;
+  onRestoreAllColumns: () => void;
 } {
-  const [introducedColumns, setIntroducedColumns] =
-    useState<OverviewIntroducedColumnStates>({});
-  const currentIntroducedColumns = nextOverviewIntroducedColumns(
-    introducedColumns,
+  const [hiddenColumns, setHiddenColumns] =
+    useState<OverviewHiddenColumnStates>(() =>
+      readOverviewHiddenColumns()
+    );
+  const currentHiddenColumns = nextOverviewHiddenColumns(
+    hiddenColumns,
     tabId,
     groups,
   );
@@ -327,8 +353,8 @@ function useOverviewIntroducedColumns({
     let cancelled = false;
     queueMicrotask(() => {
       if (cancelled) return;
-      setIntroducedColumns((current) =>
-        nextOverviewIntroducedColumns(current, tabId, groups)
+      setHiddenColumns((current) =>
+        nextOverviewHiddenColumns(current, tabId, groups)
       );
     });
     return () => {
@@ -336,16 +362,75 @@ function useOverviewIntroducedColumns({
     };
   }, [tabId, groups]);
 
-  const onHideEmptyColumn = useCallback((state: string) => {
-    setIntroducedColumns((current) =>
-      hideOverviewIntroducedColumn(current, tabId, state)
+  useEffect(() => {
+    writeOverviewHiddenColumns(currentHiddenColumns);
+  }, [currentHiddenColumns]);
+
+  const onHideColumn = useCallback((state: string) => {
+    setHiddenColumns((current) =>
+      hideOverviewColumn(current, tabId, state)
+    );
+  }, [tabId]);
+
+  const onRestoreAllColumns = useCallback(() => {
+    setHiddenColumns((current) =>
+      restoreOverviewColumns(current, tabId)
     );
   }, [tabId]);
 
   return {
-    introducedStates: currentIntroducedColumns[tabId] ?? [],
-    onHideEmptyColumn,
+    hiddenStates: currentHiddenColumns[tabId] ?? [],
+    onHideColumn,
+    onRestoreAllColumns,
   };
+}
+
+function readOverviewHiddenColumns(): OverviewHiddenColumnStates {
+  if (typeof window === "undefined") return {};
+  const raw = window.localStorage.getItem(
+    OVERVIEW_HIDDEN_COLUMNS_STORAGE_KEY,
+  );
+  if (!raw) return {};
+  try {
+    return parseOverviewHiddenColumns(JSON.parse(raw));
+  } catch {
+    return {};
+  }
+}
+
+function parseOverviewHiddenColumns(
+  value: unknown,
+): OverviewHiddenColumnStates {
+  if (!value || typeof value !== "object") return {};
+  const parsed: OverviewHiddenColumnStates = {};
+  for (const [tabId, states] of Object.entries(value)) {
+    if (!isOverviewStateTabId(tabId) || !Array.isArray(states)) {
+      continue;
+    }
+    parsed[tabId] = states.filter(
+      (state): state is string => typeof state === "string",
+    );
+  }
+  return parsed;
+}
+
+function writeOverviewHiddenColumns(
+  hiddenColumns: OverviewHiddenColumnStates,
+): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(
+    OVERVIEW_HIDDEN_COLUMNS_STORAGE_KEY,
+    JSON.stringify(hiddenColumns),
+  );
+}
+
+function isOverviewStateTabId(value: string): value is OverviewStateTabId {
+  return [
+    "work_items",
+    "exploration",
+    "gates",
+    "terminated",
+  ].includes(value);
 }
 
 function OverviewDegradedBanner(

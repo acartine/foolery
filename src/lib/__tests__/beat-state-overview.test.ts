@@ -5,10 +5,10 @@ import {
   filterOverviewBeats,
   groupBeatsByState,
   groupOverviewBeatsByState,
-  hideOverviewIntroducedColumn,
+  hideOverviewColumn,
   isOverviewActiveState,
   isOverviewBeat,
-  nextOverviewIntroducedColumns,
+  nextOverviewHiddenColumns,
   nextOverviewSizingColumnCount,
   nextOverviewSizingColumnCounts,
   normalizeOverviewState,
@@ -17,6 +17,7 @@ import {
   overviewLeaseInfoForBeat,
   overviewTabForBeat,
   overviewTabForState,
+  restoreOverviewColumns,
   renderableOverviewGroups,
   shouldShowOverviewColumnHideControl,
   visibleOverviewGroups,
@@ -228,15 +229,19 @@ describe("beat-state-overview tabs", () => {
         .map((group) => group.state),
     ).toEqual(["ready_to_evaluate", "ready_for_planning"]);
 
-    const terminated = groupOverviewBeatsByState(beats, "terminated");
+    const terminated = groupOverviewBeatsByState([
+      ...beats,
+      makeBeat("defer", "deferred"),
+      makeBeat("abandon", "abandoned"),
+    ], "terminated");
     expect(terminated.map((group) => group.state)).toEqual([
+      "terminated",
+    ]);
+    expect(terminated[0]?.beats.map((beat) => beat.state).sort()).toEqual([
       "abandoned",
       "deferred",
       "shipped",
     ]);
-    expect(
-      terminated.find((group) => group.state === "shipped")?.beats[0]?.id,
-    ).toBe("ship");
   });
 
   it("keeps required special-tab columns when those tabs are empty", () => {
@@ -247,9 +252,7 @@ describe("beat-state-overview tabs", () => {
       { state: "ready_to_evaluate", required: true, beats: [] },
     ]);
     expect(groupOverviewBeatsByState([], "terminated")).toMatchObject([
-      { state: "abandoned", required: true, beats: [] },
-      { state: "deferred", required: true, beats: [] },
-      { state: "shipped", required: true, beats: [] },
+      { state: "terminated", required: true, beats: [] },
     ]);
   });
 
@@ -266,70 +269,66 @@ describe("beat-state-overview tabs", () => {
   });
 });
 
-describe("beat-state-overview introduced columns", () => {
-  it("keeps introduced empty columns visible until hidden", () => {
-    let introduced = nextOverviewIntroducedColumns(
-      {},
-      "work_items",
-      groupOverviewBeatsByState([
-        makeBeat("plan", "planning"),
-        makeBeat("impl", "implementation"),
-      ]),
-    );
-
-    const emptiedGroups = groupOverviewBeatsByState([
+describe("beat-state-overview column visibility", () => {
+  it("shows all required columns by default until hidden", () => {
+    const groups = groupOverviewBeatsByState([
       makeBeat("impl", "implementation"),
     ]);
 
     expect(
       renderableOverviewGroups(
-        "work_items",
-        emptiedGroups,
-        introduced.work_items ?? [],
+        groups,
+        [],
       ).map((group) => group.state),
-    ).toEqual(["planning", "implementation"]);
+    ).toEqual([
+      "ready_for_planning",
+      "planning",
+      "ready_for_plan_review",
+      "plan_review",
+      "ready_for_implementation",
+      "implementation",
+      "ready_for_implementation_review",
+      "implementation_review",
+      "ready_for_shipment",
+      "shipment",
+      "ready_for_shipment_review",
+      "shipment_review",
+    ]);
 
-    introduced = hideOverviewIntroducedColumn(
-      introduced,
+    const hidden = hideOverviewColumn(
+      {},
       "work_items",
       "planning",
     );
 
     expect(
       renderableOverviewGroups(
-        "work_items",
-        emptiedGroups,
-        introduced.work_items ?? [],
+        groups,
+        hidden.work_items ?? [],
       ).map((group) => group.state),
-    ).toEqual(["implementation"]);
+    ).not.toContain("planning");
   });
 
-  it("reintroduces hidden columns when beats return", () => {
-    let introduced = nextOverviewIntroducedColumns(
-      {},
-      "work_items",
-      groupOverviewBeatsByState([
-        makeBeat("plan", "planning"),
-      ]),
-    );
-
-    introduced = hideOverviewIntroducedColumn(
-      introduced,
+  it("restores and prunes hidden column state", () => {
+    const groups = groupOverviewBeatsByState([
+      makeBeat("plan", "planning"),
+    ]);
+    let hidden = hideOverviewColumn(
+      { work_items: ["unknown_state"] },
       "work_items",
       "planning",
     );
-    introduced = nextOverviewIntroducedColumns(
-      introduced,
+    hidden = nextOverviewHiddenColumns(
+      hidden,
       "work_items",
-      groupOverviewBeatsByState([
-        makeBeat("plan", "planning"),
-      ]),
+      groups,
     );
 
-    expect(introduced.work_items).toEqual(["planning"]);
+    expect(hidden.work_items).toEqual(["planning"]);
+    expect(restoreOverviewColumns(hidden, "work_items")).toEqual({});
   });
 
-  it("shows the empty-column hide control only at zero count", () => {
+  it("shows the column hide control for every column", () => {
     const activeGroup = groupOverviewBeatsByState([
       makeBeat("plan", "planning"),
     ]).find((group) => group.state === "planning");
@@ -339,7 +338,7 @@ describe("beat-state-overview introduced columns", () => {
       beats: [],
     };
 
-    expect(shouldShowOverviewColumnHideControl(activeGroup!)).toBe(false);
+    expect(shouldShowOverviewColumnHideControl(activeGroup!)).toBe(true);
     expect(shouldShowOverviewColumnHideControl(emptyGroup)).toBe(true);
   });
 });

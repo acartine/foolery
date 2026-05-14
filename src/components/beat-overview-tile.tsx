@@ -9,6 +9,7 @@ import {
 import { overviewVisibleBeatTags } from "@/lib/beat-state-overview-filters";
 import { displayBeatLabel } from "@/lib/beat-display";
 import { BeatPriorityBadge } from "@/components/beat-priority-badge";
+import { BeatStateBadge } from "@/components/beat-state-badge";
 import { BeatTypeBadge } from "@/components/beat-type-badge";
 import { relativeTime } from "@/components/beat-column-time";
 
@@ -17,6 +18,7 @@ export function BeatOverviewTile({
   showRepoColumn,
   isAllRepositories,
   leaseInfo,
+  showStateBadge = false,
   onOpenBeat,
   onFocusLeaseSession,
   onReleaseBeat,
@@ -25,6 +27,7 @@ export function BeatOverviewTile({
   showRepoColumn: boolean;
   isAllRepositories: boolean;
   leaseInfo: OverviewLeaseInfo | null;
+  showStateBadge?: boolean;
   onOpenBeat: (beat: Beat) => void;
   onFocusLeaseSession: (sessionId: string) => void;
   onReleaseBeat: (beat: Beat) => void;
@@ -69,18 +72,10 @@ export function BeatOverviewTile({
         <div className="mt-0.5 line-clamp-2 text-[11px] font-medium leading-snug">
           {beat.title}
         </div>
-        <div className="mt-1 flex min-w-0 flex-wrap items-center gap-1">
-          <BeatTypeBadge
-            type={beat.type}
-            className={
-              "h-3.5 max-w-[8.5rem] rounded-sm px-1"
-              + " text-[9px] [&>svg]:size-2"
-            }
-          />
-          <span className="text-[9px] leading-3 text-muted-foreground">
-            {relativeTime(beat.updated)}
-          </span>
-        </div>
+        <OverviewTileMetadata
+          beat={beat}
+          showStateBadge={showStateBadge}
+        />
         {contextItems.length > 0 && (
           <div className={
             "mt-0.5 flex min-w-0 flex-wrap gap-x-1.5"
@@ -108,6 +103,35 @@ export function BeatOverviewTile({
           onReleaseBeat={onReleaseBeat}
         />
       )}
+    </div>
+  );
+}
+
+function OverviewTileMetadata({
+  beat,
+  showStateBadge,
+}: {
+  beat: Beat;
+  showStateBadge: boolean;
+}) {
+  return (
+    <div className="mt-1 flex min-w-0 flex-wrap items-center gap-1">
+      <BeatTypeBadge
+        type={beat.type}
+        className={
+          "h-3.5 max-w-[8.5rem] rounded-sm px-1"
+          + " text-[9px] [&>svg]:size-2"
+        }
+      />
+      {showStateBadge && (
+        <BeatStateBadge
+          state={beat.state}
+          className="h-3.5 rounded-sm px-1 text-[9px]"
+        />
+      )}
+      <span className="text-[9px] leading-3 text-muted-foreground">
+        {relativeTime(beat.updated)}
+      </span>
     </div>
   );
 }

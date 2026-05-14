@@ -3,12 +3,14 @@
 import {
   forwardRef,
 } from "react";
+import { EyeOff } from "lucide-react";
 import type {
   CSSProperties,
   ReactNode,
 } from "react";
 import type { Beat } from "@/lib/types";
 import {
+  isTerminatedOverviewGroup,
   shouldShowOverviewColumnHideControl,
 } from "@/lib/beat-state-overview";
 import type {
@@ -38,7 +40,7 @@ interface OverviewStateMatrixProps {
   onOpenBeat: (beat: Beat) => void;
   onFocusLeaseSession: (sessionId: string) => void;
   onReleaseBeat: (beat: Beat) => void;
-  onHideEmptyColumn: (state: string) => void;
+  onHideColumn: (state: string) => void;
   toolbarEnd?: ReactNode;
 }
 
@@ -79,7 +81,7 @@ export const OverviewStateMatrix = forwardRef<
             onOpenBeat={props.onOpenBeat}
             onFocusLeaseSession={props.onFocusLeaseSession}
             onReleaseBeat={props.onReleaseBeat}
-            onHideEmptyColumn={props.onHideEmptyColumn}
+            onHideColumn={props.onHideColumn}
           />
         ) : (
           <OverviewMatrixEmptyState />
@@ -109,7 +111,7 @@ function OverviewStateGrid(props: OverviewStateGridProps) {
           onOpenBeat={props.onOpenBeat}
           onFocusLeaseSession={props.onFocusLeaseSession}
           onReleaseBeat={props.onReleaseBeat}
-          onHideEmptyColumn={props.onHideEmptyColumn}
+          onHideColumn={props.onHideColumn}
         />
       ))}
     </div>
@@ -124,7 +126,7 @@ function BeatStateColumn({
   onOpenBeat,
   onFocusLeaseSession,
   onReleaseBeat,
-  onHideEmptyColumn,
+  onHideColumn,
 }: {
   group: BeatStateGroup;
   showRepoColumn: boolean;
@@ -133,9 +135,10 @@ function BeatStateColumn({
   onOpenBeat: (beat: Beat) => void;
   onFocusLeaseSession: (sessionId: string) => void;
   onReleaseBeat: (beat: Beat) => void;
-  onHideEmptyColumn: (state: string) => void;
+  onHideColumn: (state: string) => void;
 }) {
   const showHideControl = shouldShowOverviewColumnHideControl(group);
+  const showStateBadge = isTerminatedOverviewGroup(group.state);
 
   return (
     <section
@@ -148,7 +151,7 @@ function BeatStateColumn({
       <BeatStateColumnHeader
         group={group}
         showHideControl={showHideControl}
-        onHideEmptyColumn={onHideEmptyColumn}
+        onHideColumn={onHideColumn}
       />
       <div className="divide-y divide-border/60 overflow-hidden">
         {group.beats.length > 0 ? (
@@ -162,6 +165,7 @@ function BeatStateColumn({
                 beat,
                 leaseInfoByBeatKey,
               )}
+              showStateBadge={showStateBadge}
               onOpenBeat={onOpenBeat}
               onFocusLeaseSession={onFocusLeaseSession}
               onReleaseBeat={onReleaseBeat}
@@ -183,11 +187,11 @@ function BeatStateColumn({
 function BeatStateColumnHeader({
   group,
   showHideControl,
-  onHideEmptyColumn,
+  onHideColumn,
 }: {
   group: BeatStateGroup;
   showHideControl: boolean;
-  onHideEmptyColumn: (state: string) => void;
+  onHideColumn: (state: string) => void;
 }) {
   return (
     <div className={
@@ -208,7 +212,7 @@ function BeatStateColumnHeader({
       <BeatStateColumnCount
         group={group}
         showHideControl={showHideControl}
-        onHideEmptyColumn={onHideEmptyColumn}
+        onHideColumn={onHideColumn}
       />
     </div>
   );
@@ -217,11 +221,11 @@ function BeatStateColumnHeader({
 function BeatStateColumnCount({
   group,
   showHideControl,
-  onHideEmptyColumn,
+  onHideColumn,
 }: {
   group: BeatStateGroup;
   showHideControl: boolean;
-  onHideEmptyColumn: (state: string) => void;
+  onHideColumn: (state: string) => void;
 }) {
   return (
     <div
@@ -234,17 +238,18 @@ function BeatStateColumnCount({
         <button
           type="button"
           className={
-            "rounded-sm px-1 text-[9px] leading-4"
-            + " text-muted-foreground hover:bg-background"
-            + " hover:text-foreground"
+            "inline-flex size-4 items-center justify-center"
+            + " rounded-sm text-muted-foreground"
+            + " hover:bg-background hover:text-foreground"
           }
-          data-testid="beat-state-empty-column-hide"
+          data-testid="beat-state-column-hide"
           aria-label={
-            `Hide empty ${overviewColumnLabel(group.state)} column`
+            `Hide ${overviewColumnLabel(group.state)} column`
           }
-          onClick={() => onHideEmptyColumn(group.state)}
+          title={`Hide ${overviewColumnLabel(group.state)} column`}
+          onClick={() => onHideColumn(group.state)}
         >
-          Hide
+          <EyeOff className="size-3" aria-hidden="true" />
         </button>
       )}
       <span className={
@@ -279,6 +284,7 @@ const OVERVIEW_STATE_LABELS: Record<string, string> = {
   ready_for_shipment_review: "Ready Ship Review",
   shipment_review: "Shipment Review",
   ready_to_evaluate: "Ready Evaluate",
+  terminated: "Terminated",
 };
 
 function overviewStateLabel(state: string): string | undefined {

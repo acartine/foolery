@@ -45,4 +45,22 @@ describe("BeatOverviewTile", () => {
     expect(html).not.toContain("orchestration:wave:test");
     expect(html).not.toContain("commit:abc123");
   });
+
+  it("renders an exact state badge when requested", () => {
+    const html = renderToStaticMarkup(
+      createElement(BeatOverviewTile, {
+        beat: makeBeat({ state: "shipped" }),
+        showRepoColumn: false,
+        isAllRepositories: false,
+        leaseInfo: null,
+        showStateBadge: true,
+        onOpenBeat: () => {},
+        onFocusLeaseSession: () => {},
+        onReleaseBeat: () => {},
+      }),
+    );
+
+    expect(html).toContain("Shipped");
+    expect(html).toContain("bg-moss-100");
+  });
 });
