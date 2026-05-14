@@ -44,6 +44,7 @@ import {
   profileDisplayName,
   PROFILE_DESCRIPTIONS,
 } from "@/lib/workflows";
+import { resolveDefaultProfile } from "@/lib/profile-defaults";
 import type {
   DefaultsSettings,
   ScopeRefinementSettings,
@@ -77,6 +78,7 @@ export function SettingsDefaultsSection({
     queryKey: ["workflows"],
     queryFn: () => fetchWorkflows(),
   });
+  const workflowsLoaded = workflowResult !== undefined;
   const workflows =
     workflowResult?.ok && workflowResult.data
       ? workflowResult.data
@@ -90,22 +92,27 @@ export function SettingsDefaultsSection({
       }),
     ).entries(),
   );
-  const selectedProfileId =
-    defaults.profileId.trim().toLowerCase() ||
-    profileOptions.find(
-      ([id]) => id === "autopilot",
-    )?.[0] ||
-    profileOptions[0]?.[0] ||
-    "autopilot";
+  const resolution = resolveDefaultProfile(
+    workflows,
+    defaults.profileId,
+  );
+  const staleSavedProfileId =
+    workflowsLoaded && resolution.savedProfileStale
+      ? resolution.savedProfileId
+      : null;
+  const selectValue = staleSavedProfileId
+    ? ""
+    : resolution.selectedProfileId ?? "";
 
   return (
     <div className="space-y-3">
       <DefaultProfileSection
-        selectedProfileId={selectedProfileId}
+        selectValue={selectValue}
         profileOptions={profileOptions}
         defaults={defaults}
         onDefaultsChange={onDefaultsChange}
         onInfoOpen={() => setInfoOpen(true)}
+        staleSavedProfileId={staleSavedProfileId}
       />
       <MaxConcurrentSessionsSection
         value={maxConcurrentSessions}
@@ -139,17 +146,19 @@ export function SettingsDefaultsSection({
 type ProfileOption = readonly [string, string];
 
 function DefaultProfileSection({
-  selectedProfileId,
+  selectValue,
   profileOptions,
   defaults,
   onDefaultsChange,
   onInfoOpen,
+  staleSavedProfileId,
 }: {
-  selectedProfileId: string;
+  selectValue: string;
   profileOptions: ProfileOption[];
   defaults: DefaultsSettings;
   onDefaultsChange: (d: DefaultsSettings) => void;
   onInfoOpen: () => void;
+  staleSavedProfileId: string | null;
 }) {
   return (
     <div className="space-y-2 rounded-xl border border-accent/20 bg-background/60 p-3">
@@ -170,7 +179,7 @@ function DefaultProfileSection({
         </button>
       </div>
       <Select
-        value={selectedProfileId}
+        value={selectValue}
         onValueChange={(value) =>
           onDefaultsChange({
             ...defaults,
@@ -181,6 +190,7 @@ function DefaultProfileSection({
         <SelectTrigger
           id="default-profile"
           className="w-full border-primary/20 bg-background/80"
+          aria-invalid={staleSavedProfileId !== null}
         >
           <SelectValue placeholder="Select profile..." />
         </SelectTrigger>
@@ -192,10 +202,27 @@ function DefaultProfileSection({
           ))}
         </SelectContent>
       </Select>
-      <p className="text-[11px] text-muted-foreground">
-        The workflow profile pre-selected when creating
-        new beats with Shift+N.
-      </p>
+      {staleSavedProfileId !== null
+        ? (
+          <p
+            role="alert"
+            className="text-[11px] text-destructive"
+          >
+            Saved default profile{" "}
+            <code className="font-mono">
+              {staleSavedProfileId}
+            </code>{" "}
+            is no longer available. Pick a replacement to
+            save a valid default.
+          </p>
+        )
+        : (
+          <p className="text-[11px] text-muted-foreground">
+            The workflow profile pre-selected when creating
+            new beats with Shift+N. Leave unset to use the
+            first profile reported by the active backend.
+          </p>
+        )}
     </div>
   );
 }

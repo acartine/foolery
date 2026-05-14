@@ -265,8 +265,13 @@ export const backendSettingsSchema = z
 export const defaultsSettingsSchema = z
   .object({
     profileId: z.string().default("").describe(
-      "Default workflow profile id for newly created beats. Empty string "
-      + "falls back to the built-in `autopilot` profile.",
+      "Default workflow profile id for newly created beats. Must match "
+      + "a profile id returned by `kno profile list`. Empty string means "
+      + "\"no default configured\" — beat creation falls back to the "
+      + "first profile reported by the active backend. If the saved id "
+      + "no longer matches a live profile the settings UI surfaces an "
+      + "error and beat creation falls back gracefully without silently "
+      + "substituting another profile.",
     ),
     interactiveSessionTimeoutMinutes: z.number()
       .int()

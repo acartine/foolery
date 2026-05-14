@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
 import type { BeatListFilters } from "@/lib/backend-port";
+import type { MemoryWorkflowDescriptor } from "@/lib/types";
 import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
 import {
   backendErrorStatus,
@@ -15,6 +16,8 @@ import {
   listBeatsAcrossRegisteredRepos,
   streamBeatsAcrossRegisteredRepos,
 } from "@/lib/beats-multi-repo";
+import { loadSettings } from "@/lib/settings";
+import { resolveDefaultProfile } from "@/lib/profile-defaults";
 
 export async function GET(request: NextRequest) {
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
@@ -153,8 +156,6 @@ export async function POST(request: NextRequest) {
       }
 
       const selectedWorkflowId = parsed.data.profileId ?? parsed.data.workflowId;
-      const defaultWorkflowId = workflows.find((workflow) => workflow.id === "autopilot")?.id ?? workflows[0]!.id;
-
       if (selectedWorkflowId && !workflows.some((workflow) => workflow.id === selectedWorkflowId)) {
         return NextResponse.json(
           { error: `Unknown profileId "${selectedWorkflowId}".` },
@@ -162,9 +163,10 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const input = selectedWorkflowId
-        ? { ...parsed.data, profileId: selectedWorkflowId }
-        : { ...parsed.data, profileId: defaultWorkflowId };
+      const defaultWorkflowId = selectedWorkflowId
+        ?? await resolveDefaultProfileFromSettings(workflows);
+
+      const input = { ...parsed.data, profileId: defaultWorkflowId };
 
       const result = await measure("create", () => getBackend().create(input, repoPath));
       if (!result.ok) {
@@ -185,4 +187,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ data: result.data }, { status: 201 });
     }),
   );
+}
+
+async function resolveDefaultProfileFromSettings(
+  workflows: MemoryWorkflowDescriptor[],
+): Promise<string> {
+  let savedProfileId: string | undefined;
+  try {
+    const settings = await loadSettings();
+    savedProfileId = settings.defaults?.profileId;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(
+      `[beats-create] failed to load settings for default profile: ${message}`,
+    );
+  }
+  const resolution = resolveDefaultProfile(workflows, savedProfileId);
+  return resolution.selectedProfileId ?? workflows[0]!.id;
 }

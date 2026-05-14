@@ -17,7 +17,7 @@ import { createBeat, addDep, fetchWorkflows } from "@/lib/api";
 import { fetchSettings } from "@/lib/settings-api";
 import type { CreateBeatInput } from "@/lib/schemas";
 import { buildBeatFocusHref, stripBeatPrefix } from "@/lib/beat-navigation";
-import { profileDisplayName } from "@/lib/workflows";
+import { resolveDefaultProfile } from "@/lib/profile-defaults";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
 import { clearDraft } from "@/lib/create-draft-persistence";
 import {
@@ -44,27 +44,6 @@ interface CreateBeatDialogProps {
   onOpenChange: (open: boolean) => void;
   onCreated: () => void;
   repo?: string | null;
-}
-
-function resolveDefaultProfileId(
-  workflows: MemoryWorkflowDescriptor[],
-  settingsProfileId: string | undefined,
-): string | undefined {
-  const normalized = settingsProfileId
-    ? profileDisplayName(settingsProfileId).trim().toLowerCase()
-    : undefined;
-  return (
-    (normalized
-      ? workflows.find(
-          (w) =>
-            profileDisplayName(w.profileId ?? w.id)
-              .trim()
-              .toLowerCase() === normalized,
-        )?.id
-      : undefined) ??
-    workflows.find((w) => w.id === "autopilot")?.id ??
-    workflows[0]?.id
-  );
 }
 
 function buildToastAction(
@@ -100,10 +79,16 @@ function useCreateBeatQueries(
   const settingsProfileId = settingsResult?.ok
     ? settingsResult.data?.defaults?.profileId
     : undefined;
-  const defaultProfileId = resolveDefaultProfileId(
+  const resolution = resolveDefaultProfile(
     workflows,
     settingsProfileId,
   );
+  // Stale saved default: omit the preselection so the BeatForm/API
+  // fallback path runs gracefully instead of substituting an unrelated
+  // profile. The settings UI surfaces the stale state separately.
+  const defaultProfileId = resolution.savedProfileStale
+    ? undefined
+    : resolution.selectedProfileId;
   const isKnotsBackend = workflows.some(
     (w) => w.id === "autopilot" || w.id === "semiauto",
   );
