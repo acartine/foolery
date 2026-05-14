@@ -75,6 +75,7 @@ async function runOneJob(
   const pickedUpAt = Date.now();
   const state = getWorkerState();
   state.activeJobs.set(index, {
+    jobId: job.id,
     beatId: job.beatId,
     startedAt: pickedUpAt,
   });

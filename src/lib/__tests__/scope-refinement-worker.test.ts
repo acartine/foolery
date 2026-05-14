@@ -94,7 +94,7 @@ function setupScopeRefinementDefaults() {
 describe("processScopeRefinementJob: success", () => {
   beforeEach(setupScopeRefinementDefaults);
 
-    it("updates the beat and records a completion event", async () => {
+  it("updates the beat and records a completion event", async () => {
     const payload = '<scope_refinement_json>{"title":"Sharper title","description":"Clear description","acceptance":"Clear acceptance"}</scope_refinement_json>';
     const child = createMockChild(
       `${JSON.stringify({ type: "result", result: payload })}\n`,
@@ -505,6 +505,16 @@ describe("scope refinement worker: retry success path", () => {
     await vi.waitFor(() => {
       expect(mockSpawn).toHaveBeenCalledTimes(2);
     });
+
+    expect(getScopeRefinementWorkerHealth().activeJobs).toEqual([
+      expect.objectContaining({
+        beatId: "foolery-1",
+        agentName: "agent-b",
+        agentModel: "unknown",
+        agentVersion: "unknown",
+      }),
+    ]);
+
     successChild.emitOutput();
 
     await vi.waitFor(() => {

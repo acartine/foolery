@@ -99,6 +99,9 @@ function ActiveJobsTable({
         <TableHeader>
           <TableRow>
             <TableHead>Beat</TableHead>
+            <TableHead>Agent</TableHead>
+            <TableHead>Model</TableHead>
+            <TableHead>Version</TableHead>
             <TableHead>Age</TableHead>
             <TableHead>Started</TableHead>
           </TableRow>
@@ -109,9 +112,18 @@ function ActiveJobsTable({
             const isSlow = age > SLOW_THRESHOLD_MS;
             const isStalled = age > STALL_THRESHOLD_MS;
             return (
-              <TableRow key={`${j.beatId}-${j.startedAt}`}>
+              <TableRow key={j.jobId}>
                 <TableCell className="font-mono text-xs">
                   {j.beatId}
+                </TableCell>
+                <TableCell className="text-xs">
+                  {j.agentName ?? "Unknown"}
+                </TableCell>
+                <TableCell className="text-xs">
+                  {j.agentModel ?? "Unknown"}
+                </TableCell>
+                <TableCell className="text-xs">
+                  {j.agentVersion ?? "Unknown"}
                 </TableCell>
                 <TableCell
                   className={

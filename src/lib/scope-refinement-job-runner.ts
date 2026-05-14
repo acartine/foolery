@@ -19,6 +19,7 @@ import {
 import type { AgentTarget } from "@/lib/types-agent-target";
 import {
   MAX_RECENT_FAILURES,
+  buildAgentDiagnostic,
   fmtMs,
   getWorkerState,
   tag,
@@ -263,10 +264,21 @@ export async function processScopeRefinementJob(
     return;
   }
   const { agent, agentId } = resolved;
+  const agentDiagnostic = buildAgentDiagnostic(agent, agentId);
+  const state = getWorkerState();
+  for (const [workerIndex, activeJob] of state.activeJobs) {
+    if (activeJob.jobId !== job.id) continue;
+    state.activeJobs.set(workerIndex, {
+      ...activeJob,
+      ...agentDiagnostic,
+    });
+  }
   log.phase(
     "agent_resolved",
     Date.now() - tResolve,
-    `agent=${agentId ?? agent.label ?? agent.command}`,
+    `agent=${agentDiagnostic.agentName} `
+      + `model=${agentDiagnostic.agentModel} `
+      + `version=${agentDiagnostic.agentVersion}`,
   );
 
   const beat = await loadBeatOrFail(job, log);

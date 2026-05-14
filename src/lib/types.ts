@@ -441,7 +441,14 @@ export interface ScopeRefinementFailure {
 
 export interface ScopeRefinementWorkerHealth {
   workerCount: number;
-  activeJobs: Array<{ beatId: string; startedAt: number }>;
+  activeJobs: Array<{
+    jobId: string;
+    beatId: string;
+    startedAt: number;
+    agentName?: string;
+    agentModel?: string;
+    agentVersion?: string;
+  }>;
   totalCompleted: number;
   totalFailed: number;
   recentFailures: ScopeRefinementFailure[];

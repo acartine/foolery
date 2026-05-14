@@ -1,4 +1,5 @@
 import type { ScopeRefinementFailure } from "@/lib/types";
+import type { AgentTarget } from "@/lib/types-agent-target";
 
 export const MAX_RECENT_FAILURES = 20;
 
@@ -8,12 +9,25 @@ export interface WorkerState {
   workerStartedAt: number | null;
   activeJobs: Map<
     number,
-    { beatId: string; startedAt: number }
+    {
+      jobId: string;
+      beatId: string;
+      startedAt: number;
+      agentName?: string;
+      agentModel?: string;
+      agentVersion?: string;
+    }
   >;
   totalCompleted: number;
   totalFailed: number;
   recentFailures: ScopeRefinementFailure[];
   retryCounts: Map<string, number>;
+}
+
+export interface ScopeRefinementAgentDiagnostic {
+  agentName: string;
+  agentModel: string;
+  agentVersion: string;
 }
 
 const g = globalThis as typeof globalThis & {
@@ -46,4 +60,22 @@ export function fmtMs(ms: number): string {
   if (secs < 60) return `${secs.toFixed(1)}s`;
   const mins = Math.floor(secs / 60);
   return `${mins}m${Math.floor(secs % 60)}s`;
+}
+
+export function buildAgentDiagnostic(
+  agent: AgentTarget,
+  agentId: string | undefined,
+): ScopeRefinementAgentDiagnostic {
+  return {
+    agentName: agentId
+      ?? agent.agent_name
+      ?? agent.label
+      ?? agent.vendor
+      ?? agent.provider
+      ?? agent.command,
+    agentModel: agent.lease_model
+      ?? agent.model
+      ?? "unknown",
+    agentVersion: agent.version ?? "unknown",
+  };
 }
