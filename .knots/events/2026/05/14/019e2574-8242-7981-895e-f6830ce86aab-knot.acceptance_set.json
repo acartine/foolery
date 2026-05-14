@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2574-8242-7981-895e-f6830ce86aab",
+  "occurred_at": "2026-05-14T07:47:33.05864Z",
+  "knot_id": "foolery-e070",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "The worker's diagnostics output clearly shows the selected agent, model, and version for a scope refinement run.\nThe displayed values are accurate for the run that produced them and are not hard-coded or inferred from unrelated state.\nThe change does not alter agent/model/version selection logic, only how the chosen values are surfaced.\nExisting diagnostics behavior outside this output remains unchanged."
+  }
+}

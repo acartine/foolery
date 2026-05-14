@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2576-64db-7631-8cdf-c1f478d66e4d",
+  "occurred_at": "2026-05-14T07:49:36.603018Z",
+  "knot_id": "foolery-cc2d",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. **Recent Failures table** – each row displays the agent name, model, and version (or a graceful placeholder such as `unknown` when absent) alongside the existing Beat ID, Reason, and When columns.\n2. **Recent Completions table** – each row displays the same agent/model/version fields alongside Beat ID, Decision, and When.\n3. If `agentName`, `model`, or `version` is missing from a stored record the UI shows a distinct `—` or `unknown` placeholder rather than leaving the cell blank or crashing.\n4. Existing failure log sheet header already shows agent info; no regression in its display.\n5. **Playwright / chrome-devtools validation**: navigate to the diagnostics page while a grooming run is in progress (or replay a fixture), open the Recent Failures section, and assert that the agent/model/version cells are non-empty and match the configured agent in settings."
+  }
+}

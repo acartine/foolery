@@ -1,0 +1,17 @@
+{
+  "event_id": "019e2574-f207-76d2-aaf4-d8d09eaab4c1",
+  "occurred_at": "2026-05-14T07:48:01.671305Z",
+  "knot_id": "foolery-cc2d",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "diagnostics/ stale grooming worker show agent/model/version chosen",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

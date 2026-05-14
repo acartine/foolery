@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2573-55f1-7823-99ad-b0d934455ad2",
+  "occurred_at": "2026-05-14T07:46:16.177868Z",
+  "knot_id": "foolery-9bc7",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Overview column headers clip their content when columns are narrow. The column title, Hide button, and item count should wrap vertically instead of overflowing or being cut off."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "event_id": "019e2574-8242-7981-895e-f66ab1ecfc34",
+  "occurred_at": "2026-05-14T07:47:33.05864Z",
+  "knot_id": "foolery-e070",
+  "type": "knot.title_set",
+  "data": {
+    "from": "diagnostics/scope refinement worker show choose agent/model/version",
+    "to": "Diagnostics: show selected agent, model, and version in scope refinement worker"
+  }
+}

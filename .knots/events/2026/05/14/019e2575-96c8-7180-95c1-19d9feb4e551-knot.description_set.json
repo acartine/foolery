@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2575-96c8-7180-95c1-19d9feb4e551",
+  "occurred_at": "2026-05-14T07:48:43.848497Z",
+  "knot_id": "foolery-5afb",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Reorder the diagnostics layout so the Recent Runtime Events section renders below the scope refinement worker and stale grooming components, preserving the existing content and behavior while correcting the visual hierarchy."
+  }
+}

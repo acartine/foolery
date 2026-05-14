@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2573-55f1-7823-99ad-b0e5d3ff088c",
+  "occurred_at": "2026-05-14T07:46:16.177868Z",
+  "knot_id": "foolery-9bc7",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Resize the browser window or drag a column to a narrow width — the column title, Hide button, and count badge must all remain fully visible, wrapping onto additional lines as needed.\n2. No text in any column header is clipped or hidden by overflow:hidden at any viewport width.\n3. At full width, header layout is unchanged (single-row appearance).\n4. Validate using Playwright or Chrome DevTools: snapshot the header at a narrow column width and confirm no element reports scrollWidth > clientWidth (i.e., no overflow clipping). Example check: `document.querySelectorAll('.column-header').forEach(el => console.assert(el.scrollWidth <= el.clientWidth))`"
+  }
+}

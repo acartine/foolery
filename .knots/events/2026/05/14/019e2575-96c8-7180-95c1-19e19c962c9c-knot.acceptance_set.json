@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2575-96c8-7180-95c1-19e19c962c9c",
+  "occurred_at": "2026-05-14T07:48:43.848497Z",
+  "knot_id": "foolery-5afb",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "The diagnostics view shows Recent Runtime Events below the scope refinement worker and stale grooming components in the intended order.\nThe existing sections retain their current content and behavior; only their placement changes.\nThe layout remains stable with no overlap, truncation, or unintended spacing regressions at common viewport sizes.\nValidate the final arrangement in Chrome DevTools or via Playwright MCP to confirm the rendered order matches the acceptance criteria."
+  }
+}

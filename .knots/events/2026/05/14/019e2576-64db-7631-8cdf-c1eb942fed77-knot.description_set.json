@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2576-64db-7631-8cdf-c1eb942fed77",
+  "occurred_at": "2026-05-14T07:49:36.603018Z",
+  "knot_id": "foolery-cc2d",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The stale grooming diagnostics card (`stale-beat-grooming-diagnostics-card.tsx`) already surfaces agent/version in the active-jobs stale-session section via `formatAgentLabel()`, but the **Recent Failures** and **Recent Completions** tables omit this context entirely. When a grooming run fails or completes, the operator has no way to tell which agent (name), model, or version handled it without correlating against logs manually.\n\nAdd agent, model, and version to the stored failure/completion records and render them in the diagnostics card tables. The `AgentPromptFailureLog` type and the stale grooming store review records already carry `agentName` / `agentVersion` from `agentDetails()` in `stale-beat-grooming-job-runner.ts`; wire those fields through to the UI rows."
+  }
+}

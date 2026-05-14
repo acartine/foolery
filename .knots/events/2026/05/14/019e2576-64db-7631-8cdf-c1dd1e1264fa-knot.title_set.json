@@ -1,0 +1,10 @@
+{
+  "event_id": "019e2576-64db-7631-8cdf-c1dd1e1264fa",
+  "occurred_at": "2026-05-14T07:49:36.603018Z",
+  "knot_id": "foolery-cc2d",
+  "type": "knot.title_set",
+  "data": {
+    "from": "diagnostics/ stale grooming worker show agent/model/version chosen",
+    "to": "diagnostics: show agent, model, and version in stale grooming failure and completion rows"
+  }
+}

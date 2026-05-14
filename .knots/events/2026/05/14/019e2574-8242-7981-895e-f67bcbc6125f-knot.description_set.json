@@ -1,0 +1,9 @@
+{
+  "event_id": "019e2574-8242-7981-895e-f67bcbc6125f",
+  "occurred_at": "2026-05-14T07:47:33.05864Z",
+  "knot_id": "foolery-e070",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Clarify the diagnostics/scope refinement worker output so it explicitly reports the agent, model, and version chosen for a run. This is a presentation and visibility update only; it must not change selection behavior or expand the worker's scope."
+  }
+}
