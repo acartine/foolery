@@ -1,0 +1,21 @@
+{
+  "event_id": "019e46ba-474a-7340-b590-14f10be7e3ad",
+  "occurred_at": "2026-05-20T18:51:13.610755546Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-20ca",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Diagnostics: Show last knots/beats sync data and results",
+    "type": "work",
+    "updated_at": "2026-05-20T18:51:13.610755546Z",
+    "workflow_id": "work_sdlc"
+  }
+}

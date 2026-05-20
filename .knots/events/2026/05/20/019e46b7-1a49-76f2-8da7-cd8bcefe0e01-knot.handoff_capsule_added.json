@@ -1,0 +1,15 @@
+{
+  "event_id": "019e46b7-1a49-76f2-8da7-cd8bcefe0e01",
+  "occurred_at": "2026-05-20T18:47:45.481374563Z",
+  "knot_id": "foolery-20ca",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation complete. Branch: worktree-foolery-20ca-diagnostics-local. Commit: 9e9ce8de72bad1fde0509fea1e93352d43713829. Added latest completed beats sync diagnostics to /api/sync/beats and the Runtime diagnostics view. Validation: bun run lint passed; bunx tsc --noEmit unavailable (bunx not found); bun x tsc --noEmit passed; bun run test passed; bun run build passed.",
+    "datetime": "2026-05-20T18:47:45.481374563Z",
+    "entry_id": "019e46b7-1a49-76f2-8da7-cd769d37f7af",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

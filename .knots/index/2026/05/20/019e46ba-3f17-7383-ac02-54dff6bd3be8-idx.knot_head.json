@@ -1,0 +1,37 @@
+{
+  "event_id": "019e46ba-3f17-7383-ac02-54dff6bd3be8",
+  "occurred_at": "2026-05-20T18:51:11.511077443Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-20ca",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Diagnostics: Show last knots/beats sync data and results",
+    "type": "work",
+    "updated_at": "2026-05-20T18:51:11.511077443Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019e46ba-0f91-71a0-a045-db0a594cff81"
+  }
+}
