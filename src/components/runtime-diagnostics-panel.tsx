@@ -27,6 +27,9 @@ import { ScopeRefinementDiagnosticsCard } from "@/components/scope-refinement-di
 import {
   StaleBeatGroomingDiagnosticsCard,
 } from "@/components/stale-beat-grooming-diagnostics-card";
+import {
+  BeatsSyncDiagnosticsCard,
+} from "@/components/beats-sync-diagnostics-card";
 
 export function RuntimeDiagnosticsPanel() {
   const [snapshot, setSnapshot] = useState(() => getDiagnosticsSnapshot());
@@ -57,6 +60,7 @@ export function RuntimeDiagnosticsPanel() {
             </Button>
           </CardContent>
         </Card>
+        <BeatsSyncDiagnosticsCard />
         <ScopeRefinementDiagnosticsCard />
         <StaleBeatGroomingDiagnosticsCard />
       </div>
@@ -110,6 +114,7 @@ export function RuntimeDiagnosticsPanel() {
 
       <ScopeRefinementDiagnosticsCard />
       <StaleBeatGroomingDiagnosticsCard />
+      <BeatsSyncDiagnosticsCard />
 
       <Card>
         <CardHeader>

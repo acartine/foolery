@@ -25,6 +25,7 @@ describe("/api/sync/beats", () => {
     mockGetBeatsSyncState.mockResolvedValue({
       running: false,
       projects: [],
+      lastCompletedSync: null,
     });
 
     const response = await GET();
@@ -33,6 +34,7 @@ describe("/api/sync/beats", () => {
     expect(await response.json()).toEqual({
       running: false,
       projects: [],
+      lastCompletedSync: null,
     });
     expect(mockTriggerBeatsSync).not.toHaveBeenCalled();
   });
@@ -41,6 +43,7 @@ describe("/api/sync/beats", () => {
     mockTriggerBeatsSync.mockResolvedValue({
       running: false,
       projects: [{ repoPath: "/repo", lastSyncedAt: null }],
+      lastCompletedSync: null,
     });
 
     const response = await POST();
@@ -49,6 +52,7 @@ describe("/api/sync/beats", () => {
     expect(await response.json()).toEqual({
       running: false,
       projects: [{ repoPath: "/repo", lastSyncedAt: null }],
+      lastCompletedSync: null,
     });
     expect(mockTriggerBeatsSync).toHaveBeenCalledTimes(1);
   });

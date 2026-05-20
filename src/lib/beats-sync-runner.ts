@@ -8,6 +8,9 @@ const execFile = promisify(execFileCallback);
 export interface BeatsSyncRunResult {
   ok: boolean;
   error?: string;
+  stdout?: string;
+  stderr?: string;
+  command: string;
 }
 
 export interface BeatsSyncRunnerDeps {
@@ -33,18 +36,36 @@ export async function runRepoSync(
   deps: BeatsSyncRunnerDeps = {},
 ): Promise<BeatsSyncRunResult> {
   const { file, args } = commandFor(repo);
+  const command = [file, ...args].join(" ");
   const run = deps.execFile ?? execFile;
   try {
-    await run(file, args, { cwd: repo.path });
-    return { ok: true };
+    const result = await run(file, args, { cwd: repo.path });
+    return {
+      ok: true,
+      command,
+      stdout: result.stdout,
+      stderr: result.stderr,
+    };
   } catch (error) {
     const message = formatError(error);
     serverLog("warn", "beats-sync", "repo sync failed", {
       repoPath: repo.path,
       memoryManagerType: repo.memoryManagerType,
-      command: [file, ...args].join(" "),
+      command,
       error: message,
     });
-    return { ok: false, error: message };
+    return {
+      ok: false,
+      command,
+      error: message,
+      stdout: errorOutput(error, "stdout"),
+      stderr: errorOutput(error, "stderr"),
+    };
   }
+}
+
+function errorOutput(error: unknown, key: "stdout" | "stderr"): string | undefined {
+  if (!error || typeof error !== "object") return undefined;
+  const value = (error as Record<string, unknown>)[key];
+  return typeof value === "string" ? value : undefined;
 }

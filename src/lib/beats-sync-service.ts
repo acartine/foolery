@@ -4,6 +4,7 @@ import {
   getBeatsSyncStateSnapshot,
   isBeatsSyncRunning,
   markBeatsSyncProjectSucceeded,
+  recordBeatsSyncCompletion,
   setBeatsSyncRunning,
   upsertBeatsSyncProject,
   type BeatsSyncState,
@@ -92,11 +93,21 @@ export async function runBeatsSyncJob(
       const repo = repos[index];
       if (!repo) continue;
       const result = await merged.runRepoSync(repo);
+      const completedAt = merged.now().toISOString();
+      recordBeatsSyncCompletion({
+        completedAt,
+        repoPath: repo.path,
+        memoryManagerType: repo.memoryManagerType as "knots" | "beads",
+        command: result.command,
+        status: result.ok ? "success" : "failure",
+        payload: {
+          stdout: result.stdout ?? null,
+          stderr: result.stderr ?? null,
+          error: result.error ?? null,
+        },
+      });
       if (result.ok) {
-        markBeatsSyncProjectSucceeded(
-          repo.path,
-          merged.now().toISOString(),
-        );
+        markBeatsSyncProjectSucceeded(repo.path, completedAt);
       }
       if (index < repos.length - 1) {
         const ms = MIN_DELAY_MS + Math.floor(merged.random() * DELAY_SPREAD_MS);

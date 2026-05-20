@@ -41,7 +41,7 @@ describe("beats sync trigger", () => {
     const runRepoSync = vi.fn(
       () => new Promise<void>((resolve) => {
         releaseRun = resolve;
-      }).then(() => ({ ok: true })),
+      }).then(() => ({ ok: true, command: "kno sync" })),
     );
     const deps: BeatsSyncDeps = {
       listRepos,
@@ -59,6 +59,7 @@ describe("beats sync trigger", () => {
       Array.from({ length: 15 }, () => ({
         running: false,
         projects: [{ repoPath: "/repo-a", lastSyncedAt: null }],
+        lastCompletedSync: null,
       })),
     );
     expect(runRepoSync).toHaveBeenCalledTimes(1);
@@ -70,7 +71,7 @@ describe("beats sync trigger", () => {
     const runRepoSync = vi.fn(
       () => new Promise<void>((resolve) => {
         releaseRun = resolve;
-      }).then(() => ({ ok: true })),
+      }).then(() => ({ ok: true, command: "kno sync" })),
     );
     const deps: BeatsSyncDeps = {
       listRepos: () => Promise.resolve([repo("/repo-a")]),
@@ -86,6 +87,7 @@ describe("beats sync trigger", () => {
     expect(second).toEqual({
       running: true,
       projects: [{ repoPath: "/repo-a", lastSyncedAt: null }],
+      lastCompletedSync: null,
     });
     expect(runRepoSync).toHaveBeenCalledTimes(1);
     releaseRun();
@@ -101,6 +103,7 @@ describe("beats sync trigger", () => {
     expect(state).toEqual({
       running: false,
       projects: [{ repoPath: "/repo-a", lastSyncedAt: null }],
+      lastCompletedSync: null,
     });
     expect(runRepoSync).not.toHaveBeenCalled();
   });
@@ -120,7 +123,7 @@ describe("beats sync job", () => {
         ]),
       runRepoSync: async (registeredRepo) => {
         visited.push(registeredRepo.path);
-        return { ok: true };
+        return { ok: true, command: "kno sync" };
       },
       delay: async (ms) => {
         delays.push(ms);
@@ -143,6 +146,10 @@ describe("beats sync job", () => {
         ]),
       runRepoSync: async (registeredRepo) => ({
         ok: registeredRepo.path === "/repo-a",
+        command: registeredRepo.memoryManagerType === "knots"
+          ? "kno sync"
+          : "bd sync --no-daemon",
+        error: registeredRepo.path === "/repo-a" ? undefined : "boom",
       }),
       delay: async () => {},
       random: () => 0,
@@ -164,6 +171,53 @@ describe("beats sync job", () => {
       },
       { repoPath: "/repo-b", lastSyncedAt: null },
     ]);
+    expect(state.lastCompletedSync).toEqual({
+      completedAt: "2026-05-20T10:00:00.000Z",
+      repoPath: "/repo-a",
+      memoryManagerType: "knots",
+      command: "kno sync",
+      status: "success",
+      payload: {
+        stdout: null,
+        stderr: null,
+        error: null,
+      },
+    });
+  });
+});
+
+describe("beats sync job diagnostics", () => {
+  it("records failed sync output as the latest completed sync", async () => {
+    await runBeatsSyncJob({
+      listRepos: () => Promise.resolve([repo("/repo-a")]),
+      runRepoSync: async () => ({
+        ok: false,
+        command: "kno sync",
+        stdout: "pulled data",
+        stderr: "remote rejected",
+        error: "sync failed",
+      }),
+      delay: async () => {},
+      random: () => 0,
+      now: () => new Date("2026-05-20T10:00:00.000Z"),
+    });
+
+    const state = await getBeatsSyncState({
+      listRepos: () => Promise.resolve([repo("/repo-a")]),
+    });
+
+    expect(state.lastCompletedSync).toEqual({
+      completedAt: "2026-05-20T10:00:00.000Z",
+      repoPath: "/repo-a",
+      memoryManagerType: "knots",
+      command: "kno sync",
+      status: "failure",
+      payload: {
+        stdout: "pulled data",
+        stderr: "remote rejected",
+        error: "sync failed",
+      },
+    });
   });
 
   it("does not start a second job while already running", async () => {
