@@ -1,0 +1,9 @@
+{
+  "event_id": "019e4516-326c-7093-8991-1b63e253fb37",
+  "occurred_at": "2026-05-20T11:12:23.148871062Z",
+  "knot_id": "foolery-3c44",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Introduce two HTTP endpoints that expose a single global beats-sync job for all registered Knots/Beads projects.\n\n**POST /api/sync/beats** — state-and-trigger\nReturns the current sync state *before* acting. If the job is not already running, starts it. If already running, does nothing. The response is identical regardless of how many concurrent callers hit this endpoint; there is never more than one active sync job.\n\n**GET /api/sync/beats** — state only\nReturns the current sync state without triggering anything.\n\n**Shared response shape**\n```\n{\n  \"running\": boolean,\n  \"projects\": [\n    { \"repoPath\": string, \"lastSyncedAt\": string | null }\n  ]\n}\n```\n\n**Sync algorithm**\nWhen a sync job starts, it shuffles the list of registered Knots/Beads projects into a random order and processes them sequentially with a random delay of 2–20 seconds between each call. This prevents a thundering herd against the kno/beads CLI.\n\n**Auto-sync setting**\nAdd a boolean `autoSync` setting (default `false`). On application start, if the setting is absent it must be created and persisted. The frontend reads this setting to decide whether to poll POST /api/sync/beats on a ~3-minute interval. The setting can be toggled in the existing settings UI."
+  }
+}

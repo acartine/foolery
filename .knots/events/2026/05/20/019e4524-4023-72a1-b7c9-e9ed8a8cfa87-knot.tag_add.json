@@ -1,0 +1,9 @@
+{
+  "event_id": "019e4524-4023-72a1-b7c9-e9ed8a8cfa87",
+  "occurred_at": "2026-05-20T11:27:44.163050755Z",
+  "knot_id": "foolery-3c44",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-3c44-beats-sync-impl"
+  }
+}

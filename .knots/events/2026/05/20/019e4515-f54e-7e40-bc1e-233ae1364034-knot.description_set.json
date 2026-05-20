@@ -1,0 +1,9 @@
+{
+  "event_id": "019e4515-f54e-7e40-bc1e-233ae1364034",
+  "occurred_at": "2026-05-20T11:12:07.495415916Z",
+  "knot_id": "foolery-3c44",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we should have an async endpoint that triggers the beats sync (knots or beads) on  the knots projects registered.  the endpoint should be idempotent.  if called 15 times by 15 clients, there should only ever be one job state.  there is no need to support independent requests.  the app is either syncing beats, or it is not.  This is very important.\n\nthe endpint should be a state_and_trigger style request, where the user says \"give me the state prior to my request, trigger the beats sync if not already triggered\"\n\nthe valid states are running and not running.  in both cases the time of last sync for each project is returned.\n\nthere should also be a simple get endpoint, that returns the state without a trigger.\n\n2 endpoints in total.\n\nit should have an algorithm aiming to sync the projects stochastically, and not all in one giant simultaneous blast.  this the order should be random, with a random pause between calls (between 2 and 20 seconds).\n\nthe frontend requires a new setting for this, so it can be toggled on or off.  by default it should be off.  if the application starts and the setting is not found, it should be created and persisted.\n\nThis way the front-end can trigger the call every 3 minutes or so, and it doesn't care if it was already triggered or if there are 10 clients running."
+  }
+}

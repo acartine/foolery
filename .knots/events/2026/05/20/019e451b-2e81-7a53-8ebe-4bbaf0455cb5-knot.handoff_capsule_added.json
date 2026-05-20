@@ -1,0 +1,15 @@
+{
+  "event_id": "019e451b-2e81-7a53-8ebe-4bbaf0455cb5",
+  "occurred_at": "2026-05-20T11:17:49.825629813Z",
+  "knot_id": "foolery-3c44",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Planning complete. Implementation can proceed in one knot (no children).\n\nApproach: top-level `autoSync` boolean setting (default false) is picked\nup automatically by the existing `backfillMissingSettingsDefaults`\nstartup hook in `src/instrumentation.ts` — no extra bootstrap needed.\n\nSync is a module-level singleton in the Next.js server process:\n- `src/lib/beats-sync-state.ts` holds the `{ running, projects }`\n  snapshot.\n- `src/lib/beats-sync-service.ts` owns `getBeatsSyncState()` (used by\n  GET) and `triggerBeatsSync()` (used by POST). The trigger captures\n  state-before, sets `running = true` synchronously before any `await`\n  (so 15 concurrent calls all see the same pre-state and exactly one\n  proceeds to launch the job), then `void`-launches the job loop. The\n  loop Fisher-Yates shuffles registered repos, calls `kno sync` or\n  `bd sync --no-daemon` per repo (cwd = repo path), and sleeps a\n  random 2–20 s between repos using injected `delay`/`random` so tests\n  stay hermetic.\n- `src/app/api/sync/beats/route.ts` wires GET/POST to the service.\n\nFrontend: `src/hooks/use-auto-sync.ts` polls every 180 s when\n`settings.autoSync === true`, mounted once via `providers.tsx`. Toggle\nlives in `settings-defaults-section.tsx` styled like the existing\nterminal-theme switch.\n\nTest coverage: hermetic tests cover AC #1–6 and #9 (15-fold concurrency,\nstate-before-trigger, GET purity, shuffle + delay, lastSyncedAt update,\nschema default + persistence). Known gap: AC #8 (frontend not polling\nwhen disabled) is covered only at the React-Query level via the\nsettings refetch — `setInterval` is non-hermetic so no default-suite\ntimer test. Add manual test under `__manual_tests__/` if desired.\n\nRisks: CLI compatibility verified via existing `bd-update.ts` usage of\n`bd sync --no-daemon` and `kno sync` (confirmed via `kno sync --help`\nduring planning). Module-level singleton is safe under Node's single-\nthreaded event loop; if Foolery ever moves to multi-process serving,\nrevisit with a file-lock or daemon.",
+    "datetime": "2026-05-20T11:17:49.825629813Z",
+    "entry_id": "019e451b-2e81-7a53-8ebe-4bad8ff7e874",
+    "model": "Opus",
+    "username": "Claude",
+    "version": "4.7"
+  }
+}

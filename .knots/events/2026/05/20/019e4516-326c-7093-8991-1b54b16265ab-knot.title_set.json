@@ -1,0 +1,10 @@
+{
+  "event_id": "019e4516-326c-7093-8991-1b54b16265ab",
+  "occurred_at": "2026-05-20T11:12:23.148871062Z",
+  "knot_id": "foolery-3c44",
+  "type": "knot.title_set",
+  "data": {
+    "from": "run kno sync every n minutes for every knots project",
+    "to": "Add idempotent beats-sync endpoint with stochastic scheduling"
+  }
+}

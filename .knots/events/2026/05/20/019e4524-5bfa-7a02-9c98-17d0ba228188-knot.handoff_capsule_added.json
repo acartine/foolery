@@ -1,0 +1,15 @@
+{
+  "event_id": "019e4524-5bfa-7a02-9c98-17d0ba228188",
+  "occurred_at": "2026-05-20T11:27:51.290043422Z",
+  "knot_id": "foolery-3c44",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation complete. Branch: worktree-foolery-3c44-beats-sync-impl. Commit: 5b90fd9b48d04da39809a1843aa34e07ced6b709. Gates: bun run lint; bun run tsc --noEmit (bunx unavailable in shell); bun run test:all; bun run build.",
+    "datetime": "2026-05-20T11:27:51.290043422Z",
+    "entry_id": "019e4524-5bfa-7a02-9c98-17cc833325ab",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

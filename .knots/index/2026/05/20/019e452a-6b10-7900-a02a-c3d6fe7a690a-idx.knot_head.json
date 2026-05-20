@@ -1,0 +1,21 @@
+{
+  "event_id": "019e452a-6b10-7900-a02a-c3d6fe7a690a",
+  "occurred_at": "2026-05-20T11:34:28.368955015Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3c44",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add idempotent beats-sync endpoint with stochastic scheduling",
+    "type": "work",
+    "updated_at": "2026-05-20T11:34:28.368955015Z",
+    "workflow_id": "work_sdlc"
+  }
+}

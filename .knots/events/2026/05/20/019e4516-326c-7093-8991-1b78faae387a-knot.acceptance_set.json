@@ -1,0 +1,9 @@
+{
+  "event_id": "019e4516-326c-7093-8991-1b78faae387a",
+  "occurred_at": "2026-05-20T11:12:23.148871062Z",
+  "knot_id": "foolery-3c44",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. POST /api/sync/beats returns `{ running: false, projects: [...] }` (pre-trigger state) and starts a sync job when no job is running.\n2. POST /api/sync/beats returns `{ running: true, projects: [...] }` and does NOT start a second job when one is already running.\n3. Firing POST 15 times concurrently results in exactly one sync job; no race condition creates duplicate jobs.\n4. GET /api/sync/beats returns current state and per-project lastSyncedAt without side effects.\n5. Projects are synced in a random order with a random 2–20 s delay between each during a job run.\n6. `autoSync` setting is written with value `false` on first application start if absent, and persisted to the settings file.\n7. Toggling `autoSync` in the UI persists the change; restarting the app reads the persisted value.\n8. When `autoSync` is `false`, the frontend does not poll the sync endpoint.\n9. All new code passes lint, typecheck, and the hermetic test suite (`bun run test:all`)."
+  }
+}
