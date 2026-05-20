@@ -1,0 +1,9 @@
+{
+  "event_id": "019e46af-7f69-7432-b2c7-6e5b366de740",
+  "occurred_at": "2026-05-20T18:39:27.081596611Z",
+  "knot_id": "foolery-20ca",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "The runtime diagnostics UI or output shows the most recent knots/beats sync metadata and result.\nThe displayed information includes at minimum the last sync timestamp, the sync payload or summary data, and the final result or status.\nSuccessful and failed syncs are both represented clearly.\nThe feature does not change sync behavior or add new sync steps.\nThe information shown corresponds to the latest completed sync only."
+  }
+}

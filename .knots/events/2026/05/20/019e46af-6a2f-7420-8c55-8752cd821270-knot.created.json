@@ -1,0 +1,17 @@
+{
+  "event_id": "019e46af-6a2f-7420-8c55-8752cd821270",
+  "occurred_at": "2026-05-20T18:39:21.64721982Z",
+  "knot_id": "foolery-20ca",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Diagnostics - Runtime: Show data about last knots/beats sync and results",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "event_id": "019e46af-7f69-7432-b2c7-6e3878b29b6e",
+  "occurred_at": "2026-05-20T18:39:27.081596611Z",
+  "knot_id": "foolery-20ca",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Diagnostics - Runtime: Show data about last knots/beats sync and results",
+    "to": "Diagnostics: Show last knots/beats sync data and results"
+  }
+}

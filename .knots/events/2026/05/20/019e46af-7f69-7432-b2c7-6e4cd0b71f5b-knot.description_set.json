@@ -1,0 +1,9 @@
+{
+  "event_id": "019e46af-7f69-7432-b2c7-6e4cd0b71f5b",
+  "occurred_at": "2026-05-20T18:39:27.081596611Z",
+  "knot_id": "foolery-20ca",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add runtime diagnostics that surface the most recent knots/beats synchronization details and the outcome of that sync. The goal is to make it easy to inspect when the last sync happened, what data was exchanged, and whether it succeeded or failed, without changing the underlying sync behavior."
+  }
+}
