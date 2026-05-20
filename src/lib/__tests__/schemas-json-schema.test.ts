@@ -34,6 +34,7 @@ const TOP_LEVEL_KEYS = [
   "maxConcurrentSessions",
   "maxClaimsPerQueueType",
   "terminalLightTheme",
+  "autoSync",
 ] as const;
 
 const POOL_STEPS = [

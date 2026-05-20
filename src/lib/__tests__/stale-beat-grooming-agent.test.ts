@@ -61,6 +61,7 @@ function settings(
     maxConcurrentSessions: 5,
     maxClaimsPerQueueType: 10,
     terminalLightTheme: false,
+    autoSync: false,
     ...partial,
   };
 }

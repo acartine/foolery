@@ -12,4 +12,5 @@ export type SettingsPartial = Partial<{
   maxConcurrentSessions: FoolerySettings["maxConcurrentSessions"];
   maxClaimsPerQueueType: FoolerySettings["maxClaimsPerQueueType"];
   terminalLightTheme: FoolerySettings["terminalLightTheme"];
+  autoSync: FoolerySettings["autoSync"];
 }>;

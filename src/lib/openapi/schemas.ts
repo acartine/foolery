@@ -422,6 +422,32 @@ const coreSchemas = {
     },
   },
 
+  BeatsSyncProjectState: {
+    type: "object",
+    required: ["repoPath", "lastSyncedAt"],
+    properties: {
+      repoPath: { type: "string" },
+      lastSyncedAt: {
+        anyOf: [
+          { type: "string", format: "date-time" },
+          { type: "null" },
+        ],
+      },
+    },
+  },
+
+  BeatsSyncState: {
+    type: "object",
+    required: ["running", "projects"],
+    properties: {
+      running: { type: "boolean" },
+      projects: {
+        type: "array",
+        items: { $ref: "#/components/schemas/BeatsSyncProjectState" },
+      },
+    },
+  },
+
 } as const;
 
 export const componentSchemas = {

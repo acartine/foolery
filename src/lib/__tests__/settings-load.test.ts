@@ -58,6 +58,7 @@ const DEFAULT_SETTINGS = {
   maxConcurrentSessions: 5,
   maxClaimsPerQueueType: 10,
   terminalLightTheme: false,
+  autoSync: false,
 };
 
 beforeEach(() => {
@@ -266,6 +267,7 @@ describe("backfillMissingSettingsDefaults", () => {
         'maxConcurrentSessions = 5',
         'maxClaimsPerQueueType = 10',
         'terminalLightTheme = false',
+        'autoSync = false',
         '[actions]', 'take = ""', 'scene = ""',
         'scopeRefinement = ""', 'staleGrooming = ""',
         '[backend]', 'type = "cli"',
@@ -338,6 +340,7 @@ describe("saveSettings", () => {
       maxConcurrentSessions: 5,
       maxClaimsPerQueueType: 10,
       terminalLightTheme: false,
+      autoSync: false,
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();
@@ -362,6 +365,7 @@ describe("saveSettings", () => {
       maxConcurrentSessions: 5,
       maxClaimsPerQueueType: 10,
       terminalLightTheme: false,
+      autoSync: false,
     };
     await saveSettings(settings);
     expect(mockChmod).toHaveBeenCalledWith(

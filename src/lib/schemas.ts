@@ -390,6 +390,11 @@ export const foolerySettingsSchema = z.object({
   terminalLightTheme: z.boolean().default(false).describe(
     "Render integrated terminals with a light theme. Default: false (dark).",
   ),
+  autoSync: z.boolean().default(false).describe(
+    "Auto-trigger periodic beats sync from the frontend, roughly every "
+    + "three minutes. When false, the frontend never polls /api/sync/beats. "
+    + "Default: false.",
+  ),
 }).describe(
   "Foolery user-level settings. Written to `~/.config/foolery/settings.toml`. "
   + "Authoritative source: `src/lib/schemas.ts`. Live JSON Schema: "

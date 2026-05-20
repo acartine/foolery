@@ -9,11 +9,13 @@ import {
 } from "@/components/terminal-viewport-inset-sync";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useWindowFocusInvalidation } from "@/hooks/use-window-focus-invalidation";
+import { useAutoSync } from "@/hooks/use-auto-sync";
 import { initializeDiagnostics } from "@/lib/client-perf";
 
 /** Activates global hooks that require QueryClient context. */
 function GlobalQueryHooks() {
   useWindowFocusInvalidation();
+  useAutoSync();
   return null;
 }
 

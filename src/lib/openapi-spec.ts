@@ -20,6 +20,7 @@ import { approvalsPaths } from "@/lib/openapi/paths-approvals";
 import {
   staleGroomingPaths,
 } from "@/lib/openapi/paths-stale-grooming";
+import { syncPaths } from "@/lib/openapi/paths-sync";
 
 export const openApiSpec = {
   openapi: "3.1.0",
@@ -44,6 +45,7 @@ export const openApiSpec = {
     { name: "Registry", description: "Repository registration and browsing" },
     { name: "Scope refinement", description: "AI scope-refinement jobs, worker health, and queue status" },
     { name: "Stale grooming", description: "AI stale beat reviews, queue status, and model options" },
+    { name: "Sync", description: "Global Knots/Beads synchronization jobs" },
     { name: "System", description: "Diagnostics, version, capabilities, workflows, and history" },
   ],
   paths: {
@@ -56,6 +58,7 @@ export const openApiSpec = {
     ...approvalsPaths,
     ...orchestrationPaths,
     ...staleGroomingPaths,
+    ...syncPaths,
     ...settingsPaths,
     ...registryPaths,
     ...systemPaths,

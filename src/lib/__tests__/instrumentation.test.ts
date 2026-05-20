@@ -27,6 +27,12 @@ vi.mock("@/lib/agent-message-type-index", () => ({
     mockWriteMessageTypeIndex(index),
 }));
 
+const mockStartScopeRefinementWorker = vi.fn();
+vi.mock("@/lib/scope-refinement-worker", () => ({
+  startScopeRefinementWorker: () =>
+    mockStartScopeRefinementWorker(),
+}));
+
 import { register } from "@/instrumentation";
 
 function setupMocks(): void {
@@ -51,6 +57,7 @@ function setupMocks(): void {
       entries: [],
     });
     mockWriteMessageTypeIndex.mockResolvedValue(undefined);
+    mockStartScopeRefinementWorker.mockReturnValue(undefined);
   });
 
   afterEach(() => {

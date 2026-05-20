@@ -43,5 +43,9 @@ export function mergeSettingsPartial(
       partial.terminalLightTheme !== undefined
         ? partial.terminalLightTheme
         : current.terminalLightTheme,
+    autoSync:
+      partial.autoSync !== undefined
+        ? partial.autoSync
+        : current.autoSync,
   };
 }

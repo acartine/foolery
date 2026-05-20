@@ -51,6 +51,7 @@ interface SettingsData {
   maxConcurrentSessions: number;
   maxClaimsPerQueueType: number;
   terminalLightTheme: boolean;
+  autoSync: boolean;
 }
 
 const DEFAULTS: SettingsData = {
@@ -87,6 +88,7 @@ const DEFAULTS: SettingsData = {
   maxConcurrentSessions: 5,
   maxClaimsPerQueueType: 10,
   terminalLightTheme: false,
+  autoSync: false,
 };
 
 type SettingsTab = "repos" | "agents" | "dispatch" | "defaults";
@@ -126,6 +128,9 @@ function hydrateSettings(
     terminalLightTheme:
       data.terminalLightTheme
         ?? DEFAULTS.terminalLightTheme,
+    autoSync:
+      data.autoSync
+        ?? DEFAULTS.autoSync,
   };
 }
 
@@ -222,6 +227,12 @@ function SettingsTabPanels({
           }
           terminalLightTheme={settings.terminalLightTheme}
           onTerminalLightThemeChange={onTerminalLightThemeChange}
+          autoSync={settings.autoSync}
+          onAutoSyncChange={(v) =>
+            onSettingsChange((p) => ({
+              ...p, autoSync: v,
+            }))
+          }
         />
       </TabsContent>
     </>

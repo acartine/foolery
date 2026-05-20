@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { InteractiveSessionTimeoutSection } from "@/components/settings-interactive-session-timeout-section";
 import {
+  SettingsAutoSyncSection,
+} from "@/components/settings-auto-sync-section";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -61,6 +64,8 @@ interface SettingsDefaultsSectionProps {
   onMaxConcurrentSessionsChange: (value: number) => void;
   terminalLightTheme: boolean;
   onTerminalLightThemeChange: (value: boolean) => void;
+  autoSync: boolean;
+  onAutoSyncChange: (value: boolean) => void;
 }
 
 export function SettingsDefaultsSection({
@@ -72,6 +77,8 @@ export function SettingsDefaultsSection({
   onMaxConcurrentSessionsChange,
   terminalLightTheme,
   onTerminalLightThemeChange,
+  autoSync,
+  onAutoSyncChange,
 }: SettingsDefaultsSectionProps) {
   const [infoOpen, setInfoOpen] = useState(false);
   const { data: workflowResult } = useQuery({
@@ -125,6 +132,10 @@ export function SettingsDefaultsSection({
       <TerminalThemeSection
         lightTheme={terminalLightTheme}
         onChange={onTerminalLightThemeChange}
+      />
+      <SettingsAutoSyncSection
+        autoSync={autoSync}
+        onChange={onAutoSyncChange}
       />
       <ScopeRefinementSection
         scopeRefinement={scopeRefinement}
