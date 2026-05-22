@@ -1,0 +1,9 @@
+{
+  "event_id": "019e4edc-42b9-7f43-a242-aef08c3d50ba",
+  "occurred_at": "2026-05-22T08:45:18.393423123Z",
+  "knot_id": "foolery-cbc8",
+  "type": "knot.description_set",
+  "data": {
+    "description": "This is a regression of a previously fixed issue in the overview columns. When all columns are visible, the column label text can overflow into the component to the right. The label should always stay within its own column and never overrun adjacent content. To make that possible, the hide control and the count component may wrap onto additional lines instead of forcing all three elements to remain on a single row."
+  }
+}

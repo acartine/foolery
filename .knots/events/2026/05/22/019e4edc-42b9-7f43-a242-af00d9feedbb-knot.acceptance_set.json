@@ -1,0 +1,9 @@
+{
+  "event_id": "019e4edc-42b9-7f43-a242-af00d9feedbb",
+  "occurred_at": "2026-05-22T08:45:18.393423123Z",
+  "knot_id": "foolery-cbc8",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. When all overview columns are visible, column label text never overflows its column or overlaps adjacent content.\n2. The hide control may wrap to a new line when needed to preserve label space.\n3. The count component may wrap to a new line when needed to preserve label space.\n4. The layout is allowed to use multiple rows for the column header content; it does not need to keep label, hide control, and count on one line.\n5. The regression is fixed in the all-columns-visible state."
+  }
+}

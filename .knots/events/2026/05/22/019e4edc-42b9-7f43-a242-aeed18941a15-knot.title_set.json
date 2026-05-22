@@ -1,0 +1,10 @@
+{
+  "event_id": "019e4edc-42b9-7f43-a242-aeed18941a15",
+  "occurred_at": "2026-05-22T08:45:18.393423123Z",
+  "knot_id": "foolery-cbc8",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Overview column title formatting problems",
+    "to": "Prevent overview column labels from overflowing"
+  }
+}

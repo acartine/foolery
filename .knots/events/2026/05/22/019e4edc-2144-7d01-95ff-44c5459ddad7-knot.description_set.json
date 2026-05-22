@@ -1,0 +1,9 @@
+{
+  "event_id": "019e4edc-2144-7d01-95ff-44c5459ddad7",
+  "occurred_at": "2026-05-22T08:45:09.813544847Z",
+  "knot_id": "foolery-cbc8",
+  "type": "knot.description_set",
+  "data": {
+    "description": "this is a regression of something we already fixed.\n\ncolumn label text overruns the component to the right when all columns are visible.\n\nwhat should happen is\n\ncolumn label text never overruns, ever\n\nthe 'hide' icon/component should wrap\nthe 'count' component should wrap\n\nwe don't want to require all 3 to be in the same row, they can wrap to provide more room for the labels.\n\nbut the label text itself should never overrun it's component (or the column)"
+  }
+}

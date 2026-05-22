@@ -1,0 +1,17 @@
+{
+  "event_id": "019e4edc-2135-7402-8b69-d3a41dcf6295",
+  "occurred_at": "2026-05-22T08:45:09.813544847Z",
+  "knot_id": "foolery-cbc8",
+  "type": "knot.created",
+  "data": {
+    "body": "this is a regression of something we already fixed.\n\ncolumn label text overruns the component to the right when all columns are visible.\n\nwhat should happen is\n\ncolumn label text never overruns, ever\n\nthe 'hide' icon/component should wrap\nthe 'count' component should wrap\n\nwe don't want to require all 3 to be in the same row, they can wrap to provide more room for the labels.\n\nbut the label text itself should never overrun it's component (or the column)",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Overview column title formatting problems",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
