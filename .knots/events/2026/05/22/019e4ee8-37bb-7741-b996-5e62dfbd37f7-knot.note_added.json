@@ -1,0 +1,15 @@
+{
+  "event_id": "019e4ee8-37bb-7741-b996-5e62dfbd37f7",
+  "occurred_at": "2026-05-22T08:58:22.011858659Z",
+  "knot_id": "foolery-cbc8",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete.\n\nBranch: worktree-foolery-cbc8-overview-labels (pushed to origin)\nCommit: 4439e6ef\n\nRoot cause: The column-header label is a Badge rendered as inline-flex, so the text becomes an anonymous flex item with min-width: auto (= min-content). The previous override used break-words (overflow-wrap: break-word), which doesn't shrink intrinsic min-content sizes in flex contexts. When a column was narrow enough that the longest word in the label exceeded the column width, the badge could not shrink and bled into the adjacent column (the section has no overflow-hidden by design, so the header can grow vertically).\n\nFix: src/components/beat-state-overview-matrix.tsx — replace break-words with wrap-anywhere (overflow-wrap: anywhere) on the label badge in BeatStateColumnHeader. wrap-anywhere DOES affect intrinsic min-content sizing, so the badge can actually shrink within its min-w-0 flex container and wrap text onto additional lines. The surrounding flex-wrap items-start header is unchanged, so the hide control and count badge still wrap onto additional rows.\n\nTests: Updated src/components/__tests__/beat-state-overview-matrix-header.test.ts to assert wrap-anywhere and added a regression-guard test (foolery-cbc8) verifying break-words is no longer present.\n\nQuality gates: lint clean, tsc clean, full unit suite (2789 tests) passes, build clean. CSS output confirmed includes .wrap-anywhere{overflow-wrap:anywhere}.",
+    "datetime": "2026-05-22T08:58:22.011858659Z",
+    "entry_id": "019e4ee8-37bb-7741-b996-5e5886bb5873",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
