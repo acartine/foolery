@@ -204,8 +204,8 @@ function BeatStateColumnHeader({
           label={overviewStateLabel(group.state)}
           className={
             "h-auto max-w-full min-w-0 shrink justify-start"
-            + " overflow-visible whitespace-normal break-words rounded-sm"
-            + " px-1 py-px text-left text-[8px] leading-3"
+            + " overflow-visible whitespace-normal wrap-anywhere"
+            + " rounded-sm px-1 py-px text-left text-[8px] leading-3"
           }
         />
       </div>

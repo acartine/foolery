@@ -124,11 +124,23 @@ describe("OverviewStateMatrix header wrapping", () => {
       html,
       "ready_for_implementation_review",
     );
-    // The state label "Ready Impl Review" wraps as plain text.
     expect(section).toContain("Ready Impl Review");
-    // The badge must opt into wrap + break-words to stay within the
-    // narrow column width.
-    expect(section).toMatch(/whitespace-normal[^"]*break-words/);
+    expect(section).toMatch(/whitespace-normal[^"]*wrap-anywhere/);
     expect(section).toMatch(/min-w-0[^"]*shrink/);
+  });
+
+  it("uses wrap-anywhere on the title badge to prevent overflow", () => {
+    // Regression guard for foolery-cbc8: the previous `break-words` value
+    // didn't shrink the flex min-content size and let labels bleed into
+    // adjacent columns when all columns were visible.
+    const html = renderMatrix([
+      emptyGroup("ready_for_implementation_review"),
+    ]);
+    const section = extractColumnSection(
+      html,
+      "ready_for_implementation_review",
+    );
+    expect(section).toMatch(/\bwrap-anywhere\b/);
+    expect(section).not.toMatch(/\bbreak-words\b/);
   });
 });
