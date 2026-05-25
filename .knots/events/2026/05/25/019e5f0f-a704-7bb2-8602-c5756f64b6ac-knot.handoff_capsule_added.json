@@ -1,0 +1,15 @@
+{
+  "event_id": "019e5f0f-a704-7bb2-8602-c5756f64b6ac",
+  "occurred_at": "2026-05-25T12:15:21.860819Z",
+  "knot_id": "foolery-7645",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation pushed to origin/main at 4a53ed59. Changed src/components/beat-state-overview-matrix.tsx to measure natural wrapped header content and apply the tallest height to every column header; made label, hide control, and count wrapping siblings; made the badge label block-level/full-width with wrap-anywhere. Updated src/components/__tests__/beat-state-overview-matrix-header.test.ts for the new header structure. Verified lint, typecheck, unit tests, build, and Browser measurement: 12 columns, equal 58px header heights, 6 wrapped labels, all badges/text/components contained.",
+    "datetime": "2026-05-25T12:15:21.860819Z",
+    "entry_id": "019e5f0f-a704-7bb2-8602-c56be0221ddb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019e5f06-17a8-7151-8f67-95e21df431a8",
+  "occurred_at": "2026-05-25T12:04:55.335953Z",
+  "knot_id": "foolery-7645",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: inspect the Overview matrix header implementation and tests; reproduce the current narrow-column overflow using the screenshot data shape if possible; replace the header layout with a measured equal-height header row where the label/icon/count cluster can wrap as independent items; make the label wrap within its own component using min-width:0 and overflow-wrap:anywhere instead of truncation; add or update tests covering wrapped labels and uniform header height; validate with lint/typecheck/tests/build and rendered browser screenshots at desktop and narrow widths.",
+    "datetime": "2026-05-25T12:04:55.335953Z",
+    "entry_id": "019e5f06-17a7-7f40-bff4-8552c8c92bd4",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

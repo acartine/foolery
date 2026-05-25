@@ -1,0 +1,17 @@
+{
+  "event_id": "019e5f05-a43e-7c73-85f2-8b8c78137b63",
+  "occurred_at": "2026-05-25T12:04:25.790412Z",
+  "knot_id": "foolery-7645",
+  "type": "knot.created",
+  "data": {
+    "body": "Fix the Overview screen kanban column headers so long column labels wrap inside their header component, the label/icon/count cluster wraps when space is tight, and every column header uses the same height based on the tallest header. Verify in the rendered app and keep changes scoped to the overview header implementation.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Fix overview kanban header wrapping",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019e5f06-17a8-7151-8f67-9603daff549b",
+  "occurred_at": "2026-05-25T12:04:55.335953Z",
+  "knot_id": "foolery-7645",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Fix Overview kanban column headers in src/components/beat-state-overview-matrix.tsx. Requirements: column label wraps inside its badge, label never overruns the header, label/hide icon/count wrap as needed, and all column headers use the tallest measured header height. Verify via component tests and rendered browser QA.",
+    "datetime": "2026-05-25T12:04:55.335953Z",
+    "entry_id": "019e5f06-17a8-7151-8f67-95f1058ee314",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
