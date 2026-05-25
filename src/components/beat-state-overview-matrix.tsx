@@ -2,11 +2,16 @@
 
 import {
   forwardRef,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
 } from "react";
 import { EyeOff } from "lucide-react";
 import type {
   CSSProperties,
   ReactNode,
+  RefObject,
 } from "react";
 import type { Beat } from "@/lib/types";
 import {
@@ -92,6 +97,10 @@ export const OverviewStateMatrix = forwardRef<
 });
 
 function OverviewStateGrid(props: OverviewStateGridProps) {
+  const headerHeight = useUniformOverviewHeaderHeight(
+    props.visibleGroups,
+  );
+
   return (
     <div
       className={
@@ -105,6 +114,8 @@ function OverviewStateGrid(props: OverviewStateGridProps) {
         <BeatStateColumn
           key={group.state}
           group={group}
+          headerHeight={headerHeight.height}
+          onHeaderHeightChange={headerHeight.onHeaderHeightChange}
           showRepoColumn={props.showRepoColumn}
           isAllRepositories={props.isAllRepositories}
           leaseInfoByBeatKey={props.leaseInfoByBeatKey}
@@ -120,6 +131,8 @@ function OverviewStateGrid(props: OverviewStateGridProps) {
 
 function BeatStateColumn({
   group,
+  headerHeight,
+  onHeaderHeightChange,
   showRepoColumn,
   isAllRepositories,
   leaseInfoByBeatKey,
@@ -129,6 +142,8 @@ function BeatStateColumn({
   onHideColumn,
 }: {
   group: BeatStateGroup;
+  headerHeight?: number;
+  onHeaderHeightChange: (state: string, height: number) => void;
   showRepoColumn: boolean;
   isAllRepositories: boolean;
   leaseInfoByBeatKey: Record<string, OverviewLeaseInfo>;
@@ -150,7 +165,9 @@ function BeatStateColumn({
     >
       <BeatStateColumnHeader
         group={group}
+        headerHeight={headerHeight}
         showHideControl={showHideControl}
+        onHeaderHeightChange={onHeaderHeightChange}
         onHideColumn={onHideColumn}
       />
       <div className="divide-y divide-border/60 overflow-hidden">
@@ -186,39 +203,69 @@ function BeatStateColumn({
 
 function BeatStateColumnHeader({
   group,
+  headerHeight,
   showHideControl,
+  onHeaderHeightChange,
   onHideColumn,
 }: {
   group: BeatStateGroup;
+  headerHeight?: number;
   showHideControl: boolean;
+  onHeaderHeightChange: (state: string, height: number) => void;
   onHideColumn: (state: string) => void;
 }) {
+  const headerRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  useOverviewHeaderMeasurement(
+    group.state,
+    onHeaderHeightChange,
+    headerRef,
+    contentRef,
+  );
+
   return (
-    <div className={
-      "flex min-h-7 flex-wrap items-start gap-x-1.5 gap-y-0.5"
-      + " border-b border-border/70 bg-muted/35 px-2 py-1"
-    }>
-      <div className="flex min-w-0 flex-1 items-start">
-        <BeatStateBadge
-          state={group.state}
-          label={overviewStateLabel(group.state)}
-          className={
-            "h-auto max-w-full min-w-0 shrink justify-start"
-            + " overflow-visible whitespace-normal wrap-anywhere"
-            + " rounded-sm px-1 py-px text-left text-[8px] leading-3"
-          }
+    <div
+      className={
+        "box-border min-h-7 border-b border-border/70"
+        + " bg-muted/35 px-2 py-1"
+      }
+      data-testid="beat-state-column-header"
+      ref={headerRef}
+      style={headerHeight ? { height: headerHeight } : undefined}
+    >
+      <div
+        className={
+          "flex min-w-0 flex-wrap items-start"
+          + " gap-x-1 gap-y-0.5"
+        }
+        data-testid="beat-state-column-header-content"
+        ref={contentRef}
+      >
+        <div
+          className="min-w-0 max-w-full flex-[1_1_3.25rem]"
+          data-testid="beat-state-column-label"
+        >
+          <BeatStateBadge
+            state={group.state}
+            label={overviewStateLabel(group.state)}
+            className={
+              "block h-auto w-full max-w-full min-w-0"
+              + " overflow-visible whitespace-normal wrap-anywhere"
+              + " rounded-sm px-1 py-px text-left text-[8px] leading-3"
+            }
+          />
+        </div>
+        <BeatStateColumnActions
+          group={group}
+          showHideControl={showHideControl}
+          onHideColumn={onHideColumn}
         />
       </div>
-      <BeatStateColumnCount
-        group={group}
-        showHideControl={showHideControl}
-        onHideColumn={onHideColumn}
-      />
     </div>
   );
 }
 
-function BeatStateColumnCount({
+function BeatStateColumnActions({
   group,
   showHideControl,
   onHideColumn,
@@ -228,17 +275,12 @@ function BeatStateColumnCount({
   onHideColumn: (state: string) => void;
 }) {
   return (
-    <div
-      className={
-        "ml-auto flex min-w-0 flex-wrap items-center"
-        + " justify-end gap-x-1 gap-y-0.5"
-      }
-    >
+    <>
       {showHideControl && (
         <button
           type="button"
           className={
-            "inline-flex size-4 items-center justify-center"
+            "inline-flex size-4 shrink-0 items-center justify-center"
             + " rounded-sm text-muted-foreground"
             + " hover:bg-background hover:text-foreground"
           }
@@ -253,14 +295,110 @@ function BeatStateColumnCount({
         </button>
       )}
       <span className={
-        "flex h-4 items-center rounded-sm bg-background"
+        "flex h-4 shrink-0 items-center rounded-sm bg-background"
         + " px-1.5 text-[9px] leading-none tabular-nums"
         + " text-muted-foreground"
-      }>
+      } data-testid="beat-state-column-count">
         {group.beats.length}
       </span>
-    </div>
+    </>
   );
+}
+
+function useUniformOverviewHeaderHeight(
+  groups: BeatStateGroup[],
+): {
+  height?: number;
+  onHeaderHeightChange: (state: string, height: number) => void;
+} {
+  const heightsRef = useRef(new Map<string, number>());
+  const [height, setHeight] = useState<number>();
+
+  const recomputeHeight = useCallback(() => {
+    const next = overviewHeaderMaxHeight(groups, heightsRef.current);
+    setHeight((current) => current === next ? current : next);
+  }, [groups]);
+
+  const onHeaderHeightChange = useCallback((
+    state: string,
+    nextHeight: number,
+  ) => {
+    if (nextHeight > 0) {
+      heightsRef.current.set(state, Math.ceil(nextHeight));
+    } else {
+      heightsRef.current.delete(state);
+    }
+    recomputeHeight();
+  }, [recomputeHeight]);
+
+  useLayoutEffect(() => {
+    const visibleStates = new Set(groups.map((group) => group.state));
+    for (const state of heightsRef.current.keys()) {
+      if (!visibleStates.has(state)) heightsRef.current.delete(state);
+    }
+    recomputeHeight();
+  }, [groups, recomputeHeight]);
+
+  return { height, onHeaderHeightChange };
+}
+
+function overviewHeaderMaxHeight(
+  groups: BeatStateGroup[],
+  heights: Map<string, number>,
+): number | undefined {
+  let maxHeight = 0;
+  for (const group of groups) {
+    maxHeight = Math.max(maxHeight, heights.get(group.state) ?? 0);
+  }
+  return maxHeight > 0 ? maxHeight : undefined;
+}
+
+function useOverviewHeaderMeasurement(
+  state: string,
+  onHeightChange: (state: string, height: number) => void,
+  headerRef: RefObject<HTMLDivElement | null>,
+  contentRef: RefObject<HTMLDivElement | null>,
+): void {
+  useLayoutEffect(() => {
+    const header = headerRef.current;
+    const content = contentRef.current;
+    if (!header || !content) return undefined;
+
+    const updateHeight = () => {
+      onHeightChange(state, measureOverviewHeaderHeight(header, content));
+    };
+    updateHeight();
+
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", updateHeight);
+      return () => window.removeEventListener("resize", updateHeight);
+    }
+
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(header);
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, [contentRef, headerRef, onHeightChange, state]);
+}
+
+function measureOverviewHeaderHeight(
+  header: HTMLElement,
+  content: HTMLElement,
+): number {
+  const style = window.getComputedStyle(header);
+  const chromeHeight =
+    cssPixels(style.borderTopWidth)
+    + cssPixels(style.borderBottomWidth)
+    + cssPixels(style.paddingTop)
+    + cssPixels(style.paddingBottom);
+  return Math.ceil(
+    content.getBoundingClientRect().height + chromeHeight,
+  );
+}
+
+function cssPixels(value: string): number {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : 0;
 }
 
 function OverviewMatrixEmptyState() {

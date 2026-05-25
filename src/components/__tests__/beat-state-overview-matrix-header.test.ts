@@ -57,6 +57,20 @@ function extractFirstAttribute(
   return match[1];
 }
 
+function extractOpeningTagByTestId(
+  html: string,
+  testId: string,
+): string {
+  const marker = `data-testid="${testId}"`;
+  const markerIndex = html.indexOf(marker);
+  if (markerIndex === -1) {
+    throw new Error(`test id ${testId} not found`);
+  }
+  const tagStart = html.lastIndexOf("<", markerIndex);
+  const tagEnd = html.indexOf(">", markerIndex);
+  return html.slice(tagStart, tagEnd + 1);
+}
+
 describe("OverviewStateMatrix header wrapping", () => {
   it("does not clip the column wrapper so headers can grow vertically", () => {
     const html = renderMatrix([
@@ -72,7 +86,7 @@ describe("OverviewStateMatrix header wrapping", () => {
     expect(section).toContain("divide-y divide-border/60 overflow-hidden");
   });
 
-  it("lets the header wrap title and count onto additional rows", () => {
+  it("lets the header content wrap title and count onto rows", () => {
     const html = renderMatrix([
       emptyGroup("ready_for_implementation_review"),
     ]);
@@ -80,17 +94,26 @@ describe("OverviewStateMatrix header wrapping", () => {
       html,
       "ready_for_implementation_review",
     );
-    const headerStart = section.indexOf("<div");
-    const headerOpenEnd = section.indexOf(">", headerStart);
-    const headerOpenTag = section.slice(headerStart, headerOpenEnd + 1);
-    const headerClass = extractFirstAttribute(headerOpenTag, "class");
-    expect(headerClass).toMatch(/\bflex\b/);
-    expect(headerClass).toMatch(/\bflex-wrap\b/);
-    expect(headerClass).toMatch(/\bitems-start\b/);
-    expect(headerClass).not.toMatch(/\bjustify-between\b/);
+    const headerTag = extractOpeningTagByTestId(
+      section,
+      "beat-state-column-header",
+    );
+    const headerClass = extractFirstAttribute(headerTag, "class");
+    expect(headerClass).toMatch(/\bmin-h-7\b/);
+    expect(headerClass).not.toMatch(/\boverflow-hidden\b/);
+
+    const contentTag = extractOpeningTagByTestId(
+      section,
+      "beat-state-column-header-content",
+    );
+    const contentClass = extractFirstAttribute(contentTag, "class");
+    expect(contentClass).toMatch(/\bflex\b/);
+    expect(contentClass).toMatch(/\bflex-wrap\b/);
+    expect(contentClass).toMatch(/\bitems-start\b/);
+    expect(contentClass).not.toMatch(/\bjustify-between\b/);
   });
 
-  it("renders hide control and count inside a wrapping container", () => {
+  it("renders title, hide control, and count as wrapping siblings", () => {
     const html = renderMatrix([
       emptyGroup("ready_for_implementation_review"),
     ]);
@@ -98,24 +121,41 @@ describe("OverviewStateMatrix header wrapping", () => {
       html,
       "ready_for_implementation_review",
     );
-    const hideButton = 'data-testid="beat-state-column-hide"';
-    const hideIdx = section.indexOf(hideButton);
-    expect(hideIdx).toBeGreaterThan(0);
-    const wrapperStart = section.lastIndexOf("<div", hideIdx);
-    const wrapperOpenEnd = section.indexOf(">", wrapperStart);
-    const wrapperTag = section.slice(
-      wrapperStart,
-      wrapperOpenEnd + 1,
+    const labelTag = extractOpeningTagByTestId(
+      section,
+      "beat-state-column-label",
     );
-    const wrapperClass = extractFirstAttribute(wrapperTag, "class");
-    expect(wrapperClass).toMatch(/\bflex-wrap\b/);
-    expect(wrapperClass).not.toMatch(/\bshrink-0\b/);
-    expect(wrapperClass).toMatch(/\bmin-w-0\b/);
+    const labelClass = extractFirstAttribute(labelTag, "class");
+    expect(labelClass).toMatch(/\bmin-w-0\b/);
+    expect(labelClass).toMatch(/\bmax-w-full\b/);
+    expect(labelClass).toContain("flex-[1_1_3.25rem]");
+
+    const hideIdx = section.indexOf(
+      'data-testid="beat-state-column-hide"',
+    );
+    const countIdx = section.indexOf(
+      'data-testid="beat-state-column-count"',
+    );
+    expect(hideIdx).toBeGreaterThan(0);
+    expect(countIdx).toBeGreaterThan(hideIdx);
+
+    const hideTag = extractOpeningTagByTestId(
+      section,
+      "beat-state-column-hide",
+    );
+    const countTag = extractOpeningTagByTestId(
+      section,
+      "beat-state-column-count",
+    );
+    expect(extractFirstAttribute(hideTag, "class")).toMatch(/\bshrink-0\b/);
+    expect(extractFirstAttribute(countTag, "class")).toMatch(/\bshrink-0\b/);
     expect(section).toContain(
       'aria-label="Hide Ready Impl Review column"',
     );
   });
+});
 
+describe("OverviewStateMatrix header labels", () => {
   it("keeps the title badge able to wrap onto multiple lines", () => {
     const html = renderMatrix([
       emptyGroup("ready_for_implementation_review"),
@@ -126,7 +166,7 @@ describe("OverviewStateMatrix header wrapping", () => {
     );
     expect(section).toContain("Ready Impl Review");
     expect(section).toMatch(/whitespace-normal[^"]*wrap-anywhere/);
-    expect(section).toMatch(/min-w-0[^"]*shrink/);
+    expect(section).toMatch(/block[^"]*w-full[^"]*min-w-0/);
   });
 
   it("uses wrap-anywhere on the title badge to prevent overflow", () => {
