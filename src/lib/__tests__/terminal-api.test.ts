@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { connectToSession } from "../terminal-api";
+import { connectToSession, connectToSessionEvents } from "../terminal-api";
 
 // ---------------------------------------------------------------------------
 // Minimal EventSource mock – simulates the browser API enough for our tests.
@@ -152,6 +152,78 @@ describe("connectToSession", () => {
     });
   });
 
+});
+
+describe("connectToSessionEvents", () => {
+  it("opens one multiplex EventSource for sorted unique session ids", () => {
+    const cleanup = connectToSessionEvents(["sess-b", "sess-a", "sess-a"], vi.fn());
+
+    expect(MockEventSource.instances).toHaveLength(1);
+    expect(lastES().url).toBe("/api/terminal/events?sessionIds=sess-a,sess-b");
+    cleanup();
+    expect(lastES().closed).toBe(true);
+  });
+
+  it("forwards multiplex events with their session id", () => {
+    const onEvent = vi.fn();
+    connectToSessionEvents(["sess-a"], onEvent);
+
+    lastES().simulateMessage(JSON.stringify({
+      sessionId: "sess-a",
+      event: { type: "stdout", data: "hello", timestamp: 1 },
+    }));
+
+    expect(onEvent).toHaveBeenCalledWith(
+      "sess-a",
+      { type: "stdout", data: "hello", timestamp: 1 },
+    );
+  });
+
+  it("suppresses stream_end payloads", () => {
+    const onEvent = vi.fn();
+    const onError = vi.fn();
+    connectToSessionEvents(["sess-a"], onEvent, onError);
+
+    const es = lastES();
+    es.simulateMessage(JSON.stringify({
+      sessionId: "sess-a",
+      event: { type: "stream_end", data: "", timestamp: 1 },
+    }));
+    es.simulateError();
+
+    vi.advanceTimersByTime(500);
+    expect(onEvent).not.toHaveBeenCalled();
+    expect(onError).not.toHaveBeenCalled();
+    expect(es.closed).toBe(true);
+  });
+
+  it("recovers exits for ended sessions after disconnect", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          data: [{ id: "sess-a", status: "completed", exitCode: 0 }],
+        }),
+      }),
+    );
+    const onEvent = vi.fn();
+    const onError = vi.fn();
+    connectToSessionEvents(["sess-a", "sess-missing"], onEvent, onError);
+
+    lastES().simulateError();
+    await vi.advanceTimersByTimeAsync(200);
+
+    expect(onEvent).toHaveBeenCalledWith(
+      "sess-a",
+      expect.objectContaining({ type: "exit", data: "0" }),
+    );
+    expect(onEvent).toHaveBeenCalledWith(
+      "sess-missing",
+      expect.objectContaining({ type: "exit", data: "-2" }),
+    );
+    expect(onError).not.toHaveBeenCalled();
+  });
 });
 
 describe("connectToSession disconnect recovery", () => {

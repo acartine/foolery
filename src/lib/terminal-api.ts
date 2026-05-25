@@ -7,6 +7,11 @@ import { withClientPerfSpan } from "@/lib/client-perf";
 
 const BASE = "/api/terminal";
 
+export interface TerminalStreamEnvelope {
+  sessionId: string;
+  event: TerminalEvent;
+}
+
 export async function listSessions(): Promise<TerminalSession[]> {
   try {
     return await withClientPerfSpan("api", BASE, async () => {
@@ -102,6 +107,38 @@ async function fetchSessionStatus(
   }
 }
 
+async function fetchSessionStatusMap(
+  sessionIds: Set<string>,
+): Promise<Map<string, TerminalSession>> {
+  try {
+    const sessions = await listSessions();
+    return new Map(
+      sessions
+        .filter((s) => sessionIds.has(s.id))
+        .map((s) => [s.id, s]),
+    );
+  } catch {
+    return new Map();
+  }
+}
+
+function exitCodeForSession(session: TerminalSession | null): string {
+  if (!session) return "-2";
+  if (session.status === "disconnected") return "-2";
+  return String(
+    session.exitCode ?? (session.status === "completed" ? 0 : 1),
+  );
+}
+
+function isTerminalStatus(session: TerminalSession | null): boolean {
+  return !session
+    || (session.status !== "running" && session.status !== "idle");
+}
+
+function uniqueSessionIds(sessionIds: string[]): string[] {
+  return [...new Set(sessionIds.filter(Boolean))].sort();
+}
+
 export function connectToSession(
   sessionId: string,
   onEvent: (event: TerminalEvent) => void,
@@ -164,4 +201,89 @@ export function connectToSession(
   };
 
   return () => es.close();
+}
+
+export function connectToSessionEvents(
+  sessionIds: string[],
+  onEvent: (sessionId: string, event: TerminalEvent) => void,
+  onError?: (error: Event) => void,
+): () => void {
+  const ids = uniqueSessionIds(sessionIds);
+  if (ids.length === 0) return () => {};
+
+  const qs = ids.map(encodeURIComponent).join(",");
+  const es = new EventSource(`${BASE}/events?sessionIds=${qs}`);
+  const state = {
+    expectedIds: new Set(ids),
+    endedIds: new Set<string>(),
+  };
+
+  es.onmessage = (msg) => {
+    try {
+      const envelope = JSON.parse(msg.data) as TerminalStreamEnvelope;
+      const event = envelope.event;
+      if (event.type === "exit") state.endedIds.add(envelope.sessionId);
+      if (event.type === "stream_end") {
+        state.endedIds.add(envelope.sessionId);
+        return;
+      }
+      onEvent(envelope.sessionId, event);
+    } catch {
+      // ignore parse errors
+    }
+  };
+
+  es.onerror = (err) => {
+    if (allExpectedIdsEnded(state)) {
+      es.close();
+      return;
+    }
+    setTimeout(() => {
+      void recoverSessionEventsDisconnect(es, state, err, onEvent, onError);
+    }, 200);
+  };
+
+  return () => es.close();
+}
+
+function allExpectedIdsEnded(state: {
+  expectedIds: Set<string>;
+  endedIds: Set<string>;
+}): boolean {
+  for (const sessionId of state.expectedIds) {
+    if (!state.endedIds.has(sessionId)) return false;
+  }
+  return true;
+}
+
+async function recoverSessionEventsDisconnect(
+  es: EventSource,
+  state: { expectedIds: Set<string>; endedIds: Set<string> },
+  err: Event,
+  onEvent: (sessionId: string, event: TerminalEvent) => void,
+  onError?: (error: Event) => void,
+): Promise<void> {
+  if (allExpectedIdsEnded(state)) {
+    es.close();
+    return;
+  }
+  const statuses = await fetchSessionStatusMap(state.expectedIds);
+  let recoveredAll = true;
+  for (const sessionId of state.expectedIds) {
+    if (state.endedIds.has(sessionId)) continue;
+    const session = statuses.get(sessionId) ?? null;
+    if (!isTerminalStatus(session)) {
+      recoveredAll = false;
+      continue;
+    }
+    const event = {
+      type: "exit",
+      data: exitCodeForSession(session),
+      timestamp: Date.now(),
+    } satisfies TerminalEvent;
+    state.endedIds.add(sessionId);
+    onEvent(sessionId, event);
+  }
+  if (!recoveredAll) onError?.(err);
+  es.close();
 }

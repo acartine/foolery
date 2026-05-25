@@ -87,6 +87,37 @@ export const terminalPaths = {
     },
   },
 
+  "/api/terminal/events": {
+    get: {
+      tags: ["Terminal"],
+      summary: "Stream multiplexed terminal session output (SSE)",
+      description:
+        "Server-Sent Events stream for multiple terminal sessions. Each " +
+        "message is a TerminalStreamEnvelope with sessionId and event.",
+      operationId: "streamTerminalSessions",
+      parameters: [
+        {
+          name: "sessionIds",
+          in: "query",
+          required: true,
+          schema: { type: "string" },
+          description: "Comma-separated terminal session IDs to stream.",
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Multiplexed SSE event stream of terminal output",
+          content: {
+            "text/event-stream": {
+              schema: { $ref: "#/components/schemas/TerminalStreamEnvelope" },
+            },
+          },
+        },
+        "400": { description: "No session IDs were requested" },
+      },
+    },
+  },
+
   "/api/terminal/{sessionId}": {
     get: {
       tags: ["Terminal"],

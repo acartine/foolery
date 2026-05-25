@@ -1,4 +1,4 @@
-import { connectToSession, listSessions } from "./terminal-api";
+import { connectToSessionEvents, listSessions } from "./terminal-api";
 import { invalidateBeatListQueries } from "@/lib/beat-query-cache";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { useNotificationStore } from "@/stores/notification-store";
@@ -19,93 +19,60 @@ export interface BufferedEvent {
 type EventListener = (event: TerminalEvent) => void;
 
 interface Connection {
-  close: () => void;
   listeners: Set<EventListener>;
   buffer: BufferedEvent[];
+  bufferBytes: number;
   exitReceived: boolean;
   exitCode: number | null;
 }
 
-const MAX_BUFFER = 5_000;
+export interface TerminalConnectionStats {
+  sessionId: string;
+  listenerCount: number;
+  bufferEvents: number;
+  bufferBytes: number;
+  exited: boolean;
+  streaming: boolean;
+}
+
+const MAX_BUFFER_EVENTS = 5_000;
+const MAX_BUFFER_BYTES = 1_000_000;
+const MAX_BUFFER_EVENT_CHARS = 64_000;
 
 class SessionConnectionManager {
   private connections = new Map<string, Connection>();
   private storeUnsubscribe: (() => void) | null = null;
   private queryClient: QueryClient | null = null;
+  private streamClose: (() => void) | null = null;
+  private streamKey = "";
 
-  /** Idempotent — creates SSE connection if not already connected. */
+  /** Idempotent — tracks a session and refreshes the shared SSE stream. */
   connect(sessionId: string): void {
     if (this.connections.has(sessionId)) return;
+    this.ensureConnection(sessionId);
+    this.refreshStream();
+  }
 
+  private ensureConnection(sessionId: string): Connection {
+    const existing = this.connections.get(sessionId);
+    if (existing) return existing;
     const conn: Connection = {
-      close: () => {},
       listeners: new Set(),
       buffer: [],
+      bufferBytes: 0,
       exitReceived: false,
       exitCode: null,
     };
     this.connections.set(sessionId, conn);
-
-    const close = connectToSession(
-      sessionId,
-      (event: TerminalEvent) => {
-        // Buffer the event (bounded)
-        if (conn.buffer.length < MAX_BUFFER) {
-          conn.buffer.push({ type: event.type, data: event.data });
-        }
-
-        // Forward to all live listeners
-        for (const listener of conn.listeners) {
-          listener(event);
-        }
-
-        if (handleApprovalEvent(event, sessionId)) {
-          return;
-        }
-
-        if (event.type === "agent_switch") {
-          // The lease has rotated server-side; refetch to pick up the new
-          // `knotsLeaseId` / `knotsAgentInfo` (autostamp-derived from the
-          // new lease's agent_info).  The event payload is intentionally
-          // ignored — `docs/knots-agent-identity-contract.md` rule 5.
-          void refreshLeaseFromBackend();
-          return;
-        }
-
-        if (event.type === "beat_state_observed") {
-          if (this.queryClient) {
-            void invalidateBeatListQueries(this.queryClient);
-          }
-          return;
-        }
-
-        if (event.type === "agent_failure") {
-          fireAgentFailureNotification(event.data, sessionId);
-          return;
-        }
-
-        if (event.type === "exit") {
-          handleExitEvent(
-            event, conn, sessionId, this.queryClient,
-          );
-        }
-      },
-      // onError — remove the connection entry so sync can reconnect,
-      // but do NOT write disconnect messages (the old UI bug).
-      () => {
-        this.connections.delete(sessionId);
-      },
-    );
-
-    conn.close = close;
+    return conn;
   }
 
   /** Close SSE and remove connection entry. */
   disconnect(sessionId: string): void {
     const conn = this.connections.get(sessionId);
     if (!conn) return;
-    conn.close();
     this.connections.delete(sessionId);
+    this.refreshStream();
   }
 
   /**
@@ -141,6 +108,18 @@ class SessionConnectionManager {
     return [...this.connections.keys()];
   }
 
+  getConnectionStats(): TerminalConnectionStats[] {
+    const streamingIds = new Set(this.streamKey.split("\0").filter(Boolean));
+    return [...this.connections.entries()].map(([sessionId, conn]) => ({
+      sessionId,
+      listenerCount: conn.listeners.size,
+      bufferEvents: conn.buffer.length,
+      bufferBytes: conn.bufferBytes,
+      exited: conn.exitReceived,
+      streaming: streamingIds.has(sessionId),
+    }));
+  }
+
   /**
    * Start syncing SSE connections with the terminal store.
    * Subscribes to zustand outside React — connections persist regardless
@@ -165,9 +144,8 @@ class SessionConnectionManager {
     this.storeUnsubscribe?.();
     this.storeUnsubscribe = null;
     this.queryClient = null;
-    for (const sessionId of [...this.connections.keys()]) {
-      this.disconnect(sessionId);
-    }
+    this.closeSharedStream();
+    this.connections.clear();
   }
 
   private syncConnections(): void {
@@ -178,9 +156,9 @@ class SessionConnectionManager {
         .map((t) => t.sessionId),
     );
 
-    // Connect to new running sessions
+    // Track new running sessions; the shared SSE stream is refreshed once.
     for (const sessionId of runningIds) {
-      this.connect(sessionId);
+      this.ensureConnection(sessionId);
     }
 
     // Disconnect sessions no longer running in the store
@@ -190,15 +168,113 @@ class SessionConnectionManager {
         // keep the connection alive so we don't miss the exit event.
         const conn = this.connections.get(sessionId);
         if (conn?.exitReceived) {
-          this.disconnect(sessionId);
+          this.connections.delete(sessionId);
         }
       }
+    }
+    this.refreshStream();
+  }
+
+  private refreshStream(): void {
+    const sessionIds = [...this.connections.entries()]
+      .filter(([, conn]) => !conn.exitReceived)
+      .map(([sessionId]) => sessionId)
+      .sort();
+    const nextKey = sessionIds.join("\0");
+    if (nextKey === this.streamKey) return;
+    this.closeSharedStream();
+    this.streamKey = nextKey;
+    if (sessionIds.length === 0) return;
+    this.streamClose = connectToSessionEvents(
+      sessionIds,
+      (sessionId, event) => this.handleEvent(sessionId, event),
+      () => {
+        this.streamKey = "";
+        this.streamClose = null;
+        this.refreshStream();
+      },
+    );
+  }
+
+  private closeSharedStream(): void {
+    this.streamClose?.();
+    this.streamClose = null;
+    this.streamKey = "";
+  }
+
+  private handleEvent(sessionId: string, event: TerminalEvent): void {
+    const conn = this.connections.get(sessionId);
+    if (!conn) return;
+
+    appendBufferedEvent(conn, event);
+    for (const listener of conn.listeners) listener(event);
+
+    if (handleApprovalEvent(event, sessionId)) return;
+    if (event.type === "agent_switch") {
+      void refreshLeaseFromBackend();
+      return;
+    }
+    if (event.type === "beat_state_observed") {
+      if (this.queryClient) void invalidateBeatListQueries(this.queryClient);
+      return;
+    }
+    if (event.type === "agent_failure") {
+      fireAgentFailureNotification(event.data, sessionId);
+      return;
+    }
+    if (event.type === "exit") {
+      handleExitEvent(event, conn, sessionId, this.queryClient);
+      this.refreshStream();
     }
   }
 }
 
 /** Singleton instance */
 export const sessionConnections = new SessionConnectionManager();
+installDiagnosticsHook(sessionConnections);
+
+function appendBufferedEvent(conn: Connection, event: TerminalEvent): void {
+  const buffered = normalizeBufferedEvent(event);
+  conn.buffer.push(buffered);
+  conn.bufferBytes += estimateBufferedEventBytes(buffered);
+  while (conn.buffer.length > MAX_BUFFER_EVENTS) {
+    removeOldestBufferedEvent(conn);
+  }
+  while (conn.bufferBytes > MAX_BUFFER_BYTES && conn.buffer.length > 1) {
+    removeOldestBufferedEvent(conn);
+  }
+}
+
+function normalizeBufferedEvent(event: TerminalEvent): BufferedEvent {
+  const data = event.data.length > MAX_BUFFER_EVENT_CHARS
+    ? event.data.slice(-MAX_BUFFER_EVENT_CHARS)
+    : event.data;
+  return { type: event.type, data };
+}
+
+function removeOldestBufferedEvent(conn: Connection): void {
+  const removed = conn.buffer.shift();
+  if (!removed) return;
+  conn.bufferBytes -= estimateBufferedEventBytes(removed);
+}
+
+function estimateBufferedEventBytes(event: BufferedEvent): number {
+  return event.type.length + event.data.length;
+}
+
+declare global {
+  interface Window {
+    __FOOLERY_TERMINAL_CONNECTION_STATS__?: () => TerminalConnectionStats[];
+  }
+}
+
+function installDiagnosticsHook(manager: SessionConnectionManager): void {
+  if (typeof window === "undefined") return;
+  if (!window.location.search.includes("diagnostics=1")) return;
+  window.__FOOLERY_TERMINAL_CONNECTION_STATS__ = () => (
+    manager.getConnectionStats()
+  );
+}
 
 async function refreshLeaseFromBackend(): Promise<void> {
   try {

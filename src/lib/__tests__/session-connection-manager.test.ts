@@ -1,29 +1,36 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // ---------------------------------------------------------------------------
-// Mock connectToSession before importing the manager
+// Mock terminal stream API before importing the manager
 // ---------------------------------------------------------------------------
 type EventCallback = (event: { type: string; data: string; timestamp: number }) => void;
+type MuxEventCallback = (
+  sessionId: string,
+  event: { type: string; data: string; timestamp: number },
+) => void;
 type ErrorCallback = (error: Event) => void;
 
 let capturedOnEvent: EventCallback | null = null;
 let capturedOnError: ErrorCallback | null = null;
 let closeCallCount = 0;
+let lastSessionIds: string[] = [];
 
 vi.mock("../terminal-api", () => ({
-  connectToSession: vi.fn(
+  connectToSessionEvents: vi.fn(
     (
-      _sessionId: string,
-      onEvent: EventCallback,
+      sessionIds: string[],
+      onEvent: MuxEventCallback,
       onError?: ErrorCallback,
     ) => {
-      capturedOnEvent = onEvent;
+      lastSessionIds = sessionIds;
+      capturedOnEvent = (event) => onEvent(sessionIds[0], event);
       capturedOnError = onError ?? null;
       return () => {
         closeCallCount++;
       };
     },
   ),
+  listSessions: vi.fn().mockResolvedValue([]),
 }));
 
 // Mock the terminal store
@@ -90,13 +97,14 @@ vi.mock("sonner", () => ({
 // ---------------------------------------------------------------------------
 // Import after mocks are set up
 // ---------------------------------------------------------------------------
-import { connectToSession } from "../terminal-api";
+import { connectToSessionEvents } from "../terminal-api";
 import { sessionConnections } from "../session-connection-manager";
 
 beforeEach(() => {
   capturedOnEvent = null;
   capturedOnError = null;
   closeCallCount = 0;
+  lastSessionIds = [];
   mockTerminals.length = 0;
   storeSubscribers = [];
   mockUpdateStatus.mockClear();
@@ -140,7 +148,7 @@ function createMockQueryClient(): import("@tanstack/react-query").QueryClient {
 
 describe("SessionConnectionManager: connection lifecycle state handling", () => {
   it("connect() is idempotent", () => {
-    const mockConnect = vi.mocked(connectToSession);
+    const mockConnect = vi.mocked(connectToSessionEvents);
     sessionConnections.connect("sess-1");
     sessionConnections.connect("sess-1");
 
@@ -269,19 +277,22 @@ describe("SessionConnectionManager: connection lifecycle buffering", () => {
     expect(sessionConnections.getExitCode("sess-10")).toBe(42);
   });
 
-  it("onError removes connection entry (allows re-sync to reconnect)", () => {
+  it("onError recreates shared stream without dropping logical sessions", () => {
+    const mockConnect = vi.mocked(connectToSessionEvents);
+    mockConnect.mockClear();
     sessionConnections.connect("sess-11");
     expect(sessionConnections.getConnectedIds()).toContain("sess-11");
 
     capturedOnError!({} as Event);
 
-    expect(sessionConnections.getConnectedIds()).not.toContain("sess-11");
+    expect(sessionConnections.getConnectedIds()).toContain("sess-11");
+    expect(mockConnect).toHaveBeenCalledTimes(2);
   });
 });
 
 describe("SessionConnectionManager: sync and notification", () => {
-    it("startSync connects SSE for running terminals", () => {
-    const mockConnect = vi.mocked(connectToSession);
+  it("startSync connects SSE for running terminals", () => {
+    const mockConnect = vi.mocked(connectToSessionEvents);
     mockConnect.mockClear();
 
     mockTerminals.push({ sessionId: "sess-s1", status: "running", beatId: "beat-1", beatTitle: "Test Beat" });
@@ -293,6 +304,24 @@ describe("SessionConnectionManager: sync and notification", () => {
     expect(mockConnect).toHaveBeenCalledTimes(1);
     expect(sessionConnections.getConnectedIds()).toContain("sess-s1");
     expect(sessionConnections.getConnectedIds()).not.toContain("sess-s2");
+  });
+
+  it("startSync multiplexes all running terminals into one stream", () => {
+    const mockConnect = vi.mocked(connectToSessionEvents);
+    mockConnect.mockClear();
+    mockTerminals.push({
+      sessionId: "sess-m1", status: "running", beatId: "beat-1",
+      beatTitle: "One",
+    });
+    mockTerminals.push({
+      sessionId: "sess-m2", status: "running", beatId: "beat-2",
+      beatTitle: "Two",
+    });
+
+    sessionConnections.startSync(createMockQueryClient());
+
+    expect(mockConnect).toHaveBeenCalledTimes(1);
+    expect(lastSessionIds).toEqual(["sess-m1", "sess-m2"]);
   });
 
   it("startSync is idempotent (no double subscribe)", () => {
@@ -315,7 +344,9 @@ describe("SessionConnectionManager: sync and notification", () => {
     expect(sessionConnections.getConnectedIds()).toEqual([]);
     expect(storeSubscribers.length).toBe(0);
   });
+});
 
+describe("SessionConnectionManager: exit notifications", () => {
   it("exit event fires in-app notification with beat info", () => {
     mockTerminals.push({
       sessionId: "sess-notif",

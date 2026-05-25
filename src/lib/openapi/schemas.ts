@@ -138,7 +138,17 @@ const coreSchemas = {
       agentModel: { type: "string" },
       agentVersion: { type: "string" },
       agentCommand: { type: "string" },
-      status: { type: "string", enum: ["idle", "running", "completed", "error", "aborted"] },
+      status: {
+        type: "string",
+        enum: [
+          "idle",
+          "running",
+          "completed",
+          "error",
+          "aborted",
+          "disconnected",
+        ],
+      },
       startedAt: { type: "string", format: "date-time" },
       exitCode: { type: "integer" },
       pendingApprovals: {
@@ -159,15 +169,26 @@ const coreSchemas = {
         type: "string",
         enum: [
           "stdout",
+          "stdout_detail",
           "stderr",
           "exit",
           "stream_end",
           "agent_switch",
           "beat_state_observed",
+          "agent_failure",
         ],
       },
       data: { type: "string" },
       timestamp: { type: "number" },
+    },
+  },
+
+  TerminalStreamEnvelope: {
+    type: "object",
+    required: ["sessionId", "event"],
+    properties: {
+      sessionId: { type: "string" },
+      event: { $ref: "#/components/schemas/TerminalEvent" },
     },
   },
 
