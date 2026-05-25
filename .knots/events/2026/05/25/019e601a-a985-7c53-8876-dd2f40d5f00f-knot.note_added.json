@@ -1,0 +1,15 @@
+{
+  "event_id": "019e601a-a985-7c53-8876-dd2f40d5f00f",
+  "occurred_at": "2026-05-25T17:07:00.613852Z",
+  "knot_id": "foolery-3f10",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete.\n\nMerged codex/3f10-terminal-sse-saturation into main with a fast-forward merge and pushed origin/main to b80008e708fe0b2af70a72d697bea6c1dc67d09a.\n\nRemote verification:\n- GitHub Actions CI run 26411545720 passed on main for commit b80008e708fe0b2af70a72d697bea6c1dc67d09a. Lint, unit tests with coverage, coverage regression check, and build all completed successfully. Coverage regression annotations were warnings, not failures.\n- GitHub Actions Coverage Badge run 26411545736 completed successfully.\n\nLocal verification before shipment:\n- bun run lint\n- bunx tsc --noEmit\n- bun run test\n- bun run build\n- Local six-session fixture smoke probe reported terminalStreamCount=1 and perSessionTerminalStreamCount=0 over HTTP/1.1.",
+    "datetime": "2026-05-25T17:07:00.613852Z",
+    "entry_id": "019e601a-a985-7c53-8876-dd16ecb87519",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

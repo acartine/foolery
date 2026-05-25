@@ -1,0 +1,15 @@
+{
+  "event_id": "019e6005-f9aa-7a13-ad7a-16ca177ae0ab",
+  "occurred_at": "2026-05-25T16:44:24.874297Z",
+  "knot_id": "foolery-3f10",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning outcome for 3f10:\n\nRoot cause from the audit/repro is browser-side terminal streaming, not the local Next server and not the remote server. The current UI opens one long-lived EventSource per running terminal session. On HTTP/1.1, six running sessions can occupy the browser's per-origin connection budget, so normal UI fetches such as /api/terminal and /api/beats get queued behind SSE sockets. Hidden sessions also keep parsing every event and retaining client buffers, and switching to a terminal synchronously replays the retained buffer into xterm.\n\nImplementation plan:\n1. Add a multiplexed terminal event endpoint that streams events for a requested set of running terminal sessions through one SSE response and tags each event with its session id.\n2. Replace the browser session connection manager's per-session EventSource model with one multiplex connection per origin, routing events to per-session listeners/buffers.\n3. Bound retained client terminal output by both event count and approximate bytes; keep recent output available on tab switch while avoiding unbounded stdout_detail/stderr retention.\n4. Preserve existing terminal behavior: active session live output, approval events, agent failure notifications, beat query invalidation, and session status polling.\n5. Add focused unit tests around multiplex routing/buffering and add a repeatable Playwright/CDP diagnostic script for the six-session browser saturation case.\n6. Run the repo quality gates before shipping: bun run lint, bunx tsc --noEmit, bun run test, bun run build.\n\nWorktree plan: create a dedicated implementation worktree/branch for the code changes, run bun install --frozen-lockfile there before any gates, then integrate back to origin/main per repo policy.",
+    "datetime": "2026-05-25T16:44:24.874297Z",
+    "entry_id": "019e6005-f9aa-7a13-ad7a-16bfd8a18f51",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

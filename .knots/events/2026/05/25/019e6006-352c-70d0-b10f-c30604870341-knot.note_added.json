@@ -1,0 +1,15 @@
+{
+  "event_id": "019e6006-352c-70d0-b10f-c30604870341",
+  "occurred_at": "2026-05-25T16:44:40.108471Z",
+  "knot_id": "foolery-3f10",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review: approved.\n\nThe plan directly targets the reproduced failure mode: browser HTTP/1.1 connection exhaustion from one EventSource per running terminal session, plus hidden-session parse/buffer pressure. A multiplexed SSE endpoint preserves background terminal events and approval/failure behavior better than an active-session-only fallback. The buffer bounds and diagnostic script cover the memory/debuggability requirements. The proposed tests cover the new routing/buffering behavior, and the manual/CDP probe covers the browser-level connection-budget behavior that unit tests cannot faithfully reproduce.\n\nNo knot invariants are violated: the work stays in terminal/browser streaming code, does not alter Knots workflow semantics, does not lower maxConcurrentSessions, and does not hide failures.",
+    "datetime": "2026-05-25T16:44:40.108471Z",
+    "entry_id": "019e6006-352c-70d0-b10f-c2f72b26ab2e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

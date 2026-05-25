@@ -1,0 +1,15 @@
+{
+  "event_id": "019e6005-f9aa-7a13-ad7a-16eb5c7111ff",
+  "occurred_at": "2026-05-25T16:44:24.874297Z",
+  "knot_id": "foolery-3f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff capsule:\n- Reproduction showed six /api/terminal/{sessionId} EventSource streams over HTTP/1.1 and multi-second browser queueing for ordinary API requests.\n- Key files to touch: src/lib/session-connection-manager.ts, src/lib/terminal-api.ts, terminal API routes under src/app/api/terminal, and tests under src/lib/__tests__.\n- Preferred fix is multiplexing one browser SSE connection and routing by sessionId, with bounded per-session buffers. Active-only streaming is a fallback but may miss background approval/failure events until selected.\n- Add a script/manual probe that reports terminal event stream count, request protocol/durations, message/byte rate, and browser long tasks.",
+    "datetime": "2026-05-25T16:44:24.874297Z",
+    "entry_id": "019e6005-f9aa-7a13-ad7a-16d2d7eb342e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

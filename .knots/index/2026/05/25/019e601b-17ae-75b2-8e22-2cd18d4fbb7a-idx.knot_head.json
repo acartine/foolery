@@ -1,0 +1,21 @@
+{
+  "event_id": "019e601b-17ae-75b2-8e22-2cd18d4fbb7a",
+  "occurred_at": "2026-05-25T17:07:28.814827Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3f10",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Stop terminal SSE browser saturation",
+    "type": "work",
+    "updated_at": "2026-05-25T17:07:28.814827Z",
+    "workflow_id": "work_sdlc"
+  }
+}

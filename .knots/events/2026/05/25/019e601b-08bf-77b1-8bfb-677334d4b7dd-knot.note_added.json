@@ -1,0 +1,15 @@
+{
+  "event_id": "019e601b-08bf-77b1-8bfb-677334d4b7dd",
+  "occurred_at": "2026-05-25T17:07:24.991353Z",
+  "knot_id": "foolery-3f10",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review: approved.\n\nVerified shipped target:\n- local main, origin/main, and HEAD all resolve to b80008e708fe0b2af70a72d697bea6c1dc67d09a.\n- Knot tags include commit:b80008e708fe0b2af70a72d697bea6c1dc67d09a and branch:codex/3f10-terminal-sse-saturation.\n- GitHub Actions runs for the shipped commit are completed successfully: CI 26411545720 and Coverage Badge 26411545736.\n\nAll invariants hold: no Knots workflow behavior changed, no max session limit reduction, no hidden terminal failure downgrade, and no PR workflow was used. The change is live on remote main with the verified multiplex terminal stream fix.",
+    "datetime": "2026-05-25T17:07:24.991353Z",
+    "entry_id": "019e601b-08bf-77b1-8bfb-67625ccac098",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

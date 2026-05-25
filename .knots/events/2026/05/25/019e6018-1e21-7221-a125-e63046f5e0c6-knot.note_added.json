@@ -1,0 +1,15 @@
+{
+  "event_id": "019e6018-1e21-7221-a125-e63046f5e0c6",
+  "occurred_at": "2026-05-25T17:04:13.857647Z",
+  "knot_id": "foolery-3f10",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review: approved.\n\nReviewed branch codex/3f10-terminal-sse-saturation at commit b80008e708fe0b2af70a72d697bea6c1dc67d09a against origin/main. The implementation matches the accepted plan: one multiplex /api/terminal/events SSE stream replaces one EventSource per running terminal in the browser connection manager, per-session replay is bounded by event count and approximate bytes, active-session listeners still receive live output, background approval/failure/beat-state events still route through the manager, and diagnostics=1 exposes connection/buffer stats for the probe.\n\nTests cover the new client routing, bounded buffers, terminal-api multiplex behavior, and the route replay envelope. Sanity gates passed after the final amend: bun run lint, bunx tsc --noEmit, bun run test, bun run build. Local fixture smoke with six running sessions over HTTP/1.1 reported terminalStreamCount=1 and perSessionTerminalStreamCount=0.\n\nNo security, workflow, or maintainability regressions found. Knots workflow semantics and dispatch invariants are untouched.",
+    "datetime": "2026-05-25T17:04:13.857647Z",
+    "entry_id": "019e6018-1e21-7221-a125-e622862d26f3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
