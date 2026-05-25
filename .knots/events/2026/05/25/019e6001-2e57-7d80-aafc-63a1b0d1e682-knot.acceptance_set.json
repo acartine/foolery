@@ -1,0 +1,9 @@
+{
+  "event_id": "019e6001-2e57-7d80-aafc-63a1b0d1e682",
+  "occurred_at": "2026-05-25T16:39:10.6515Z",
+  "knot_id": "foolery-3f10",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. With six running terminal sessions over http://<host>:3210 using HTTP/1.1, the browser no longer opens one long-lived EventSource request to /api/terminal/{sessionId} for each running session.\n2. The terminal UI still shows live output for the active session and can recover/replay bounded recent output when switching to another running session.\n3. Hidden or inactive terminal sessions do not continuously render into xterm and do not retain unbounded stdout_detail/stderr data in client memory.\n4. A repeatable verification script, manual test, or documented diagnostic procedure reports terminal stream count, message rate, buffered bytes/events, request protocol, and request durations for the six-session scenario.\n5. The implementation passes bun run lint, bunx tsc --noEmit, bun run test, and bun run build."
+  }
+}

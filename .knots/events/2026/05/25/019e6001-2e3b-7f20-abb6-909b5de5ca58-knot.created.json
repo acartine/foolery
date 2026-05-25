@@ -1,0 +1,17 @@
+{
+  "event_id": "019e6001-2e3b-7f20-abb6-909b5de5ca58",
+  "occurred_at": "2026-05-25T16:39:10.6515Z",
+  "knot_id": "foolery-3f10",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nFix Foolery's browser-side terminal streaming so multiple running terminal sessions do not exhaust the browser's per-origin HTTP/1.1 connection budget or cause hidden-terminal output to create avoidable parsing, buffering, GC, or xterm replay pressure. The user-visible outcome is that the web UI remains responsive when six or more terminal sessions are running against a remote host such as manhattan:3210.\n\nVerification:\n1. Create or identify a remote Foolery instance with at least six running terminal sessions, then open a fresh Chromium/Chrome context at http://<host>:3210/beats?diagnostics=1 and confirm the app loads with the terminal panel present.\n2. Run a repeatable Playwright/CDP probe that records Network.responseReceived protocol/mimeType plus a page-side EventSource/message counter for 30 seconds; expected result: the page uses no more than one long-lived terminal event stream per origin, or otherwise does not keep one EventSource open per running terminal.\n3. In the same probe, verify ordinary UI requests such as GET /api/beats and GET /api/terminal are not delayed by multi-second browser queueing while six terminal sessions are running; expected result: steady-state request durations remain in the normal sub-second range on an otherwise healthy remote server.\n4. Switch between terminal tabs after the probe; expected result: terminal output is still available for the selected session and replay does not create visible freezes or long tasks.\n5. Run bun run lint, bunx tsc --noEmit, bun run test, and bun run build before shipping.\n\nConstraints:\nKeep Knots workflow behavior untouched. Do not solve this by lowering maxConcurrentSessions, hiding terminal failures, disabling terminal output, or requiring the user to use a different browser. Prefer a browser-side architectural fix such as multiplexing terminal events through one stream/WebSocket or streaming only the active session while preserving enough bounded history for inactive sessions. Add byte/event bounds and instrumentation where needed so future regressions are diagnosable. If the Playwright/CDP probe is not already checked in, make it part of this work or document an equivalent repeatable manual command.\n",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Stop terminal SSE browser saturation",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
