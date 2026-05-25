@@ -1,0 +1,15 @@
+{
+  "event_id": "019e5f1d-0a93-7ba2-b340-0193ec02b162",
+  "occurred_at": "2026-05-25T12:29:59.315777Z",
+  "knot_id": "foolery-7645",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment artifact: origin/main at 400b6f19 / tag v0.14.9. GitHub Release: https://github.com/acartine/foolery/releases/tag/v0.14.9. Runtime assets present for darwin-arm64, linux-arm64, and linux-x64 with .sha256 files. Knot is ready for shipment review.",
+    "datetime": "2026-05-25T12:29:59.315777Z",
+    "entry_id": "019e5f1d-0a93-7ba2-b340-01847ca24946",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

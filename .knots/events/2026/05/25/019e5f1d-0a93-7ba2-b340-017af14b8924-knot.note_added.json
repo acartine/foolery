@@ -1,0 +1,15 @@
+{
+  "event_id": "019e5f1d-0a93-7ba2-b340-017af14b8924",
+  "occurred_at": "2026-05-25T12:29:59.315777Z",
+  "knot_id": "foolery-7645",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment done: overview header fix is on origin/main and included in patch release v0.14.9 at release commit 400b6f19. Release script passed lint, typecheck, unit tests, build, pushed main/tag, created https://github.com/acartine/foolery/releases/tag/v0.14.9, and verified three runtime tarballs plus sha256 assets. Remote CI and Coverage Badge runs for release commit 400b6f19 completed successfully.",
+    "datetime": "2026-05-25T12:29:59.315777Z",
+    "entry_id": "019e5f1d-0a93-7ba2-b340-0168b8773711",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
