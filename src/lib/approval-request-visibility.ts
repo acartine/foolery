@@ -141,6 +141,11 @@ function extractAskUserQuestion(
       ]) ?? undefined,
       options: collectOptions(question?.options),
       toolUseId: pickString(block, ["id"]) ?? undefined,
+      supportedActions: ["respond"],
+      replyTarget: {
+        adapter: "claude-bridge",
+        transport: "stdio",
+      },
     };
   }
 

@@ -21,7 +21,11 @@ import {
   getApproval,
   registerApproval,
   type ApprovalResponder,
+  type ApprovalResponderPayload,
 } from "@/lib/approval-registry";
+import {
+  respondAskUserViaStdio,
+} from "@/lib/approval-ask-user-stdio";
 import type {
   SessionEntry,
 } from "@/lib/terminal-manager-types";
@@ -50,8 +54,8 @@ export function attachApprovalResponder(
   entry: SessionEntry,
   runtime: AgentSessionRuntime,
 ): void {
-  const responder: ApprovalResponder = (record, action) =>
-    respondWithRuntime(runtime, record, action);
+  const responder: ApprovalResponder = (record, action, payload) =>
+    respondWithRuntime(runtime, entry, record, action, payload);
   entry.approvalResponder = responder;
   attachResponderForSession(
     entry.session.id,
@@ -141,6 +145,7 @@ export async function performApprovalAction(
   entry: SessionEntry,
   approvalId: string,
   action: ApprovalAction,
+  payload?: ApprovalResponderPayload,
 ): Promise<ApprovalActionExecution> {
   const record = entry.pendingApprovals?.get(approvalId);
   if (!record) {
@@ -154,6 +159,7 @@ export async function performApprovalAction(
     record,
     responder: entry.approvalResponder ?? null,
     action,
+    payload,
     onFailureBanner: (failureRecord, reason) =>
       pushApprovalFailureEvent(entry, failureRecord, reason),
   });
@@ -162,6 +168,7 @@ export async function performApprovalAction(
 export async function applyApprovalAction(
   approvalId: string,
   action: ApprovalAction,
+  payload?: ApprovalResponderPayload,
 ): Promise<ApprovalActionExecution> {
   const entry = getApproval(approvalId);
   if (!entry) {
@@ -175,6 +182,7 @@ export async function applyApprovalAction(
     record: entry.record,
     responder: entry.responder,
     action,
+    payload,
   });
 }
 
@@ -182,6 +190,7 @@ interface ExecuteApprovalActionInput {
   record: PendingApprovalRecord;
   responder: ApprovalResponder | null | undefined;
   action: ApprovalAction;
+  payload?: ApprovalResponderPayload;
   onFailureBanner?: (
     record: PendingApprovalRecord,
     reason?: string,
@@ -191,7 +200,8 @@ interface ExecuteApprovalActionInput {
 async function executeApprovalAction(
   input: ExecuteApprovalActionInput,
 ): Promise<ApprovalActionExecution> {
-  const { record, responder, action, onFailureBanner } = input;
+  const { record, responder, action, payload, onFailureBanner } =
+    input;
   logApprovalEscalation(
     "approval.action_requested",
     logContext(record, action),
@@ -218,7 +228,7 @@ async function executeApprovalAction(
     "approval.action_sent",
     logContext(record, action),
   );
-  const result = await responder!(record, action);
+  const result = await responder!(record, action, payload);
   return finishApprovalReply(
     record,
     action,
@@ -229,8 +239,10 @@ async function executeApprovalAction(
 
 async function respondWithRuntime(
   runtime: AgentSessionRuntime,
+  entry: SessionEntry,
   record: PendingApprovalRecord,
   action: ApprovalAction,
+  payload?: ApprovalResponderPayload,
 ): Promise<ApprovalReplyResult> {
   const target = record.replyTarget;
   if (!target) {
@@ -272,7 +284,14 @@ async function respondWithRuntime(
     target.adapter === "claude-bridge" &&
     target.transport === "stdio"
   ) {
-    return { ok: true };
+    if (action !== "respond") return { ok: true };
+    return respondAskUserViaStdio({
+      runtime,
+      entry,
+      record,
+      action,
+      payload,
+    });
   }
   return {
     ok: false,

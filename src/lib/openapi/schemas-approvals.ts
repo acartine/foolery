@@ -5,7 +5,7 @@
 export const approvalComponentSchemas = {
   ApprovalAction: {
     type: "string",
-    enum: ["approve", "always_approve", "reject"],
+    enum: ["approve", "always_approve", "reject", "respond"],
   },
 
   ApprovalEscalationStatus: {
@@ -16,6 +16,7 @@ export const approvalComponentSchemas = {
       "approved",
       "always_approved",
       "rejected",
+      "responded",
       "manual_required",
       "dismissed",
       "reply_failed",

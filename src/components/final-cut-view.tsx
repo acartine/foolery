@@ -11,6 +11,7 @@ import {
 } from "@/lib/api";
 import {
   sendApprovalAction,
+  sendApprovalRespond,
 } from "@/lib/terminal-api";
 import { Badge } from "@/components/ui/badge";
 import { BeatTable } from "@/components/beat-table";
@@ -66,13 +67,11 @@ export function FinalCutView() {
   const markManualAction = useApprovalEscalationStore(
     (s) => s.markManualAction,
   );
-  const handleApprovalAction = useApprovalActionHandler();
+  const onApprovalAction = useApprovalActionHandler();
+  const onApprovalRespond = useApprovalRespondHandler();
   const scope = resolveBeatsScope(activeRepo, registeredRepos);
   const activeTab: EscalationsTab =
-    searchParams.get("tab") === "approvals"
-      ? "approvals"
-      : "notes";
-
+    searchParams.get("tab") === "approvals" ? "approvals" : "notes";
   const query = useQuery({
     queryKey: buildBeatsQueryKey(
       "finalcut",
@@ -108,8 +107,6 @@ export function FinalCutView() {
   );
 
   const allBeats: Beat[] = data?.ok ? (data.data ?? []) : [];
-
-  // Only show top-level beats (no parent) and parent beats (have children).
   // Leaf children are excluded to reduce clutter in the Final Cut view.
   const parentIds = new Set(allBeats.map((b) => b.parent).filter(Boolean));
   const beats = allBeats.filter((b) => !b.parent || parentIds.has(b.id));
@@ -148,9 +145,59 @@ export function FinalCutView() {
         onSelectionChange={handleSelectionChange}
         onDismissApproval={dismissApproval}
         onManualAction={markManualAction}
-        onApprovalAction={handleApprovalAction}
+        onApprovalAction={onApprovalAction}
+        onApprovalRespond={onApprovalRespond}
       />
     </div>
+  );
+}
+
+function useApprovalRespondHandler() {
+  const markApprovalResponding = useApprovalEscalationStore(
+    (s) => s.markApprovalResponding,
+  );
+  const markApprovalResolved = useApprovalEscalationStore(
+    (s) => s.markApprovalResolved,
+  );
+  const markApprovalUnsupported = useApprovalEscalationStore(
+    (s) => s.markApprovalUnsupported,
+  );
+  const markApprovalFailed = useApprovalEscalationStore(
+    (s) => s.markApprovalFailed,
+  );
+  return useCallback(
+    async (approval: ApprovalEscalation, text: string) => {
+      markApprovalResponding(approval.id, "respond");
+      const result = await sendApprovalRespond(
+        approval.sessionId,
+        approval.id,
+        text,
+      );
+      if (!result.ok) {
+        const message =
+          result.error ?? "Approval response failed";
+        if (
+          message.includes("not supported") ||
+          message.includes("not_supported")
+        ) {
+          markApprovalUnsupported(approval.id, message);
+        } else {
+          markApprovalFailed(approval.id, message);
+        }
+        return;
+      }
+      markApprovalResolved(
+        approval.id,
+        "respond",
+        result.data?.status,
+      );
+    },
+    [
+      markApprovalResponding,
+      markApprovalResolved,
+      markApprovalUnsupported,
+      markApprovalFailed,
+    ],
   );
 }
 
@@ -252,6 +299,10 @@ function EscalationsTabs(props: {
     approval: ApprovalEscalation,
     action: ApprovalAction,
   ) => void;
+  onApprovalRespond: (
+    approval: ApprovalEscalation,
+    text: string,
+  ) => void;
 }) {
   return (
     <Tabs value={props.activeTab} onValueChange={props.onTabChange}>
@@ -274,6 +325,7 @@ function EscalationsTabs(props: {
           onDismiss={props.onDismissApproval}
           onManualAction={props.onManualAction}
           onApprovalAction={props.onApprovalAction}
+          onRespond={props.onApprovalRespond}
         />
       </TabsContent>
     </Tabs>

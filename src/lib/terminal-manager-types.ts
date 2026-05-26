@@ -14,6 +14,9 @@ import type {
   ApprovalReplyResult,
   PendingApprovalRecord,
 } from "@/lib/approval-actions";
+import type {
+  ApprovalResponderPayload,
+} from "@/lib/approval-registry";
 
 export interface SessionEntry {
   session: TerminalSession;
@@ -37,6 +40,7 @@ export interface SessionEntry {
   approvalResponder?: (
     record: PendingApprovalRecord,
     action: ApprovalAction,
+    payload?: ApprovalResponderPayload,
   ) => Promise<ApprovalReplyResult>;
   approvalBridgeBaseUrl?: string;
   approvalBridgeToken?: string;

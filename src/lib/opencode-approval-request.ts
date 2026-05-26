@@ -1,9 +1,7 @@
 import type {
   ApprovalRequest,
 } from "@/lib/approval-request-visibility";
-import {
-  APPROVAL_ACTIONS,
-} from "@/lib/approval-actions";
+import type { ApprovalAction } from "@/lib/approval-actions";
 
 const MAX_VALUE_CHARS = 320;
 
@@ -283,7 +281,7 @@ export function extractOpenCodePermissionAsked(
     "id",
   ]) ?? undefined;
   const supportedActions = nativeSessionId && permissionId
-    ? [...APPROVAL_ACTIONS]
+    ? (["approve", "always_approve", "reject"] as ApprovalAction[])
     : undefined;
   const permissionName = pickRequestString(candidates, [
     "permission",

@@ -15,7 +15,7 @@ const APPROVAL_REPLY_TIMEOUT_MS = 1_500;
 
 function responseForAction(
   action: ApprovalAction,
-): string {
+): string | null {
   switch (action) {
     case "approve":
       return "once";
@@ -23,6 +23,8 @@ function responseForAction(
       return "always";
     case "reject":
       return "reject";
+    case "respond":
+      return null;
   }
 }
 
@@ -43,6 +45,14 @@ export async function respondToOpenCodeApproval(
       reason: "missing_opencode_reply_target",
     };
   }
+  const responseValue = responseForAction(action);
+  if (!responseValue) {
+    return {
+      ok: false,
+      status: "unsupported",
+      reason: `opencode_action_unsupported:${action}`,
+    };
+  }
   const controller = new AbortController();
   const timeout = setTimeout(() => {
     controller.abort();
@@ -58,7 +68,7 @@ export async function respondToOpenCodeApproval(
         },
         signal: controller.signal,
         body: JSON.stringify({
-          response: responseForAction(action),
+          response: responseValue,
           remember: action === "always_approve",
         }),
       },

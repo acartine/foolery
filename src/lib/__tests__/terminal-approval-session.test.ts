@@ -135,6 +135,7 @@ describe("terminal approval session", () => {
     expect(entry.approvalResponder).toHaveBeenCalledWith(
       record,
       "approve",
+      undefined,
     );
   });
 });

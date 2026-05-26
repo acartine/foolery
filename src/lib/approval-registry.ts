@@ -23,9 +23,14 @@ import {
 } from "@/lib/approval-actions";
 import type { ExecutionAgentInfo } from "@/lib/execution-port";
 
+export interface ApprovalResponderPayload {
+  text?: string;
+}
+
 export type ApprovalResponder = (
   record: PendingApprovalRecord,
   action: ApprovalAction,
+  payload?: ApprovalResponderPayload,
 ) => Promise<ApprovalReplyResult>;
 
 export interface ApprovalRegistryEntry {

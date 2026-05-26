@@ -24,8 +24,11 @@ import {
 import type { ScopedApproval } from "@/lib/approval-repo-scope";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  ApprovalRespondComposer,
+} from "@/components/approval-respond-composer";
 
-export function ApprovalEscalationsPanel(props: {
+export interface ApprovalEscalationsPanelProps {
   approvals: ScopedApproval[];
   onDismiss: (id: string) => void;
   onManualAction: (id: string) => void;
@@ -33,7 +36,15 @@ export function ApprovalEscalationsPanel(props: {
     approval: ApprovalEscalation,
     action: ApprovalAction,
   ) => void;
-}) {
+  onRespond?: (
+    approval: ApprovalEscalation,
+    text: string,
+  ) => void;
+}
+
+export function ApprovalEscalationsPanel(
+  props: ApprovalEscalationsPanelProps,
+) {
   if (props.approvals.length === 0) {
     return (
       <div
@@ -54,6 +65,7 @@ export function ApprovalEscalationsPanel(props: {
           onDismiss={props.onDismiss}
           onManualAction={props.onManualAction}
           onApprovalAction={props.onApprovalAction}
+          onRespond={props.onRespond}
         />
       ))}
     </div>
@@ -68,10 +80,22 @@ function ApprovalEscalationRow(props: {
     approval: ApprovalEscalation,
     action: ApprovalAction,
   ) => void;
+  onRespond?: (
+    approval: ApprovalEscalation,
+    text: string,
+  ) => void;
 }) {
   const { approval } = props;
   const consoleHref = buildApprovalConsoleHref(approval);
   const detailText = formatApprovalDetailText(approval);
+  const supportsRespond =
+    (approval.supportedActions ?? []).includes("respond");
+  const isTerminal =
+    approval.status === "responded" ||
+    approval.status === "approved" ||
+    approval.status === "always_approved" ||
+    approval.status === "rejected" ||
+    approval.status === "dismissed";
   return (
     <article
       className="rounded-md border bg-card px-4 py-3 text-sm shadow-sm"
@@ -91,6 +115,17 @@ function ApprovalEscalationRow(props: {
         />
       </div>
       <ApprovalRowMeta approval={approval} />
+      {supportsRespond && !isTerminal && props.onRespond ? (
+        <ApprovalRespondComposer
+          approvalId={approval.id}
+          question={approval.question}
+          options={approval.options}
+          isSubmitting={approval.status === "responding"}
+          onSubmit={(_id, text) =>
+            props.onRespond?.(approval, text)
+          }
+        />
+      ) : null}
       <ApprovalStatusMessage approval={approval} />
       {consoleHref ? (
         <a
@@ -324,6 +359,8 @@ function approvalStatusLabel(
       return "Manual action";
     case "responding":
       return "Responding";
+    case "responded":
+      return "Responded";
     case "reply_failed":
       return "Reply failed";
     case "unsupported":

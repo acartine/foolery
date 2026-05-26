@@ -228,7 +228,9 @@ describe("applyApprovalAction via canonical registry path", () => {
     );
     expect(approve.ok).toBe(true);
     expect(record.status).toBe("approved");
-    expect(responder).toHaveBeenCalledWith(record, "approve");
+    expect(responder).toHaveBeenCalledWith(
+      record, "approve", undefined,
+    );
   });
 
   it("returns 409 with code approval_responder_unavailable after detach", async () => {

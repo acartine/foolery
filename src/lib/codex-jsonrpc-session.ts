@@ -331,7 +331,9 @@ function approvalResultForAction(
     method === "item/commandExecution/requestApproval" ||
     method === "item/fileChange/requestApproval"
   ) {
-    if (action === "reject") return { decision: "decline" };
+    if (action === "reject" || action === "respond") {
+      return { decision: "decline" };
+    }
     if (action === "always_approve") {
       return { decision: "acceptForSession" };
     }
@@ -341,13 +343,15 @@ function approvalResultForAction(
     method === "execCommandApproval" ||
     method === "applyPatchApproval"
   ) {
-    if (action === "reject") return { decision: "denied" };
+    if (action === "reject" || action === "respond") {
+      return { decision: "denied" };
+    }
     if (action === "always_approve") {
       return { decision: "approved_for_session" };
     }
     return { decision: "approved" };
   }
-  if (action === "reject") {
+  if (action === "reject" || action === "respond") {
     return { action: "decline" };
   }
   return { action: "accept", content: {} };

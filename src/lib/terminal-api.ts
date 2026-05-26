@@ -96,6 +96,40 @@ export async function sendApprovalAction(
   );
 }
 
+export async function sendApprovalRespond(
+  sessionId: string,
+  approvalId: string,
+  text: string,
+): Promise<BdResult<ApprovalActionResponse>> {
+  return withClientPerfSpan(
+    "api",
+    `${BASE}/${sessionId}/approvals/${approvalId}/respond`,
+    async () => {
+      const res = await fetch(
+        `${BASE}/${encodeURIComponent(sessionId)}` +
+          `/approvals/${encodeURIComponent(approvalId)}/respond`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        },
+      );
+      const json = await res.json();
+      if (!res.ok) {
+        return {
+          ok: false,
+          error: json.error ?? "Failed to send approval response",
+        };
+      }
+      return { ok: true, data: json.data };
+    },
+    () => ({
+      method: "POST",
+      meta: { sessionId, approvalId, action: "respond" as const },
+    }),
+  );
+}
+
 async function fetchSessionStatus(
   sessionId: string,
 ): Promise<TerminalSession | null> {

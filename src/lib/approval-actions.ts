@@ -2,6 +2,7 @@ export const APPROVAL_ACTIONS = [
   "approve",
   "always_approve",
   "reject",
+  "respond",
 ] as const;
 
 export type ApprovalAction =
@@ -13,6 +14,7 @@ export type ApprovalEscalationStatus =
   | "approved"
   | "always_approved"
   | "rejected"
+  | "responded"
   | "manual_required"
   | "dismissed"
   | "reply_failed"
@@ -98,6 +100,8 @@ export function approvalStatusForAction(
       return "always_approved";
     case "reject":
       return "rejected";
+    case "respond":
+      return "responded";
   }
 }
 
@@ -107,6 +111,7 @@ export function isTerminalApprovalStatus(
   return status === "approved" ||
     status === "always_approved" ||
     status === "rejected" ||
+    status === "responded" ||
     status === "dismissed";
 }
 
@@ -126,5 +131,7 @@ export function approvalActionLabel(
       return "Always approve";
     case "reject":
       return "Reject";
+    case "respond":
+      return "Respond";
   }
 }
