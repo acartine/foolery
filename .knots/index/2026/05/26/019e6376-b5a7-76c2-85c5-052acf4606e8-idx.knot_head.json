@@ -1,0 +1,21 @@
+{
+  "event_id": "019e6376-b5a7-76c2-85c5-052acf4606e8",
+  "occurred_at": "2026-05-26T08:46:24.665343547Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7645",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix overview kanban header wrapping",
+    "type": "work",
+    "updated_at": "2026-05-26T08:46:24.665343547Z",
+    "workflow_id": "work_sdlc"
+  }
+}
