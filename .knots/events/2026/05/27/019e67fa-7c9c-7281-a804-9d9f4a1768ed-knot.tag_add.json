@@ -1,0 +1,9 @@
+{
+  "event_id": "019e67fa-7c9c-7281-a804-9d9f4a1768ed",
+  "occurred_at": "2026-05-27T05:48:49.692960549Z",
+  "knot_id": "foolery-697d",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-697d-console-tabs"
+  }
+}

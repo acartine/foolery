@@ -1,0 +1,15 @@
+{
+  "event_id": "019e67fa-bf5d-7a11-be07-512f61476b71",
+  "occurred_at": "2026-05-27T05:49:06.78144294Z",
+  "knot_id": "foolery-697d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: worktree-foolery-697d-console-tabs\nCommit: 8e7122992a2b5d0c12b4aa174bde4e25349c1745\nSummary: Stabilized terminal tab compact-label mode so six-tab clicks do not bounce between compact and full widths.\nGates: bun run lint; bun run tsc --noEmit; bun run test; bun run build.",
+    "datetime": "2026-05-27T05:49:06.78144294Z",
+    "entry_id": "019e67fa-bf5d-7a11-be07-5116d98054a7",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}
