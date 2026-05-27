@@ -242,6 +242,9 @@ function applyScalarFields(
   if (input.assignee !== undefined) beat.assignee = input.assignee;
   if (input.due !== undefined) beat.due = input.due;
   if (input.acceptance !== undefined) beat.acceptance = input.acceptance;
+  if (input.verificationSteps !== undefined) {
+    beat.verificationSteps = input.verificationSteps;
+  }
   if (input.notes !== undefined) beat.notes = input.notes;
   if (input.estimate !== undefined) beat.estimate = input.estimate;
 }

@@ -7,6 +7,7 @@ export interface CreateDraftData {
   priority?: number;
   labels?: string[];
   acceptance?: string;
+  verificationSteps?: string[];
   blocks?: string[];
   blockedBy?: string[];
 }
@@ -62,5 +63,7 @@ export function mergeDraftDefaults(
   if (draft.labels?.length) merged.labels = draft.labels;
   if (draft.acceptance)
     merged.acceptance = draft.acceptance;
+  if (draft.verificationSteps)
+    merged.verificationSteps = draft.verificationSteps;
   return merged;
 }

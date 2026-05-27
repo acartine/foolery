@@ -27,6 +27,14 @@ import {
 import { RelationshipPicker } from "@/components/relationship-picker";
 import { ProfileInfoDialog } from "@/components/profile-info-dialog";
 import { FormField } from "@/components/form-field";
+import {
+  AcceptanceField,
+  LabelsField,
+  VerificationStepsField,
+} from "@/components/beat-form-fields";
+import type {
+  BeatFormController,
+} from "@/components/beat-form-fields";
 
 const PRIORITIES = [0, 1, 2, 3, 4] as const;
 
@@ -35,17 +43,13 @@ export interface RelationshipDeps {
   blockedBy: string[];
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-type AnyForm = ReturnType<typeof useForm<any>>;
-/* eslint-enable @typescript-eslint/no-explicit-any */
-
 function ProfileSelectField({
   form,
   workflows,
   error,
   onInfoClick,
 }: {
-  form: AnyForm;
+  form: BeatFormController;
   workflows: MemoryWorkflowDescriptor[];
   error?: string;
   onInfoClick: () => void;
@@ -84,7 +88,7 @@ function TypePriorityRow({
   form,
   hideTypeSelector,
 }: {
-  form: AnyForm;
+  form: BeatFormController;
   hideTypeSelector: boolean;
 }) {
   const cls = hideTypeSelector
@@ -213,36 +217,6 @@ function BeatFormActions({
   );
 }
 
-function LabelsField({ form }: { form: AnyForm }) {
-  return (
-    <FormField label="Labels (comma-separated)">
-      <Input
-        placeholder="bug, frontend, urgent"
-        {...form.register("labels", {
-          setValueAs: (v: string | string[]) =>
-            typeof v === "string"
-              ? v
-                  .split(",")
-                  .map((s) => s.trim())
-                  .filter(Boolean)
-              : v,
-        })}
-      />
-    </FormField>
-  );
-}
-
-function AcceptanceField({ form }: { form: AnyForm }) {
-  return (
-    <FormField label="Acceptance criteria">
-      <Textarea
-        placeholder="Acceptance criteria"
-        {...form.register("acceptance")}
-      />
-    </FormField>
-  );
-}
-
 type BeatFormProps =
   | {
       mode: "create";
@@ -334,6 +308,7 @@ function useBeatForm(props: BeatFormProps) {
     priority: 2 as const,
     labels: [] as string[],
     acceptance: "",
+    verificationSteps: [] as string[],
     ...defaultValues,
   };
 
@@ -359,6 +334,8 @@ function useBeatForm(props: BeatFormProps) {
         labels: vals.labels as string[],
         acceptance:
           (vals.acceptance as string) || undefined,
+        verificationSteps:
+          (vals.verificationSteps as string[]) ?? [],
         blocks,
         blockedBy,
       };
@@ -458,6 +435,7 @@ export function BeatForm(props: BeatFormProps) {
       />
       <LabelsField form={form} />
       <AcceptanceField form={form} />
+      <VerificationStepsField form={form} />
       {mode === "create" && (
         <RelationshipSection
           blocks={blocks}

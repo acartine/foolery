@@ -114,6 +114,13 @@ export function buildUpdatePatch(
   if (input.acceptance !== undefined) {
     patch.acceptance = input.acceptance;
   }
+  if (input.verificationSteps !== undefined) {
+    applyVerificationStepsToPatch(
+      patch,
+      current.verificationSteps ?? [],
+      input.verificationSteps,
+    );
+  }
   if (input.priority !== undefined) {
     patch.priority = input.priority;
   }
@@ -177,6 +184,9 @@ export function hasPatchFields(patch: KnotUpdateInput): boolean {
     patch.title !== undefined ||
     patch.description !== undefined ||
     patch.acceptance !== undefined ||
+    (patch.addVerificationSteps?.length ?? 0) > 0 ||
+    (patch.removeVerificationSteps?.length ?? 0) > 0 ||
+    patch.clearVerificationSteps === true ||
     patch.priority !== undefined ||
     patch.status !== undefined ||
     patch.type !== undefined ||
@@ -188,6 +198,34 @@ export function hasPatchFields(patch: KnotUpdateInput): boolean {
     (patch.removeInvariants?.length ?? 0) > 0 ||
     patch.clearInvariants === true
   );
+}
+
+function applyVerificationStepsToPatch(
+  patch: KnotUpdateInput,
+  currentRaw: string[],
+  nextRaw: string[],
+): void {
+  const current = normalizeVerificationSteps(currentRaw);
+  const next = normalizeVerificationSteps(nextRaw);
+
+  if (next.length === 0 && current.length > 0) {
+    patch.clearVerificationSteps = true;
+    return;
+  }
+
+  const removed = current.filter((step) => !next.includes(step));
+  const added = next.filter((step) => !current.includes(step));
+  if (added.length > 0) patch.addVerificationSteps = added;
+  if (removed.length > 0) patch.removeVerificationSteps = removed;
+}
+
+function normalizeVerificationSteps(
+  steps: readonly string[] | undefined,
+): string[] {
+  return (steps ?? []).flatMap((step) => {
+    const normalized = step.trim();
+    return normalized ? [normalized] : [];
+  });
 }
 
 // ── Parent edge management ──────────────────────────────────────────
@@ -248,6 +286,7 @@ export async function createKnotImpl(
       {
         description: input.description,
         acceptance: input.acceptance,
+        verificationSteps: input.verificationSteps,
         state: selectedWorkflow.initialState,
         profile: selectedWorkflow.id,
       },

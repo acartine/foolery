@@ -74,6 +74,7 @@ export interface Beat {
   description?: string;
   notes?: string;
   acceptance?: string;
+  verificationSteps?: string[];
   type: string;
   state: string;
   workflowId?: string;

@@ -171,6 +171,7 @@ export function normalizeFromJsonl(raw: RawBead): Beat {
     notes: cleanNotes,
     acceptance: raw.acceptance_criteria
       ?? (raw as Record<string, unknown>).acceptance as string | undefined,
+    verificationSteps: [],
     type,
     state: runtime.state,
     workflowId: workflow.id,

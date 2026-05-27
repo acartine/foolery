@@ -46,6 +46,27 @@ function mapKnot(
 }
 
 describe("Knots backend mapper lease agent metadata", () => {
+  it("maps native verification steps", () => {
+    const beat = mapKnot(makeKnot({
+      verification_steps: [
+        " Run lint ",
+        "",
+        "Run tests",
+      ],
+    }));
+
+    expect(beat.verificationSteps).toEqual([
+      "Run lint",
+      "Run tests",
+    ]);
+  });
+
+  it("defaults missing verification steps to an empty array", () => {
+    const beat = mapKnot(makeKnot({}));
+
+    expect(beat.verificationSteps).toEqual([]);
+  });
+
   it("surfaces top-level lease_agent metadata", () => {
     const beat = mapKnot(makeKnot({
       lease_agent: {

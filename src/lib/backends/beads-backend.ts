@@ -261,6 +261,7 @@ export class BeadsBackend implements BackendPort {
       parent: input.parent,
       due: input.due,
       acceptance: input.acceptance,
+      verificationSteps: input.verificationSteps ?? [],
       notes: input.notes,
       estimate: input.estimate,
       invariants: normalizeInvariants(input.invariants),
@@ -530,4 +531,3 @@ export class BeadsBackend implements BackendPort {
     return { target, step: activeResolved.step };
   }
 }
-

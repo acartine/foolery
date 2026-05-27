@@ -16,6 +16,9 @@ import { isWaveLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import { BeatPriorityBadge } from "@/components/beat-priority-badge";
 import { StateDropdown } from "./beat-detail-state-dropdown";
+import {
+  VerificationStepsEditor,
+} from "@/components/verification-steps-editor";
 
 const PRIORITIES: BeatPriority[] = [0, 1, 2, 3, 4];
 
@@ -217,6 +220,10 @@ export function BeatDetail({
     onUpdate({ removeLabels: [label] }).catch(() => {});
   }, [onUpdate]);
 
+  const updateVerificationSteps = useCallback((next: string[]) => {
+    fireUpdate({ verificationSteps: next });
+  }, [fireUpdate]);
+
   return (
     <div className="space-y-2">
       <BeatDetailHeader
@@ -228,6 +235,47 @@ export function BeatDetail({
         removeLabel={removeLabel}
       />
 
+      <BeatEditableSections
+        beat={beat}
+        editingField={editingField}
+        editValue={editValue}
+        onCancelEdit={cancelEdit}
+        onChangeEditValue={setEditValue}
+        onSaveEdit={saveEdit}
+        onStartEdit={startEdit}
+        onUpdate={onUpdate}
+      />
+
+      <VerificationStepsSection
+        value={beat.verificationSteps ?? []}
+        onChange={updateVerificationSteps}
+        disabled={!onUpdate}
+      />
+    </div>
+  );
+}
+
+function BeatEditableSections({
+  beat,
+  editingField,
+  editValue,
+  onCancelEdit,
+  onChangeEditValue,
+  onSaveEdit,
+  onStartEdit,
+  onUpdate,
+}: {
+  beat: Beat;
+  editingField: string | null;
+  editValue: string;
+  onCancelEdit: () => void;
+  onChangeEditValue: (value: string) => void;
+  onSaveEdit: (field: string, value: string) => Promise<void>;
+  onStartEdit: (field: string, currentValue: string) => void;
+  onUpdate?: (fields: UpdateBeatInput) => Promise<void>;
+}) {
+  return (
+    <>
       <EditableSection
         field="description"
         title="Description"
@@ -235,13 +283,12 @@ export function BeatDetail({
         placeholder="Click to add description"
         editingField={editingField}
         editValue={editValue}
-        onStartEdit={startEdit}
-        onCancelEdit={cancelEdit}
-        onChangeEditValue={setEditValue}
-        onSaveEdit={saveEdit}
+        onStartEdit={onStartEdit}
+        onCancelEdit={onCancelEdit}
+        onChangeEditValue={onChangeEditValue}
+        onSaveEdit={onSaveEdit}
         onUpdate={onUpdate}
       />
-
       <EditableSection
         field="notes"
         title="Notes"
@@ -249,13 +296,12 @@ export function BeatDetail({
         placeholder="Click to add notes"
         editingField={editingField}
         editValue={editValue}
-        onStartEdit={startEdit}
-        onCancelEdit={cancelEdit}
-        onChangeEditValue={setEditValue}
-        onSaveEdit={saveEdit}
+        onStartEdit={onStartEdit}
+        onCancelEdit={onCancelEdit}
+        onChangeEditValue={onChangeEditValue}
+        onSaveEdit={onSaveEdit}
         onUpdate={onUpdate}
       />
-
       <EditableSection
         field="acceptance"
         title="Acceptance"
@@ -263,13 +309,36 @@ export function BeatDetail({
         placeholder="Click to add acceptance criteria"
         editingField={editingField}
         editValue={editValue}
-        onStartEdit={startEdit}
-        onCancelEdit={cancelEdit}
-        onChangeEditValue={setEditValue}
-        onSaveEdit={saveEdit}
+        onStartEdit={onStartEdit}
+        onCancelEdit={onCancelEdit}
+        onChangeEditValue={onChangeEditValue}
+        onSaveEdit={onSaveEdit}
         onUpdate={onUpdate}
       />
-    </div>
+    </>
+  );
+}
+
+function VerificationStepsSection({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: string[];
+  onChange: (next: string[]) => void;
+  disabled: boolean;
+}) {
+  return (
+    <section className="min-w-0 rounded-md border border-border/70 bg-muted/20 px-2 py-1.5">
+      <h3 className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        Verification steps
+      </h3>
+      <VerificationStepsEditor
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+      />
+    </section>
   );
 }
 

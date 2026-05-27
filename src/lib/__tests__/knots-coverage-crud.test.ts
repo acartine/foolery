@@ -258,6 +258,23 @@ describe("newKnot", () => {
     expect(callArgs).toContain("--tag=slice:all");
   });
 
+  it("passes verification steps and skips blank entries", async () => {
+    responseQueue.push({ stdout: "created 106" });
+    await newKnot(
+      "Title",
+      { verificationSteps: ["  Run lint  ", "", "Run tests"] },
+      "/repo",
+    );
+    const callArgs = execFileCallArgs[0]!;
+    const stepArgs = callArgs.filter(
+      (arg: string) => arg.startsWith("--verification-step="),
+    );
+    expect(stepArgs).toEqual([
+      "--verification-step=Run lint",
+      "--verification-step=Run tests",
+    ]);
+  });
+
   it("returns error on non-zero exit", async () => {
     responseQueue.push({
       error: {
@@ -461,6 +478,22 @@ describe("updateKnot", () => {
       ["--remove-invariant=State:must remain queued"],
     );
     expect(callArgs).toContain("--clear-invariants");
+  });
+});
+
+describe("updateKnot verification and error paths", () => {
+  it("serializes verification step mutations", async () => {
+    responseQueue.push({});
+    await updateKnot("42", {
+      addVerificationSteps: ["  Run build  ", ""],
+      removeVerificationSteps: ["Run lint"],
+      clearVerificationSteps: true,
+    }, "/repo");
+    const callArgs = execFileCallArgs[0]!;
+    expect(callArgs).toContain("--add-verification-step=Run build");
+    expect(callArgs).not.toContain("--add-verification-step=");
+    expect(callArgs).toContain("--remove-verification-step=Run lint");
+    expect(callArgs).toContain("--clear-verification-steps");
   });
 
   it("returns error on non-zero exit", async () => {

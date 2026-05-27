@@ -20,27 +20,20 @@ import { isPlanBeat } from "@/lib/orchestration-plan-payload";
 import {
   normalizePriority,
   normalizeInvariants,
-  extractAcceptanceFromNotes,
   stringifyNotes,
   knotStepEntries,
   deriveParentId,
   normalizeProfileId,
   collectAliases,
 } from "@/lib/backends/knots-backend-helpers";
-
-type KnotLeaseAgentInfo = {
-  agent_type?: string;
-  provider?: string;
-  agent_name?: string;
-  model?: string;
-  model_version?: string;
-};
-
-type KnotLeaseMetadata = {
-  agentInfo?: KnotLeaseAgentInfo;
-  leaseId?: string;
-  acquiredAt?: string;
-};
+import {
+  extractAcceptance,
+  extractVerificationSteps,
+  knotLeaseMetadata,
+} from "@/lib/backends/knots-backend-field-extractors";
+import type {
+  KnotLeaseMetadata,
+} from "@/lib/backends/knots-backend-field-extractors";
 
 // ── toBeat ──────────────────────────────────────────────────────────
 
@@ -63,13 +56,8 @@ export function toBeat(
   const invariants = normalizeInvariants(knot.invariants);
   const aliases = collectAliases(knot);
   const leaseMetadata = knotLeaseMetadata(knot, leaseAcquiredAtById);
-
-  const nativeAcceptance =
-    typeof knot.acceptance === "string"
-      ? knot.acceptance.trim() || undefined
-      : undefined;
-  const acceptance =
-    nativeAcceptance ?? extractAcceptanceFromNotes(knot.notes);
+  const acceptance = extractAcceptance(knot);
+  const verificationSteps = extractVerificationSteps(knot);
 
   if (!workflow) {
     return toBeatWithoutWorkflow(
@@ -82,6 +70,7 @@ export function toBeat(
       invariants,
       aliases,
       acceptance,
+      verificationSteps,
       leaseMetadata,
     );
   }
@@ -96,6 +85,7 @@ export function toBeat(
     invariants,
     aliases,
     acceptance,
+    verificationSteps,
     leaseMetadata,
   );
 }
@@ -110,6 +100,7 @@ function toBeatWithoutWorkflow(
   invariants: Invariant[],
   aliases: string[],
   acceptance: string | undefined,
+  verificationSteps: string[],
   leaseMetadata: KnotLeaseMetadata,
 ): Beat {
   const tags = (knot.tags ?? []).filter(
@@ -135,6 +126,7 @@ function toBeatWithoutWorkflow(
     aliases: aliases.length > 0 ? aliases : undefined,
     notes: stringifyNotes(knot.notes),
     acceptance,
+    verificationSteps,
     parent: deriveParentId(
       knot.id,
       aliases[0] ?? null,
@@ -176,6 +168,7 @@ function toBeatWithWorkflow(
   invariants: Invariant[],
   aliases: string[],
   acceptance: string | undefined,
+  verificationSteps: string[],
   leaseMetadata: KnotLeaseMetadata,
 ): Beat {
   const tags = (knot.tags ?? []).filter(
@@ -213,6 +206,7 @@ function toBeatWithWorkflow(
     aliases: aliases.length > 0 ? aliases : undefined,
     notes,
     acceptance,
+    verificationSteps,
     parent: deriveParentId(
       knot.id,
       aliases[0] ?? null,
@@ -247,61 +241,6 @@ function toBeatWithWorkflow(
         : {}),
     },
   };
-}
-
-function knotLeaseMetadata(
-  knot: KnotRecord,
-  leaseAcquiredAtById: ReadonlyMap<string, string>,
-): KnotLeaseMetadata {
-  const leaseId = cleanString(knot.lease_id);
-  const acquiredAt = leaseId
-    ? cleanString(leaseAcquiredAtById.get(leaseId))
-    : undefined;
-  return {
-    agentInfo: knotLeaseAgentInfo(knot),
-    leaseId,
-    acquiredAt,
-  };
-}
-
-function knotLeaseAgentInfo(
-  knot: KnotRecord,
-): KnotLeaseAgentInfo | undefined {
-  return cleanLeaseAgentInfo(knot.lease?.agent_info)
-    ?? cleanLeaseAgentInfo(
-      (knot as KnotRecord & { lease_agent?: unknown }).lease_agent,
-    );
-}
-
-function cleanLeaseAgentInfo(
-  value: unknown,
-): KnotLeaseAgentInfo | undefined {
-  if (!value || typeof value !== "object") return undefined;
-  const record = value as Record<string, unknown>;
-  const info: KnotLeaseAgentInfo = {};
-  copyAgentField(info, record, "agent_type");
-  copyAgentField(info, record, "provider");
-  copyAgentField(info, record, "agent_name");
-  copyAgentField(info, record, "model");
-  copyAgentField(info, record, "model_version");
-  return Object.keys(info).length > 0 ? info : undefined;
-}
-
-function copyAgentField(
-  info: KnotLeaseAgentInfo,
-  record: Record<string, unknown>,
-  key: keyof KnotLeaseAgentInfo,
-): void {
-  const value = record[key];
-  if (typeof value === "string" && value.trim().length > 0) {
-    info[key] = value.trim();
-  }
-}
-
-function cleanString(value: unknown): string | undefined {
-  return typeof value === "string" && value.trim().length > 0
-    ? value.trim()
-    : undefined;
 }
 
 // ── Filtering ───────────────────────────────────────────────────────
