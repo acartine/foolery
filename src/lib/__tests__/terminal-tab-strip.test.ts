@@ -89,6 +89,16 @@ describe("terminal-tab-strip compact labels and display", () => {
       expect(shouldUseCompactTerminalTabLabels(true, 520, 4)).toBe(true);
     });
 
+    it("keeps compact labels stable after compacting removes overflow", () => {
+      expect(shouldUseCompactTerminalTabLabels(true, 1_080, 6)).toBe(true);
+      expect(
+        shouldUseCompactTerminalTabLabels(false, 1_080, 6, true),
+      ).toBe(true);
+      expect(
+        shouldUseCompactTerminalTabLabels(false, 1_320, 6, true),
+      ).toBe(false);
+    });
+
     it("keeps full beat id labels in non-compact mode", () => {
       expect(
         resolveTerminalTabDisplayLabel(

@@ -1,5 +1,7 @@
 const TAB_STRIP_EPSILON = 1;
 const COMPACT_TAB_WIDTH_THRESHOLD = 190;
+// Prevent compact/full label mode from bouncing around the fit threshold.
+const COMPACT_TAB_WIDTH_RELEASE_THRESHOLD = 220;
 const COMPACT_TAB_PREFIX_MAX = 10;
 const COMPACT_TAB_LOCAL_ID_MAX = 12;
 
@@ -73,9 +75,16 @@ export function shouldUseCompactTerminalTabLabels(
   hasOverflow: boolean,
   clientWidth: number,
   tabCount: number,
+  currentlyCompact = false,
 ): boolean {
-  if (!hasOverflow || tabCount <= 0) return false;
-  return clientWidth / tabCount < COMPACT_TAB_WIDTH_THRESHOLD;
+  if (tabCount <= 0) return false;
+  const averageTabWidth = clientWidth / tabCount;
+
+  if (currentlyCompact) {
+    return averageTabWidth < COMPACT_TAB_WIDTH_RELEASE_THRESHOLD;
+  }
+
+  return hasOverflow && averageTabWidth < COMPACT_TAB_WIDTH_THRESHOLD;
 }
 
 export function getTerminalTabScrollAmount(clientWidth: number): number {

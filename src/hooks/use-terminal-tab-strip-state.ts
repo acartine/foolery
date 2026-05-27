@@ -45,11 +45,12 @@ export function useTabStripHelpers(
       clientWidth: strip.clientWidth,
     });
     setTabStripState(next);
-    setCompactTabLabels(
+    setCompactTabLabels((currentlyCompact) =>
       shouldUseCompactTerminalTabLabels(
         next.hasOverflow,
         strip.clientWidth,
         terminalCount,
+        currentlyCompact,
       ),
     );
   }, [terminalCount]);
