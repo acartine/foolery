@@ -471,29 +471,29 @@ function renderShipButton(
   );
 }
 
-export function repoColumn(): ColumnDef<Beat> {
+export function verificationStepsColumn(): ColumnDef<Beat> {
   return {
-    id: "_repoName",
-    header: "Repo",
-    size: 100,
-    minSize: 100,
-    maxSize: 100,
+    id: "verificationSteps",
+    header: "Steps",
+    size: 64,
+    minSize: 56,
+    maxSize: 80,
+    enableSorting: false,
     cell: ({ row }) => {
-      const repoName = (
-        row.original as unknown as
-          Record<string, unknown>
-      )._repoName;
-      return repoName ? (
+      const count = row.original.verificationSteps?.length ?? 0;
+      const tone = count > 0
+        ? "bg-lake-100 text-lake-700 dark:bg-lake-700/30 dark:text-lake-100"
+        : "bg-muted text-muted-foreground";
+      return (
         <span
+          title={`${count} verification steps`}
           className={
-            "text-xs font-mono"
-            + " text-muted-foreground"
+            "inline-flex h-5 min-w-5 items-center"
+            + ` justify-center rounded px-1.5 text-[10px] font-semibold ${tone}`
           }
         >
-          {repoName as string}
+          {count}
         </span>
-      ) : (
-        "-"
       );
     },
   };

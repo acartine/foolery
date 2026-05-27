@@ -180,6 +180,7 @@ export class MockBackendPort implements BackendPort {
       parent: input.parent,
       due: input.due,
       acceptance: input.acceptance,
+      verificationSteps: input.verificationSteps ?? [],
       notes: input.notes,
       estimate: input.estimate,
       created: now,
@@ -468,6 +469,9 @@ function applyUpdate(beat: Beat, input: UpdateBeatInput): void {
   if (input.assignee !== undefined) beat.assignee = input.assignee;
   if (input.due !== undefined) beat.due = input.due;
   if (input.acceptance !== undefined) beat.acceptance = input.acceptance;
+  if (input.verificationSteps !== undefined) {
+    beat.verificationSteps = input.verificationSteps;
+  }
   if (input.notes !== undefined) beat.notes = input.notes;
   if (input.addHandoffCapsule !== undefined) {
     const metadata = beat.metadata ?? {};

@@ -87,6 +87,7 @@ function normalizeBeat(
     acceptance: (
       raw.acceptance_criteria ?? raw.acceptance
     ) as string | undefined,
+    verificationSteps: [],
     parent: inferParent(
       id, raw.parent, raw.dependencies,
     ),
@@ -96,7 +97,7 @@ function normalizeBeat(
       raw.estimated_minutes ?? raw.estimate
     ) as number | undefined,
     labels,
-  } as Beat;
+  } as unknown as Beat;
 }
 
 function normalizeBeats(raw: string): Beat[] {
@@ -373,4 +374,3 @@ export async function showBeat(
     };
   }
 }
-

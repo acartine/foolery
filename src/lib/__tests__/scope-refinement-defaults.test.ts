@@ -17,6 +17,18 @@ describe("interpolateScopeRefinementPrompt", () => {
     expect(result).toContain("Original acceptance");
   });
 
+  it("keeps the acceptance criteria section in the default prompt", () => {
+    const result = interpolateScopeRefinementPrompt(DEFAULT_SCOPE_REFINEMENT_PROMPT, {
+      title: "Original title",
+      description: "Original description",
+      acceptance: "1. Run lint\n2. Run tests",
+    });
+
+    expect(result).toContain("Acceptance criteria:");
+    expect(result).toContain("1. Run lint\n2. Run tests");
+    expect(result).not.toContain("{{acceptance}}");
+  });
+
   it("fills missing values with an explicit placeholder", () => {
     const result = interpolateScopeRefinementPrompt(
       "D={{description}} A={{acceptance}}",

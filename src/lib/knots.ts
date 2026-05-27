@@ -81,6 +81,7 @@ export interface KnotRecord {
   body?: string | null;
   description?: string | null;
   acceptance?: string | null;
+  verification_steps?: string[] | null;
   priority?: number | null;
   type?: string | null;
   tags?: string[];
@@ -172,6 +173,9 @@ export interface KnotUpdateInput {
   title?: string;
   description?: string;
   acceptance?: string;
+  addVerificationSteps?: string[];
+  removeVerificationSteps?: string[];
+  clearVerificationSteps?: boolean;
   priority?: number;
   status?: string;
   type?: string;

@@ -42,6 +42,7 @@ export async function newKnot(
     description?: string;
     body?: string;
     acceptance?: string;
+    verificationSteps?: string[];
     state?: string;
     type?: string;
     profile?: string;
@@ -55,6 +56,12 @@ export async function newKnot(
   if (description) args.push(`--desc=${description}`);
   if (options?.acceptance !== undefined) {
     args.push(`--acceptance=${options.acceptance}`);
+  }
+  for (const step of options?.verificationSteps ?? []) {
+    const normalized = step.trim();
+    if (normalized) {
+      args.push(`--verification-step=${normalized}`);
+    }
   }
   if (options?.state) args.push("--state", options.state);
   if (options?.type) args.push("--type", options.type);
@@ -196,6 +203,7 @@ export async function updateKnot(
   if (input.acceptance !== undefined) {
     args.push(`--acceptance=${input.acceptance}`);
   }
+  appendVerificationStepArgs(args, input);
   if (input.priority !== undefined) {
     args.push("--priority", String(input.priority));
   }
@@ -277,6 +285,27 @@ function appendInvariantArgs(
   }
   if (input.clearInvariants) {
     args.push("--clear-invariants");
+  }
+}
+
+function appendVerificationStepArgs(
+  args: string[],
+  input: KnotUpdateInput,
+): void {
+  for (const step of input.addVerificationSteps ?? []) {
+    const normalized = step.trim();
+    if (normalized) {
+      args.push(`--add-verification-step=${normalized}`);
+    }
+  }
+  for (const step of input.removeVerificationSteps ?? []) {
+    const normalized = step.trim();
+    if (normalized) {
+      args.push(`--remove-verification-step=${normalized}`);
+    }
+  }
+  if (input.clearVerificationSteps) {
+    args.push("--clear-verification-steps");
   }
 }
 

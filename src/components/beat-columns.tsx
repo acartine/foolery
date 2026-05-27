@@ -14,8 +14,11 @@ import {
   stateColumn,
   agentColumns,
   actionColumn,
-  repoColumn,
+  verificationStepsColumn,
 } from "./beat-column-defs-extra";
+import {
+  repoColumn,
+} from "./beat-columns-repo";
 
 export type {
   AgentInfo,
@@ -45,6 +48,7 @@ export function getBeatColumns(
     selectColumn(),
     idColumn(),
     priorityColumn(r),
+    verificationStepsColumn(),
     profileColumn(r),
   ];
 
