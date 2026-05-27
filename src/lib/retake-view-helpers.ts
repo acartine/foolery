@@ -11,7 +11,7 @@ import {
   resolveBeatsScope,
 } from "@/lib/api";
 import { useRepoSwitchQueryState } from "@/hooks/use-repo-switch-query-state";
-import { isRetakeSourceState } from "@/lib/retake";
+import { isRetakeEligibleType, isRetakeSourceState } from "@/lib/retake";
 import { startSession } from "@/lib/terminal-api";
 import { hasRollingAncestor } from "@/lib/rolling-ancestor";
 import {
@@ -64,7 +64,8 @@ async function loadRepo(
   return {
     ok: true,
     data: allBeats.filter(
-      (beat) => isRetakeSourceState(beat.state),
+      (beat) => isRetakeSourceState(beat.state)
+        && isRetakeEligibleType(beat.type),
     ),
     allBeats,
   };
