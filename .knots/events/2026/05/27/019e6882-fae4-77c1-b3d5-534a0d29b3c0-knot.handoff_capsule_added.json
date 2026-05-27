@@ -1,0 +1,15 @@
+{
+  "event_id": "019e6882-fae4-77c1-b3d5-534a0d29b3c0",
+  "occurred_at": "2026-05-27T08:17:54.916436765Z",
+  "knot_id": "foolery-da13",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning completed for the beat detail lightbox handoff capsule work. The implementation should place capsule context in the LightboxBody sidebar below Dependencies, reuse renderedHandoffCapsules and capsuleMeta from beat-table-metadata where possible, render nothing for beats without capsules, and add focused hermetic render tests for present and absent capsule cases. No child knots are needed.",
+    "datetime": "2026-05-27T08:17:54.916436765Z",
+    "entry_id": "019e6882-fae4-77c1-b3d5-533a4dcc122b",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

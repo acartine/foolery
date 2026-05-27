@@ -1,0 +1,9 @@
+{
+  "event_id": "019e6881-0daa-7171-b72f-20e3e208571b",
+  "occurred_at": "2026-05-27T08:15:48.650020542Z",
+  "knot_id": "foolery-cfc9",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. A knots-backed beat with no verification steps shows an empty list (not an error or hidden field) on both the create lightbox and beat detail panel.\n2. A user can add a new verification step using only the keyboard (no mouse required) on both surfaces.\n3. A user can delete an existing verification step using only the keyboard on both surfaces.\n4. Arrow keys move focus between items in the list on both surfaces.\n5. The queues screen row overview and the active screen active-row overview display a verification steps indicator (count or list preview) without requiring the detail panel to be opened.\n6. Changes to verification steps are persisted to the knots backend and survive a page reload.\n7. The scope-refinement prompt template includes an acceptance criteria section that is populated or prompted for during a scope-refinement flow.\n8. No regressions on existing beat fields (title, description, state) across all three surfaces."
+  }
+}

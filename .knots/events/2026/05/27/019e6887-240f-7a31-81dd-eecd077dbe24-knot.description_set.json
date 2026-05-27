@@ -1,0 +1,9 @@
+{
+  "event_id": "019e6887-240f-7a31-81dd-eecd077dbe24",
+  "occurred_at": "2026-05-27T08:22:27.599447903Z",
+  "knot_id": "foolery-7561",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Update the Retakes screen so it excludes lease, gate, and exploration knot types from the list. The screen should display only work-type knots."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "event_id": "019e6881-0daa-7171-b72f-20c858a59a97",
+  "occurred_at": "2026-05-27T08:15:48.650020542Z",
+  "knot_id": "foolery-cfc9",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Support Verification Steps for knots backed beats",
+    "to": "Add verification steps field to knots-backed beats"
+  }
+}

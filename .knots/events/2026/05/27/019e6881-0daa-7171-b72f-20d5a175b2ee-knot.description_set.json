@@ -1,0 +1,9 @@
+{
+  "event_id": "019e6881-0daa-7171-b72f-20d5a175b2ee",
+  "occurred_at": "2026-05-27T08:15:48.650020542Z",
+  "knot_id": "foolery-cfc9",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Expose a verification steps field (ordered list of strings) on knots-backed beats across three surfaces, and update the scope-refinement prompt to include acceptance criteria.\n\n**Create beat lightbox**\n- Display verification steps as an editable list of strings.\n- Support keyboard-only navigation: add a new item (Enter at end of list), move between items (Up/Down arrows), and delete the focused item (Backspace on empty item or dedicated key binding).\n- Mouse interaction (click to focus an item, click to delete) also supported.\n\n**Beat detail panel**\n- Same editable list with identical keyboard-navigation and add/remove behavior as the lightbox.\n\n**Queues screen and Active screen (active-row overview)**\n- Add a verification steps column (or badge/count) to the existing row-overview component so the presence and count of steps is visible at a glance without opening the detail view.\n\n**Scope refinement prompt**\n- Update the prompt template used during scope refinement to include an acceptance criteria section, mirroring what this work item demonstrates."
+  }
+}

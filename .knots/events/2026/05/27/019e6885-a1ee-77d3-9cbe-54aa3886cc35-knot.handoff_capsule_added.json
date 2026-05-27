@@ -1,0 +1,15 @@
+{
+  "event_id": "019e6885-a1ee-77d3-9cbe-54aa3886cc35",
+  "occurred_at": "2026-05-27T08:20:48.750270461Z",
+  "knot_id": "foolery-cfc9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. Implement in a dedicated worktree after `bun install --frozen-lockfile`. Back verification steps with Knots native `acceptance` because kno 0.16.0 has no separate verification field; add small parser/formatter helpers, a shared editor, detail/create integration, a Queues/Active row count badge, and tests for parsing, backend create/update, prompt acceptance criteria, and keyboard interactions.",
+    "datetime": "2026-05-27T08:20:48.750270461Z",
+    "entry_id": "019e6885-a1ee-77d3-9cbe-5493dce74bdf",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

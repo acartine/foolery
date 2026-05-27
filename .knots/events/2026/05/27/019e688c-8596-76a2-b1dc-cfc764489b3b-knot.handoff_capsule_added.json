@@ -1,0 +1,15 @@
+{
+  "event_id": "019e688c-8596-76a2-b1dc-cfc764489b3b",
+  "occurred_at": "2026-05-27T08:28:20.246074935Z",
+  "knot_id": "foolery-cfc9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan v2 — addresses reviewer's revision request.\n\nPersistence uses kno 0.16.0 native `verification_steps` (verified live\non this knot; v1's acceptance-overload is discarded). `Beat.acceptance`\nis left untouched and the detail-panel acceptance editor remains;\nverification steps are added as a separate, always-`string[]` field\nwith its own editor below acceptance. No parser/formatter helpers.\n\nImplementation order: (1) pre-extractions to free room in 4 files at\nthe 500-line cap; (2) types through `KnotRecord` / `Beat` /\n`CreateBeatInput` / `UpdateBeatInput`; (3) backend wire-up in\n`knots-operations` (`--verification-step`, add/remove/clear) and\n`buildUpdatePatch` diff math (covers AC6 persistence); (4) shared\n`VerificationStepsEditor` component with keyboard-only nav\n(Enter add, Up/Down focus, Backspace-empty delete); (5) mount in\nbeat-form (lightbox) and beat-detail (panel); (6) count badge column\non Queues + Active row overviews.\n\nAC7 (scope refinement) is already satisfied by the existing\n`Acceptance criteria:` + `{{acceptance}}` lines in\n`scope-refinement-defaults.ts` — no wording change required, only a\nregression test that locks the heading + substitution. The plan note\ncalls this out explicitly.\n\nTest plan covers diff math (all combinations including clear), mapper\ndefaults, CLI arg formation, prompt substitution, and Storybook\ninteraction tests for keyboard behavior. Manual roundtrip test gated\nbehind `__manual_tests__/`.\n\nReady for plan_review.",
+    "datetime": "2026-05-27T08:28:20.246074935Z",
+    "entry_id": "019e688c-8596-76a2-b1dc-cfbbde1c8892",
+    "model": "Opus",
+    "username": "foolery",
+    "version": "4.7"
+  }
+}

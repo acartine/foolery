@@ -1,0 +1,15 @@
+{
+  "event_id": "019e6891-0b63-7d63-bfe8-45b03ca2b7df",
+  "occurred_at": "2026-05-27T08:33:16.643783626Z",
+  "knot_id": "foolery-da13",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review complete. Implementation commit 2d8cbbeaa9157db4f6e573e9542609cb64d5309a merged to origin/main via df98e88d (Merge worktree-foolery-da13-handoff-capsules). Quality gates passed: lint, tsc --noEmit (exit 0), bun run test (278 files, 2804 tests passing), bun run build. Acceptance criteria met: HandoffCapsulesPanel renders in beat detail lightbox sidebar using shared renderedHandoffCapsules/capsuleMeta helpers; collapses when empty; no regressions in beats without capsules.",
+    "datetime": "2026-05-27T08:33:16.643783626Z",
+    "entry_id": "019e6891-0b63-7d63-bfe8-45a2acb12ec6",
+    "model": "Sonnet",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "event_id": "019e6886-fe79-7ff1-b9f6-65ccdd7cba2f",
+  "occurred_at": "2026-05-27T08:22:17.977734324Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7561",
+    "next_step_metadata": {
+      "action_kind": "produce",
+      "action_state": "implementation",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "implementation",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Retakes screen should filter out lease, gate, and exploration knot types.  only work types should show up in the screen.",
+    "type": "work",
+    "updated_at": "2026-05-27T08:22:17.977734324Z",
+    "workflow_id": "work_sdlc"
+  }
+}

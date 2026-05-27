@@ -1,0 +1,9 @@
+{
+  "event_id": "019e6880-c81e-7181-9ea8-6db71cbad17c",
+  "occurred_at": "2026-05-27T08:15:30.830418823Z",
+  "knot_id": "foolery-cfc9",
+  "type": "knot.description_set",
+  "data": {
+    "description": "for each surface, add support for verification steps\n- create beat lightbox -list of strings.  make it easy to navigate without clicking o nthe mouse.  must be able to add/remove items from the list.\n- beat detail -list of strings.  make it easy to navigate without clicking o nthe mouse.  must be able to add/remove items from the list.\n- queues and active screens when active row - add another column to the \"overview\" component of the row\n- scope refinement - update prompt to include acceptance criteria"
+  }
+}
