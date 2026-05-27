@@ -1,0 +1,17 @@
+{
+  "event_id": "019e67e1-7792-7b51-ac4d-98bc0395c1df",
+  "occurred_at": "2026-05-27T05:21:30.002821076Z",
+  "knot_id": "foolery-697d",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "with 6 console tabs open, clicking on a tab causes tab jitter - the tab sizes get twice as big, then twice as small etc.",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

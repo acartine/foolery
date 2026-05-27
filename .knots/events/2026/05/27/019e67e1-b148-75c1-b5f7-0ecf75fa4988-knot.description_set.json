@@ -1,0 +1,9 @@
+{
+  "event_id": "019e67e1-b148-75c1-b5f7-0ecf75fa4988",
+  "occurred_at": "2026-05-27T05:21:44.776893963Z",
+  "knot_id": "foolery-697d",
+  "type": "knot.description_set",
+  "data": {
+    "description": "In the console tab strip, when six tabs are open, clicking any tab causes the tab widths to oscillate between larger and smaller sizes instead of settling into a stable layout. The jitter is visible immediately after the click and disrupts the tab strip rendering."
+  }
+}

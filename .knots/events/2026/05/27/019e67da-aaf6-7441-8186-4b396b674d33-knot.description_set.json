@@ -1,0 +1,9 @@
+{
+  "event_id": "019e67da-aaf6-7441-8186-4b396b674d33",
+  "occurred_at": "2026-05-27T05:14:04.406766602Z",
+  "knot_id": "foolery-19f8",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The queues screen needs a way to filter beats by label. Add a pulldown (select/dropdown) control that is populated with all labels known to the current backend. Selecting a label narrows the queue list to beats that carry that label; clearing the selection restores the full list."
+  }
+}

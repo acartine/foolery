@@ -1,0 +1,37 @@
+{
+  "event_id": "019e67ed-7cd3-72d2-aab2-0091667f3fcc",
+  "occurred_at": "2026-05-27T05:34:37.779629045Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-19f8",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Add label filter dropdown to queues screen",
+    "type": "work",
+    "updated_at": "2026-05-27T05:34:37.779629045Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019e67ed-389b-7421-9959-4e0803787b8d"
+  }
+}

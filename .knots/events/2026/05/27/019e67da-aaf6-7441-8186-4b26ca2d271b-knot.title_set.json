@@ -1,0 +1,10 @@
+{
+  "event_id": "019e67da-aaf6-7441-8186-4b26ca2d271b",
+  "occurred_at": "2026-05-27T05:14:04.406766602Z",
+  "knot_id": "foolery-19f8",
+  "type": "knot.title_set",
+  "data": {
+    "from": "In queues screen, add a pulldown filter with all known labels so you can filter by label",
+    "to": "Add label filter dropdown to queues screen"
+  }
+}

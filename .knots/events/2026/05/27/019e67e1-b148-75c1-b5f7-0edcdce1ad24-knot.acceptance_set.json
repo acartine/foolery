@@ -1,0 +1,9 @@
+{
+  "event_id": "019e67e1-b148-75c1-b5f7-0edcdce1ad24",
+  "occurred_at": "2026-05-27T05:21:44.776893963Z",
+  "knot_id": "foolery-697d",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- With exactly six console tabs open, clicking any tab does not cause the tab strip to jitter or oscillate in size.\n- After a tab is clicked, the selected state and tab widths settle immediately into a stable layout.\n- Repeated clicks between the six tabs do not reproduce the resize flicker or jitter."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "event_id": "019e67e1-b148-75c1-b5f7-0ebaea253a0c",
+  "occurred_at": "2026-05-27T05:21:44.776893963Z",
+  "knot_id": "foolery-697d",
+  "type": "knot.title_set",
+  "data": {
+    "from": "with 6 console tabs open, clicking on a tab causes tab jitter - the tab sizes get twice as big, then twice as small etc.",
+    "to": "Console tabs jitter and resize when clicking a tab with six tabs open"
+  }
+}

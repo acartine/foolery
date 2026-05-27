@@ -1,0 +1,21 @@
+{
+  "event_id": "019e67f0-3701-7cb2-bcb9-6a6f0dd631ec",
+  "occurred_at": "2026-05-27T05:37:36.513840261Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-19f8",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add label filter dropdown to queues screen",
+    "type": "work",
+    "updated_at": "2026-05-27T05:37:36.513840261Z",
+    "workflow_id": "work_sdlc"
+  }
+}

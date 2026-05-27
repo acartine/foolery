@@ -1,0 +1,15 @@
+{
+  "event_id": "019e67e8-f239-7f92-86f6-be22f58651a3",
+  "occurred_at": "2026-05-27T05:29:40.153017551Z",
+  "knot_id": "foolery-19f8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: worktree-foolery-19f8-label-filter. Commit: e8f7fdf78f6dcc71a45395d5b4558f5ef6013898. Gates: bun install --frozen-lockfile; bun run lint; bun x tsc --noEmit (bunx unavailable in this shell); bun run test; bun run build.",
+    "datetime": "2026-05-27T05:29:40.153017551Z",
+    "entry_id": "019e67e8-f239-7f92-86f6-be15fdda853e",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

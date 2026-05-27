@@ -1,0 +1,9 @@
+{
+  "event_id": "019e67da-aaf6-7441-8186-4b42d183a5b7",
+  "occurred_at": "2026-05-27T05:14:04.406766602Z",
+  "knot_id": "foolery-19f8",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. A dropdown control is visible on the queues screen.\n2. The dropdown is populated with every distinct label present across all beats returned by the backend (no hardcoded list).\n3. Selecting a label filters the displayed queue rows to only those beats tagged with that label.\n4. Selecting the empty/default option removes the filter and shows all beats.\n5. The filter state is reflected in the UI immediately (no extra submit step).\n6. If no labels exist, the dropdown is either hidden or shows a disabled placeholder.\n7. Existing queue functionality (sorting, pagination, state display) is unaffected when a filter is active."
+  }
+}
