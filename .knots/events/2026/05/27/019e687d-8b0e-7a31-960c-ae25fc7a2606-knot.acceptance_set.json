@@ -1,0 +1,9 @@
+{
+  "event_id": "019e687d-8b0e-7a31-960c-ae25fc7a2606",
+  "occurred_at": "2026-05-27T08:11:58.606112835Z",
+  "knot_id": "foolery-da13",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "The beat detail lightbox shows any handoff capsules attached to the beat; the capsules use the existing beat detail styling and placement; beats without handoff capsules still open normally, with no errors or layout regressions."
+  }
+}

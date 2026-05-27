@@ -1,0 +1,9 @@
+{
+  "event_id": "019e687d-8b0e-7a31-960c-ae17375a43a8",
+  "occurred_at": "2026-05-27T08:11:58.606112835Z",
+  "knot_id": "foolery-da13",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When a beat is opened in the detail lightbox, surface any handoff capsules associated with that beat in the same view so the handoff context is visible alongside the beat details."
+  }
+}

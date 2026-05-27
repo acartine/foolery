@@ -1,0 +1,10 @@
+{
+  "event_id": "019e687d-8b0e-7a31-960c-ae0512ac1b7e",
+  "occurred_at": "2026-05-27T08:11:58.606112835Z",
+  "knot_id": "foolery-da13",
+  "type": "knot.title_set",
+  "data": {
+    "from": "show handoff capsules in beat detail lightbox",
+    "to": "Display handoff capsules in the beat detail lightbox"
+  }
+}

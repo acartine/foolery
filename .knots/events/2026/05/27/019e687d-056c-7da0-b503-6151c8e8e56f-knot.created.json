@@ -1,0 +1,17 @@
+{
+  "event_id": "019e687d-056c-7da0-b503-6151c8e8e56f",
+  "occurred_at": "2026-05-27T08:11:24.396580318Z",
+  "knot_id": "foolery-da13",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "show handoff capsules in beat detail lightbox",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
