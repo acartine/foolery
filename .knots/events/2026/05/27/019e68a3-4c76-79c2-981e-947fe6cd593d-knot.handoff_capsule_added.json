@@ -1,0 +1,15 @@
+{
+  "event_id": "019e68a3-4c76-79c2-981e-947fe6cd593d",
+  "occurred_at": "2026-05-27T08:53:12.950648622Z",
+  "knot_id": "foolery-cfc9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Branch: worktree-foolery-cfc9-verification-steps; Commit: fb5de1397b88f2ff9ab8cea6a14bf71e81bfe769; Gates: bun run lint, bun run tsc --noEmit, bun run test, bun run test:storybook, bun run build.",
+    "datetime": "2026-05-27T08:53:12.950648622Z",
+    "entry_id": "019e68a3-4c76-79c2-981e-9469aad72d3b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

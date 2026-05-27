@@ -1,0 +1,20 @@
+{
+  "event_id": "019e68b4-1695-7a51-a184-df2138689ffd",
+  "occurred_at": "2026-05-27T09:11:33.269310402Z",
+  "knot_id": "foolery-cfc9",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "agent_model": "Sonnet",
+    "agent_name": "Claude",
+    "agent_version": "4.6",
+    "force": false,
+    "from": "ready_for_shipment_review",
+    "profile_id": "autopilot",
+    "to": "shipment_review",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019e68b3-de0e-7a83-bc9b-013b999d6b58"
+  }
+}

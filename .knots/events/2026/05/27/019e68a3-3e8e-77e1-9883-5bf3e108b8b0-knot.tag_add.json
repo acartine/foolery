@@ -1,0 +1,9 @@
+{
+  "event_id": "019e68a3-3e8e-77e1-9883-5bf3e108b8b0",
+  "occurred_at": "2026-05-27T08:53:09.389995591Z",
+  "knot_id": "foolery-cfc9",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-cfc9-verification-steps"
+  }
+}

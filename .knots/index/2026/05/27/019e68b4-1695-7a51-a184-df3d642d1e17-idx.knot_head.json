@@ -1,0 +1,37 @@
+{
+  "event_id": "019e68b4-1695-7a51-a184-df3d642d1e17",
+  "occurred_at": "2026-05-27T09:11:33.269310402Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-cfc9",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Add verification steps field to knots-backed beats",
+    "type": "work",
+    "updated_at": "2026-05-27T09:11:33.269310402Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019e68b3-de0e-7a83-bc9b-013b999d6b58"
+  }
+}
