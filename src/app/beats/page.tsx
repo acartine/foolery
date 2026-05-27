@@ -1,7 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
-import { useEffect, useMemo } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Beat } from "@/lib/types";
 import type { AgentInfo } from "@/components/beat-columns";
@@ -27,6 +26,9 @@ import { SetlistView } from "@/components/setlist-view";
 import {
   BeatStateOverviewScreen,
 } from "@/components/beat-state-overview";
+import {
+  QueueLabelFilterSelect,
+} from "@/components/queue-label-filter-select";
 import { RepoSwitchLoadingState } from "@/components/repo-switch-loading-state";
 import {
   StreamingProgressBar,
@@ -55,6 +57,7 @@ import {
 import { useBulkActions } from "./use-bulk-actions";
 import { useBeatActions } from "./use-beat-actions";
 import { useBeatDetail } from "./use-beat-detail";
+import { useQueueLabelFilter } from "./use-queue-label-filter";
 import { useBeatsScreenWarmup } from "@/hooks/use-beats-screen-warmup";
 import { useReleasePendingStore } from "@/stores/release-pending-store";
 
@@ -126,7 +129,12 @@ function useBeatsPageState() {
     beatsView, searchQuery, shouldLoadBeats, activeRepo,
     registeredRepos, shippingByBeatId,
   });
-  const displayedBeats = useDisplayedBeats(beats);
+  const backendBeats = useDisplayedBeats(beats);
+  const queueLabelFilter = useQueueLabelFilter(
+    backendBeats,
+    beatsView === "queues",
+  );
+  const displayedBeats = queueLabelFilter.filteredBeats;
 
   const showRepoColumn =
     !activeRepo && registeredRepos.length > 1;
@@ -160,7 +168,7 @@ function useBeatsPageState() {
     isActiveView, activeRepo,
     searchQuery, detailBeatId, detailRepo,
     beats: displayedBeats, isLoading, loadError, isDegradedError,
-    hasRollingAncestor, showRepoColumn,
+    hasRollingAncestor, showRepoColumn, queueLabelFilter,
     agentInfoByBeatId, shippingByBeatId,
     overviewLeaseInfoByBeatKey,
     setActiveSession,
@@ -222,15 +230,24 @@ function BeatsPageInner() {
           + " border-b border-border/60 pb-2"
         }
         data-testid="beats-filter-shell">
-          <FilterBar
-            viewPhase={s.viewPhase}
-            selectedIds={s.selectedIds}
-            onBulkUpdate={s.handleBulkUpdate}
-            onClearSelection={s.handleClearSelection}
-            onSceneBeats={s.handleSceneBeats}
-            onMergeBeats={s.handleMergeBeats}
-            onRefineScope={s.handleRefineScope}
-          />
+          <div className="min-w-0 flex-1">
+            <FilterBar
+              viewPhase={s.viewPhase}
+              selectedIds={s.selectedIds}
+              onBulkUpdate={s.handleBulkUpdate}
+              onClearSelection={s.handleClearSelection}
+              onSceneBeats={s.handleSceneBeats}
+              onMergeBeats={s.handleMergeBeats}
+              onRefineScope={s.handleRefineScope}
+            />
+          </div>
+          {s.beatsView === "queues" && (
+            <QueueLabelFilterSelect
+              options={s.queueLabelFilter.options}
+              selectedLabel={s.queueLabelFilter.selectedLabel}
+              onChange={s.queueLabelFilter.setSelectedLabel}
+            />
+          )}
         </div>
       )}
       <BeatsViewBody
