@@ -1,0 +1,15 @@
+{
+  "event_id": "019e773a-4d69-75a2-90b1-b123bc4e5232",
+  "occurred_at": "2026-05-30T04:52:50.153215Z",
+  "knot_id": "foolery-53fe",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented central agentRuntime settings with provider-specific Codex speed/reasoning and Claude Opus effort wiring. Verified with lint, typecheck, unit tests, build, and settings UI smoke test. Leaving knot non-terminal per repo instruction.",
+    "datetime": "2026-05-30T04:52:50.153215Z",
+    "entry_id": "019e773a-4d69-75a2-90b1-b117feb82689",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

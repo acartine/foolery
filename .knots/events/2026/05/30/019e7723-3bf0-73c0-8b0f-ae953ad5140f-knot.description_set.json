@@ -1,0 +1,9 @@
+{
+  "event_id": "019e7723-3bf0-73c0-8b0f-ae953ad5140f",
+  "occurred_at": "2026-05-30T04:27:38.344386Z",
+  "knot_id": "foolery-53fe",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add central provider-specific settings for Codex GPT and Claude Opus launches: default speed fast, default reasoning high, pass through provider-supported effort values, skip Claude speed because the CLI has no speed flag, and keep labels unchanged."
+  }
+}
