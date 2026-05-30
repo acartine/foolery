@@ -1,0 +1,21 @@
+{
+  "event_id": "019e7718-24c3-79b2-90c2-0f3db32c7b89",
+  "occurred_at": "2026-05-30T04:15:31.523469211Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e8a2",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add Claude Opus 4.8 model support",
+    "type": "work",
+    "updated_at": "2026-05-30T04:15:31.523469211Z",
+    "workflow_id": "work_sdlc"
+  }
+}

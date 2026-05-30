@@ -1,0 +1,15 @@
+{
+  "event_id": "019e7708-6528-7e73-b00c-a7a399570f74",
+  "occurred_at": "2026-05-30T03:58:19.432865218Z",
+  "knot_id": "foolery-e8a2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. No child knots needed. Implementation should add `claude-opus-4-8` to the Claude static scan catalog, keep the generic Claude normalization path, add regression coverage for identity/display/settings scan/dispatch adapter pass-through, update audit/docs/schema examples, then run lint, typecheck, tests, and build after bootstrapping the worktree with `bun install --frozen-lockfile`.",
+    "datetime": "2026-05-30T03:58:19.432865218Z",
+    "entry_id": "019e7708-6528-7e73-b00c-a79b1c079911",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}
