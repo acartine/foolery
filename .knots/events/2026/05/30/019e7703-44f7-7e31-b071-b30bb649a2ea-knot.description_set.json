@@ -1,0 +1,9 @@
+{
+  "event_id": "019e7703-44f7-7e31-b071-b30bb649a2ea",
+  "occurred_at": "2026-05-30T03:52:43.511254657Z",
+  "knot_id": "foolery-e8a2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The Claude Opus 4.8 model (`claude-opus-4-8`) is now available and must be recognized throughout Foolery wherever model identifiers are referenced — configuration, UI dropdowns, agent dispatch, and any hardcoded model lists."
+  }
+}

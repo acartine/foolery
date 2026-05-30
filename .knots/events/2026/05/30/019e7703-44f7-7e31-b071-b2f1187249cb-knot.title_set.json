@@ -1,0 +1,10 @@
+{
+  "event_id": "019e7703-44f7-7e31-b071-b2f1187249cb",
+  "occurred_at": "2026-05-30T03:52:43.511254657Z",
+  "knot_id": "foolery-e8a2",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Add support for Claude Code Opus 4.8",
+    "to": "Add Claude Opus 4.8 model support"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019e7703-2951-75e1-9010-8a4da42637ca",
+  "occurred_at": "2026-05-30T03:52:36.426695817Z",
+  "knot_id": "foolery-e8a2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says. new opus version.\n\nfind affected services, such as setup/install/ui/settings\n\nand support it"
+  }
+}

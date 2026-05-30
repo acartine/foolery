@@ -1,0 +1,9 @@
+{
+  "event_id": "019e7703-44f7-7e31-b071-b31a188259f5",
+  "occurred_at": "2026-05-30T03:52:43.511254657Z",
+  "knot_id": "foolery-e8a2",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- `claude-opus-4-8` is accepted as a valid model identifier in Foolery's settings/config layer without errors.\n- The model appears in any UI that lists available Claude models (e.g. model selectors, agent configuration screens).\n- Agent dispatch routes correctly when `claude-opus-4-8` is configured as the target model.\n- No existing model options (Sonnet 4.6, Haiku 4.5, prior Opus versions) are broken or removed.\n- Lint, type-check, and tests pass (`bun run lint`, `bunx tsc --noEmit`, `bun run test`)."
+  }
+}

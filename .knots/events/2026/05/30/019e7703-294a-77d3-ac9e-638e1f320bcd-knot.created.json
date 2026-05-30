@@ -1,0 +1,17 @@
+{
+  "event_id": "019e7703-294a-77d3-ac9e-638e1f320bcd",
+  "occurred_at": "2026-05-30T03:52:36.426695817Z",
+  "knot_id": "foolery-e8a2",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says. new opus version.\n\nfind affected services, such as setup/install/ui/settings\n\nand support it",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add support for Claude Code Opus 4.8",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
