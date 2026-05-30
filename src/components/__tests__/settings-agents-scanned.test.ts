@@ -50,6 +50,15 @@ function makeClaudeScannedAgent(): ScannedAgent {
     provider: "Claude",
     options: [
       {
+        id: "claude-claude-opus-4-8",
+        label: "Claude Opus 4.8",
+        provider: "Claude",
+        model: "claude",
+        flavor: "opus",
+        version: "4.8",
+        modelId: "claude-opus-4-8",
+      },
+      {
         id: "claude-claude-opus-4-7",
         label: "Claude Opus 4.7",
         provider: "Claude",
@@ -183,10 +192,10 @@ describe("ScannedAgentsList", () => {
   it("shows stripped selected-model pills and clear controls", () => {
     const scanned = makeClaudeScannedAgent();
     const registered: Record<string, RegisteredAgent> = {
-      "claude-claude-opus-4-7": {
+      "claude-claude-opus-4-8": {
         command: scanned.path,
         provider: "Claude",
-        model: "claude-opus-4-7",
+        model: "claude-opus-4-8",
       },
     };
 
@@ -200,9 +209,9 @@ describe("ScannedAgentsList", () => {
       }),
     );
 
-    expect(markup).toContain("Opus 4.7");
-    expect(markup).not.toContain(">Claude Opus 4.7<");
-    expect(markup).toContain('aria-label="Clear Opus 4.7"');
+    expect(markup).toContain("Opus 4.8");
+    expect(markup).not.toContain(">Claude Opus 4.8<");
+    expect(markup).toContain('aria-label="Clear Opus 4.8"');
   });
 });
 

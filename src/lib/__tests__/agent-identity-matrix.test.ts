@@ -134,6 +134,20 @@ describe("Codex extractor matrix", () => {
 });
 
 describe("Claude extractor matrix", () => {
+  it("claude-opus-4-8 → Claude Opus 4.8", () => {
+    check({
+      command: "claude",
+      model: "claude-opus-4-8",
+      expectNormalize: {
+        provider: "Claude",
+        model: "Claude",
+        flavor: "Opus",
+        version: "4.8",
+      },
+      expectLabel: "Claude Opus 4.8",
+    });
+  });
+
   it("claude-opus-4-7 → Claude Opus 4.7", () => {
     check({
       command: "claude",

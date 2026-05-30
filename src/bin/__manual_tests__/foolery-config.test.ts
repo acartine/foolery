@@ -118,13 +118,13 @@ describe("foolery-config CLI: validate (success)", () => {
       "dispatchMode = \"advanced\"\n"
       + "maxConcurrentSessions = 8\n"
       + "\n"
-      + "[agents.claude-claude-opus-4-7]\n"
+      + "[agents.claude-claude-opus-4-8]\n"
       + "command = \"/usr/local/bin/claude\"\n"
       + "vendor = \"claude\"\n"
-      + "model = \"claude-opus-4-7\"\n"
+      + "model = \"claude-opus-4-8\"\n"
       + "\n"
       + "[[pools.implementation]]\n"
-      + "agentId = \"claude-claude-opus-4-7\"\n"
+      + "agentId = \"claude-claude-opus-4-8\"\n"
       + "weight = 1\n",
     );
     const { status } = runCli(["validate", fixturePath]);

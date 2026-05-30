@@ -139,7 +139,7 @@ export type RemoveRepoInput = z.infer<typeof removeRepoSchema>;
 
 const AGENT_ID_CONVENTION
   = "Keyed by agent id using the convention `<vendor>-<model-slug>` "
-  + "(e.g. `claude-claude-opus-4-7`, `codex-gpt-5-4`, "
+  + "(e.g. `claude-claude-opus-4-8`, `codex-gpt-5-4`, "
   + "`opencode-openrouter-z-ai-glm-5`). Non-alphanumerics in the model "
   + "slug are lowercased and replaced with `-`.";
 
@@ -181,14 +181,14 @@ export const registeredAgentSchema = z.object({
   ),
   model: z.string().optional().describe(
     "Concrete model identifier handed to the CLI "
-    + "(e.g. `claude-opus-4-7`, `gpt-5.4`, `openrouter/z-ai/glm-5`).",
+    + "(e.g. `claude-opus-4-8`, `gpt-5.4`, `openrouter/z-ai/glm-5`).",
   ),
   flavor: z.string().optional().describe(
     "Free-form variant tag (e.g. `mini`, `spark`). Surfaces in the "
     + "model-picker UI.",
   ),
   version: z.string().optional().describe(
-    "Marketing version string (e.g. `4.7`, `5.4`). Informational.",
+    "Marketing version string (e.g. `4.8`, `5.4`). Informational.",
   ),
   approvalMode: z.enum(["bypass", "prompt"]).optional().describe(
     "CLI permission launch mode. Omit or set `bypass` to keep autonomous "
@@ -324,7 +324,7 @@ export const dispatchModeSchema = z
 export const poolEntrySchema = z.object({
   agentId: z.string().min(1).describe(
     "Registered agent id (key from the `agents` map, e.g. "
-    + "`claude-claude-opus-4-7`).",
+    + "`claude-claude-opus-4-8`).",
   ),
   weight: z.number().min(0).default(1).describe(
     "Relative selection weight within the pool. Non-negative; entries "

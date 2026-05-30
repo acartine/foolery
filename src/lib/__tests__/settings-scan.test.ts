@@ -76,9 +76,10 @@ describe("scanForAgents: discovery and status", () => {
       path: "/usr/local/bin/claude",
       installed: true,
       provider: "Claude",
-      selectedOptionId: "claude-claude-opus-4-7",
+      selectedOptionId: "claude-claude-opus-4-8",
     });
     expect(claude?.options?.map((option) => option.label)).toEqual([
+      "Claude Opus 4.8",
       "Claude Opus 4.7",
       "Claude Sonnet 4.6",
       "Claude Opus 4.6",
@@ -87,14 +88,14 @@ describe("scanForAgents: discovery and status", () => {
       "Claude Opus 4.5",
     ]);
     expect(claude?.options?.[0]).toMatchObject({
-      id: "claude-claude-opus-4-7",
-      modelId: "claude-opus-4-7",
+      id: "claude-claude-opus-4-8",
+      modelId: "claude-opus-4-8",
       provider: "Claude",
       // Display-form per foolery-b42b.
       model: "Claude",
       flavor: "Opus",
-      version: "4.7",
-      label: "Claude Opus 4.7",
+      version: "4.8",
+      label: "Claude Opus 4.8",
     });
   });
 
@@ -258,7 +259,7 @@ describe("scanForAgents: claude model metadata", () => {
       modelId: "claude-sonnet-4-5",
       version: "4.5",
     });
-    expect(claude?.options?.length).toBe(6);
+    expect(claude?.options?.length).toBe(7);
     expect(claude?.options?.[0]).toMatchObject({
       id: "claude-claude-sonnet-4-5",
       modelId: "claude-sonnet-4-5",
@@ -269,6 +270,15 @@ describe("scanForAgents: claude model metadata", () => {
       version: "4.5",
     });
     expect(claude?.options?.[1]).toMatchObject({
+      id: "claude-claude-opus-4-8",
+      modelId: "claude-opus-4-8",
+      label: "Claude Opus 4.8",
+      provider: "Claude",
+      model: "Claude",
+      flavor: "Opus",
+      version: "4.8",
+    });
+    expect(claude?.options?.[2]).toMatchObject({
       id: "claude-claude-opus-4-7",
       modelId: "claude-opus-4-7",
       label: "Claude Opus 4.7",
@@ -277,7 +287,7 @@ describe("scanForAgents: claude model metadata", () => {
       flavor: "Opus",
       version: "4.7",
     });
-    expect(claude?.options?.[2]?.label).toBe("Claude Sonnet 4.6");
+    expect(claude?.options?.[3]?.label).toBe("Claude Sonnet 4.6");
   });
 });
 
@@ -394,6 +404,7 @@ describe("scanForAgents: copilot dynamic model discovery", () => {
         return {
           stdout: [
             "  `model`: AI model to use",
+            '    - "claude-opus-4.8"',
             '    - "claude-opus-4.7"',
             '    - "claude-sonnet-4.6"',
             '    - "claude-opus-4.6"',
@@ -411,9 +422,11 @@ describe("scanForAgents: copilot dynamic model discovery", () => {
     const agents = await scanForAgents();
     const copilot = agents.find((a) => a.id === "copilot");
     expect(copilot?.installed).toBe(true);
-    expect(copilot?.options?.length).toBe(5);
+    expect(copilot?.options?.length).toBe(6);
+    expect(copilot?.options?.[0]?.credits).toBe(15);
     const ids = copilot?.options?.map((o) => o.modelId);
     expect(ids).toEqual([
+      "claude-opus-4.8",
       "claude-opus-4.7",
       "claude-sonnet-4.6",
       "claude-opus-4.6",
