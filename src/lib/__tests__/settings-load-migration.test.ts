@@ -127,6 +127,30 @@ describe("loadSettings auto-migration to canonical agent shape", () => {
   });
 });
 
+describe("loadSettings: Claude Opus 4.8 config support", () => {
+  it("accepts and canonicalizes Claude Opus 4.8 registered agents", async () => {
+    mockReadFile.mockResolvedValue(
+      [
+        "[agents.claude-opus-4-8]",
+        'command = "claude"',
+        'model = "claude-opus-4-8"',
+      ].join("\n"),
+    );
+    const settings = await loadSettings();
+    expect(settings.agents["claude-opus-4-8"]).toMatchObject({
+      command: "claude",
+      vendor: "claude",
+      provider: "Claude",
+      agent_name: "Claude",
+      lease_model: "Opus",
+      model: "claude-opus-4-8",
+      flavor: "Opus",
+      version: "4.8",
+      label: "Claude Opus 4.8",
+    });
+  });
+});
+
 // foolery-b42b AC-7: legacy machine-form values get rewritten to
 // display-form on first read, idempotently. The previous block already
 // covers the legacy-entry-from-scratch path; this case targets the

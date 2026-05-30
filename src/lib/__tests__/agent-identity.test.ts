@@ -53,6 +53,21 @@ describe("canonical lease identity", () => {
     });
   });
 
+  it("normalizes Claude Opus 4.8 agent identity", () => {
+    const info = toExecutionAgentInfo({
+      command: "claude",
+      model: "claude-opus-4-8",
+    });
+
+    expect(info).toMatchObject({
+      agentName: "Claude",
+      agentProvider: "Claude",
+      agentModel: "Opus",
+      agentVersion: "4.8",
+      agentType: "cli",
+    });
+  });
+
   it("normalizes Codex agent identity (display-form)", () => {
     const info = toExecutionAgentInfo({
       command: "codex",

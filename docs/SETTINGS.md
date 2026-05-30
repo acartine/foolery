@@ -31,15 +31,15 @@ maxConcurrentSessions = 8
 maxClaimsPerQueueType = 10
 terminalLightTheme = false
 
-[agents.claude-claude-opus-4-7]
+[agents.claude-claude-opus-4-8]
 command = "/Applications/cmux.app/Contents/Resources/bin/claude"
 agent_type = "cli"
 vendor = "claude"
 provider = "Claude"
 agent_name = "Claude"
 lease_model = "opus/claude"
-model = "claude-opus-4-7"
-version = "4.7"
+model = "claude-opus-4-8"
+version = "4.8"
 
 [actions]
 take = ""
@@ -57,7 +57,7 @@ interactiveSessionTimeoutMinutes = 10
 prompt = "..."
 
 [[pools.implementation]]
-agentId = "claude-claude-opus-4-7"
+agentId = "claude-claude-opus-4-8"
 weight = 1
 ```
 
@@ -81,7 +81,7 @@ weight = 1
 Registered agents. Each agent gets its own table under `agents`.
 
 **Agent id convention:** `<vendor>-<model-slug>` — for example,
-`claude-claude-opus-4-7`, `codex-gpt-5-4`, `opencode-openrouter-z-ai-glm-5`.
+`claude-claude-opus-4-8`, `codex-gpt-5-4`, `opencode-openrouter-z-ai-glm-5`.
 Non-alphanumerics in the model portion are lowercased and replaced with `-`.
 
 | Field          | Type   | Required | Description |
@@ -92,24 +92,24 @@ Non-alphanumerics in the model portion are lowercased and replaced with `-`.
 | `provider`     | string | no       | Display name of the provider (e.g. `Claude`, `Codex`, `OpenCode`). |
 | `agent_name`   | string | no       | Display name surfaced in the UI. Usually matches `provider`. |
 | `lease_model`  | string | no       | Lease-mapping key used when a workflow names a lease model (e.g. `opus/claude`, `gpt`). Typical in Advanced dispatch. |
-| `model`        | string | no       | Concrete model identifier passed to the CLI (e.g. `claude-opus-4-7`, `gpt-5.4`, `openrouter/z-ai/glm-5`). |
+| `model`        | string | no       | Concrete model identifier passed to the CLI (e.g. `claude-opus-4-8`, `gpt-5.4`, `openrouter/z-ai/glm-5`). |
 | `flavor`       | string | no       | Free-form variant tag (e.g. `mini`, `spark`). Surfaces in the agent picker UI. |
-| `version`      | string | no       | Marketing version string (e.g. `4.7`, `5.4`). Informational. |
+| `version`      | string | no       | Marketing version string (e.g. `4.8`, `5.4`). Informational. |
 | `approvalMode` | enum   | no       | Claude Code permission launch mode. Omit or set `"bypass"` to keep autonomous sessions using `--dangerously-skip-permissions`; set `"prompt"` on approval-test Claude agents to omit that flag. |
 | `label`        | string | no       | Human-friendly override for the agent's display label; otherwise falls back to `provider`/`agent_name`. |
 
 ### Example
 
 ```toml
-[agents.claude-claude-opus-4-7]
+[agents.claude-claude-opus-4-8]
 command = "/Applications/cmux.app/Contents/Resources/bin/claude"
 agent_type = "cli"
 vendor = "claude"
 provider = "Claude"
 agent_name = "Claude"
 lease_model = "opus/claude"
-model = "claude-opus-4-7"
-version = "4.7"
+model = "claude-opus-4-8"
+version = "4.8"
 ```
 
 For a Claude Code approval-test agent that should surface Claude permission
@@ -121,7 +121,7 @@ command = "/Applications/cmux.app/Contents/Resources/bin/claude"
 agent_type = "cli"
 vendor = "claude"
 provider = "Claude"
-model = "claude-opus-4-7"
+model = "claude-opus-4-8"
 approvalMode = "prompt"
 ```
 
@@ -140,8 +140,8 @@ Advanced dispatch these fields are ignored; see [`[[pools.<step>]]`](#poolsstep)
 
 ```toml
 [actions]
-take = "claude-claude-opus-4-7"
-scene = "claude-claude-opus-4-7"
+take = "claude-claude-opus-4-8"
+scene = "claude-claude-opus-4-8"
 scopeRefinement = "claude-claude-sonnet-4-6"
 ```
 
@@ -231,14 +231,14 @@ accepts any string key.
 
 | Field     | Type   | Default | Description |
 |-----------|--------|---------|-------------|
-| `agentId` | string | —       | Registered agent id (key from the `[agents.*]` map, e.g. `claude-claude-opus-4-7`). |
+| `agentId` | string | —       | Registered agent id (key from the `[agents.*]` map, e.g. `claude-claude-opus-4-8`). |
 | `weight`  | number | `1`     | Relative selection weight within the pool. Non-negative; entries compete proportionally. |
 
 ### Example
 
 ```toml
 [[pools.implementation]]
-agentId = "claude-claude-opus-4-7"
+agentId = "claude-claude-opus-4-8"
 weight = 2
 
 [[pools.implementation]]

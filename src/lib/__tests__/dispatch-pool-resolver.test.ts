@@ -81,6 +81,12 @@ describe("resolveDispatchAgent", () => {
         agent_type: "cli",
         vendor: "opencode",
       },
+      "claude-opus-4-8": {
+        command: "/Applications/cmux.app/Contents/Resources/bin/claude",
+        agent_type: "cli",
+        vendor: "claude",
+        model: "claude-opus-4-8",
+      },
       "claude-opus-4-7": {
         command: "/Applications/cmux.app/Contents/Resources/bin/claude",
         agent_type: "cli",
@@ -232,6 +238,28 @@ describe("resolveDispatchAgent", () => {
     });
     expect(agent).not.toBeNull();
     expect(agent!.agentId).toBe("claude-opus-4-7");
+  });
+
+  it("dispatches a pool configured with Claude Opus 4.8", () => {
+    const autopilot = builtinProfileDescriptor("autopilot");
+    const settings: FoolerySettings = {
+      ...settingsWithEvaluatingPool,
+      pools: {
+        ...settingsWithEvaluatingPool.pools,
+        implementation: [
+          { agentId: "claude-opus-4-8", weight: 1 },
+        ],
+      },
+    };
+    const agent = resolveDispatchAgent({
+      beatId: "beat-1",
+      state: "ready_for_implementation",
+      workflow: autopilot,
+      settings,
+    });
+    expect(agent).not.toBeNull();
+    expect(agent!.agentId).toBe("claude-opus-4-8");
+    expect(agent!.model).toBe("claude-opus-4-8");
   });
 
   it("emits the red ANSI banner via console.error on failure", () => {

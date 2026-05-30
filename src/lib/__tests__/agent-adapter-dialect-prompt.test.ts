@@ -87,6 +87,15 @@ describe("buildPromptModeArgs: Claude and Codex", () => {
     expect(result.args[modelIdx + 1]).toBe("sonnet");
   });
 
+  it("passes Claude Opus 4.8 through as the exact CLI model", () => {
+    const result = buildPromptModeArgs(
+      { command: "claude", model: "claude-opus-4-8" },
+      PROMPT,
+    );
+    const modelIdx = result.args.indexOf("--model");
+    expect(result.args[modelIdx + 1]).toBe("claude-opus-4-8");
+  });
+
   it("builds correct codex args without model", () => {
     const result = buildPromptModeArgs({ command: "codex" }, PROMPT);
     expect(result.command).toBe("codex");

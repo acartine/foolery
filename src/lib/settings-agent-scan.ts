@@ -24,6 +24,7 @@ const STATIC_PROVIDER_MODEL_IDS: Partial<
   Record<string, readonly string[]>
 > = {
   claude: [
+    "claude-opus-4-8",
     "claude-opus-4-7",
     "claude-sonnet-4-6",
     "claude-opus-4-6",
@@ -82,7 +83,8 @@ export async function readOpenCodeModels(): Promise<
 // docs.github.com/en/copilot/concepts/billing/copilot-requests
 const COPILOT_CREDITS: Record<string, number> = {
   "claude-sonnet-4.6": 1,
-  "claude-opus-4.7": 3,
+  "claude-opus-4.8": 15,
+  "claude-opus-4.7": 15,
   "claude-sonnet-4.5": 1,
   "claude-haiku-4.5": 0.33,
   "claude-opus-4.6": 3,
