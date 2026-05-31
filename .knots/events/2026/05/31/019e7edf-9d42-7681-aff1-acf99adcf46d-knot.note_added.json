@@ -1,0 +1,15 @@
+{
+  "event_id": "019e7edf-9d42-7681-aff1-acf99adcf46d",
+  "occurred_at": "2026-05-31T16:30:44.546938199Z",
+  "knot_id": "foolery-53fe",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review (agent gate): APPROVED. Reviewed branch worktree-foolery-53fe-agent-runtime @ d7022e0a against spec + invariants. Sanity gates re-run in worktree all PASS: lint, tsc --noEmit, test (2851 passed/11 skipped), build. Spec met: Codex default speed=fast + reasoning=high -> -c service_tier / -c model_reasoning_effort; Claude reasoning=high -> --effort (no speed flag, correctly skipped); provider effort sets pass through (codex low/medium/high/xhigh, claude +max); labels/identity unchanged. Invariants upheld: genuine zod .default()s (not banned ?? fallbacks), flags emitted in BOTH interactive + prompt-mode paths, runtime attached at all 4 dispatch chokepoints, per-sub-object merge isolates codex/claude (sibling-isolation test present). Adversarial multi-agent review (13 agents, findings independently verified) returned 5 nit-only items, 4 positive confirmations; sole real nit is defense-in-depth (AgentRuntimeTarget.speed/reasoning typed string vs schema enums) but single write chokepoint copies only schema-validated values, so no invalid value can reach a target. No blocker/major/minor issues.",
+    "datetime": "2026-05-31T16:30:44.546938199Z",
+    "entry_id": "019e7edf-9d42-7681-aff1-ace0877b795a",
+    "model": "Opus",
+    "username": "Claude",
+    "version": "4.8"
+  }
+}
