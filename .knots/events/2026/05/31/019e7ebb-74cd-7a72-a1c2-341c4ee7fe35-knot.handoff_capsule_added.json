@@ -1,0 +1,15 @@
+{
+  "event_id": "019e7ebb-74cd-7a72-a1c2-341c4ee7fe35",
+  "occurred_at": "2026-05-31T15:51:14.893498029Z",
+  "knot_id": "foolery-53fe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. Implement central agentRuntime settings with defaults codex speed fast, codex reasoning high, claude reasoning high; validate Codex effort low/medium/high/xhigh and Claude effort low/medium/high/xhigh/max; map Codex speed to service_tier=fast and reasoning to model_reasoning_effort; map Claude reasoning to --effort; do not add Claude speed and do not change label/identity normalization. Primary files: src/lib/schemas.ts, settings partial/merge files, a new runtime-settings helper, src/lib/agent-adapter.ts, dispatch target wrapping paths, docs/SETTINGS.md, and focused adapter/settings/dispatch tests. No child knots required.",
+    "datetime": "2026-05-31T15:51:14.893498029Z",
+    "entry_id": "019e7ebb-74cd-7a72-a1c2-3400f1a1bb32",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

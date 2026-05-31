@@ -1,0 +1,15 @@
+{
+  "event_id": "019e7ebf-77b1-7fd3-8ac4-456365b25a1c",
+  "occurred_at": "2026-05-31T15:55:37.777648594Z",
+  "knot_id": "foolery-53fe",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan review (agent gate): APPROVED. Plan is complete, correct, feasible; respects file-length, fail-loudly (central defaults are real schema defaults, not silent ?? fallbacks), and labels/identity invariants. Verified against codebase: agent-adapter.ts is 338 lines (room under 500-cap), agent-pool.ts 468 (plan correctly wraps at call sites), all 4 arg-builders + 4 dispatch entry points confirmed; Codex -c service_tier / -c model_reasoning_effort and Claude --effort (low/medium/high/xhigh/max) are all real/documented flags. Non-blocking refinements for implementation: (1) Make the type edit explicit — CliAgentTarget/AgentTargetBase in src/lib/types-agent-target.ts must gain a runtime-settings field. (2) Append new Codex -c flags in BOTH interactive AND prompt-mode (buildPromptModeArgs Codex branch) paths. (3) agentRuntime is nested (codex+claude); use per-sub-object merge so patching agentRuntime.claude doesn't clobber agentRuntime.codex, and add a sibling-isolation test. (4) Claude approval uses --permission-mode/appendClaudePermissionArgs, not a simple --approval flag; append --effort after existing permission/model args.",
+    "datetime": "2026-05-31T15:55:37.777648594Z",
+    "entry_id": "019e7ebf-77b1-7fd3-8ac4-455e093da975",
+    "model": "Opus",
+    "username": "Claude",
+    "version": "4.8"
+  }
+}
