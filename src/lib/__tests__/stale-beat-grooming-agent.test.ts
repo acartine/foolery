@@ -58,6 +58,10 @@ function settings(
       interactiveSessionTimeoutMinutes: 10,
     },
     scopeRefinement: { prompt: "" },
+    agentRuntime: {
+      codex: { speed: "fast", reasoning: "high" },
+      claude: { reasoning: "high" },
+    },
     maxConcurrentSessions: 5,
     maxClaimsPerQueueType: 10,
     terminalLightTheme: false,

@@ -43,6 +43,11 @@ const DEFAULT_POOLS = {
   stale_grooming: [],
 };
 
+const DEFAULT_AGENT_RUNTIME = {
+  codex: { speed: "fast" as const, reasoning: "high" as const },
+  claude: { reasoning: "high" as const },
+};
+
 const DEFAULT_SETTINGS = {
   agents: {},
   actions: DEFAULT_ACTIONS,
@@ -53,6 +58,7 @@ const DEFAULT_SETTINGS = {
       DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
   },
   scopeRefinement: { prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT },
+  agentRuntime: DEFAULT_AGENT_RUNTIME,
   pools: DEFAULT_POOLS,
   dispatchMode: "basic",
   maxConcurrentSessions: 5,
@@ -276,6 +282,11 @@ describe("backfillMissingSettingsDefaults", () => {
         `interactiveSessionTimeoutMinutes = ${DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES}`,
         '[scopeRefinement]',
         `prompt = """${DEFAULT_SCOPE_REFINEMENT_PROMPT}"""`,
+        '[agentRuntime.codex]',
+        'speed = "fast"',
+        'reasoning = "high"',
+        '[agentRuntime.claude]',
+        'reasoning = "high"',
         '[pools]', 'planning = []', 'plan_review = []',
         'orchestration = []',
         'implementation = []', 'implementation_review = []',
@@ -335,6 +346,7 @@ describe("saveSettings", () => {
           DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
       },
       scopeRefinement: { prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT },
+      agentRuntime: DEFAULT_AGENT_RUNTIME,
       pools: DEFAULT_POOLS,
       dispatchMode: "basic" as const,
       maxConcurrentSessions: 5,
@@ -360,6 +372,7 @@ describe("saveSettings", () => {
           DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
       },
       scopeRefinement: { prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT },
+      agentRuntime: DEFAULT_AGENT_RUNTIME,
       pools: DEFAULT_POOLS,
       dispatchMode: "basic" as const,
       maxConcurrentSessions: 5,

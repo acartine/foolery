@@ -33,6 +33,9 @@ import {
   selectFromPoolStrict,
 } from "@/lib/agent-pool";
 import {
+  attachAgentRuntimeSettings,
+} from "@/lib/agent-runtime-settings";
+import {
   workflowActionStateForState,
   workflowStatePhase,
 } from "@/lib/workflows-runtime";
@@ -358,7 +361,7 @@ export function resolveDispatchAgent(
       reason: "no_eligible_agent",
     });
   }
-  return selected;
+  return attachAgentRuntimeSettings(selected, ctx.settings.agentRuntime);
 }
 
 /**

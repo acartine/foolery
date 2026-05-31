@@ -1,5 +1,8 @@
 import { buildAnsiRedBanner } from "@/lib/ansi-red-banner";
 import { resolvePoolAgent } from "@/lib/agent-pool";
+import {
+  attachAgentRuntimeSettings,
+} from "@/lib/agent-runtime-settings";
 import { loadSettings } from "@/lib/settings";
 import { toCliTarget } from "@/lib/settings-agent-targets";
 import type {
@@ -78,7 +81,9 @@ function resolveExplicitAgent(
         + "add it under [agents] or pick another agent",
     );
   }
-  return toCliTarget(configured, agentId);
+  return attachAgentRuntimeSettings(
+    toCliTarget(configured, agentId), settings.agentRuntime,
+  );
 }
 
 function resolveDefaultAgent(settings: FoolerySettings): AgentTarget {
@@ -106,7 +111,9 @@ function resolveDefaultAgent(settings: FoolerySettings): AgentTarget {
         503,
       );
     }
-    return selected;
+    return attachAgentRuntimeSettings(
+      selected, settings.agentRuntime,
+    );
   }
 
   const agentId = settings.actions.staleGrooming?.trim();
@@ -126,7 +133,9 @@ function resolveDefaultAgent(settings: FoolerySettings): AgentTarget {
       503,
     );
   }
-  return toCliTarget(configured, agentId);
+  return attachAgentRuntimeSettings(
+    toCliTarget(configured, agentId), settings.agentRuntime,
+  );
 }
 
 function agentOption(

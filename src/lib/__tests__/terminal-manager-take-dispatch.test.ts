@@ -124,6 +124,10 @@ const baseSettings: FoolerySettings = {
       { agentId: "codex", weight: 1 },
     ],
   },
+  agentRuntime: {
+    codex: { speed: "fast", reasoning: "high" },
+    claude: { reasoning: "high" },
+  },
 } as unknown as FoolerySettings;
 
 function makeCtx(): TakeLoopContext {

@@ -27,6 +27,9 @@ import {
 } from "@/lib/server-logger";
 import { toCliTarget } from "@/lib/settings-agent-targets";
 import {
+  attachAgentRuntimeSettings,
+} from "@/lib/agent-runtime-settings";
+import {
   CONFIG_DIR,
   SETTINGS_FILE,
   CACHE_TTL_MS,
@@ -300,7 +303,11 @@ export async function getScopeRefinementAgent(
       settings.agents,
       excludeAgentIds,
     );
-    if (poolAgent) return poolAgent;
+    if (poolAgent) {
+      return attachAgentRuntimeSettings(
+        poolAgent, settings.agentRuntime,
+      );
+    }
   }
 
   const agentId =
@@ -311,8 +318,9 @@ export async function getScopeRefinementAgent(
     settings.agents[agentId]
     && !excludeAgentIds?.has(agentId)
   ) {
-    return toCliTarget(
-      settings.agents[agentId], agentId,
+    return attachAgentRuntimeSettings(
+      toCliTarget(settings.agents[agentId], agentId),
+      settings.agentRuntime,
     );
   }
 

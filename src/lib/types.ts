@@ -3,6 +3,7 @@ import type {
   PendingApprovalRecord,
 } from "@/lib/approval-actions";
 import type { FoolerySettings } from "@/lib/schemas";
+import type { AgentRuntimeTarget } from "@/lib/types-agent-target";
 
 // ── Beat types ──────────────────────────────────────────────
 
@@ -370,6 +371,8 @@ export interface RegisteredAgent {
   kind?: "cli";
   /** Pool agent ID when selected via pool dispatch. */
   agentId?: string;
+  /** Central provider runtime settings resolved for this target's dialect. */
+  runtime?: AgentRuntimeTarget;
 }
 
 export type ActionName =

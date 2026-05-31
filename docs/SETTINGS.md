@@ -56,6 +56,13 @@ interactiveSessionTimeoutMinutes = 10
 [scopeRefinement]
 prompt = "..."
 
+[agentRuntime.codex]
+speed = "fast"
+reasoning = "high"
+
+[agentRuntime.claude]
+reasoning = "high"
+
 [[pools.implementation]]
 agentId = "claude-claude-opus-4-8"
 weight = 1
@@ -74,6 +81,7 @@ weight = 1
 | `backend`                  | table      | `{type="auto"}` | See [`[backend]`](#backend) below   | Internal backend selection. |
 | `defaults`                 | table      | see below | See [`[defaults]`](#defaults) below       | Defaults for beat creation and interactive sessions. |
 | `scopeRefinement`          | table      | see below | See [`[scopeRefinement]`](#scoperefinement) below | Scope Refinement prompt configuration. |
+| `agentRuntime`             | table      | see below | See [`[agentRuntime]`](#agentruntime) below | Central Codex/Claude launch runtime settings (speed, reasoning). |
 | `pools`                    | table      | all `[]`  | See [`[[pools.<step>]]`](#poolsstep) below | Weighted dispatch pools per workflow step (Advanced dispatch). |
 
 ## `[agents.<id>]`
@@ -202,6 +210,42 @@ Description:
 Acceptance criteria:
 {{acceptance}}
 """
+```
+
+## `[agentRuntime]`
+
+Central, provider-specific runtime settings applied to **every** Codex and
+Claude launch — both interactive sessions and one-shot prompt dispatches. They
+are resolved onto the dispatch target at selection time and translated into
+provider-specific CLI flags by the agent adapter. They do **not** affect agent
+labels or identity.
+
+Claude has no `speed` setting because the Claude CLI exposes no speed/service-
+tier flag. Effort (reasoning) values are passed straight through to the
+provider, so each provider's supported set differs.
+
+### `[agentRuntime.codex]`
+
+| Field       | Type | Default  | Values                          | Maps to | Description |
+|-------------|------|----------|---------------------------------|---------|-------------|
+| `speed`     | enum | `"fast"` | `"fast"`, `"default"`           | `-c service_tier="<value>"` | Requested Codex service tier. |
+| `reasoning` | enum | `"high"` | `"low"`, `"medium"`, `"high"`, `"xhigh"` | `-c model_reasoning_effort="<value>"` | Codex reasoning effort. |
+
+### `[agentRuntime.claude]`
+
+| Field       | Type | Default  | Values                          | Maps to | Description |
+|-------------|------|----------|---------------------------------|---------|-------------|
+| `reasoning` | enum | `"high"` | `"low"`, `"medium"`, `"high"`, `"xhigh"`, `"max"` | `--effort <value>` | Claude reasoning effort. |
+
+### Example
+
+```toml
+[agentRuntime.codex]
+speed = "fast"
+reasoning = "high"
+
+[agentRuntime.claude]
+reasoning = "high"
 ```
 
 ## `[[pools.<step>]]`
