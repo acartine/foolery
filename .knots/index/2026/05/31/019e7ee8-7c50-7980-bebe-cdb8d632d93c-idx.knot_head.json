@@ -1,0 +1,21 @@
+{
+  "event_id": "019e7ee8-7c50-7980-bebe-cdb8d632d93c",
+  "occurred_at": "2026-05-31T16:40:25.936896704Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-53fe",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Support central agent speed and reasoning settings",
+    "type": "work",
+    "updated_at": "2026-05-31T16:40:25.936896704Z",
+    "workflow_id": "work_sdlc"
+  }
+}
