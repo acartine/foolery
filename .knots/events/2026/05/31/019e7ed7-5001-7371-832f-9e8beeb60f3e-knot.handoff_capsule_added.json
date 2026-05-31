@@ -1,0 +1,15 @@
+{
+  "event_id": "019e7ed7-5001-7371-832f-9e8beeb60f3e",
+  "occurred_at": "2026-05-31T16:21:40.481033957Z",
+  "knot_id": "foolery-53fe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete. Branch: worktree-foolery-53fe-agent-runtime (pushed to origin). Commit: d7022e0a. Added central agentRuntime settings (Codex speed fast + reasoning high → service_tier/model_reasoning_effort; Claude reasoning high → --effort, no speed). Real zod schema defaults; attached onto dispatch targets at all 4 chokepoints (take loop, orchestration, scope refinement, stale grooming); flags emitted in both interactive and prompt-mode adapter paths; per-sub-object merge isolates codex/claude. Labels/identity unchanged. Updated schema/types, settings merge+partial, settings UI, OpenAPI mirror, docs/SETTINGS.md. Tests added (adapter/helper/schema/merge/dispatch). Quality gates all pass: lint, tsc, test:all (293 files), build. Self-reviewed via adversarial multi-agent workflow; 2 nits fixed (OpenAPI mirror + comment accuracy).",
+    "datetime": "2026-05-31T16:21:40.481033957Z",
+    "entry_id": "019e7ed7-5001-7371-832f-9e7a54ad9517",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
