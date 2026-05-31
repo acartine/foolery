@@ -22,6 +22,18 @@ export function mergeSettingsPartial(
     scopeRefinement: partial.scopeRefinement !== undefined
       ? { ...current.scopeRefinement, ...partial.scopeRefinement }
       : current.scopeRefinement,
+    // Per-sub-object merge: patching `agentRuntime.claude` must not clobber a
+    // previously-saved `agentRuntime.codex`, and vice versa.
+    agentRuntime: partial.agentRuntime !== undefined
+      ? {
+        codex: partial.agentRuntime.codex !== undefined
+          ? { ...current.agentRuntime.codex, ...partial.agentRuntime.codex }
+          : current.agentRuntime.codex,
+        claude: partial.agentRuntime.claude !== undefined
+          ? { ...current.agentRuntime.claude, ...partial.agentRuntime.claude }
+          : current.agentRuntime.claude,
+      }
+      : current.agentRuntime,
     pools: partial.pools !== undefined
       ? {
         ...current.pools,

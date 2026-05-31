@@ -25,6 +25,7 @@ import { DEFAULT_SCOPE_REFINEMENT_PROMPT } from "@/lib/scope-refinement-defaults
 import type { RegisteredAgent } from "@/lib/types";
 import type {
   ActionAgentMappings,
+  AgentRuntimeSettings,
   BackendSettings,
   DefaultsSettings,
   ScopeRefinementSettings,
@@ -46,6 +47,7 @@ interface SettingsData {
   backend: BackendSettings;
   defaults: DefaultsSettings;
   scopeRefinement: ScopeRefinementSettings;
+  agentRuntime: AgentRuntimeSettings;
   pools: PoolsSettings;
   dispatchMode: DispatchMode;
   maxConcurrentSessions: number;
@@ -72,6 +74,10 @@ const DEFAULTS: SettingsData = {
   },
   scopeRefinement: {
     prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
+  },
+  agentRuntime: {
+    codex: { speed: "fast", reasoning: "high" },
+    claude: { reasoning: "high" },
   },
   pools: {
     orchestration: [],
@@ -116,6 +122,8 @@ function hydrateSettings(
     defaults: data.defaults ?? DEFAULTS.defaults,
     scopeRefinement:
       data.scopeRefinement ?? DEFAULTS.scopeRefinement,
+    agentRuntime:
+      data.agentRuntime ?? DEFAULTS.agentRuntime,
     pools: data.pools ?? DEFAULTS.pools,
     dispatchMode:
       data.dispatchMode ?? DEFAULTS.dispatchMode,

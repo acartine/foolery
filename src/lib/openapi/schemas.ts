@@ -415,6 +415,32 @@ const coreSchemas = {
           prompt: { type: "string" },
         },
       },
+      agentRuntime: {
+        type: "object",
+        properties: {
+          codex: {
+            type: "object",
+            properties: {
+              speed: { type: "string", enum: ["fast", "default"], default: "fast" },
+              reasoning: {
+                type: "string",
+                enum: ["low", "medium", "high", "xhigh"],
+                default: "high",
+              },
+            },
+          },
+          claude: {
+            type: "object",
+            properties: {
+              reasoning: {
+                type: "string",
+                enum: ["low", "medium", "high", "xhigh", "max"],
+                default: "high",
+              },
+            },
+          },
+        },
+      },
       pools: {
         type: "object",
         properties: {

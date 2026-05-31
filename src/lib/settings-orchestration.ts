@@ -13,11 +13,25 @@ import type { AgentTarget } from "@/lib/types-agent-target";
 import { toCliTarget } from "@/lib/settings-agent-targets";
 import { resolvePoolAgent } from "@/lib/agent-pool";
 import {
+  attachAgentRuntimeSettings,
+} from "@/lib/agent-runtime-settings";
+import {
   DISPATCH_FAILURE_MARKER,
   emitDispatchFailureBanner,
 } from "@/lib/dispatch-pool-resolver";
 
 const ORCHESTRATION_POOL_KEY = "orchestration";
+
+function finalizeOrchestrationAgent(
+  agent: AgentTarget,
+  settings: FoolerySettings,
+  modelOverride?: string,
+): AgentTarget {
+  return attachAgentRuntimeSettings(
+    withModelOverride(agent, modelOverride),
+    settings.agentRuntime,
+  );
+}
 
 function withModelOverride(
   agent: AgentTarget,
@@ -41,7 +55,9 @@ export function resolveOrchestrationAgent(
       settings.agents,
     );
     if (poolAgent) {
-      return withModelOverride(poolAgent, modelOverride);
+      return finalizeOrchestrationAgent(
+        poolAgent, settings, modelOverride,
+      );
     }
   }
 
@@ -51,11 +67,12 @@ export function resolveOrchestrationAgent(
     sceneAgentId !== "default" &&
     settings.agents[sceneAgentId]
   ) {
-    return withModelOverride(
+    return finalizeOrchestrationAgent(
       toCliTarget(
         settings.agents[sceneAgentId],
         sceneAgentId,
       ),
+      settings,
       modelOverride,
     );
   }

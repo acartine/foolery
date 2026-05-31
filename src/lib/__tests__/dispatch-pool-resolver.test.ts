@@ -122,6 +122,10 @@ describe("resolveDispatchAgent", () => {
       interactiveSessionTimeoutMinutes: 10,
     },
     scopeRefinement: { prompt: "" },
+    agentRuntime: {
+      codex: { speed: "fast", reasoning: "high" },
+      claude: { reasoning: "high" },
+    },
   } as unknown as FoolerySettings;
 
   it("derives pool key from workflow.queueActions for ready_to_evaluate", () => {
@@ -151,6 +155,24 @@ describe("resolveDispatchAgent", () => {
     expect(selections).not.toContain("opencode-agent");
     for (const id of selections) {
       expect(["claude-opus-4-7", "codex-gpt-5-4"]).toContain(id);
+    }
+  });
+
+  it("attaches central agentRuntime settings to the resolved target", () => {
+    for (let i = 0; i < 50; i++) {
+      const agent = resolveDispatchAgent({
+        beatId: "gate-1",
+        state: "ready_to_evaluate",
+        workflow: gateWorkflow,
+        settings: settingsWithEvaluatingPool,
+      });
+      expect(agent).not.toBeNull();
+      if (agent!.agentId === "codex-gpt-5-4") {
+        expect(agent!.runtime).toEqual({ speed: "fast", reasoning: "high" });
+      } else {
+        // Both other pool agents are Claude → reasoning only, no speed.
+        expect(agent!.runtime).toEqual({ reasoning: "high" });
+      }
     }
   });
 

@@ -310,6 +310,70 @@ export const scopeRefinementSettingsSchema = z
   })
   .describe("Scope Refinement prompt configuration.");
 
+// Provider-supported effort (reasoning) values. Exported so the schema enums,
+// their `describe()` strings, and tests all reference one canonical list
+// rather than a second, drifting copy.
+export const CODEX_REASONING_EFFORTS = [
+  "low",
+  "medium",
+  "high",
+  "xhigh",
+] as const;
+export const CLAUDE_REASONING_EFFORTS = [
+  "low",
+  "medium",
+  "high",
+  "xhigh",
+  "max",
+] as const;
+export const CODEX_SPEEDS = ["fast", "default"] as const;
+
+// Central, provider-specific runtime settings applied to every Codex / Claude
+// launch (interactive and one-shot). These are genuine schema defaults — NOT
+// `?? "high"`-style silent fallbacks. Claude has no speed knob because the CLI
+// exposes no service-tier flag, so only Codex carries `speed`.
+export const codexRuntimeSettingsSchema = z
+  .object({
+    speed: z.enum(CODEX_SPEEDS).default("fast").describe(
+      "Codex service tier, mapped to `-c service_tier=\"<value>\"`. "
+      + "`fast` requests the fast tier; `default` requests the provider "
+      + "default tier. Default: `fast`.",
+    ),
+    reasoning: z.enum(CODEX_REASONING_EFFORTS).default("high").describe(
+      "Codex reasoning effort, mapped to "
+      + "`-c model_reasoning_effort=\"<value>\"`. "
+      + `One of ${CODEX_REASONING_EFFORTS.join(", ")}. Default: \`high\`.`,
+    ),
+  })
+  .default({ speed: "fast", reasoning: "high" })
+  .describe("Runtime settings for Codex GPT launches.");
+
+export const claudeRuntimeSettingsSchema = z
+  .object({
+    reasoning: z.enum(CLAUDE_REASONING_EFFORTS).default("high").describe(
+      "Claude reasoning effort, mapped to the `--effort <value>` flag. "
+      + `One of ${CLAUDE_REASONING_EFFORTS.join(", ")}. Default: \`high\`. `
+      + "Claude has no speed setting because the CLI exposes no speed flag.",
+    ),
+  })
+  .default({ reasoning: "high" })
+  .describe("Runtime settings for Claude launches.");
+
+export const agentRuntimeSettingsSchema = z
+  .object({
+    codex: codexRuntimeSettingsSchema,
+    claude: claudeRuntimeSettingsSchema,
+  })
+  .default({
+    codex: { speed: "fast", reasoning: "high" },
+    claude: { reasoning: "high" },
+  })
+  .describe(
+    "Central provider-specific runtime settings applied to Codex and Claude "
+    + "launches. Defaults: Codex speed `fast` + reasoning `high`, Claude "
+    + "reasoning `high`. Labels and agent identity are unaffected.",
+  );
+
 // Agent dispatch mode.
 export const dispatchModeSchema = z
   .enum(["basic", "advanced"])
@@ -379,6 +443,7 @@ export const foolerySettingsSchema = z.object({
   backend: backendSettingsSchema,
   defaults: defaultsSettingsSchema,
   scopeRefinement: scopeRefinementSettingsSchema,
+  agentRuntime: agentRuntimeSettingsSchema,
   pools: poolsSettingsSchema,
   dispatchMode: dispatchModeSchema,
   maxConcurrentSessions: z.number().int().min(1).max(20).default(5).describe(
@@ -408,6 +473,9 @@ export type ActionAgentMappings = z.infer<typeof actionAgentMappingsSchema>;
 export type BackendSettings = z.infer<typeof backendSettingsSchema>;
 export type DefaultsSettings = z.infer<typeof defaultsSettingsSchema>;
 export type ScopeRefinementSettings = z.infer<typeof scopeRefinementSettingsSchema>;
+export type CodexRuntimeSettings = z.infer<typeof codexRuntimeSettingsSchema>;
+export type ClaudeRuntimeSettings = z.infer<typeof claudeRuntimeSettingsSchema>;
+export type AgentRuntimeSettings = z.infer<typeof agentRuntimeSettingsSchema>;
 export type PoolEntry = z.infer<typeof poolEntrySchema>;
 export type DispatchMode = z.infer<typeof dispatchModeSchema>;
 

@@ -7,6 +7,10 @@ export type SettingsPartial = Partial<{
   backend: Partial<FoolerySettings["backend"]>;
   defaults: Partial<FoolerySettings["defaults"]>;
   scopeRefinement: Partial<FoolerySettings["scopeRefinement"]>;
+  agentRuntime: {
+    codex?: Partial<FoolerySettings["agentRuntime"]["codex"]>;
+    claude?: Partial<FoolerySettings["agentRuntime"]["claude"]>;
+  };
   pools: Partial<FoolerySettings["pools"]>;
   dispatchMode: FoolerySettings["dispatchMode"];
   maxConcurrentSessions: FoolerySettings["maxConcurrentSessions"];

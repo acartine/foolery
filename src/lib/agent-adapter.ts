@@ -55,6 +55,39 @@ export function resolveDialect(command: string): AgentDialect {
 // ── 2) Arg building ────────────────────────────────────────
 
 /**
+ * Append Codex runtime flags from the target's resolved `runtime` settings.
+ * `speed` maps to `-c service_tier=...`, `reasoning` to
+ * `-c model_reasoning_effort=...`. No-op when no runtime settings are present
+ * (e.g. a bare `{ command: "codex" }` target), so CLI defaults stand.
+ */
+function appendCodexRuntimeArgs(
+  args: string[],
+  agent: RegisteredAgent | AgentTarget,
+): void {
+  const runtime = agent.runtime;
+  if (!runtime) return;
+  if (runtime.speed) {
+    args.push("-c", `service_tier="${runtime.speed}"`);
+  }
+  if (runtime.reasoning) {
+    args.push("-c", `model_reasoning_effort="${runtime.reasoning}"`);
+  }
+}
+
+/**
+ * Append the Claude `--effort` flag from the target's resolved `runtime`
+ * settings. Claude has no speed flag, so only `reasoning` is consumed. No-op
+ * when no runtime settings are present.
+ */
+function appendClaudeRuntimeArgs(
+  args: string[],
+  agent: RegisteredAgent | AgentTarget,
+): void {
+  const reasoning = agent.runtime?.reasoning;
+  if (reasoning) args.push("--effort", reasoning);
+}
+
+/**
  * Build CLI args for an interactive Codex session
  * using the app-server JSON-RPC stdio protocol.
  */
@@ -79,6 +112,7 @@ export function buildCodexInteractiveArgs(
   if (agent.model) {
     args.push("-c", `model="${agent.model}"`);
   }
+  appendCodexRuntimeArgs(args, agent);
   return { command, args };
 }
 
@@ -206,6 +240,7 @@ export function buildClaudeInteractiveArgs(
   ];
   appendClaudePermissionArgs(args, agent);
   if (agent.model) args.push("--model", agent.model);
+  appendClaudeRuntimeArgs(args, agent);
   return { command, args };
 }
 
@@ -230,6 +265,7 @@ export function buildClaudePromptModeArgs(
   ];
   appendClaudePermissionArgs(args, agent);
   if (agent.model) args.push("--model", agent.model);
+  appendClaudeRuntimeArgs(args, agent);
   return { command, args };
 }
 
@@ -292,6 +328,7 @@ export function buildPromptModeArgs(
       "--dangerously-bypass-approvals-and-sandbox",
     ];
     if (agent.model) args.push("-m", agent.model);
+    appendCodexRuntimeArgs(args, agent);
     return { command, args };
   }
 
