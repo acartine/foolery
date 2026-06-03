@@ -1,0 +1,9 @@
+{
+  "event_id": "019e8c07-8992-74c0-b0cb-07854eba88dd",
+  "occurred_at": "2026-06-03T05:49:24.7542912Z",
+  "knot_id": "foolery-3ji.5",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "triage"
+  }
+}

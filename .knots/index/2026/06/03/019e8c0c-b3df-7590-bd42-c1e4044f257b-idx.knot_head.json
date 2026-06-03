@@ -1,0 +1,21 @@
+{
+  "event_id": "019e8c0c-b3df-7590-bd42-c1e4044f257b",
+  "occurred_at": "2026-06-03T05:55:03.263438581Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-00e9",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Bulk-tag selected beats on Queues + declutter multi-select bar",
+    "type": "work",
+    "updated_at": "2026-06-03T05:55:03.263438581Z",
+    "workflow_id": "work_sdlc"
+  }
+}
