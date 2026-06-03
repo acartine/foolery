@@ -1,0 +1,9 @@
+{
+  "event_id": "019e8bee-fbc7-7431-9238-0e2e67d3da47",
+  "occurred_at": "2026-06-03T05:22:35.579711Z",
+  "knot_id": "foolery-00e9",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. On /beats?beatsView=queues in multi-select mode, a bulk tag/label control is available that calls onBulkUpdate with { labels: string[] } (and optionally { removeLabels: string[] }) applied to every id in selectedIds.\n2. Applying labels to N selected beats persists to all N beats, verified both in the beat-detail UI after reload and via kno ls --json on the underlying knots.\n3. The per-field bulk editors (Type, Priority, Profile, State, Tags) are consolidated into a single grouped surface (e.g. an \"Edit fields\" popover/menu) instead of separate always-visible inline dropdowns; the primary actions (Ship, Scene!, Merge, Refine Scope, Clear, and the \"N selected\" count) remain directly visible.\n4. With all controls present, the multi-select bar fits without horizontal-scroll at >= 768px viewport width (no overflow-x scrolling required to reach Apply or Clear).\n5. The tag control accepts multiple labels, displays the pending labels before Apply, and rejects empty/whitespace-only labels.\n6. No new hardcoded workflow-state strings are introduced, and bun run lint, bunx tsc --noEmit, bun run test, and bun run build all pass."
+  }
+}
