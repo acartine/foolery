@@ -1,0 +1,15 @@
+{
+  "event_id": "019e8c01-cdd7-7bf0-a83d-ebd71ba46deb",
+  "occurred_at": "2026-06-03T05:43:09.015629005Z",
+  "knot_id": "foolery-00e9",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Handoff: Implementation complete. Branch: worktree-foolery-00e9-bulk-tags (pushed to origin). Commit: 07493d477c6737aeaef93cb22d216917167e8beb. Bulk label/tag editor added to Queues multi-select and the four inline Set-dropdowns consolidated into one 'Edit fields' popover (bar uses flex-wrap, no horizontal scroll). Reuses onBulkUpdate({labels}/{removeLabels}); no new route/schema. State options stay loom-derived. New files under src/components/bulk/. Gates green: lint, tsc --noEmit, test (2860 pass), build. Manual bulk source-grep tests repointed and green; remaining test:manual failures (install-launcher-path, foolery-config) are pre-existing host-env tests unrelated to this change.",
+    "datetime": "2026-06-03T05:43:09.015629005Z",
+    "entry_id": "019e8c01-cdd7-7bf0-a83d-ebc5e514bc88",
+    "model": "Opus",
+    "username": "Claude",
+    "version": "4.8"
+  }
+}
