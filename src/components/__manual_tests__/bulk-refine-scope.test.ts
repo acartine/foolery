@@ -9,7 +9,7 @@ import * as path from "node:path";
 
 function readSource(): string {
   return fs.readFileSync(
-    path.resolve(__dirname, "../filter-bar.tsx"),
+    path.resolve(__dirname, "../bulk/bulk-edit-controls.tsx"),
     "utf-8",
   );
 }
@@ -21,8 +21,7 @@ function bulkSection(src: string): string {
       "BulkEditControls function not found",
     );
   }
-  const end = src.indexOf("function FilterControls");
-  return src.slice(start, end);
+  return src.slice(start);
 }
 
 describe("BulkEditControls – Refine Scope button", () => {
