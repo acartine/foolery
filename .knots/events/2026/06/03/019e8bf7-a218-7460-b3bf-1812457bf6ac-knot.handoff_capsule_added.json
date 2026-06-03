@@ -1,0 +1,15 @@
+{
+  "event_id": "019e8bf7-a218-7460-b3bf-1812457bf6ac",
+  "occurred_at": "2026-06-03T05:32:02.45619344Z",
+  "knot_id": "foolery-00e9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan attached. Pure UI work — backend already supports labels/removeLabels via updateBeatSchema (schemas.ts:63-64) and the bulk path forwards any UpdateBeatInput unchanged (use-bulk-actions.ts). Two deliverables: (1) add a tag/label chip editor to the existing pending/Apply flow; (2) collapse the four inline 'Set ...' Selects into ONE 'Edit fields' Popover so the bar stops horizontally scrolling. Extract bulk-edit code from filter-bar.tsx (~520 lines, over max-lines budget) into new src/components/bulk/ files: bulk-edit-shared.ts (helpers/constants/types incl. extended PendingBulkFields with labels/removeLabels), bulk-labels-input.tsx (chip add/remove + trim/reject-empty/dedupe), bulk-edit-fields-popover.tsx (4 Selects + labels + Apply/Reset), bulk-edit-controls.tsx (BulkEditControls/BulkActionButtons; Ship/Scene!/Merge/Refine Scope + N-selected + Clear stay directly visible). handleApply must include labels/removeLabels. Keep Selects calling only setPending (manual-test contract). Reuse collectBulkSetStateOptions for state options (loom-derived, no new hardcoded states); no '?? default' coalescing. Update both bulk-edit-terminal-states test files' imports/slice targets. Gates: bun install --frozen-lockfile then lint, tsc --noEmit, test, build.",
+    "datetime": "2026-06-03T05:32:02.45619344Z",
+    "entry_id": "019e8bf7-a218-7460-b3bf-180e5962fb43",
+    "model": "Opus",
+    "username": "Claude",
+    "version": "4.8"
+  }
+}
