@@ -1,0 +1,21 @@
+{
+  "event_id": "019e9773-7540-7093-b870-df4d0b23e8aa",
+  "occurred_at": "2026-06-05T11:03:06.816311839Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ddb9",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Host agent-friendly API resource",
+    "type": "work",
+    "updated_at": "2026-06-05T11:03:06.816311839Z",
+    "workflow_id": "work_sdlc"
+  }
+}

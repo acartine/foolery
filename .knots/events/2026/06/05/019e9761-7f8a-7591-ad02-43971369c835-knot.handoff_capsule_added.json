@@ -1,0 +1,15 @@
+{
+  "event_id": "019e9761-7f8a-7591-ad02-43971369c835",
+  "occurred_at": "2026-06-05T10:43:29.802175457Z",
+  "knot_id": "foolery-ddb9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan attached for agent-friendly API discoverability. Approach is fully additive (keeps /api/openapi.json compatible): (A) enrich spec metadata in src/lib/openapi-spec.ts — rich info.description (agent guide), externalDocs->/api/docs, expanded servers (keep {url:'/'} first), x-agent-discovery extension, reusable RepoParam param; (B) /api/docs becomes onboarding via ReDoc-rendered info.description + small banner; (C) NEW /.well-known/foolery.json route serving a discovery document; (D) add examples to sparse ops + hermetic test (src/lib/__tests__/openapi-discovery.test.ts on static spec+discovery doc) + manual curl smoke script for the live discovery flow. New module src/lib/openapi/agent-guide.ts is the single source for guide markdown + discovery doc, shared by spec and well-known route. Watch ESLint 500-line/100-col limits; do NOT hardcode workflow state names (keep examples state-neutral or point at /api/workflows). No child knots. Verify .well-known reachable under Next app router; fallback /api/discovery alias.",
+    "datetime": "2026-06-05T10:43:29.802175457Z",
+    "entry_id": "019e9761-7f8a-7591-ad02-438fe78f1690",
+    "model": "Opus",
+    "username": "Claude",
+    "version": "4.8"
+  }
+}
