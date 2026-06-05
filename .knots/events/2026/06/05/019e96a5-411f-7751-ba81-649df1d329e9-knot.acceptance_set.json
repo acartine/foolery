@@ -1,0 +1,9 @@
+{
+  "event_id": "019e96a5-411f-7751-ba81-649df1d329e9",
+  "occurred_at": "2026-06-05T07:17:53.034743Z",
+  "knot_id": "foolery-ddb9",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. `GET /api/openapi.json` includes enough metadata, tags, operation ids, schemas, and examples for an agent to discover and call Foolery APIs without inspecting source files.\n2. A browser-accessible API docs page explains the local base URL, repository resolution via `GET /api/registry`, response envelope conventions, and at least one complete agent workflow example.\n3. The docs or a well-known endpoint provide an idiomatic machine-discovery entrypoint for agents, such as linking the OpenAPI spec and examples from a stable route.\n4. Automated or repeatable verification covers the discovery flow and confirms the hosted API resource remains available."
+  }
+}

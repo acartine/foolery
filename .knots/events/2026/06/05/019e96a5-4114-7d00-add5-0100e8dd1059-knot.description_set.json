@@ -1,0 +1,9 @@
+{
+  "event_id": "019e96a5-4114-7d00-add5-0100e8dd1059",
+  "occurred_at": "2026-06-05T07:17:53.034743Z",
+  "knot_id": "foolery-ddb9",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Goal:\nMake Foolery expose its HTTP API in a user- and agent-friendly, idiomatic way. Foolery already serves /api/openapi.json and /api/docs; this work should improve discoverability and machine consumption so agents can reliably find API capabilities, schemas, examples, and base-url guidance without reading source code.\n\nVerification:\n1. Run `curl -sS http://localhost:3000/api/openapi.json` against a dev server and confirm stale grooming, registry, settings, terminal, plans, and core beat paths are present.\n2. Open `http://localhost:3000/api/docs` and confirm the docs clearly show how agents should authenticate or connect locally, discover the base URL, resolve repositories, and use common workflows.\n3. Run the documented agent discovery flow from a clean shell using curl or a small script and confirm it can find the OpenAPI spec, resolve a repo by name, and call at least one documented endpoint without source-code knowledge.\n\nConstraints:\nKeep the existing OpenAPI endpoint compatible. Prefer additive metadata, docs, examples, or well-known discovery endpoints over route-breaking changes. Do not introduce a PR workflow unless explicitly requested."
+  }
+}
