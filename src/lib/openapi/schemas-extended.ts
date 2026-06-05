@@ -3,6 +3,42 @@
  */
 
 export const extendedComponentSchemas = {
+  DiscoveryDocument: {
+    type: "object",
+    description:
+      "Machine-discovery map served from /.well-known/foolery.json and "
+      + "/api/discovery.",
+    required: ["name", "apiVersion", "openapi", "docs", "endpoints"],
+    properties: {
+      name: { type: "string" },
+      description: { type: "string" },
+      apiVersion: { type: "string" },
+      openapi: { type: "string", description: "Path to the OpenAPI spec" },
+      docs: { type: "string", description: "Path to the human/agent docs page" },
+      discovery: { type: "string", description: "Stable well-known path" },
+      endpoints: {
+        type: "object",
+        additionalProperties: { type: "string" },
+        description: "Map of capability name to entrypoint path",
+      },
+      baseUrls: {
+        type: "object",
+        additionalProperties: { type: "string" },
+        description: "Known base URLs (relative, dev, installed runtime)",
+      },
+      conventions: {
+        type: "object",
+        additionalProperties: true,
+        description: "Repo-selector, envelope, and workflow conventions",
+      },
+      quickstart: {
+        type: "array",
+        items: { type: "object", additionalProperties: true },
+        description: "Ordered steps for the agent discovery flow",
+      },
+    },
+  },
+
   BackendCapabilities: {
     type: "object",
     properties: {

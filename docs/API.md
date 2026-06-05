@@ -5,6 +5,7 @@ Reference for agent clients automating Foolery operations. All endpoints live un
 ## Table of Contents
 
 - [Overview](#overview)
+- [Machine Discovery](#machine-discovery)
 - [Authentication](#authentication)
 - [Common Patterns](#common-patterns)
 - [Beats (Work Items)](#beats-work-items)
@@ -33,6 +34,70 @@ Key facts:
 - Multi-repo support works via the `_repo` query parameter or body field.
 - The default base URL is `http://localhost:3000`.
 - Long-running workflows also expose SSE endpoints for live progress.
+
+## Machine Discovery
+
+Agents can bootstrap the entire API from a single stable request — no
+source-code knowledge required.
+
+### Discovery document
+
+```
+GET /.well-known/foolery.json     # idiomatic, RFC 8615
+GET /api/discovery                # always-available alias
+```
+
+Both return the same JSON map:
+
+```json
+{
+  "name": "Foolery API",
+  "apiVersion": "1.0.0",
+  "openapi": "/api/openapi.json",
+  "docs": "/api/docs",
+  "discovery": "/.well-known/foolery.json",
+  "endpoints": {
+    "registry": "/api/registry",
+    "capabilities": "/api/capabilities",
+    "workflows": "/api/workflows",
+    "version": "/api/version",
+    "beats": "/api/beats"
+  },
+  "baseUrls": {
+    "relative": "/",
+    "dev": "http://localhost:3000",
+    "installedRuntime": "http://localhost:3210"
+  },
+  "conventions": {
+    "repoSelector": "_repo",
+    "repoResolution": "GET /api/registry → match by `name` → use `path` as `_repo`",
+    "successEnvelope": "{ \"data\": ... } or { \"ok\": true, \"data\": ... }",
+    "errorEnvelope": "{ \"error\": ..., \"banner\"?: ..., \"marker\"?: ... }"
+  },
+  "quickstart": [ { "step": 1, "call": "GET /api/version" }, ... ]
+}
+```
+
+The same guidance is rendered for humans at the top of [`/api/docs`](#openapi-spec)
+and embedded in the OpenAPI `info.description`.
+
+### Discovery flow (clean shell)
+
+```bash
+BASE=http://localhost:3000
+# 1. discover entrypoints
+curl -sS "$BASE/.well-known/foolery.json"
+# 2. confirm the spec
+curl -sS "$BASE/api/openapi.json" | jq '.info.title'
+# 3. resolve a repo named "foolery" to its absolute path
+REPO=$(curl -sS "$BASE/api/registry" \
+  | jq -r '.data[] | select(.name=="foolery") | .path')
+# 4. call a repo-scoped endpoint with the resolved path
+curl -sS "$BASE/api/beats?_repo=$REPO" | jq '.data | length'
+```
+
+The repeatable version of this flow lives in
+[`scripts/agent-discovery-smoke.sh`](../scripts/agent-discovery-smoke.sh).
 
 ## Authentication
 

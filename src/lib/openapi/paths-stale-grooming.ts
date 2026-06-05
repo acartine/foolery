@@ -35,6 +35,20 @@ export const staleGroomingPaths = {
                   },
                 },
               },
+              examples: {
+                success: {
+                  value: {
+                    ok: true,
+                    data: {
+                      staleBeats: [
+                        { id: "foolery-1a2b", title: "Old beat", ageDays: 21 },
+                      ],
+                      count: 1,
+                      ageDays: 14,
+                    },
+                  },
+                },
+              },
             },
           },
         },

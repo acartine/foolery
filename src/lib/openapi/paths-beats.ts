@@ -43,6 +43,22 @@ export const beatsPaths = {
                   data: { type: "array", items: { $ref: "#/components/schemas/Beat" } },
                 },
               },
+              examples: {
+                success: {
+                  summary: "Repo-scoped beat list",
+                  value: {
+                    data: [
+                      {
+                        id: "foolery-ddb9",
+                        title: "Host agent-friendly API resource",
+                        status: "implementation",
+                        type: "work",
+                        priority: 2,
+                      },
+                    ],
+                  },
+                },
+              },
             },
           },
         },
@@ -76,6 +92,18 @@ export const beatsPaths = {
                 profileId: { type: "string" },
                 workflowId: { type: "string" },
                 _repo: { type: "string" },
+              },
+            },
+            examples: {
+              minimal: {
+                summary: "Create a work beat",
+                value: {
+                  title: "Document the public API",
+                  description: "Write agent-facing docs for the HTTP API.",
+                  type: "work",
+                  priority: 2,
+                  _repo: "/home/me/foolery",
+                },
               },
             },
           },
