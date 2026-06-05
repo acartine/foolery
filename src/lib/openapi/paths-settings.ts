@@ -20,6 +20,12 @@ export const settingsPaths = {
                   data: { $ref: "#/components/schemas/FoolerySettings" },
                 },
               },
+              examples: {
+                success: {
+                  summary: "ok/data envelope",
+                  value: { ok: true, data: { agents: {}, dispatch: {} } },
+                },
+              },
             },
           },
         },

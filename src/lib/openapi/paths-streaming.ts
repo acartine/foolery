@@ -42,6 +42,15 @@ export const terminalPaths = {
                 prompt: { type: "string" },
               },
             },
+            examples: {
+              minimal: {
+                summary: "Start an agent terminal for a beat",
+                value: {
+                  beatId: "foolery-ddb9",
+                  _repo: "/home/me/foolery",
+                },
+              },
+            },
           },
         },
       },

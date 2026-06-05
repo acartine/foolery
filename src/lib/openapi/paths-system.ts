@@ -8,6 +8,9 @@ export const registryPaths = {
     get: {
       tags: ["Registry"],
       summary: "List registered repositories",
+      description:
+        "Resolve a repository by `name`, then pass its `path` as the `_repo` "
+        + "query parameter on repo-scoped endpoints.",
       operationId: "listRepos",
       responses: {
         "200": {
@@ -18,6 +21,20 @@ export const registryPaths = {
                 type: "object",
                 properties: {
                   data: { type: "array", items: { $ref: "#/components/schemas/RegisteredRepo" } },
+                },
+              },
+              examples: {
+                success: {
+                  value: {
+                    data: [
+                      {
+                        path: "/home/me/foolery",
+                        name: "foolery",
+                        addedAt: "2026-05-01T09:00:00Z",
+                        memoryManagerType: "knots",
+                      },
+                    ],
+                  },
                 },
               },
             },
@@ -111,6 +128,51 @@ export const registryPaths = {
       },
     },
   },
+};
+
+const discoveryOperation = {
+  tags: ["System"],
+  summary: "Machine-discovery entrypoint for agents",
+  description:
+    "Returns a stable map of API entrypoints (OpenAPI spec, docs, registry, "
+    + "capabilities, workflows, version), base-URL guidance, response-envelope "
+    + "conventions, and a copy-pasteable quickstart. Also served at "
+    + "`/.well-known/foolery.json`.",
+  operationId: "getDiscoveryDocument",
+  responses: {
+    "200": {
+      description: "Discovery document",
+      content: {
+        "application/json": {
+          schema: { $ref: "#/components/schemas/DiscoveryDocument" },
+          examples: {
+            success: {
+              value: {
+                name: "Foolery API",
+                apiVersion: "1.0.0",
+                openapi: "/api/openapi.json",
+                docs: "/api/docs",
+                discovery: "/.well-known/foolery.json",
+                endpoints: {
+                  registry: "/api/registry",
+                  capabilities: "/api/capabilities",
+                  workflows: "/api/workflows",
+                  version: "/api/version",
+                  beats: "/api/beats",
+                },
+                conventions: { repoSelector: "_repo" },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+} as const;
+
+export const discoveryPaths = {
+  "/.well-known/foolery.json": { get: discoveryOperation },
+  "/api/discovery": { get: discoveryOperation },
 };
 
 export const systemPaths = {

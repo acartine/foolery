@@ -5,6 +5,11 @@
  */
 
 import { componentSchemas } from "@/lib/openapi/schemas";
+import {
+  API_VERSION,
+  agentGuideMarkdown,
+  DISCOVERY_WELL_KNOWN_PATH,
+} from "@/lib/openapi/agent-guide";
 import { beatsPaths } from "@/lib/openapi/paths-beats";
 import { depsPaths } from "@/lib/openapi/paths-deps";
 import { plansPaths } from "@/lib/openapi/paths-plans";
@@ -15,7 +20,11 @@ import {
   orchestrationPaths,
 } from "@/lib/openapi/paths-streaming";
 import { settingsPaths } from "@/lib/openapi/paths-settings";
-import { registryPaths, systemPaths } from "@/lib/openapi/paths-system";
+import {
+  registryPaths,
+  systemPaths,
+  discoveryPaths,
+} from "@/lib/openapi/paths-system";
 import { approvalsPaths } from "@/lib/openapi/paths-approvals";
 import {
   staleGroomingPaths,
@@ -26,13 +35,23 @@ export const openApiSpec = {
   openapi: "3.1.0",
   info: {
     title: "Foolery API",
-    version: "1.0.0",
+    version: API_VERSION,
     description:
       "Work-item orchestration API for Foolery. Manages beats (work items), " +
       "wave planning, agent terminals, orchestration, " +
-      "settings, and repository registry.",
+      "settings, and repository registry.\n\n" +
+      agentGuideMarkdown,
   },
-  servers: [{ url: "/" }],
+  externalDocs: {
+    description: "Agent onboarding docs (rendered guide + interactive spec)",
+    url: "/api/docs",
+  },
+  "x-agent-discovery": DISCOVERY_WELL_KNOWN_PATH,
+  servers: [
+    { url: "/", description: "Same-origin relative base (browser / in-app)" },
+    { url: "http://localhost:3000", description: "Local dev server" },
+    { url: "http://localhost:3210", description: "Installed runtime" },
+  ],
   tags: [
     { name: "Beats", description: "Beat (work item) CRUD and actions" },
     { name: "Dependencies", description: "Beat dependency management" },
@@ -62,8 +81,21 @@ export const openApiSpec = {
     ...settingsPaths,
     ...registryPaths,
     ...systemPaths,
+    ...discoveryPaths,
   },
   components: {
     schemas: componentSchemas,
+    parameters: {
+      RepoParam: {
+        name: "_repo",
+        in: "query",
+        required: false,
+        schema: { type: "string" },
+        description:
+          "Absolute path of the target repository (multi-repo support). "
+          + "Resolve it from GET /api/registry by matching the repo `name`, "
+          + "then pass the returned `path` here.",
+      },
+    },
   },
 } as const;
