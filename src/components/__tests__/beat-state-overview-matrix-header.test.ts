@@ -8,7 +8,7 @@ import type { BeatStateGroup } from "@/lib/beat-state-overview";
 
 function renderMatrix(groups: BeatStateGroup[]): string {
   const gridStyle = {
-    "--overview-column-width": "40px",
+    gridTemplateColumns: "repeat(1, minmax(80px, 1fr))",
   } as CSSProperties;
   return renderToStaticMarkup(
     createElement(OverviewStateMatrix, {
@@ -70,6 +70,24 @@ function extractOpeningTagByTestId(
   const tagEnd = html.indexOf(">", markerIndex);
   return html.slice(tagStart, tagEnd + 1);
 }
+
+describe("OverviewStateMatrix column fill", () => {
+  it("drives column widths from the fr template, not fixed tracks", () => {
+    // Regression guard for foolery-c5fc: fixed `auto-cols` tracks left empty
+    // space when columns were hidden. The grid must instead apply the
+    // caller's `grid-template-columns` so `1fr` tracks fill the table.
+    const html = renderMatrix([emptyGroup("implementation")]);
+    const gridTag = extractOpeningTagByTestId(
+      html,
+      "beat-state-overview-grid",
+    );
+    const gridClass = extractFirstAttribute(gridTag, "class");
+    expect(gridClass).not.toMatch(/\bauto-cols-/);
+    expect(gridClass).not.toMatch(/\bgrid-flow-col\b/);
+    expect(gridTag).toMatch(/grid-template-columns:\s*repeat\(/);
+    expect(gridTag).toContain("minmax(80px, 1fr)");
+  });
+});
 
 describe("OverviewStateMatrix header wrapping", () => {
   it("does not clip the column wrapper so headers can grow vertically", () => {

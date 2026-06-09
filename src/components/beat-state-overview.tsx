@@ -4,7 +4,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { AlertTriangle } from "lucide-react";
@@ -19,7 +18,7 @@ import {
   groupOverviewBeatsByState,
   hideOverviewColumn,
   nextOverviewHiddenColumns,
-  overviewColumnWidthPx,
+  overviewGridTemplateColumns,
   renderableOverviewGroups,
   restoreOverviewColumns,
 } from "@/lib/beat-state-overview";
@@ -40,12 +39,6 @@ import {
 import type {
   StreamingProgress,
 } from "@/app/beats/use-streaming-progress";
-import {
-  useElementWidth,
-} from "@/components/use-element-width";
-import {
-  useOverviewColumnWatermark,
-} from "@/components/use-overview-column-watermark";
 import {
   StaleBeatGroomingDialog,
 } from "@/components/stale-beat-grooming-dialog";
@@ -210,24 +203,12 @@ function BeatStateOverview({
     ),
     [groups, columnVisibility.hiddenStates],
   );
-  const visibleColumnCount = visibleGroups.length;
-  const scrollportRef = useRef<HTMLDivElement | null>(null);
-  const scrollportWidth = useElementWidth(scrollportRef);
-  const sizingColumnCount = useOverviewColumnWatermark({
-    tabId: activeTab,
-    visibleColumnCount,
-  });
-  const columnWidth = overviewColumnWidthPx(
-    scrollportWidth,
-    sizingColumnCount,
-  );
   const gridStyle = {
-    "--overview-column-width": `${columnWidth}px`,
+    gridTemplateColumns: overviewGridTemplateColumns(visibleGroups.length),
   } as CSSProperties;
 
   return (
     <OverviewStateMatrix
-      ref={scrollportRef}
       tabs={tabs}
       activeTab={activeTab}
       onTabChange={setActiveTab}

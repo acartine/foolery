@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  forwardRef,
   useCallback,
   useLayoutEffect,
   useRef,
@@ -54,13 +53,7 @@ type OverviewStateGridProps = Omit<
   "tabs" | "activeTab" | "onTabChange" | "toolbarEnd"
 >;
 
-export const OverviewStateMatrix = forwardRef<
-  HTMLDivElement,
-  OverviewStateMatrixProps
->(function OverviewStateMatrix(
-  props,
-  scrollportRef,
-) {
+export function OverviewStateMatrix(props: OverviewStateMatrixProps) {
   return (
     <div className="min-w-0 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -74,7 +67,6 @@ export const OverviewStateMatrix = forwardRef<
       <div
         className="overflow-x-auto pb-2"
         data-testid="beat-state-overview-scrollport"
-        ref={scrollportRef}
       >
         {props.visibleGroups.length > 0 ? (
           <OverviewStateGrid
@@ -94,7 +86,7 @@ export const OverviewStateMatrix = forwardRef<
       </div>
     </div>
   );
-});
+}
 
 function OverviewStateGrid(props: OverviewStateGridProps) {
   const headerHeight = useUniformOverviewHeaderHeight(
@@ -103,10 +95,7 @@ function OverviewStateGrid(props: OverviewStateGridProps) {
 
   return (
     <div
-      className={
-        "grid min-w-full grid-flow-col"
-        + " auto-cols-[var(--overview-column-width)] gap-2"
-      }
+      className="grid min-w-full gap-2"
       data-testid="beat-state-overview-grid"
       style={props.gridStyle}
     >
