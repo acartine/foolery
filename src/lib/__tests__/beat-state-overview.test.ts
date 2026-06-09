@@ -9,11 +9,9 @@ import {
   isOverviewActiveState,
   isOverviewBeat,
   nextOverviewHiddenColumns,
-  nextOverviewSizingColumnCount,
-  nextOverviewSizingColumnCounts,
   normalizeOverviewState,
   overviewBeatLabel,
-  overviewColumnWidthPx,
+  overviewGridTemplateColumns,
   overviewLeaseInfoForBeat,
   overviewTabForBeat,
   overviewTabForState,
@@ -344,64 +342,48 @@ describe("beat-state-overview column visibility", () => {
 });
 
 describe("beat-state-overview sizing", () => {
-  it("caps overview columns at one sixth of available width", () => {
-    expect(overviewColumnWidthPx(1200, 3)).toBe(200);
-    expect(overviewColumnWidthPx(300, 1)).toBe(50);
-    expect(overviewColumnWidthPx(2000, 2)).toBe(320);
+  it("fills the table with one equal fr track per visible column", () => {
+    expect(overviewGridTemplateColumns(1)).toBe(
+      "repeat(1, minmax(80px, 1fr))",
+    );
+    expect(overviewGridTemplateColumns(5)).toBe(
+      "repeat(5, minmax(80px, 1fr))",
+    );
+    expect(overviewGridTemplateColumns(12)).toBe(
+      "repeat(12, minmax(80px, 1fr))",
+    );
   });
 
-  it("sizes visible columns from available width and sizing count", () => {
-    expect(overviewColumnWidthPx(1200, 10)).toBe(109);
-    expect(overviewColumnWidthPx(240, 10)).toBe(40);
-    expect(overviewColumnWidthPx(0, 2)).toBe(160);
-    expect(overviewColumnWidthPx(1200, 0)).toBe(160);
+  it("expands remaining columns when one is hidden", () => {
+    // Hiding a column lowers the visible count, so each surviving column's
+    // `1fr` share of the table width grows — the grid never leaves a gap.
+    const beforeHide = overviewGridTemplateColumns(6);
+    const afterHide = overviewGridTemplateColumns(5);
+
+    expect(beforeHide).toBe("repeat(6, minmax(80px, 1fr))");
+    expect(afterHide).toBe("repeat(5, minmax(80px, 1fr))");
   });
 
-  it("promotes sizing pressure by two columns on growth", () => {
-    let watermark = nextOverviewSizingColumnCount(undefined, 4);
-
-    expect(watermark).toBe(4);
-    expect(overviewColumnWidthPx(1200, watermark)).toBe(200);
-
-    watermark = nextOverviewSizingColumnCount(watermark, 6);
-
-    expect(watermark).toBe(8);
-    expect(overviewColumnWidthPx(1200, watermark)).toBe(133);
+  it("resizes proportionally when a hidden column is restored", () => {
+    // Restoring raises the count back; the template depends only on the
+    // count, so toggle order never changes the result.
+    expect(overviewGridTemplateColumns(5)).toBe(
+      overviewGridTemplateColumns(5),
+    );
+    expect(overviewGridTemplateColumns(6)).toBe(
+      "repeat(6, minmax(80px, 1fr))",
+    );
   });
 
-  it("keeps the sizing watermark when visible columns decrease", () => {
-    const watermark = nextOverviewSizingColumnCount(8, 4);
-
-    expect(watermark).toBe(8);
-    expect(overviewColumnWidthPx(1200, watermark)).toBe(133);
+  it("returns an empty template when no columns are visible", () => {
+    expect(overviewGridTemplateColumns(0)).toBe("none");
+    expect(overviewGridTemplateColumns(-3)).toBe("none");
   });
 
-  it("tracks sizing watermarks independently by tab", () => {
-    let watermarks = nextOverviewSizingColumnCounts(
-      {},
-      "work_items",
-      4,
+  it("ignores fractional column counts", () => {
+    expect(overviewGridTemplateColumns(3.9)).toBe(
+      "repeat(3, minmax(80px, 1fr))",
     );
-    watermarks = nextOverviewSizingColumnCounts(
-      watermarks,
-      "terminated",
-      2,
-    );
-    watermarks = nextOverviewSizingColumnCounts(
-      watermarks,
-      "work_items",
-      6,
-    );
-    watermarks = nextOverviewSizingColumnCounts(
-      watermarks,
-      "terminated",
-      1,
-    );
-
-    expect(watermarks).toMatchObject({
-      work_items: 8,
-      terminated: 2,
-    });
   });
 });
 

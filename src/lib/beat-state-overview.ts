@@ -38,18 +38,16 @@ export interface OverviewStateTabSummary {
   count: number;
 }
 
-export type OverviewSizingColumnCounts =
-  Partial<Record<OverviewStateTabId, number>>;
 export type OverviewHiddenColumnStates =
   Partial<Record<OverviewStateTabId, string[]>>;
 
 export const DEFAULT_OVERVIEW_STATE_TAB: OverviewStateTabId =
   "work_items";
+// Floor width below which columns stop shrinking and the grid scrolls
+// instead. Above this, columns share the table width equally via `1fr`
+// so they always fill it and resize proportionally as columns are
+// hidden or restored.
 const OVERVIEW_COLUMN_MIN_WIDTH_PX = 80;
-const OVERVIEW_COLUMN_MAX_WIDTH_PX = 320;
-const OVERVIEW_COLUMN_FALLBACK_WIDTH_PX = 160;
-const OVERVIEW_COLUMN_PRESSURE_BUFFER = 2;
-const OVERVIEW_COLUMN_VISIBLE_WIDTH_FRACTION = 6;
 
 const WORK_ITEM_OVERVIEW_STATES = [
   "ready_for_planning",
@@ -358,57 +356,18 @@ export function nextOverviewHiddenColumns(
   };
 }
 
-export function overviewColumnWidthPx(
-  availableWidth: number,
-  sizingColumnCount: number,
-): number {
-  if (sizingColumnCount <= 0) return OVERVIEW_COLUMN_FALLBACK_WIDTH_PX;
-  if (availableWidth <= 0) return OVERVIEW_COLUMN_FALLBACK_WIDTH_PX;
-  const maxWidth = Math.min(
-    OVERVIEW_COLUMN_MAX_WIDTH_PX,
-    Math.floor(
-      availableWidth / OVERVIEW_COLUMN_VISIBLE_WIDTH_FRACTION,
-    ),
-  );
-  const minWidth = Math.min(OVERVIEW_COLUMN_MIN_WIDTH_PX, maxWidth);
-  const rawWidth = Math.floor(availableWidth / (sizingColumnCount + 1));
-  return Math.min(
-    maxWidth,
-    Math.max(minWidth, rawWidth),
-  );
-}
-
-export function nextOverviewSizingColumnCount(
-  currentSizingColumnCount: number | undefined,
+// Builds the grid-template-columns value for the overview matrix. Each
+// visible column gets `minmax(MIN, 1fr)`: the `1fr` shares the table width
+// equally so the columns always fill it (and resize proportionally when a
+// column is hidden or restored), while the `MIN` floor keeps columns
+// readable and lets the grid scroll horizontally only when too many columns
+// are visible to fit — never because of empty space left by a hidden column.
+export function overviewGridTemplateColumns(
   visibleColumnCount: number,
-): number {
-  const visible = Math.max(0, Math.floor(visibleColumnCount));
-  const current = Math.max(
-    0,
-    Math.floor(currentSizingColumnCount ?? 0),
-  );
-  if (visible === 0) return current;
-  if (current === 0) return visible;
-  if (visible > current) {
-    return visible + OVERVIEW_COLUMN_PRESSURE_BUFFER;
-  }
-  return current;
-}
-
-export function nextOverviewSizingColumnCounts(
-  current: OverviewSizingColumnCounts,
-  tabId: OverviewStateTabId,
-  visibleColumnCount: number,
-): OverviewSizingColumnCounts {
-  const nextCount = nextOverviewSizingColumnCount(
-    current[tabId],
-    visibleColumnCount,
-  );
-  if (nextCount === current[tabId]) return current;
-  return {
-    ...current,
-    [tabId]: nextCount,
-  };
+): string {
+  const count = Math.max(0, Math.floor(visibleColumnCount));
+  if (count <= 0) return "none";
+  return `repeat(${count}, minmax(${OVERVIEW_COLUMN_MIN_WIDTH_PX}px, 1fr))`;
 }
 
 function leaseAgentInfoString(
