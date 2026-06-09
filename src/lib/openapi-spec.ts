@@ -11,6 +11,7 @@ import {
   DISCOVERY_WELL_KNOWN_PATH,
 } from "@/lib/openapi/agent-guide";
 import { beatsPaths } from "@/lib/openapi/paths-beats";
+import { beatCorrectionPaths } from "@/lib/openapi/paths-beat-corrections";
 import { depsPaths } from "@/lib/openapi/paths-deps";
 import { plansPaths } from "@/lib/openapi/paths-plans";
 import { plansCompletePaths } from "@/lib/openapi/paths-plans-complete";
@@ -19,7 +20,11 @@ import {
   terminalPaths,
   orchestrationPaths,
 } from "@/lib/openapi/paths-streaming";
+import { terminalActionPaths } from "@/lib/openapi/paths-terminal-actions";
 import { settingsPaths } from "@/lib/openapi/paths-settings";
+import {
+  settingsAgentRemovalPaths,
+} from "@/lib/openapi/paths-settings-agent-removal";
 import {
   registryPaths,
   systemPaths,
@@ -27,9 +32,13 @@ import {
 } from "@/lib/openapi/paths-system";
 import { approvalsPaths } from "@/lib/openapi/paths-approvals";
 import {
+  approvalResponsePaths,
+} from "@/lib/openapi/paths-approval-responses";
+import {
   staleGroomingPaths,
 } from "@/lib/openapi/paths-stale-grooming";
 import { syncPaths } from "@/lib/openapi/paths-sync";
+import { systemExtraPaths } from "@/lib/openapi/paths-system-extra";
 
 export const openApiSpec = {
   openapi: "3.1.0",
@@ -58,29 +67,43 @@ export const openApiSpec = {
     { name: "Plans", description: "Persisted execution plans and step driving" },
     { name: "Waves", description: "Wave-based execution planning" },
     { name: "Terminal", description: "Agent terminal sessions and SSE streams" },
-    { name: "Approvals", description: "Approval escalations queue, listing, and per-record actions" },
+    {
+      name: "Approvals",
+      description: "Approval escalations queue, listing, and per-record actions",
+    },
     { name: "Orchestration", description: "Multi-wave orchestration sessions" },
     { name: "Settings", description: "Application and agent configuration" },
     { name: "Registry", description: "Repository registration and browsing" },
-    { name: "Scope refinement", description: "AI scope-refinement jobs, worker health, and queue status" },
-    { name: "Stale grooming", description: "AI stale beat reviews, queue status, and model options" },
+    {
+      name: "Scope refinement",
+      description: "AI scope-refinement jobs, worker health, and queue status",
+    },
+    {
+      name: "Stale grooming",
+      description: "AI stale beat reviews, queue status, and model options",
+    },
     { name: "Sync", description: "Global Knots/Beads synchronization jobs" },
     { name: "System", description: "Diagnostics, version, capabilities, workflows, and history" },
   ],
   paths: {
     ...beatsPaths,
+    ...beatCorrectionPaths,
     ...depsPaths,
     ...plansPaths,
     ...plansCompletePaths,
     ...wavesPaths,
     ...terminalPaths,
+    ...terminalActionPaths,
     ...approvalsPaths,
+    ...approvalResponsePaths,
     ...orchestrationPaths,
     ...staleGroomingPaths,
     ...syncPaths,
     ...settingsPaths,
+    ...settingsAgentRemovalPaths,
     ...registryPaths,
     ...systemPaths,
+    ...systemExtraPaths,
     ...discoveryPaths,
   },
   components: {
