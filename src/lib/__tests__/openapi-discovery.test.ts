@@ -6,6 +6,40 @@ import {
   API_VERSION,
 } from "@/lib/openapi/agent-guide";
 
+type StaticGlob = (
+  pattern: string,
+  options: { query: string; import: string; eager: true },
+) => Record<string, string>;
+
+declare global {
+  interface ImportMeta {
+    glob: StaticGlob;
+  }
+}
+
+const routeModules = import.meta.glob("../../app/api/**/route.ts", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+});
+
+function routePathForModule(modulePath: string): string {
+  return "/" + modulePath
+    .replace(/\?raw$/u, "")
+    .replace(/^.*\/app\//u, "")
+    .replace(/\/route\.ts$/u, "")
+    .replace(/\[([^\]]+)\]/gu, "{$1}");
+}
+
+function exportedHttpMethods(source: string): string[] {
+  return Array.from(
+    source.matchAll(
+      /export\s+(?:async\s+)?function\s+(GET|POST|PUT|PATCH|DELETE)\b/gu,
+    ),
+    (match) => match[1]!.toLowerCase(),
+  );
+}
+
 /**
  * Hermetic discoverability contract for the agent-friendly API resource.
  * Asserts only on the static spec object + discovery document — no env, fs,
@@ -68,6 +102,21 @@ describe("OpenAPI agent discoverability", () => {
     expect(paths).toHaveProperty(["/api/discovery"]);
     const schemas = openApiSpec.components.schemas as Record<string, unknown>;
     expect(schemas).toHaveProperty(["DiscoveryDocument"]);
+  });
+
+  it("documents every shipped app API route method", () => {
+    const missing: string[] = [];
+    for (const [modulePath, source] of Object.entries(routeModules)) {
+      const routePath = routePathForModule(modulePath);
+      for (const method of exportedHttpMethods(source)) {
+        const operation = paths[routePath]?.[method];
+        if (!operation) {
+          missing.push(`${method.toUpperCase()} ${routePath}`);
+        }
+      }
+    }
+
+    expect(missing.sort()).toEqual([]);
   });
 });
 
