@@ -1,0 +1,9 @@
+{
+  "event_id": "019ead66-b04b-73a1-a638-a2556141739e",
+  "occurred_at": "2026-06-09T17:20:48.715645976Z",
+  "knot_id": "foolery-c5fc",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When a column is hidden in the Overview screen, the remaining visible columns should expand to fill the available horizontal space. When a hidden column is restored, all visible columns should resize proportionally rather than leaving empty space or overflowing."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019ead66-b04b-73a1-a638-a2634d7d6123",
+  "occurred_at": "2026-06-09T17:20:48.715645976Z",
+  "knot_id": "foolery-c5fc",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- Hiding any column causes the remaining columns to expand and fill the full table width\n- Restoring a hidden column causes all visible columns to resize proportionally to fit the table width\n- No horizontal scrollbar appears due to empty space from a hidden column\n- Column resize behavior is consistent regardless of which column(s) are hidden or in what order columns are toggled"
+  }
+}

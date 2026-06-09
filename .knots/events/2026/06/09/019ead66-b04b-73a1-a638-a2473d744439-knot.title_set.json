@@ -1,0 +1,10 @@
+{
+  "event_id": "019ead66-b04b-73a1-a638-a2473d744439",
+  "occurred_at": "2026-06-09T17:20:48.715645976Z",
+  "knot_id": "foolery-c5fc",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Overview Screen: Columns should resize when others are hidden/restored",
+    "to": "Overview screen: columns resize to fill space when others are hidden or restored"
+  }
+}
