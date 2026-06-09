@@ -8,23 +8,44 @@ description: >-
 
 # Knots
 
+## Agent identity
+
+Create or receive a lease before writing workflow metadata:
+
+```bash
+kno lease create --nickname "<session-name>"
+```
+
+Bind that lease to every claim, creation, advance, note, and handoff-capsule
+command you run for the session. Agent identity for notes, handoff capsules,
+state transitions, and gate decisions comes from the bound lease.
+
+Do not copy legacy `--*-agentname/model/version` identity flags from telemetry
+or command history. They are deprecated, ignored by current `kno`, and can
+leave metadata attributed as `[unknown <date>]` when no lease is bound.
+
 ## Create a knot
 
 Run:
 
 ```bash
-kno new "<title>" -d "<description>"
+kno new "<title>" -d "<description>" --lease <lease-id>
 ```
 
 Use a short action-oriented title. Write the description with the expected
-outcome, relevant context, and constraints for the next agent.
+outcome, relevant context, and constraints for the next agent. Add handoff
+context for the next actor with:
+
+```bash
+kno update <id> -H "<capsule>" --lease <lease-id>
+```
 
 ## Execute a knot
 
 Follow this sequence:
 
 ```bash
-kno claim <id>
+kno claim <id> --lease <lease-id>
 ```
 
 - If you are working inside a git worktree, run Knots commands as
@@ -36,13 +57,13 @@ kno claim <id>
 - If the goals were met, advance with a guarded state check:
 
 ```bash
-kno next <id> --expected-state <current_state>
+kno next <id> --expected-state <current_state> --lease <lease-id>
 ```
 
 - If you are blocked, validation fails, or the state's goals were not met, roll back safely:
 
 ```bash
-kno rollback <id>
+kno rollback <id> --lease <lease-id>
 ```
 
 If the claimed knot lists children, handle the children first:

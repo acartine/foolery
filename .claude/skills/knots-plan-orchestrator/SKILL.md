@@ -8,6 +8,23 @@ description: >-
 
 # Knots Plan Orchestrator
 
+## Agent identity
+
+Create or receive a lease for the orchestrator before reading or advancing the
+plan:
+
+```bash
+kno lease create --nickname "<session-name>"
+```
+
+Use the orchestrator lease for plan-level notes, handoff capsules, and plan
+state transitions. Each launched worker must receive or create its own lease
+and claim its assigned knot with `--lease <lease-id>` so metadata authorship
+comes from the bound lease instead of `[unknown <date>]`.
+
+Do not copy legacy `--*-agentname/model/version` identity flags from telemetry
+or command history. They are deprecated and ignored by current `kno`.
+
 ## Load the plan
 
 ```bash
@@ -50,7 +67,8 @@ kno show <knot-id> --json
 - Skip knots already in a terminal state (`SHIPPED`) or a passive waiting
   state (`BLOCKED`, `DEFERRED`).
 - Launch all remaining knots concurrently. Delegate to your agent-launching
-  protocol; do not inline the execution of a knot inside the orchestrator.
+  protocol and pass each worker its lease id; do not inline the execution of a
+  knot inside the orchestrator.
 - Wait for every launched knot to reach `SHIPPED`, `BLOCKED`, or `DEFERRED`
   before moving to the next step.
 
@@ -73,14 +91,20 @@ When every wave has been processed:
   check:
 
 ```bash
-kno next <plan-id> --expected-state <current_state>
+kno next <plan-id> --expected-state <current_state> --lease <lease-id>
 ```
 
 - If the plan cannot be advanced because required knots did not ship, roll
   the plan back:
 
 ```bash
-kno rollback <plan-id>
+kno rollback <plan-id> --lease <lease-id>
+```
+
+- Attach any final handoff context under the orchestrator lease:
+
+```bash
+kno update <plan-id> -H "<capsule>" --lease <lease-id>
 ```
 
 ## Session close behavior

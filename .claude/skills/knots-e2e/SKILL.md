@@ -9,6 +9,22 @@ description: >-
 
 # Knots E2E
 
+## Agent identity
+
+Create or receive a lease before the first claim:
+
+```bash
+kno lease create --nickname "<session-name>"
+```
+
+Bind the same lease to every e2e claim, advance, note, and handoff-capsule
+command in the run. Agent identity for notes, handoff capsules, state
+transitions, and gate decisions comes from the bound lease.
+
+Do not copy legacy `--*-agentname/model/version` identity flags from telemetry
+or command history. They are deprecated, ignored by current `kno`, and can
+leave metadata attributed as `[unknown <date>]` when no lease is bound.
+
 ## Invocation precedence
 
 When this skill is invoked, the agent MUST claim with the `--e2e` flag so the
@@ -16,7 +32,7 @@ workflow boundary surfaced by `kno` advertises e2e-continuation semantics
 rather than the default single-action boundary:
 
 ```bash
-kno claim --e2e <id>
+kno claim --e2e <id> --lease <lease-id>
 ```
 
 The claim output will then carry `kind: e2e_continuation` in the workflow
@@ -24,8 +40,8 @@ boundary section (and `"workflow_boundary_kind": "e2e_continuation"` plus
 `"e2e": true` in `--json` output). That signal authorizes the agent to keep
 working past the per-claim "complete exactly one workflow action" boundary
 that ordinary claims emit. After every successful `kno next`, immediately
-re-claim with `kno claim --e2e <id>` and continue until the knot reaches
-`SHIPPED`, `BLOCKED`, or `DEFERRED`.
+re-claim with `kno claim --e2e <id> --lease <lease-id>` and continue until the
+knot reaches `SHIPPED`, `BLOCKED`, or `DEFERRED`.
 
 If the claim output shows `kind: single_action` (i.e. `--e2e` was not
 passed), do NOT continue past the boundary. Stop after the single action
@@ -36,7 +52,7 @@ and ask the user to re-invoke with the e2e skill if they want to continue.
 Follow this sequence:
 
 ```bash
-kno claim --e2e <id>
+kno claim --e2e <id> --lease <lease-id>
 ```
 
 - If you are working inside a git worktree, run Knots commands as
@@ -49,14 +65,14 @@ kno claim --e2e <id>
 - If the goals were met, advance with a guarded state check:
 
 ```bash
-kno next <id> --expected-state <current_state>
+kno next <id> --expected-state <current_state> --lease <lease-id>
 ```
 
 - Record the new current state from the `kno next` output.
 - Re-claim immediately, again with `--e2e`, to enter the next action state:
 
 ```bash
-kno claim --e2e <id>
+kno claim --e2e <id> --lease <lease-id>
 ```
 
 - Repeat the claim/work/validate/advance loop until the current state is
@@ -65,12 +81,12 @@ kno claim --e2e <id>
   roll back safely and stop:
 
 ```bash
-kno rollback <id>
+kno rollback <id> --lease <lease-id>
 ```
 
 If the claimed knot lists children, handle the children first:
-- Claim each child knot (with `--e2e`) and follow that child prompt to
-  completion.
+- Claim each child knot (with `--e2e --lease <lease-id>`) and follow that child
+  prompt to completion.
 - When the child knots are handled, evaluate the outcomes.
 - If every child advanced, advance the parent and continue the loop.
 - If any child rolled back, roll the parent back and stop.
@@ -79,6 +95,13 @@ Do not invent alternate transition workflows. Prefer `claim`, `next`, and
 `rollback` over manual state mutation unless the user explicitly asks for it.
 Do not use `kno show` as the primary control-flow source when `claim`/`next`
 already provide the state needed to continue safely.
+
+When the workflow prompt asks for handoff context between action states, attach
+it under the bound lease:
+
+```bash
+kno update <id> -H "<capsule>" --lease <lease-id>
+```
 
 ## Why `--e2e` exists
 
