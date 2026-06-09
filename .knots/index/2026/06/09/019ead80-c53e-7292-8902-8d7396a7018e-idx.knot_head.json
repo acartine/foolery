@@ -1,0 +1,21 @@
+{
+  "event_id": "019ead80-c53e-7292-8902-8d7396a7018e",
+  "occurred_at": "2026-06-09T17:49:18.014172646Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c5fc",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Overview screen: columns resize to fill space when others are hidden or restored",
+    "type": "work",
+    "updated_at": "2026-06-09T17:49:18.014172646Z",
+    "workflow_id": "work_sdlc"
+  }
+}
