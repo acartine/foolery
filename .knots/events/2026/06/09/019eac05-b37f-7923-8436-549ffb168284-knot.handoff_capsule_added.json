@@ -1,0 +1,15 @@
+{
+  "event_id": "019eac05-b37f-7923-8436-549ffb168284",
+  "occurred_at": "2026-06-09T10:55:15.327408833Z",
+  "knot_id": "foolery-9v09.1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: worktree-foolery-9v09-openapi\nCommit: 8671d8a0881403e0c900bde5498cd64af654eda0\nSummary: Documented all shipped app API route methods in the OpenAPI spec, including update/diagnostic/correction/terminal-helper routes, and added a static route-method regression test.\nVerification: bun run lint; bunx tsc --noEmit; bun run test; bun run build.",
+    "datetime": "2026-06-09T10:55:15.327408833Z",
+    "entry_id": "019eac05-b37f-7923-8436-548d446e0c46",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

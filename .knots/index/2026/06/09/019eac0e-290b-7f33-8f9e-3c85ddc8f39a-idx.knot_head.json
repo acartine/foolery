@@ -1,0 +1,21 @@
+{
+  "event_id": "019eac0e-290b-7f33-8f9e-3c85ddc8f39a",
+  "occurred_at": "2026-06-09T11:04:29.707656092Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9v09.1",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Keep Foolery OpenAPI contract in sync with live API routes",
+    "type": "work",
+    "updated_at": "2026-06-09T11:04:29.707656092Z",
+    "workflow_id": "work_sdlc"
+  }
+}
