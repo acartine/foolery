@@ -1,0 +1,47 @@
+{
+  "event_id": "019eb0b7-739e-7e03-a7b3-1f2d59fe6be6",
+  "occurred_at": "2026-06-10T08:47:53.246105323Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5ef0",
+    "next_step_metadata": {
+      "action_kind": "produce",
+      "action_state": "implementation",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "implementation",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Queues: clicking a beat ID copies its fully qualified ID and shows a toast",
+    "type": "work",
+    "updated_at": "2026-06-10T08:47:53.246105323Z",
+    "workflow_id": "work_sdlc"
+  }
+}

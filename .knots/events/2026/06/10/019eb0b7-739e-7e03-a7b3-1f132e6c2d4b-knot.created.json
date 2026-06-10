@@ -1,0 +1,17 @@
+{
+  "event_id": "019eb0b7-739e-7e03-a7b3-1f132e6c2d4b",
+  "occurred_at": "2026-06-10T08:47:53.246105323Z",
+  "knot_id": "foolery-5ef0",
+  "type": "knot.created",
+  "data": {
+    "body": "In the queues list, clicking a beat ID should copy the beat's fully qualified ID to the clipboard and show a toast confirming that the ID was copied. No other behavior changes are implied.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Queues: clicking a beat ID copies its fully qualified ID and shows a toast",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
