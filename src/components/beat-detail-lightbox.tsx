@@ -184,6 +184,24 @@ export function getDisplayedBeatAliases(
 
 // ── Shared click-to-copy ID chip ──
 
+export async function copyBeatIdToClipboard(
+  value: string,
+  deps: {
+    clipboard: Pick<Clipboard, "writeText">;
+    onSuccess: (message: string) => void;
+    onError: (message: string) => void;
+  },
+): Promise<boolean> {
+  try {
+    await deps.clipboard.writeText(value);
+    deps.onSuccess(`Copied: ${value}`);
+    return true;
+  } catch {
+    deps.onError("Failed to copy to clipboard");
+    return false;
+  }
+}
+
 function ClickToCopyId({
   value,
   suffix,
@@ -195,15 +213,13 @@ function ClickToCopyId({
     <button
       type="button"
       className="cursor-pointer rounded px-0.5 hover:bg-muted/70"
-      title="Click to copy"
+      title="Click to copy beat ID"
       onClick={() => {
-        navigator.clipboard.writeText(value).then(
-          () => toast.success(`Copied: ${value}`),
-          () =>
-            toast.error(
-              "Failed to copy to clipboard",
-            ),
-        );
+        void copyBeatIdToClipboard(value, {
+          clipboard: navigator.clipboard,
+          onSuccess: toast.success,
+          onError: toast.error,
+        });
       }}
     >
       {value}
