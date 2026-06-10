@@ -11,6 +11,7 @@ import { repoPathForBeat } from "@/components/beat-table-mutations";
 type ColumnsParams = {
   showRepoColumn: boolean;
   showAgentColumns: boolean;
+  copyFullIdOnIdClick: boolean;
   agentInfoByBeatId: Record<string, AgentInfo>;
   handleUpdateBeat: (args: {
     id: string;
@@ -65,6 +66,7 @@ export function useBeatTableColumns(
   const {
     showRepoColumn,
     showAgentColumns,
+    copyFullIdOnIdClick,
     agentInfoByBeatId,
     handleUpdateBeat,
     handleRewindBeat,
@@ -87,6 +89,7 @@ export function useBeatTableColumns(
       getBeatColumns({
         showRepoColumn,
         showAgentColumns,
+        copyFullIdOnIdClick,
         agentInfoByBeatId,
         onUpdateBeat: (id, fields, repoPath) =>
           handleUpdateBeat({
@@ -112,6 +115,7 @@ export function useBeatTableColumns(
     [
       showRepoColumn,
       showAgentColumns,
+      copyFullIdOnIdClick,
       agentInfoByBeatId,
       handleUpdateBeat,
       handleRewindBeat,

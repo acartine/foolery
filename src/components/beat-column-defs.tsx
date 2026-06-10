@@ -58,6 +58,7 @@ export interface ResolvedOpts {
   childCountMap: Map<string, number>;
   parentRollingBeatIds: Set<string>;
   agentInfoByBeatId: Record<string, AgentInfo>;
+  copyFullIdOnIdClick?: boolean;
 }
 
 export function resolveOpts(
@@ -70,6 +71,7 @@ export function resolveOpts(
       childCountMap: new Map<string, number>(),
       parentRollingBeatIds: new Set<string>(),
       agentInfoByBeatId: {},
+      copyFullIdOnIdClick: false,
     };
   }
   return {
@@ -87,6 +89,8 @@ export function resolveOpts(
     parentRollingBeatIds:
       opts.parentRollingBeatIds ?? new Set<string>(),
     agentInfoByBeatId: opts.agentInfoByBeatId ?? {},
+    copyFullIdOnIdClick:
+      opts.copyFullIdOnIdClick ?? false,
   };
 }
 
@@ -120,7 +124,9 @@ export function selectColumn(): ColumnDef<Beat> {
   };
 }
 
-export function idColumn(): ColumnDef<Beat> {
+export function idColumn(
+  copyFullIdOnIdClick = false,
+): ColumnDef<Beat> {
   return {
     accessorKey: "id",
     header: "",
@@ -133,6 +139,9 @@ export function idColumn(): ColumnDef<Beat> {
         row.original.id,
       );
       const displayId = displayBeatLabel(row.original.id, row.original.aliases);
+      const copyId = copyFullIdOnIdClick
+        ? row.original.id
+        : displayId;
       return (
         <button
           type="button"
@@ -145,11 +154,11 @@ export function idColumn(): ColumnDef<Beat> {
           onClick={(e) => {
             e.stopPropagation();
             navigator.clipboard
-              .writeText(displayId)
+              .writeText(copyId)
               .then(
                 () =>
                   toast.success(
-                    `Copied: ${displayId}`,
+                    `Copied: ${copyId}`,
                   ),
                 () =>
                   toast.error(
