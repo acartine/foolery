@@ -46,7 +46,7 @@ export function getBeatColumns(
 
   const columns: ColumnDef<Beat>[] = [
     selectColumn(),
-    idColumn(),
+    idColumn(r.copyFullIdOnIdClick),
     priorityColumn(r),
     verificationStepsColumn(),
     profileColumn(r),

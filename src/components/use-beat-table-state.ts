@@ -58,6 +58,7 @@ type BeatTableInput = {
   shippingByBeatId: Record<string, string>;
   onAbortShipping?: (beatId: string) => void;
   sortTopLevelByPriorityUpdated: boolean;
+  copyFullIdOnIdClick: boolean;
 };
 
 // eslint-disable-next-line max-lines-per-function
@@ -75,6 +76,7 @@ export function useBeatTableState(
     shippingByBeatId,
     onAbortShipping,
     sortTopLevelByPriorityUpdated,
+    copyFullIdOnIdClick,
   } = input;
 
   const router = useRouter();
@@ -157,6 +159,7 @@ export function useBeatTableState(
 
   const columns = useBeatTableColumns({
     showRepoColumn, showAgentColumns,
+    copyFullIdOnIdClick,
     agentInfoByBeatId,
     handleUpdateBeat: doUpdate,
     handleRewindBeat: doRewind,

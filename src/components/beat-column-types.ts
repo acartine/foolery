@@ -12,6 +12,7 @@ export interface AgentInfo {
 export interface BeatColumnOpts {
   showRepoColumn?: boolean;
   showAgentColumns?: boolean;
+  copyFullIdOnIdClick?: boolean;
   agentInfoByBeatId?: Record<string, AgentInfo>;
   onUpdateBeat?: (
     id: string,

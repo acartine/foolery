@@ -69,6 +69,8 @@ export function BeatTable({
     selectionVersion, onOpenBeat, onShipBeat,
     shippingByBeatId, onAbortShipping,
     sortTopLevelByPriorityUpdated,
+    copyFullIdOnIdClick:
+      !showAgentColumns && Boolean(onShipBeat),
   });
 
   const [sorting, setSorting] =
