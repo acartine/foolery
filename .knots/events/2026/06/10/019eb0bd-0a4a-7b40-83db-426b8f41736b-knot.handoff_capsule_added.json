@@ -1,0 +1,15 @@
+{
+  "event_id": "019eb0bd-0a4a-7b40-83db-426b8f41736b",
+  "occurred_at": "2026-06-10T08:53:59.498734374Z",
+  "knot_id": "foolery-ec8e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: worktree-foolery-ec8e-copy-id\nCommit: 6379f19ecd91201456f45aee1a34c2f34d1fca38\nSummary: Extracted beat detail ID copy helper, kept the existing sonner toast feedback, and added unit coverage for fully qualified ID selection plus success/failure clipboard feedback.\nVerified: bun run lint; bunx tsc --noEmit; bun run test; bun run build.",
+    "datetime": "2026-06-10T08:53:59.498734374Z",
+    "entry_id": "019eb0bd-0a4a-7b40-83db-425772a9bd67",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

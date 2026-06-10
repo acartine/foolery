@@ -1,0 +1,9 @@
+{
+  "event_id": "019eb0b7-b90a-7ac2-acad-1e91527f281e",
+  "occurred_at": "2026-06-10T08:48:11.018641134Z",
+  "knot_id": "foolery-5ef0",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- Clicking a beat ID in the queues list writes the fully qualified ID to the clipboard.\n- A toast notification appears immediately after the copy confirming success.\n- The copied value matches the fully qualified ID exactly (not a truncated or display variant).\n- No other click targets or list behaviors are affected."
+  }
+}

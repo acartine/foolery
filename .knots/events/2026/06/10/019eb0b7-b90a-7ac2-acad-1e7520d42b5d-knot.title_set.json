@@ -1,0 +1,10 @@
+{
+  "event_id": "019eb0b7-b90a-7ac2-acad-1e7520d42b5d",
+  "occurred_at": "2026-06-10T08:48:11.018641134Z",
+  "knot_id": "foolery-5ef0",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Queues: clicking a beat ID copies its fully qualified ID and shows a toast",
+    "to": "Queues: click beat ID to copy fully qualified ID with toast confirmation"
+  }
+}

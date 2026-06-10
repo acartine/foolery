@@ -1,0 +1,21 @@
+{
+  "event_id": "019eb0c4-6b8f-7ad3-a14a-dd051b881b2a",
+  "occurred_at": "2026-06-10T09:02:03.151062878Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5ef0",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Queues: click beat ID to copy fully qualified ID with toast confirmation",
+    "type": "work",
+    "updated_at": "2026-06-10T09:02:03.151062878Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019eb0b9-826d-7e61-bc38-475a8918e573",
+  "occurred_at": "2026-06-10T08:50:08.109783606Z",
+  "knot_id": "foolery-ec8e",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Clicking the beat ID element in the beat detail view writes the fully qualified beat ID to the clipboard.\n2. An ephemeral notice appears immediately after the click confirming the copy (e.g. \"Copied!\").\n3. The notice dismisses automatically without requiring user action.\n4. The beat ID element has a visual affordance (pointer cursor and/or hover highlight) indicating it is clickable.\n5. Feedback style matches the existing pattern used for ephemeral notices elsewhere in the beat detail panel/lightbox."
+  }
+}

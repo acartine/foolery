@@ -1,0 +1,9 @@
+{
+  "event_id": "019eb0b9-3ff3-70d2-9c0f-f60ff4f0d68d",
+  "occurred_at": "2026-06-10T08:49:51.077157071Z",
+  "knot_id": "foolery-ec8e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "can be a toast or a banner, not sure what is idiomatic for feedback in a lightbox."
+  }
+}

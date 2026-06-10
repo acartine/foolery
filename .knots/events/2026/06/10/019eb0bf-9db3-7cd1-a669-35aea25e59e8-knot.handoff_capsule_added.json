@@ -1,0 +1,15 @@
+{
+  "event_id": "019eb0bf-9db3-7cd1-a669-35aea25e59e8",
+  "occurred_at": "2026-06-10T08:56:48.307425155Z",
+  "knot_id": "foolery-5ef0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented queue beat ID copy toast. Branch: worktree-foolery-5ef0-copy-beat-id. Commit: e6d1b5bdf661d5de56904808dd79afb23d424c10. Verification: bun run lint; bunx tsc --noEmit; bun run test; bun run build.",
+    "datetime": "2026-06-10T08:56:48.307425155Z",
+    "entry_id": "019eb0bf-9db3-7cd1-a669-359c6237dd47",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

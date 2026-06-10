@@ -1,0 +1,10 @@
+{
+  "event_id": "019eb0b9-826d-7e61-bc38-473789f6ebae",
+  "occurred_at": "2026-06-10T08:50:08.109783606Z",
+  "knot_id": "foolery-ec8e",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Beat Detail - clicking the beat id should copy the fully qualified id to the clipboard and generate an ephemeral notice to the user",
+    "to": "Beat Detail: click beat ID to copy fully qualified ID to clipboard with ephemeral confirmation"
+  }
+}
