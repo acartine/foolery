@@ -1,6 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
+import {
+  useState,
+  useRef,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -12,6 +17,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { BeatForm } from "@/components/beat-form";
+import { CreateBeatPostActions } from "@/components/create-beat-post-actions";
 import type { RelationshipDeps } from "@/components/beat-form";
 import { createBeat, addDep, fetchWorkflows } from "@/lib/api";
 import { fetchSettings } from "@/lib/settings-api";
@@ -23,6 +29,12 @@ import { clearDraft } from "@/lib/create-draft-persistence";
 import {
   invalidateBeatListQueries,
 } from "@/lib/beat-query-cache";
+
+interface CreatedBeat {
+  id: string;
+  title: string;
+  repo?: string | null;
+}
 
 async function addDepsForBeat(
   beatId: string,
@@ -44,6 +56,32 @@ interface CreateBeatDialogProps {
   onOpenChange: (open: boolean) => void;
   onCreated: () => void;
   repo?: string | null;
+}
+
+interface CreateBeatDialogViewProps {
+  createdBeat: CreatedBeat | null;
+  formKey: number;
+  defaultProfileId: string | undefined;
+  workflows: MemoryWorkflowDescriptor[];
+  isKnotsBackend: boolean;
+  isSubmitting: boolean;
+  onSubmit: (
+    data: CreateBeatInput,
+    deps?: RelationshipDeps,
+  ) => void;
+  onCreateMore: (
+    data: CreateBeatInput,
+    deps?: RelationshipDeps,
+  ) => void;
+  onClear: () => void;
+  onDone: () => void;
+}
+
+interface DialogCloseHandlersInput {
+  createdBeat: CreatedBeat | null;
+  setCreatedBeat: Dispatch<SetStateAction<CreatedBeat | null>>;
+  onOpenChange: (open: boolean) => void;
+  onCreated: () => void;
 }
 
 function buildToastAction(
@@ -141,20 +179,94 @@ function useSubmitBeat(
   return { isSubmitting, submitBeat };
 }
 
-export function CreateBeatDialog({
-  open,
+function CreateBeatDialogView({
+  createdBeat,
+  formKey,
+  defaultProfileId,
+  workflows,
+  isKnotsBackend,
+  isSubmitting,
+  onSubmit,
+  onCreateMore,
+  onClear,
+  onDone,
+}: CreateBeatDialogViewProps) {
+  if (createdBeat) {
+    return (
+      <CreateBeatPostActions
+        beatId={createdBeat.id}
+        title={createdBeat.title}
+        repo={createdBeat.repo}
+        onDone={onDone}
+      />
+    );
+  }
+  return (
+    <BeatForm
+      key={`${formKey}-${defaultProfileId ?? ""}`}
+      mode="create"
+      workflows={workflows}
+      hideTypeSelector={isKnotsBackend}
+      defaultValues={{
+        profileId: defaultProfileId,
+        workflowId: undefined,
+      }}
+      onSubmit={onSubmit}
+      onCreateMore={onCreateMore}
+      onClear={onClear}
+      isSubmitting={isSubmitting}
+    />
+  );
+}
+
+function useDialogCloseHandlers({
+  createdBeat,
+  setCreatedBeat,
   onOpenChange,
   onCreated,
-  repo,
+}: DialogCloseHandlersInput) {
+  function handleOpenChange(nextOpen: boolean) {
+    if (nextOpen) {
+      onOpenChange(true);
+      return;
+    }
+    if (createdBeat) {
+      setCreatedBeat(null);
+      onCreated();
+      return;
+    }
+    onOpenChange(false);
+  }
+
+  function handleDone() {
+    setCreatedBeat(null);
+    onCreated();
+  }
+
+  return { handleOpenChange, handleDone };
+}
+
+export function CreateBeatDialog({
+  open, onOpenChange, onCreated, repo,
 }: CreateBeatDialogProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [formKey, setFormKey] = useState(0);
+  const [createdBeat, setCreatedBeat] = useState<CreatedBeat | null>(null);
   const queryClient = useQueryClient();
   const { workflows, defaultProfileId, isKnotsBackend } =
     useCreateBeatQueries(open, repo);
-  const { isSubmitting, submitBeat } =
-    useSubmitBeat(repo, defaultProfileId);
+  const { isSubmitting, submitBeat } = useSubmitBeat(
+    repo,
+    defaultProfileId,
+  );
+  const { handleOpenChange, handleDone } =
+    useDialogCloseHandlers({
+      createdBeat,
+      setCreatedBeat,
+      onOpenChange,
+      onCreated,
+    });
 
   function navigateToBeat(beatId: string) {
     router.push(
@@ -176,7 +288,16 @@ export function CreateBeatDialog({
       toast.success(msg, {
         action: buildToastAction(beatId, navigateToBeat),
       });
-      onCreated();
+      void invalidateBeatListQueries(queryClient);
+      if (beatId) {
+        setCreatedBeat({
+          id: beatId,
+          title: data.title,
+          repo,
+        });
+      } else {
+        onCreated();
+      }
     });
   }
 
@@ -204,29 +325,25 @@ export function CreateBeatDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="max-w-lg max-h-[90vh] overflow-y-auto"
-      >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New</DialogTitle>
           <DialogDescription>
             Add a new issue or task to your project.
           </DialogDescription>
         </DialogHeader>
-        <BeatForm
-          key={`${formKey}-${defaultProfileId ?? ""}`}
-          mode="create"
+        <CreateBeatDialogView
+          createdBeat={createdBeat}
+          formKey={formKey}
+          defaultProfileId={defaultProfileId}
           workflows={workflows}
-          hideTypeSelector={isKnotsBackend}
-          defaultValues={{
-            profileId: defaultProfileId,
-            workflowId: undefined,
-          }}
+          isKnotsBackend={isKnotsBackend}
+          isSubmitting={isSubmitting}
           onSubmit={handleSubmit}
           onCreateMore={handleCreateMore}
           onClear={handleClear}
-          isSubmitting={isSubmitting}
+          onDone={handleDone}
         />
       </DialogContent>
     </Dialog>

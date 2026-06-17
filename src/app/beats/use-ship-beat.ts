@@ -1,7 +1,6 @@
 import { useCallback } from "react";
-import {
-  startSession, abortSession,
-} from "@/lib/terminal-api";
+import { abortSession } from "@/lib/terminal-api";
+import { startBeatSession } from "@/lib/start-beat-session";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import type { ActiveTerminal } from "@/stores/terminal-store";
@@ -16,7 +15,7 @@ export function useShipBeat(
 ) {
   const { activeRepo } = useAppStore();
   const {
-    setActiveSession, upsertTerminal, updateStatus,
+    setActiveSession, updateStatus,
   } = useTerminalStore();
 
   const handleShipBeat = useCallback(
@@ -40,32 +39,22 @@ export function useShipBeat(
       const repo = extractRepoPath(beat);
       const repoArg =
         repo ?? activeRepo ?? undefined;
-      const result = await startSession(
-        beat.id, repoArg,
-      );
-      if (!result.ok || !result.data) {
+      const result = await startBeatSession({
+        beatId: beat.id,
+        beatTitle: beat.title,
+        repo: repoArg,
+      });
+      if (!result.ok) {
         toast.error(
           result.error
           ?? "Failed to start terminal session",
         );
         return;
       }
-      upsertTerminal({
-        sessionId: result.data.id,
-        beatId: beat.id,
-        beatTitle: beat.title,
-        repoPath:
-          result.data.repoPath ?? repoArg,
-        ...(result.data.knotsLeaseId
-          ? { knotsLeaseId: result.data.knotsLeaseId }
-          : {}),
-        status: "running",
-        startedAt: result.data.startedAt,
-      });
     },
     [
       activeRepo, hasRollingAncestor,
-      setActiveSession, terminals, upsertTerminal,
+      setActiveSession, terminals,
     ],
   );
 
