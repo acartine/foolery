@@ -1,0 +1,9 @@
+{
+  "event_id": "019ed598-08da-7170-ae43-089cb6fc76be",
+  "occurred_at": "2026-06-17T12:39:31.290419037Z",
+  "knot_id": "foolery-cc43",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-cc43-groom-take"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ed58e-caf1-7ec2-80fb-573e65f1c03c",
+  "occurred_at": "2026-06-17T12:29:25.617448707Z",
+  "knot_id": "foolery-cc43",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan for two-phase Create New dialog: after create, show Groom→Take panel. Reuse stale-beat-grooming reviews pipeline (POST/GET /api/beats/stale-grooming/reviews accepts arbitrary targets) to groom the new beat and poll its jobId for completed/failed; Take (startSession) enabled only on status=completed, blocked on failed/pending. New files: src/lib/grooming-status.ts (pure deriveGroomingStatus — test seam), src/lib/use-beat-grooming.ts (poll hook), src/components/create-beat-post-actions.tsx (panel); extract startBeatSession helper shared with useShipBeat for Take parity; edit create-beat-dialog.tsx to add post-create phase. Reuse canTakeBeat; no workflow-state string checks; surface grooming/agent errors loudly. Tests: pure grooming-status unit tests + sequence-guard + storybook states.",
+    "datetime": "2026-06-17T12:29:25.617448707Z",
+    "entry_id": "019ed58e-caf1-7ec2-80fb-572d33ddac69",
+    "model": "Opus",
+    "username": "Claude",
+    "version": "4.8"
+  }
+}

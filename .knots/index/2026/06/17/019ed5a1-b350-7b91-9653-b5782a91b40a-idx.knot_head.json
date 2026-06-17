@@ -1,0 +1,21 @@
+{
+  "event_id": "019ed5a1-b350-7b91-9653-b5782a91b40a",
+  "occurred_at": "2026-06-17T12:50:04.752690903Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-cc43",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Create New: Add Groom then Take buttons",
+    "type": "work",
+    "updated_at": "2026-06-17T12:50:04.752690903Z",
+    "workflow_id": "work_sdlc"
+  }
+}

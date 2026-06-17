@@ -1,0 +1,17 @@
+{
+  "event_id": "019ed588-116a-7b82-9747-c500fa77d9cb",
+  "occurred_at": "2026-06-17T12:22:04.906378517Z",
+  "knot_id": "foolery-cc43",
+  "type": "knot.created",
+  "data": {
+    "body": "exact as title says - should wait for grooming to complete and then begin work on the beat",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Create New:  Add Groom, then Take! button",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

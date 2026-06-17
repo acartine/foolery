@@ -1,0 +1,10 @@
+{
+  "event_id": "019ed588-29fb-7eb0-b504-0a1e9f644a36",
+  "occurred_at": "2026-06-17T12:22:11.19512915Z",
+  "knot_id": "foolery-cc43",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Create New:  Add Groom, then Take! button",
+    "to": "Create New: Add Groom then Take buttons"
+  }
+}

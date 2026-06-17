@@ -1,0 +1,15 @@
+{
+  "event_id": "019ed598-3bd7-7911-be95-e5757e1c89cb",
+  "occurred_at": "2026-06-17T12:39:44.343798511Z",
+  "knot_id": "foolery-cc43",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: worktree-foolery-cc43-groom-take\nCommit: 862370238e05492d25bb7e1d749bbb5abb4d0ef5\nSummary: Added post-create Groom then Take sequence. Groom uses stale grooming review enqueue/poll; Take unlocks only after successful grooming and reuses shared startBeatSession logic.\nVerification: bun run lint; bunx tsc --noEmit; bun run test; bun run build.\nNote: sneka-agents git note could not be written locally because git notes failed with \"unable to create temporary file: Read-only file system\".",
+    "datetime": "2026-06-17T12:39:44.343798511Z",
+    "entry_id": "019ed598-3bd7-7911-be95-e566ccf3e968",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.5"
+  }
+}

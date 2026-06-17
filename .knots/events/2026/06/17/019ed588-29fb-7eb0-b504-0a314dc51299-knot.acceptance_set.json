@@ -1,0 +1,9 @@
+{
+  "event_id": "019ed588-29fb-7eb0-b504-0a314dc51299",
+  "occurred_at": "2026-06-17T12:22:11.19512915Z",
+  "knot_id": "foolery-cc43",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- A 'Groom' button is present in the Create New flow after a beat is created\n- Clicking Groom triggers grooming on the beat and shows a pending/loading state while it runs\n- A 'Take' button appears (or becomes enabled) only after grooming completes successfully\n- Clicking Take begins work on the beat (equivalent to the existing Take action)\n- If grooming fails, the Take button does not become available and an error is surfaced\n- The sequence cannot be bypassed (Take is not accessible before Groom completes)"
+  }
+}

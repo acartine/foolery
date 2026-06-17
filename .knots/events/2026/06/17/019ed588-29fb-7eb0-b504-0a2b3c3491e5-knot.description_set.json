@@ -1,0 +1,9 @@
+{
+  "event_id": "019ed588-29fb-7eb0-b504-0a2b3c3491e5",
+  "occurred_at": "2026-06-17T12:22:11.19512915Z",
+  "knot_id": "foolery-cc43",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The 'Create New' flow should expose two sequential actions: first a Groom button that triggers grooming on the newly created beat and waits for it to complete, then a Take button that begins work on the beat. The Take button should only become available after grooming has finished successfully."
+  }
+}

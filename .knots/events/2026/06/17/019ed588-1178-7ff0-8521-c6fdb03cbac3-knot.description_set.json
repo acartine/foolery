@@ -1,0 +1,9 @@
+{
+  "event_id": "019ed588-1178-7ff0-8521-c6fdb03cbac3",
+  "occurred_at": "2026-06-17T12:22:04.906378517Z",
+  "knot_id": "foolery-cc43",
+  "type": "knot.description_set",
+  "data": {
+    "description": "exact as title says - should wait for grooming to complete and then begin work on the beat"
+  }
+}
