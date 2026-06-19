@@ -1,0 +1,9 @@
+{
+  "event_id": "019ededc-7b30-77b3-b40d-e739a7357f93",
+  "occurred_at": "2026-06-19T07:50:51.952117917Z",
+  "knot_id": "foolery-548d",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Clicking a version control should run the form-upgrade check for that version. The current behavior appears to do nothing, so the user needs a visible response when the action is handled and clear feedback when the upgrade check cannot proceed or finds no applicable upgrade."
+  }
+}

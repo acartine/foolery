@@ -1,0 +1,9 @@
+{
+  "event_id": "019ededc-7b30-77b3-b40d-e74d1cb690f0",
+  "occurred_at": "2026-06-19T07:50:51.952117917Z",
+  "knot_id": "foolery-548d",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "Clicking a version starts the form-upgrade check for that version.\nThe UI provides visible feedback while the check is running and after it completes.\nIf the check cannot run or does not result in an upgrade, the user sees an explicit message or state change instead of a silent no-op."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019ededc-3318-79b1-8a91-018fc867ad6e",
+  "occurred_at": "2026-06-19T07:50:33.496909313Z",
+  "knot_id": "foolery-548d",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "clicking on version fails to check form upgrade or provide any feedback",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

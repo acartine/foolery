@@ -1,0 +1,10 @@
+{
+  "event_id": "019ededc-7b30-77b3-b40d-e72ec943152c",
+  "occurred_at": "2026-06-19T07:50:51.952117917Z",
+  "knot_id": "foolery-548d",
+  "type": "knot.title_set",
+  "data": {
+    "from": "clicking on version fails to check form upgrade or provide any feedback",
+    "to": "Version clicks should trigger form upgrade checks and surface feedback"
+  }
+}
