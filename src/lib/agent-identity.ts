@@ -154,7 +154,7 @@ function normalizeClaudeModel(
 ): { model?: string; flavor?: string; version?: string } {
   const cleaned = cleanValue(rawModel)?.toLowerCase();
   if (!cleaned) return {};
-  const familyMatch = cleaned.match(/(opus|sonnet|haiku)/i);
+  const familyMatch = cleaned.match(/(opus|sonnet|haiku|fable)/i);
   const hasOneMillion = cleaned.includes("1m");
   const hasFast = /\bfast\b/.test(cleaned);
   // Strip 1m/fast suffixes BEFORE version-matching. The version regex
@@ -168,7 +168,7 @@ function normalizeClaudeModel(
     .replace(/-fast\b/g, "")
     .replace(/\bfast\b/g, "");
   const versionMatch = versionTarget.match(
-    /(?:opus|sonnet|haiku)[- ](\d+(?:[-.]\d+)*)/i,
+    /(?:opus|sonnet|haiku|fable)[- ](\d+(?:[-.]\d+)*)/i,
   );
   const normalizedVersion = versionMatch?.[1]?.replace(/-/g, ".");
   const flavor = familyMatch?.[1]
@@ -294,7 +294,8 @@ function normalizeCopilotModel(
     cleaned.includes("claude") ||
     cleaned.includes("opus") ||
     cleaned.includes("sonnet") ||
-    cleaned.includes("haiku")
+    cleaned.includes("haiku") ||
+    cleaned.includes("fable")
   ) {
     const normalized = normalizeClaudeModel(rawModel);
     return {

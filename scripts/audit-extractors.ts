@@ -34,6 +34,8 @@ const CASES: Case[] = [
 
   // Claude family
   { command: "claude", model: "claude-opus-4-8", desc: "Claude Opus 4.8" },
+  { command: "claude", model: "claude-fable-5", desc: "Claude Fable 5" },
+  { command: "claude", model: "claude-sonnet-5", desc: "Claude Sonnet 5" },
   { command: "claude", model: "claude-opus-4-7", desc: "Claude Opus 4.7" },
   { command: "claude", model: "claude-sonnet-4-6", desc: "Claude Sonnet 4.6" },
   { command: "claude", model: "claude-haiku-4-5", desc: "Claude Haiku 4.5" },

@@ -151,6 +151,50 @@ describe("loadSettings: Claude Opus 4.8 config support", () => {
   });
 });
 
+describe("loadSettings: Claude Fable 5 config support", () => {
+  it("accepts and canonicalizes a Claude Fable 5 registered agent", async () => {
+    mockReadFile.mockResolvedValue(
+      [
+        "[agents.claude-fable-5]",
+        'command = "claude"',
+        'model = "claude-fable-5"',
+      ].join("\n"),
+    );
+    const settings = await loadSettings();
+    expect(settings.agents["claude-fable-5"]).toMatchObject({
+      command: "claude",
+      vendor: "claude",
+      provider: "Claude",
+      agent_name: "Claude",
+      lease_model: "Fable",
+      model: "claude-fable-5",
+      flavor: "Fable",
+      version: "5",
+      label: "Claude Fable 5",
+    });
+  });
+
+  it("canonicalizes a dot-versioned Claude Sonnet 5 model id", async () => {
+    mockReadFile.mockResolvedValue(
+      [
+        "[agents.claude-sonnet-5]",
+        'command = "claude"',
+        'model = "claude-sonnet-5"',
+      ].join("\n"),
+    );
+    const settings = await loadSettings();
+    expect(settings.agents["claude-sonnet-5"]).toMatchObject({
+      command: "claude",
+      provider: "Claude",
+      lease_model: "Sonnet",
+      model: "claude-sonnet-5",
+      flavor: "Sonnet",
+      version: "5",
+      label: "Claude Sonnet 5",
+    });
+  });
+});
+
 // foolery-b42b AC-7: legacy machine-form values get rewritten to
 // display-form on first read, idempotently. The previous block already
 // covers the legacy-entry-from-scratch path; this case targets the

@@ -51,7 +51,7 @@ function canonicalizeClaudeModel(
 ): string {
   const cleaned = rawModel.trim().toLowerCase();
   const match = cleaned.match(
-    /^(claude-(?:opus|sonnet|haiku))-(\d+(?:[-.]\d+)*)(.*)$/u,
+    /^(claude-(?:opus|sonnet|haiku|fable))-(\d+(?:[-.]\d+)*)(.*)$/u,
   );
   if (!match) return cleaned;
 

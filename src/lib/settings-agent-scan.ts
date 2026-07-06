@@ -25,6 +25,8 @@ const STATIC_PROVIDER_MODEL_IDS: Partial<
 > = {
   claude: [
     "claude-opus-4-8",
+    "claude-fable-5",
+    "claude-sonnet-5",
     "claude-opus-4-7",
     "claude-sonnet-4-6",
     "claude-opus-4-6",

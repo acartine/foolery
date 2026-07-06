@@ -80,6 +80,8 @@ describe("scanForAgents: discovery and status", () => {
     });
     expect(claude?.options?.map((option) => option.label)).toEqual([
       "Claude Opus 4.8",
+      "Claude Fable 5",
+      "Claude Sonnet 5",
       "Claude Opus 4.7",
       "Claude Sonnet 4.6",
       "Claude Opus 4.6",
@@ -259,7 +261,7 @@ describe("scanForAgents: claude model metadata", () => {
       modelId: "claude-sonnet-4-5",
       version: "4.5",
     });
-    expect(claude?.options?.length).toBe(7);
+    expect(claude?.options?.length).toBe(9);
     expect(claude?.options?.[0]).toMatchObject({
       id: "claude-claude-sonnet-4-5",
       modelId: "claude-sonnet-4-5",
@@ -279,6 +281,24 @@ describe("scanForAgents: claude model metadata", () => {
       version: "4.8",
     });
     expect(claude?.options?.[2]).toMatchObject({
+      id: "claude-claude-fable-5",
+      modelId: "claude-fable-5",
+      label: "Claude Fable 5",
+      provider: "Claude",
+      model: "Claude",
+      flavor: "Fable",
+      version: "5",
+    });
+    expect(claude?.options?.[3]).toMatchObject({
+      id: "claude-claude-sonnet-5",
+      modelId: "claude-sonnet-5",
+      label: "Claude Sonnet 5",
+      provider: "Claude",
+      model: "Claude",
+      flavor: "Sonnet",
+      version: "5",
+    });
+    expect(claude?.options?.[4]).toMatchObject({
       id: "claude-claude-opus-4-7",
       modelId: "claude-opus-4-7",
       label: "Claude Opus 4.7",
@@ -287,7 +307,7 @@ describe("scanForAgents: claude model metadata", () => {
       flavor: "Opus",
       version: "4.7",
     });
-    expect(claude?.options?.[3]?.label).toBe("Claude Sonnet 4.6");
+    expect(claude?.options?.[5]?.label).toBe("Claude Sonnet 4.6");
   });
 });
 

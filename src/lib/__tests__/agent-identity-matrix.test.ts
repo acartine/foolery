@@ -219,6 +219,36 @@ describe("Claude extractor matrix", () => {
   });
 });
 
+describe("Claude 5-generation extractor matrix", () => {
+  it("claude-fable-5 → Claude Fable 5", () => {
+    check({
+      command: "claude",
+      model: "claude-fable-5",
+      expectNormalize: {
+        provider: "Claude",
+        model: "Claude",
+        flavor: "Fable",
+        version: "5",
+      },
+      expectLabel: "Claude Fable 5",
+    });
+  });
+
+  it("claude-sonnet-5 → Claude Sonnet 5", () => {
+    check({
+      command: "claude",
+      model: "claude-sonnet-5",
+      expectNormalize: {
+        provider: "Claude",
+        model: "Claude",
+        flavor: "Sonnet",
+        version: "5",
+      },
+      expectLabel: "Claude Sonnet 5",
+    });
+  });
+});
+
 describe("Gemini extractor matrix", () => {
   it("gemini-2.5-pro → Gemini Pro 2.5", () => {
     check({
@@ -289,6 +319,21 @@ describe("Copilot extractor matrix (Bug 3 regression)", () => {
         version: "4.5",
       },
       expectLabel: "Copilot Claude Sonnet 4.5",
+      expectPills: ["copilot", "cli"],
+    });
+  });
+
+  it("claude-fable-5 → Copilot Claude Fable 5", () => {
+    check({
+      command: "copilot",
+      model: "claude-fable-5",
+      expectNormalize: {
+        provider: "Copilot",
+        model: "Claude",
+        flavor: "Fable",
+        version: "5",
+      },
+      expectLabel: "Copilot Claude Fable 5",
       expectPills: ["copilot", "cli"],
     });
   });
