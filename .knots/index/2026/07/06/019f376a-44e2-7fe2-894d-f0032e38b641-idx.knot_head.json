@@ -1,0 +1,21 @@
+{
+  "event_id": "019f376a-44e2-7fe2-894d-f0032e38b641",
+  "occurred_at": "2026-07-06T12:32:19.170133017Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-280c",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Support Claude Fable 5 and Claude Sonnet 5 model types",
+    "type": "work",
+    "updated_at": "2026-07-06T12:32:19.170133017Z",
+    "workflow_id": "work_sdlc"
+  }
+}

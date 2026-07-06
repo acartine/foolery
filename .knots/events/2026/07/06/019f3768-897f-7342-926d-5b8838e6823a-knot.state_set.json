@@ -1,0 +1,17 @@
+{
+  "event_id": "019f3768-897f-7342-926d-5b8838e6823a",
+  "occurred_at": "2026-07-06T12:30:25.663361574Z",
+  "knot_id": "foolery-280c",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "agent_model": "GPT Mini",
+    "agent_name": "Codex",
+    "agent_version": "5.4",
+    "force": false,
+    "from": "shipment",
+    "profile_id": "autopilot_no_planning",
+    "to": "ready_for_shipment_review",
+    "workflow_id": "work_sdlc"
+  }
+}
