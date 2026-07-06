@@ -1,0 +1,17 @@
+{
+  "event_id": "019f3759-6899-7cb2-86fa-448b057bf000",
+  "occurred_at": "2026-07-06T12:13:54.201921639Z",
+  "knot_id": "foolery-280c",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Add support for new agent /model types Claude Fable 5 and Claude Sonnet 5",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

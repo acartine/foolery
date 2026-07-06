@@ -1,0 +1,10 @@
+{
+  "event_id": "019f3759-9d24-7063-8632-5686990e2c05",
+  "occurred_at": "2026-07-06T12:14:07.652722139Z",
+  "knot_id": "foolery-280c",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Add support for new agent /model types Claude Fable 5 and Claude Sonnet 5",
+    "to": "Support Claude Fable 5 and Claude Sonnet 5 model types"
+  }
+}

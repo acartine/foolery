@@ -1,0 +1,9 @@
+{
+  "event_id": "019f3759-9d24-7063-8632-56a89d2779c4",
+  "occurred_at": "2026-07-06T12:14:07.652722139Z",
+  "knot_id": "foolery-280c",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "Claude Fable 5 and Claude Sonnet 5 are accepted anywhere supported agent/model types are validated or selected; both flow through the existing selection/dispatch path without errors; existing agent/model types continue to work as before."
+  }
+}

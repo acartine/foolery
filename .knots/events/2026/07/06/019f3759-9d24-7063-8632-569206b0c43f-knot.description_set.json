@@ -1,0 +1,9 @@
+{
+  "event_id": "019f3759-9d24-7063-8632-569206b0c43f",
+  "occurred_at": "2026-07-06T12:14:07.652722139Z",
+  "knot_id": "foolery-280c",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Update agent/model type handling so the newly introduced Claude Fable 5 and Claude Sonnet 5 options are recognized and selectable wherever supported. Keep existing behavior unchanged for all other agent/model types."
+  }
+}
