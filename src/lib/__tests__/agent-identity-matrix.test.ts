@@ -46,6 +46,41 @@ function check(c: ParseCase): void {
   }
 }
 
+describe("Codex 5.6 extractor matrix", () => {
+  it("gpt-5.6-sol → Codex GPT Sol 5.6", () => {
+    check({
+      command: "codex",
+      model: "gpt-5.6-sol",
+      expectNormalize: {
+        provider: "Codex", model: "GPT", flavor: "Sol", version: "5.6",
+      },
+      expectLabel: "Codex GPT Sol 5.6",
+    });
+  });
+
+  it("gpt-5.6-terra → Codex GPT Terra 5.6", () => {
+    check({
+      command: "codex",
+      model: "gpt-5.6-terra",
+      expectNormalize: {
+        provider: "Codex", model: "GPT", flavor: "Terra", version: "5.6",
+      },
+      expectLabel: "Codex GPT Terra 5.6",
+    });
+  });
+
+  it("gpt-5.6-luna → Codex GPT Luna 5.6", () => {
+    check({
+      command: "codex",
+      model: "gpt-5.6-luna",
+      expectNormalize: {
+        provider: "Codex", model: "GPT", flavor: "Luna", version: "5.6",
+      },
+      expectLabel: "Codex GPT Luna 5.6",
+    });
+  });
+});
+
 describe("Codex extractor matrix", () => {
   it("gpt-5.5 → Codex GPT 5.5", () => {
     check({

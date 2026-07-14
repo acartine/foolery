@@ -24,6 +24,9 @@ interface Case {
 
 const CASES: Case[] = [
   // Codex family — every shape from settings.toml + likely additions
+  { command: "codex", model: "gpt-5.6-sol", desc: "Codex GPT 5.6 Sol" },
+  { command: "codex", model: "gpt-5.6-terra", desc: "Codex GPT 5.6 Terra" },
+  { command: "codex", model: "gpt-5.6-luna", desc: "Codex GPT 5.6 Luna" },
   { command: "codex", model: "gpt-5.5", desc: "Codex GPT 5.5" },
   { command: "codex", model: "gpt-5.4", desc: "Codex GPT 5.4" },
   { command: "codex", model: "gpt-5.4-mini", desc: "Codex GPT 5.4 Mini" },

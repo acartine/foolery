@@ -190,7 +190,7 @@ describe("scanForAgents: codex model metadata", () => {
     });
     mockReadFile.mockImplementation(async (path: string) => {
       if (path.endsWith(".codex/config.toml")) {
-        return 'model = "gpt-5.4"\n';
+        return 'model = "gpt-5.6-sol"\n';
       }
       throw new Error("missing");
     });
@@ -204,11 +204,15 @@ describe("scanForAgents: codex model metadata", () => {
       installed: true,
       provider: "Codex",
       model: "GPT",
-      modelId: "gpt-5.4",
-      version: "5.4",
+      flavor: "Sol",
+      modelId: "gpt-5.6-sol",
+      version: "5.6",
     });
     expect(codex?.options?.length).toBeGreaterThan(0);
     expect(codex?.options?.map((option) => option.modelId)).toEqual([
+      "gpt-5.6-sol",
+      "gpt-5.6-terra",
+      "gpt-5.6-luna",
       "gpt-5.4",
       "gpt-5.4-mini",
       "gpt-5.3-codex",
@@ -218,16 +222,27 @@ describe("scanForAgents: codex model metadata", () => {
       "gpt-5.1-codex-max",
       "gpt-5.1-codex-mini",
     ]);
-    expect(codex?.selectedOptionId).toBe("codex-gpt-5-4");
-    expect(codex?.options?.[0]).toMatchObject({
-      id: "codex-gpt-5-4",
-      // Display-form per foolery-b42b: provider+model joined.
-      label: "Codex GPT 5.4",
-      provider: "Codex",
-      model: "GPT",
-      version: "5.4",
-      modelId: "gpt-5.4",
-    });
+    expect(codex?.selectedOptionId).toBe("codex-gpt-5-6-sol");
+    expect(codex?.options?.slice(0, 3)).toMatchObject([
+      {
+        id: "codex-gpt-5-6-sol",
+        label: "Codex GPT Sol 5.6",
+        flavor: "Sol",
+        modelId: "gpt-5.6-sol",
+      },
+      {
+        id: "codex-gpt-5-6-terra",
+        label: "Codex GPT Terra 5.6",
+        flavor: "Terra",
+        modelId: "gpt-5.6-terra",
+      },
+      {
+        id: "codex-gpt-5-6-luna",
+        label: "Codex GPT Luna 5.6",
+        flavor: "Luna",
+        modelId: "gpt-5.6-luna",
+      },
+    ]);
   });
 });
 

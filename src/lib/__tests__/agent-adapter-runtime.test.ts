@@ -63,6 +63,28 @@ describe("codex runtime args (interactive app-server)", () => {
 });
 
 describe("codex runtime args (one-shot exec)", () => {
+  it.each([
+    { model: "gpt-5.6-sol", reasoning: "low" },
+    { model: "gpt-5.6-terra", reasoning: "high" },
+    { model: "gpt-5.6-luna", reasoning: "xhigh" },
+  ] as const)(
+    "passes $model through with $reasoning reasoning",
+    ({ model, reasoning }) => {
+      const result = buildPromptModeArgs(
+        {
+          command: "codex",
+          model,
+          runtime: { speed: "default", reasoning },
+        },
+        PROMPT,
+      );
+      expect(result.args).toContain(model);
+      expect(result.args).toContain(
+        `model_reasoning_effort="${reasoning}"`,
+      );
+    },
+  );
+
   it("appends service_tier and reasoning after the model flag", () => {
     const result = buildPromptModeArgs(
       {
