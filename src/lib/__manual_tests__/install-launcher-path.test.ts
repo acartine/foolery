@@ -175,9 +175,10 @@ describe("install launcher path overrides", () => {
   ])(
     "warns only when no supported runtime CLI is on PATH: $cliName",
     async ({ cliName, shouldWarn }) => {
-      const { stderr } = await runInstallMainWithPathCli(cliName);
+      const { stdout, stderr } = await runInstallMainWithPathCli(cliName);
 
       const warning = "Neither bd nor Knots (kno/knots) is on PATH.";
+      expect(stdout).not.toContain("Commands: foolery start");
       if (shouldWarn) {
         expect(stderr).toContain(warning);
         return;

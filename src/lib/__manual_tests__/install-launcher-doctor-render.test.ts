@@ -91,6 +91,73 @@ const SAMPLE_DOCTOR_RESPONSE = JSON.stringify({
   },
 });
 
+describe("install launcher doctor endpoint discovery", () => {
+  it("discovers loopback and assigned IPv4 and IPv6 interface URLs", async () => {
+    const tempRoot = await makeTempDir("foolery-launcher-doctor-candidates-");
+    const launcherPath = join(tempRoot, "foolery");
+    await writeLauncher(launcherPath);
+
+    const { stdout } = await evalLauncher(
+      launcherPath,
+      String.raw`
+        list_network_interface_addresses() {
+          printf '%s\n' '10.20.30.40' 'fe80::1%eth0'
+        }
+        doctor_candidate_urls
+      `,
+    );
+
+    expect(stdout).toContain("http://127.0.0.1:3210");
+    expect(stdout).toContain("http://[::1]:3210");
+    expect(stdout).toContain("http://10.20.30.40:3210");
+    expect(stdout).toContain("http://[fe80::1%25eth0]:3210");
+  });
+
+  it("selects a reachable API on a non-loopback interface", async () => {
+    const tempRoot = await makeTempDir("foolery-launcher-doctor-select-");
+    const launcherPath = join(tempRoot, "foolery");
+    await writeLauncher(launcherPath);
+
+    const { stdout } = await evalLauncher(
+      launcherPath,
+      String.raw`
+        list_network_interface_addresses() { printf '%s\n' '10.20.30.40'; }
+        curl() {
+          [[ "$*" == *'http://10.20.30.40:3210/api/version'* ]]
+        }
+        select_doctor_url
+        printf 'selected=%s\nattempted=%s\n' \
+          "$DOCTOR_URL" "$DOCTOR_ATTEMPTED_ENDPOINTS"
+      `,
+    );
+
+    expect(stdout).toContain("selected=http://10.20.30.40:3210");
+    expect(stdout).toContain("http://127.0.0.1:3210/api/doctor");
+    expect(stdout).toContain("http://[::1]:3210/api/doctor");
+    expect(stdout).toContain("http://10.20.30.40:3210/api/doctor");
+  });
+
+  it("records every attempted endpoint when no API is reachable", async () => {
+    const tempRoot = await makeTempDir("foolery-launcher-doctor-failure-");
+    const launcherPath = join(tempRoot, "foolery");
+    await writeLauncher(launcherPath);
+
+    const { stdout } = await evalLauncher(
+      launcherPath,
+      String.raw`
+        list_network_interface_addresses() { printf '%s\n' '10.20.30.40'; }
+        curl() { return 1; }
+        if select_doctor_url; then exit 1; fi
+        printf '%s\n' "$DOCTOR_ATTEMPTED_ENDPOINTS"
+      `,
+    );
+
+    expect(stdout).toContain("http://127.0.0.1:3210/api/doctor");
+    expect(stdout).toContain("http://[::1]:3210/api/doctor");
+    expect(stdout).toContain("http://10.20.30.40:3210/api/doctor");
+  });
+});
+
 describe("install launcher doctor rendering on Linux/Node 24", () => {
   it("render_doctor_report runs the inline node script without ENOENT", async () => {
     const tempRoot = await makeTempDir("foolery-launcher-doctor-render-");

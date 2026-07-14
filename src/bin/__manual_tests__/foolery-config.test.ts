@@ -85,7 +85,9 @@ describe("foolery-config CLI: schema", () => {
     const props = parsed.properties ?? {};
     expect(Object.keys(props).sort()).toEqual([
       "actions",
+      "agentRuntime",
       "agents",
+      "autoSync",
       "backend",
       "defaults",
       "dispatchMode",

@@ -921,8 +921,23 @@ update_cmd() {
   require_cmd bash
   require_cmd curl
 
-  local install_url
+  local install_url installed_version latest_tag latest_version updated_version
   install_url="https://raw.githubusercontent.com/\$RELEASE_OWNER/\$RELEASE_REPO/main/scripts/install.sh"
+
+  if ! installed_version="\$(read_installed_version)"; then
+    fail "Unable to determine installed version from \$APP_DIR/package.json."
+  fi
+  if [[ "\$RELEASE_TAG" == "latest" ]]; then
+    if ! latest_tag="\$(fetch_latest_release_tag)"; then
+      fail "Unable to determine the latest Foolery release."
+    fi
+  else
+    latest_tag="\$RELEASE_TAG"
+  fi
+  latest_version="\${latest_tag#v}"
+
+  log "Installed version: \$installed_version"
+  log "Latest version:    \$latest_version"
 
   step "Updating Foolery runtime from \$RELEASE_OWNER/\$RELEASE_REPO (\$RELEASE_TAG)..."
   if ! curl --fail --location --silent --show-error "\$install_url" | \
@@ -940,7 +955,10 @@ update_cmd() {
   fi
 
   rm -f "\$UPDATE_CHECK_FILE" >/dev/null 2>&1 || true
-  success "Update complete."
+  if ! updated_version="\$(read_installed_version)"; then
+    fail "Update completed, but the installed version could not be verified."
+  fi
+  success "Update complete: \$installed_version -> \$updated_version (latest \$latest_version)."
 }
 
 uninstall_cmd() {
@@ -1226,11 +1244,77 @@ NODE
   printf '%s' "\$response" | node "\$script_file" "\$fix_mode"
 }
 
+list_network_interface_addresses() {
+  if ! command -v node >/dev/null 2>&1; then
+    return 0
+  fi
+
+  node <<'NETWORK_INTERFACES_NODE'
+const { networkInterfaces } = require('node:os');
+
+for (const entries of Object.values(networkInterfaces())) {
+  for (const entry of entries || []) {
+    if (entry && entry.address) process.stdout.write(entry.address + '\n');
+  }
+}
+NETWORK_INTERFACES_NODE
+}
+
+doctor_candidate_urls() {
+  local address encoded_address
+  {
+    printf '%s\n' "\$LOCAL_URL"
+    printf 'http://127.0.0.1:%s\n' "\$PORT"
+    printf 'http://[::1]:%s\n' "\$PORT"
+    while IFS= read -r address; do
+      if [[ -z "\$address" ]]; then
+        continue
+      fi
+      if [[ "\$address" == *:* ]]; then
+        encoded_address="\${address//%/%25}"
+        printf 'http://[%s]:%s\n' "\$encoded_address" "\$PORT"
+      else
+        printf 'http://%s:%s\n' "\$address" "\$PORT"
+      fi
+    done < <(list_network_interface_addresses)
+  } | awk 'NF && !seen[\$0]++'
+}
+
+select_doctor_url() {
+  local candidate endpoint
+  DOCTOR_URL=""
+  DOCTOR_ATTEMPTED_ENDPOINTS=""
+
+  while IFS= read -r candidate; do
+    if [[ -z "\$candidate" ]]; then
+      continue
+    fi
+    endpoint="\$candidate/api/doctor"
+    if [[ -n "\$DOCTOR_ATTEMPTED_ENDPOINTS" ]]; then
+      DOCTOR_ATTEMPTED_ENDPOINTS="\$DOCTOR_ATTEMPTED_ENDPOINTS, \$endpoint"
+    else
+      DOCTOR_ATTEMPTED_ENDPOINTS="\$endpoint"
+    fi
+    if curl --silent --show-error --fail --connect-timeout 1 --max-time 3 \
+      -o /dev/null "\$candidate/api/version" 2>/dev/null; then
+      DOCTOR_URL="\$candidate"
+      return 0
+    fi
+  done < <(doctor_candidate_urls)
+
+  return 1
+}
+
+fail_doctor_unreachable() {
+  fail "Failed to reach Foolery API. Tried: \$DOCTOR_ATTEMPTED_ENDPOINTS"
+}
+
 render_doctor_stream() {
   if ! command -v node >/dev/null 2>&1; then
     return 1
   fi
 
+  local doctor_url="\${1:-\$LOCAL_URL}"
   local script_file
   script_file="\$(mktemp "\${TMPDIR:-/tmp}/foolery-doctor-stream.XXXXXX.js")"
   trap "rm -f '\$script_file'" RETURN
@@ -1295,7 +1379,7 @@ rl.on('line', (line) => {
 rl.on('close', () => {});
 STREAM_NODE
 
-  curl --silent --show-error --no-buffer --max-time 60 "\$LOCAL_URL/api/doctor?stream=1" 2>/dev/null | node "\$script_file"
+  curl --silent --show-error --no-buffer --max-time 60 "\$doctor_url/api/doctor?stream=1" 2>/dev/null | node "\$script_file"
 }
 
 doctor_cmd() {
@@ -1317,14 +1401,19 @@ doctor_cmd() {
     fail "curl is required for foolery doctor."
   fi
 
+  if ! select_doctor_url; then
+    fail_doctor_unreachable
+  fi
+  local doctor_url="\$DOCTOR_URL"
+
   if [[ "\$fix" -eq 0 ]]; then
     # Diagnostic-only mode — prefer streaming, fall back to batch
-    if render_doctor_stream; then
+    if render_doctor_stream "\$doctor_url"; then
       return
     fi
     local response
-    response="\$(curl --silent --show-error --max-time 60 -X GET "\$LOCAL_URL/api/doctor" 2>&1)" || {
-      fail "Failed to reach Foolery API at \$LOCAL_URL/api/doctor"
+    response="\$(curl --silent --show-error --max-time 60 -X GET "\$doctor_url/api/doctor" 2>&1)" || {
+      fail "Failed to reach Foolery API at \$doctor_url/api/doctor"
     }
     render_doctor_report "\$response" "0"
     return
@@ -1332,15 +1421,15 @@ doctor_cmd() {
 
   # --fix mode: GET diagnostics first, prompt per check, then POST with strategies
   local diag_response
-  diag_response="\$(curl --silent --show-error --max-time 60 -X GET "\$LOCAL_URL/api/doctor" 2>&1)" || {
-    fail "Failed to reach Foolery API at \$LOCAL_URL/api/doctor"
+  diag_response="\$(curl --silent --show-error --max-time 60 -X GET "\$doctor_url/api/doctor" 2>&1)" || {
+    fail "Failed to reach Foolery API at \$doctor_url/api/doctor"
   }
 
   if ! command -v node >/dev/null 2>&1; then
     # Fallback: no node, just POST with defaults
     local response
-    response="\$(curl --silent --show-error --max-time 60 -X POST "\$LOCAL_URL/api/doctor" 2>&1)" || {
-      fail "Failed to reach Foolery API at \$LOCAL_URL/api/doctor"
+    response="\$(curl --silent --show-error --max-time 60 -X POST "\$doctor_url/api/doctor" 2>&1)" || {
+      fail "Failed to reach Foolery API at \$doctor_url/api/doctor"
     }
     render_doctor_report "\$response" "1"
     return
@@ -1489,8 +1578,8 @@ NODE
   local post_body
   post_body="\$(printf '{"strategies":%s}' "\$strategies_json")"
   local response
-  response="\$(curl --silent --show-error --max-time 60 -X POST -H 'Content-Type: application/json' -d "\$post_body" "\$LOCAL_URL/api/doctor" 2>&1)" || {
-    fail "Failed to reach Foolery API at \$LOCAL_URL/api/doctor"
+  response="\$(curl --silent --show-error --max-time 60 -X POST -H 'Content-Type: application/json' -d "\$post_body" "\$doctor_url/api/doctor" 2>&1)" || {
+    fail "Failed to reach Foolery API at \$doctor_url/api/doctor"
   }
 
   render_doctor_report "\$response" "1"
@@ -1675,7 +1764,6 @@ main() {
   fi
 
   success "Install complete"
-  tip "Commands: foolery start | foolery setup | foolery config | foolery update | foolery stop | foolery restart | foolery status | foolery uninstall"
 
   case ":$PATH:" in
     *":$BIN_DIR:"*)

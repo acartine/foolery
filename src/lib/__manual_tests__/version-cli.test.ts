@@ -11,7 +11,14 @@
  */
 
 import { execFile } from "node:child_process";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  chmod,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
@@ -91,4 +98,55 @@ describe("foolery version CLI", () => {
       expect(stderr).toBe("");
     },
   );
+
+  it("reports installed and latest versions while updating", async () => {
+    const root = await makeTempDir("foolery-update-cli-");
+    const appDir = join(root, "app");
+    const binDir = join(root, "bin");
+    await mkdir(appDir, { recursive: true });
+    await mkdir(binDir, { recursive: true });
+    await writeFile(
+      join(appDir, "package.json"),
+      JSON.stringify({ version: "0.14.17" }, null, 2),
+      "utf8",
+    );
+
+    const curlPath = join(binDir, "curl");
+    await writeFile(
+      curlPath,
+      String.raw`#!/usr/bin/env bash
+set -euo pipefail
+url="$*"
+if [[ "$url" == *'/releases/latest' ]]; then
+  printf '%s\n' '{"tag_name":"v0.14.18"}'
+else
+  printf '%s\n' '#!/usr/bin/env bash'
+  printf '%s\n' 'cd "$FOOLERY_APP_DIR"'
+  printf '%s\n' 'sed '\''s/0.14.17/0.14.18/'\'' package.json > package.json.next'
+  printf '%s\n' 'mv package.json.next package.json'
+fi
+`,
+      "utf8",
+    );
+    await chmod(curlPath, 0o755);
+
+    const { stdout, stderr } = await execFileAsync(cliPath, ["update"], {
+      env: {
+        ...process.env,
+        PATH: `${binDir}:${process.env.PATH ?? ""}`,
+        FORCE_COLOR: "0",
+        NO_COLOR: "1",
+        TERM: "dumb",
+        FOOLERY_APP_DIR: appDir,
+        FOOLERY_UPDATE_CHECK: "0",
+      },
+    });
+
+    expect(stderr).toBe("");
+    expect(stdout).toContain("Installed version: 0.14.17");
+    expect(stdout).toContain("Latest version:    0.14.18");
+    expect(stdout).toContain(
+      "Update complete: 0.14.17 -> 0.14.18 (latest 0.14.18).",
+    );
+  });
 });
