@@ -1,0 +1,21 @@
+{
+  "event_id": "019f5f62-e2f7-7e82-8d27-2fa8da4c6c56",
+  "occurred_at": "2026-07-14T06:49:03.991487Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-bfdf",
+    "profile_id": "lease",
+    "state": "lease_terminated",
+    "terminal": true,
+    "title": "Lease: codex-34d0-review",
+    "type": "lease",
+    "updated_at": "2026-07-14T06:49:03.991487Z",
+    "workflow_id": "lease_sdlc"
+  }
+}

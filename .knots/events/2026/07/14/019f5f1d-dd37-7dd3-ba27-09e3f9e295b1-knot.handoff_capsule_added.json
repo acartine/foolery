@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f1d-dd37-7dd3-ba27-09e3f9e295b1",
+  "occurred_at": "2026-07-14T05:33:40.535825Z",
+  "knot_id": "foolery-820f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Final sign-off: Foolery v0.14.17 is live and verified. Main/tag SHA 20e0e53d; model implementation b85d2479; all CI/CD and six release assets verified.",
+    "datetime": "2026-07-14T05:33:40.535825Z",
+    "entry_id": "019f5f1d-dd37-7dd3-ba27-09d087af388b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

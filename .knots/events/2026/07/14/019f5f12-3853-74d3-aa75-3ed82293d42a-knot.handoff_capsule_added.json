@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f12-3853-74d3-aa75-3ed82293d42a",
+  "occurred_at": "2026-07-14T05:20:57.427564Z",
+  "knot_id": "foolery-820f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan ready: add the three verified GPT-5.6 CLI IDs, teach canonical identity about Sol/Terra/Luna, prove existing reasoning flag passthrough, run all gates, integrate to origin/main, and publish the patch from clean main. Exact model catalog and effort support were verified via Codex app-server model/list.",
+    "datetime": "2026-07-14T05:20:57.427564Z",
+    "entry_id": "019f5f12-3853-74d3-aa75-3ec56bf16f74",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

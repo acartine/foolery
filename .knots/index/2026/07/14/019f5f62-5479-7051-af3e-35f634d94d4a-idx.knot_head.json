@@ -1,0 +1,21 @@
+{
+  "event_id": "019f5f62-5479-7051-af3e-35f634d94d4a",
+  "occurred_at": "2026-07-14T06:48:27.513147Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e7dd",
+    "profile_id": "lease",
+    "state": "lease_terminated",
+    "terminal": true,
+    "title": "Lease: fix-update-doctor-implementation",
+    "type": "lease",
+    "updated_at": "2026-07-14T06:48:27.513147Z",
+    "workflow_id": "lease_sdlc"
+  }
+}

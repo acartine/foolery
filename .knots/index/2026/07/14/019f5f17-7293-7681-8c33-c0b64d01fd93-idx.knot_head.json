@@ -1,0 +1,34 @@
+{
+  "event_id": "019f5f17-7293-7681-8c33-c0b64d01fd93",
+  "occurred_at": "2026-07-14T05:26:40.019368Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-03ca",
+    "profile_id": "lease",
+    "state": "lease_active",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "lease_active",
+      "output": {
+        "artifact_type": ""
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Lease: codex-models-5-6-e2e-shipment",
+    "type": "lease",
+    "updated_at": "2026-07-14T05:26:40.019368Z",
+    "workflow_id": "lease_sdlc"
+  }
+}

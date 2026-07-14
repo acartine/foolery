@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f1d-753b-72d3-94b7-8b45eca942c8",
+  "occurred_at": "2026-07-14T05:33:13.914991Z",
+  "knot_id": "foolery-820f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete. Reviewed commit b85d2479 was fast-forwarded to origin/main. Main CI run 29308557728 and Coverage Badge run 29308557731 both completed successfully. Patch release v0.14.17 was cut by the project release script at commit 20e0e53d and published at https://github.com/acartine/foolery/releases/tag/v0.14.17. Release Runtime Artifact run 29308716746 passed for darwin-arm64, linux-x64, and linux-arm64. All three tarballs and their three .sha256 files are uploaded. Sneka attribution notes for implementation and release commits are pushed.",
+    "datetime": "2026-07-14T05:33:13.914991Z",
+    "entry_id": "019f5f1d-753b-72d3-94b7-8b358df2864b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

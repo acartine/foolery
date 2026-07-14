@@ -1,0 +1,17 @@
+{
+  "event_id": "019f5f62-6ee6-7d90-b771-5cb9114db341",
+  "occurred_at": "2026-07-14T06:48:34.278023Z",
+  "knot_id": "foolery-bfdf",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "lease",
+    "state": "lease_ready",
+    "title": "Lease: codex-34d0-review",
+    "type": "lease",
+    "workflow_id": "lease_sdlc"
+  }
+}

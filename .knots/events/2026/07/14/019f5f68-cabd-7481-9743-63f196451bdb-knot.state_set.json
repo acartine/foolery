@@ -1,0 +1,19 @@
+{
+  "event_id": "019f5f68-cabd-7481-9743-63f196451bdb",
+  "occurred_at": "2026-07-14T06:55:31.005444Z",
+  "knot_id": "foolery-34d0",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "agent_model": "gpt-5",
+    "agent_name": "codex",
+    "force": false,
+    "from": "ready_for_shipment_review",
+    "profile_id": "autopilot",
+    "to": "shipment_review",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019f5f68-aaba-7ff0-84c4-eedcbd34b0ce"
+  }
+}

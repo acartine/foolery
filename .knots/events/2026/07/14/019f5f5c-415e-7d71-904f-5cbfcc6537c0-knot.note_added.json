@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f5c-415e-7d71-904f-5cbfcc6537c0",
+  "occurred_at": "2026-07-14T06:41:49.406116Z",
+  "knot_id": "foolery-34d0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approved. The scope is complete and feasible, with explicit handling for Bash 3 portability, IPv6 interface URLs, endpoint timeout bounds, explicit override priority, version-read failures, and the Hermetic Test Policy. Shell launcher behavior belongs in __manual_tests__ because it necessarily generates files and executes bash; the default unit suite will remain host-independent and must still pass unchanged. No security concern: discovery is limited to addresses assigned to the local host and the configured Foolery port.",
+    "datetime": "2026-07-14T06:41:49.406116Z",
+    "entry_id": "019f5f5c-415e-7d71-904f-5caa37188af6",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

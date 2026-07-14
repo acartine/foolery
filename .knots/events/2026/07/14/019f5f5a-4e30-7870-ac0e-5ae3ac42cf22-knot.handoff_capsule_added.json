@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f5a-4e30-7870-ac0e-5ae3ac42cf22",
+  "occurred_at": "2026-07-14T06:39:41.616011Z",
+  "knot_id": "foolery-34d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Reproduction came from installed Linux runtime on manhattan: update completed without version comparison, installer printed a long Commands list, and doctor only requested http://127.0.0.1:3210/api/doctor. Inspect launcher/install scripts and keep network-interface tests hermetic through injected discovery/probing.",
+    "datetime": "2026-07-14T06:39:41.616011Z",
+    "entry_id": "019f5f5a-4e30-7870-ac0e-5ad64f090132",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

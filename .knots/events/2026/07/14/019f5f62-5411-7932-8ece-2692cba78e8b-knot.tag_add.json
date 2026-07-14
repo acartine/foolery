@@ -1,0 +1,9 @@
+{
+  "event_id": "019f5f62-5411-7932-8ece-2692cba78e8b",
+  "occurred_at": "2026-07-14T06:48:27.409059Z",
+  "knot_id": "foolery-34d0",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/34d0-update-doctor"
+  }
+}

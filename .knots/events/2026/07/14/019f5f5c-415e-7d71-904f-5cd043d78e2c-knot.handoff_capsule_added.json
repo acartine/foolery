@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f5c-415e-7d71-904f-5cd043d78e2c",
+  "occurred_at": "2026-07-14T06:41:49.406116Z",
+  "knot_id": "foolery-34d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review passed. Implement the launcher-only changes and deterministic manual integration coverage, then run every project gate before shipping v0.14.18.",
+    "datetime": "2026-07-14T06:41:49.406116Z",
+    "entry_id": "019f5f5c-415e-7d71-904f-5cc1193dec23",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

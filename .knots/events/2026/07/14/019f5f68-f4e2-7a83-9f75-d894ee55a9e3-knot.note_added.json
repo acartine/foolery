@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f68-f4e2-7a83-9f75-d894ee55a9e3",
+  "occurred_at": "2026-07-14T06:55:41.794272Z",
+  "knot_id": "foolery-34d0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review approved. Local main, origin/main, and tag v0.14.18 all resolve to 3adb38b7. Knot tags identify implementation commit 212b589e, release commit 3adb38b7, the feature branch, and v0.14.18. Main CI, coverage, and all three release artifact jobs succeeded; the public release is non-draft/non-prerelease with six uploaded assets.",
+    "datetime": "2026-07-14T06:55:41.794272Z",
+    "entry_id": "019f5f68-f4e2-7a83-9f75-d88dbc78806d",
+    "model": "gpt-5",
+    "username": "OpenAI",
+    "version": "unknown"
+  }
+}

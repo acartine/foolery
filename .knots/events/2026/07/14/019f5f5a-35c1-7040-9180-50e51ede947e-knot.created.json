@@ -1,0 +1,17 @@
+{
+  "event_id": "019f5f5a-35c1-7040-9180-50e51ede947e",
+  "occurred_at": "2026-07-14T06:39:35.361143Z",
+  "knot_id": "foolery-34d0",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nMake installed Foolery updates report the installed and latest versions, remove the installer command-list noise, and make foolery doctor locate the API when it is bound to a non-loopback interface; then publish the next patch release.\n\nVerification:\n1. Run focused launcher/installer tests and confirm update output shows installed and latest versions before updating and the resulting installed version afterward.\n2. Run installer output tests and confirm no Commands: line is emitted.\n3. Run doctor endpoint-discovery tests with localhost unavailable and another local interface reachable; confirm doctor succeeds against the reachable address and reports attempted endpoints when none respond.\n4. Run bun run lint, bunx tsc --noEmit, bun run test, and bun run build; all must pass.\n5. Run the patch release workflow and confirm the public release has runtime tarballs and matching .sha256 files.\n\nConstraints:\nUse a dedicated worktree, preserve hermetic default tests by injecting host/network discovery, push final integrated changes to origin/main without a PR, and use the project release script.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Fix installed update and doctor discovery",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

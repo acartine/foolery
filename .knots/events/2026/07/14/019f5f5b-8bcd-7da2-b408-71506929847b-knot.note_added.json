@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f5b-8bcd-7da2-b408-71506929847b",
+  "occurred_at": "2026-07-14T06:41:02.925565Z",
+  "knot_id": "foolery-34d0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan (medium complexity, shell-launcher focused): 1. Create a fresh worktree from synchronized main and install locked dependencies. 2. In scripts/install.sh, enhance update_cmd to read the installed version, resolve the requested/latest release tag, print an explicit installed-versus-latest comparison, run the installer, re-read the installed runtime version, and print the before-to-after result. Preserve explicit FOOLERY_RELEASE_TAG behavior and fail clearly if installed/new versions cannot be read. 3. Remove only the post-install Commands: summary line; retain foolery help command documentation. 4. Add portable doctor endpoint discovery to the generated launcher: produce candidates from LOCAL_URL, IPv4 loopback, IPv6 loopback, and every Node os.networkInterfaces address; deduplicate and format IPv6 URLs; probe each candidate quickly via /api/version; then use the selected base consistently for stream, GET, and POST doctor requests. On failure, print every attempted /api/doctor endpoint. Separate address enumeration and candidate selection so manual tests can inject deterministic interfaces without touching real network state. 5. Extend manual launcher integration tests for version comparison/update completion, absent install command summary, candidate enumeration/selection, and attempted-endpoint diagnostics. Keep default tests hermetic per policy. 6. Run focused manual tests plus bash syntax validation, then lint, typecheck, unit tests, and build. 7. Commit with Sneka attribution, push the review branch, review, fast-forward to origin/main, verify CI, and use the project script to publish patch v0.14.18 with verified tarballs/checksums. Risks: Bash 3 portability rules out associative arrays; interface-local IPv6 zone identifiers require URL encoding; slow unreachable interfaces require short preflight timeouts; explicit URL overrides must remain first priority. No child knots are needed.",
+    "datetime": "2026-07-14T06:41:02.925565Z",
+    "entry_id": "019f5f5b-8bcd-7da2-b408-7145e24424b7",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

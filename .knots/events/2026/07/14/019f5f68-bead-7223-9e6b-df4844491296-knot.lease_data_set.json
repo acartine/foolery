@@ -1,0 +1,20 @@
+{
+  "event_id": "019f5f68-bead-7223-9e6b-df4844491296",
+  "occurred_at": "2026-07-14T06:55:27.917898Z",
+  "knot_id": "foolery-27ec",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "codex",
+        "agent_type": "api",
+        "model": "gpt-5",
+        "model_version": "",
+        "provider": "OpenAI"
+      },
+      "lease_type": "agent",
+      "nickname": "codex-34d0-shipment-review",
+      "timeout_seconds": 1800
+    }
+  }
+}

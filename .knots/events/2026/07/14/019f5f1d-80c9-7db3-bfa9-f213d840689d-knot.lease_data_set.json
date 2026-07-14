@@ -1,0 +1,20 @@
+{
+  "event_id": "019f5f1d-80c9-7db3-bfa9-f213d840689d",
+  "occurred_at": "2026-07-14T05:33:16.873864Z",
+  "knot_id": "foolery-33fd",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "",
+        "agent_type": "",
+        "model": "",
+        "model_version": "",
+        "provider": ""
+      },
+      "lease_type": "agent",
+      "nickname": "codex-models-5-6-e2e-ship-review",
+      "timeout_seconds": 600
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f13-60c1-7371-aeb9-cdd6eb2b2b5b",
+  "occurred_at": "2026-07-14T05:22:13.313703Z",
+  "knot_id": "foolery-820f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review passed. Proceed with the scoped model catalog, identity labels, reasoning passthrough tests, full gates, main integration, and patch release.",
+    "datetime": "2026-07-14T05:22:13.313703Z",
+    "entry_id": "019f5f13-60c1-7371-aeb9-cdc889b1182a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

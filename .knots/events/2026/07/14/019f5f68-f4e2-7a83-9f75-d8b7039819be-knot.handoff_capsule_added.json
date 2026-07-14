@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f68-f4e2-7a83-9f75-d8b7039819be",
+  "occurred_at": "2026-07-14T06:55:41.794272Z",
+  "knot_id": "foolery-34d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Released v0.14.18 successfully: update version comparison, quieter installer completion, and multi-interface doctor discovery are live on origin/main. Public release: https://github.com/acartine/foolery/releases/tag/v0.14.18",
+    "datetime": "2026-07-14T06:55:41.794272Z",
+    "entry_id": "019f5f68-f4e2-7a83-9f75-d8af80f3a1e0",
+    "model": "gpt-5",
+    "username": "OpenAI",
+    "version": "unknown"
+  }
+}

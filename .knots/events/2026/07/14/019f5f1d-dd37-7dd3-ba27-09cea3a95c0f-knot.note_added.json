@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f1d-dd37-7dd3-ba27-09cea3a95c0f",
+  "occurred_at": "2026-07-14T05:33:40.535825Z",
+  "knot_id": "foolery-820f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. Local main, origin/main, and v0.14.17 all resolve to 20e0e53d; package version at the tag is 0.14.17. Knot tags include both implementation and release commits, the review branch, and release tag. Main CI and Coverage Badge succeeded for b85d2479; Release Runtime Artifact succeeded for 20e0e53d. The public non-draft, non-prerelease release contains three platform tarballs and matching .sha256 assets. The shipped code preserves kno workflow authority and the existing reasoning-setting contract. No dependent-system regressions observed.",
+    "datetime": "2026-07-14T05:33:40.535825Z",
+    "entry_id": "019f5f1d-dd37-7dd3-ba27-09b209807806",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

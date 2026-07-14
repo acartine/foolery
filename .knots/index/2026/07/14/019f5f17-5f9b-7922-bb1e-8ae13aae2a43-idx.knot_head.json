@@ -1,0 +1,21 @@
+{
+  "event_id": "019f5f17-5f9b-7922-bb1e-8ae13aae2a43",
+  "occurred_at": "2026-07-14T05:26:35.163287Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ccf4",
+    "profile_id": "lease",
+    "state": "lease_terminated",
+    "terminal": true,
+    "title": "Lease: codex-models-5-6-e2e-review",
+    "type": "lease",
+    "updated_at": "2026-07-14T05:26:35.163287Z",
+    "workflow_id": "lease_sdlc"
+  }
+}

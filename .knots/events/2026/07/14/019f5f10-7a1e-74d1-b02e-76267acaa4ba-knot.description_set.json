@@ -1,0 +1,9 @@
+{
+  "event_id": "019f5f10-7a1e-74d1-b02e-76267acaa4ba",
+  "occurred_at": "2026-07-14T05:19:03.187313Z",
+  "knot_id": "foolery-820f",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add Foolery support for Codex 5.6 Luna, Terra, and Sol using the exact Codex CLI model identifiers. Preserve the existing reasoning-effort setting for all three models, add deterministic coverage, pass lint/typecheck/tests/build, integrate to origin/main, and publish a verified patch release. Do not use a PR. Do not move this knot to a terminal state."
+  }
+}

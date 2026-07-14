@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f5b-8bcd-7da2-b408-7179d1c8a0c5",
+  "occurred_at": "2026-07-14T06:41:02.925565Z",
+  "knot_id": "foolery-34d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan ready: correct generated launcher update output and doctor endpoint selection in scripts/install.sh, cover it with deterministic manual integration tests, then pass all gates and publish v0.14.18.",
+    "datetime": "2026-07-14T06:41:02.925565Z",
+    "entry_id": "019f5f5b-8bcd-7da2-b408-716ac150dfec",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

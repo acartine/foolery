@@ -1,0 +1,17 @@
+{
+  "event_id": "019f5f10-6d3b-7500-a120-3578ee2f5663",
+  "occurred_at": "2026-07-14T05:18:59.899952Z",
+  "knot_id": "foolery-935e",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "lease",
+    "state": "lease_ready",
+    "title": "Lease: codex-models-5-6",
+    "type": "lease",
+    "workflow_id": "lease_sdlc"
+  }
+}

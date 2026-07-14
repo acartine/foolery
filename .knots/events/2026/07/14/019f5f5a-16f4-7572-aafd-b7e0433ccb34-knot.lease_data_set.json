@@ -1,0 +1,20 @@
+{
+  "event_id": "019f5f5a-16f4-7572-aafd-b7e0433ccb34",
+  "occurred_at": "2026-07-14T06:39:27.47622Z",
+  "knot_id": "foolery-da76",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "",
+        "agent_type": "",
+        "model": "",
+        "model_version": "",
+        "provider": ""
+      },
+      "lease_type": "agent",
+      "nickname": "fix-update-doctor-release",
+      "timeout_seconds": 600
+    }
+  }
+}

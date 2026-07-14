@@ -1,0 +1,20 @@
+{
+  "event_id": "019f5f62-f172-7e32-900e-cb6df05a8a70",
+  "occurred_at": "2026-07-14T06:49:07.698058Z",
+  "knot_id": "foolery-654a",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "codex",
+        "agent_type": "api",
+        "model": "gpt-5",
+        "model_version": "",
+        "provider": "OpenAI"
+      },
+      "lease_type": "agent",
+      "nickname": "codex-34d0-ship",
+      "timeout_seconds": 3600
+    }
+  }
+}

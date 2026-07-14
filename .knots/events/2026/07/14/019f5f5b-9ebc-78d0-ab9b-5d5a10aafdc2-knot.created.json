@@ -1,0 +1,17 @@
+{
+  "event_id": "019f5f5b-9ebc-78d0-ab9b-5d5a10aafdc2",
+  "occurred_at": "2026-07-14T06:41:07.77216Z",
+  "knot_id": "foolery-9af1",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "lease",
+    "state": "lease_ready",
+    "title": "Lease: fix-update-doctor-plan-review",
+    "type": "lease",
+    "workflow_id": "lease_sdlc"
+  }
+}

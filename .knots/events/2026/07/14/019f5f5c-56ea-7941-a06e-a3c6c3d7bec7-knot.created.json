@@ -1,0 +1,17 @@
+{
+  "event_id": "019f5f5c-56ea-7941-a06e-a3c6c3d7bec7",
+  "occurred_at": "2026-07-14T06:41:54.922673Z",
+  "knot_id": "foolery-e7dd",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "lease",
+    "state": "lease_ready",
+    "title": "Lease: fix-update-doctor-implementation",
+    "type": "lease",
+    "workflow_id": "lease_sdlc"
+  }
+}

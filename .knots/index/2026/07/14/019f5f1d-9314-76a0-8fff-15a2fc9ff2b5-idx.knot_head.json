@@ -1,0 +1,37 @@
+{
+  "event_id": "019f5f1d-9314-76a0-8fff-15a2fc9ff2b5",
+  "occurred_at": "2026-07-14T05:33:21.556429Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-820f",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Add Codex 5.6 model variants and ship patch",
+    "type": "work",
+    "updated_at": "2026-07-14T05:33:21.556429Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019f5f1d-7590-7293-8674-aa0bd7284ec4"
+  }
+}

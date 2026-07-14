@@ -1,0 +1,9 @@
+{
+  "event_id": "019f5f5a-35cf-7431-9d61-91b623a0afb4",
+  "occurred_at": "2026-07-14T06:39:35.361143Z",
+  "knot_id": "foolery-34d0",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. foolery update reports the currently installed version and the latest release version, then confirms the installed version after success.\n2. Installer/update output no longer prints the full supported command list.\n3. foolery doctor probes loopback and discovered local network-interface addresses instead of failing after only 127.0.0.1; failure output identifies all attempted API endpoints.\n4. Default tests remain hermetic and cover all three corrected behaviors.\n5. All quality gates and remote CI pass.\n6. The next patch release is public with verified runtime archives and checksums."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019f5f68-f526-7c23-9ad2-f26eb63915d3",
+  "occurred_at": "2026-07-14T06:55:41.862548Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-34d0",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix installed update and doctor discovery",
+    "type": "work",
+    "updated_at": "2026-07-14T06:55:41.862548Z",
+    "workflow_id": "work_sdlc"
+  }
+}

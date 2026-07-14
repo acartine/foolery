@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f68-aa78-7d82-8ad4-927d09846851",
+  "occurred_at": "2026-07-14T06:55:22.744863Z",
+  "knot_id": "foolery-34d0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment complete. origin/main is 3adb38b7 (implementation 212b589e plus release commit), v0.14.18 is public, and Release Runtime Artifact run 29312737698 succeeded. The release contains uploaded archives plus SHA-256 files for linux-x64, linux-arm64, and darwin-arm64. Main CI 29312528383 and Coverage Badge 29312528420 both passed.",
+    "datetime": "2026-07-14T06:55:22.744863Z",
+    "entry_id": "019f5f68-aa78-7d82-8ad4-926a60e8593b",
+    "model": "gpt-5",
+    "username": "OpenAI",
+    "version": "unknown"
+  }
+}

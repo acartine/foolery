@@ -1,0 +1,20 @@
+{
+  "event_id": "019f5f5b-9ec4-7d73-a259-288f7b97f462",
+  "occurred_at": "2026-07-14T06:41:07.780767Z",
+  "knot_id": "foolery-9af1",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "",
+        "agent_type": "",
+        "model": "",
+        "model_version": "",
+        "provider": ""
+      },
+      "lease_type": "agent",
+      "nickname": "fix-update-doctor-plan-review",
+      "timeout_seconds": 600
+    }
+  }
+}

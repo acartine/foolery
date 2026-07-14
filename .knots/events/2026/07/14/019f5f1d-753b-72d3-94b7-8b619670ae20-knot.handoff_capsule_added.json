@@ -1,0 +1,15 @@
+{
+  "event_id": "019f5f1d-753b-72d3-94b7-8b619670ae20",
+  "occurred_at": "2026-07-14T05:33:13.914991Z",
+  "knot_id": "foolery-820f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment ready for final review: origin/main and tag v0.14.17 point to 20e0e53d; implementation commit is b85d2479. Main CI and coverage workflow are green. GitHub release is public with darwin-arm64, linux-x64, and linux-arm64 tarballs plus matching .sha256 assets.",
+    "datetime": "2026-07-14T05:33:13.914991Z",
+    "entry_id": "019f5f1d-753b-72d3-94b7-8b5bf236c88e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

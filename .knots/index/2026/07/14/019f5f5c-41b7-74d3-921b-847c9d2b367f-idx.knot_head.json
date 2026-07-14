@@ -1,0 +1,21 @@
+{
+  "event_id": "019f5f5c-41b7-74d3-921b-847c9d2b367f",
+  "occurred_at": "2026-07-14T06:41:49.495255Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9af1",
+    "profile_id": "lease",
+    "state": "lease_terminated",
+    "terminal": true,
+    "title": "Lease: fix-update-doctor-plan-review",
+    "type": "lease",
+    "updated_at": "2026-07-14T06:41:49.495255Z",
+    "workflow_id": "lease_sdlc"
+  }
+}

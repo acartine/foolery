@@ -1,0 +1,9 @@
+{
+  "event_id": "019f5f68-aa78-7d82-8ad4-92538684e104",
+  "occurred_at": "2026-07-14T06:55:22.744863Z",
+  "knot_id": "foolery-34d0",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "release:v0.14.18"
+  }
+}

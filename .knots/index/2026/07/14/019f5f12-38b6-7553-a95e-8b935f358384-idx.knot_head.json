@@ -1,0 +1,21 @@
+{
+  "event_id": "019f5f12-38b6-7553-a95e-8b935f358384",
+  "occurred_at": "2026-07-14T05:20:57.526102Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-935e",
+    "profile_id": "lease",
+    "state": "lease_terminated",
+    "terminal": true,
+    "title": "Lease: codex-models-5-6",
+    "type": "lease",
+    "updated_at": "2026-07-14T05:20:57.526102Z",
+    "workflow_id": "lease_sdlc"
+  }
+}
