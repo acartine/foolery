@@ -1,0 +1,24 @@
+{
+  "event_id": "01a16e7b-8e4e-7503-a072-5de954075126",
+  "occurred_at": "2026-10-24T15:15:53.550428Z",
+  "knot_id": "foolery-9c1b",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "codex",
+        "agent_type": "cli",
+        "model": "GPT-6",
+        "model_version": "",
+        "provider": "OpenAI"
+      },
+      "lease_type": "agent",
+      "nickname": "foolery-beads-models",
+      "owner": {
+        "machine_id": "767cf407b0d0f4c3312532f4e5065f2c",
+        "pid": 29191
+      },
+      "timeout_seconds": 600
+    }
+  }
+}

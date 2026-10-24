@@ -1,0 +1,15 @@
+{
+  "event_id": "01a16e91-bd0c-7610-a65b-d57163fe1d34",
+  "occurred_at": "2026-10-24T15:40:07.308494Z",
+  "knot_id": "foolery-3c24",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipped v0.15.0 via scripts/release.sh --minor --wait-for-artifacts. Code39901d78009f; release18423f60f15f; origin/main and tag point to18423f60. CI40107389547 and40107613716 passed; all3 matrix artifact jobs40107614615 succeeded and all6 tarball/checksum assets verified. Existing local channel updated with foolery update, reports installed/latestv0.15.0 on3210. Real installed Scan verifies current Codex/Claude catalogs and374 OpenRouter choices; settings.toml hash unchanged. Real Beads1.3 shipped-artifact HTTP proof: SSE ready/change,3 priority reads plus external mutation cause zero additional bd list; native state fallback fresh. Host bd remains0.58, preserving compatibility. Repo clean. User rule prohibits terminal knot transitions, so leave nonterminal.",
+    "datetime": "2026-10-24T15:40:07.308494Z",
+    "entry_id": "01a16e91-bd0c-7610-a65b-d56f80dfd33b",
+    "model": "GPT-6",
+    "username": "OpenAI",
+    "version": "unknown"
+  }
+}

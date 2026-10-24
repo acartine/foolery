@@ -1,0 +1,15 @@
+{
+  "event_id": "01a16e81-6c33-7fc0-8f0b-b22bb188a934",
+  "occurred_at": "2026-10-24T15:22:18.034868Z",
+  "knot_id": "foolery-3c24",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Model catalog and OpenCode refresh implemented; 47 focused model/identity tests passed. Real CLI scan found 374 OpenRouter models. Read-only model picker preview at http://127.0.0.1:3328/model-preview uses actual scan data. Awaiting operator preview feedback before full lint/typecheck/test/build and shipment. Beads independent review found cache filter parity and nullable dependency snapshot cases; fixes in progress. No terminal transition or release performed.",
+    "datetime": "2026-10-24T15:22:18.034868Z",
+    "entry_id": "01a16e81-6c33-7fc0-8f0b-b218ef128e94",
+    "model": "GPT-6",
+    "username": "OpenAI",
+    "version": "unknown"
+  }
+}

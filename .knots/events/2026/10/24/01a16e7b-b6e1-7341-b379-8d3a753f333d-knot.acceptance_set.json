@@ -1,0 +1,9 @@
+{
+  "event_id": "01a16e7b-b6e1-7341-b379-8d3a753f333d",
+  "occurred_at": "2026-10-24T15:16:03.925666Z",
+  "knot_id": "foolery-3c24",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "Journal-enabled Beads repos avoid repeated full bd list scans, apply ordered full issue records, and recover after truncation or sync. Disabled/older journals retain explicitly diagnosed compatibility. Settings scan offers current officially verified Codex and Claude models, refreshes OpenRouter discovery through OpenCode, and preserves configured choices. Preview precedes full validation and shipment."
+  }
+}

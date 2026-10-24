@@ -1,0 +1,15 @@
+{
+  "event_id": "01a16e86-4495-7fd2-89cc-8b2b1b808acb",
+  "occurred_at": "2026-10-24T15:27:35.573486Z",
+  "knot_id": "foolery-3c24",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Operator accepted Codex choices and reported local Scan failure. Root cause verified: preview execution sandbox blocked OpenCode log writes at ~/.local/share/opencode/log/opencode.log. Restarted preview with normal filesystem access; real UI Scan now succeeds (4 CLIs, 374 OpenRouter models). Claude picker opened in real settings UI with Opus 5.5, Fable 5.1, Sonnet 5.5, Haiku 5.5; operator feedback pending. Existing registered selections not changed. Integrated focused run: 79 tests passed; agent independently reports 87 Beads-focused tests including backend contracts. Real official Beads1.3 embedded HTTP proof passed SSE ready/change, repeated priority string reads add zero bd list calls, external mutation updates mirror, native state fallback fresh. No full gates, commit, main push, or release yet.",
+    "datetime": "2026-10-24T15:27:35.573486Z",
+    "entry_id": "01a16e86-4495-7fd2-89cc-8b1e23f03541",
+    "model": "GPT-6",
+    "username": "OpenAI",
+    "version": "unknown"
+  }
+}

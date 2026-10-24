@@ -1,0 +1,22 @@
+{
+  "event_id": "01a16e91-be0e-7d91-9c7e-ba432322a920",
+  "occurred_at": "2026-10-24T15:40:07.566871Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9c1b",
+    "lease_expiry_ts": 1792857007,
+    "profile_id": "lease",
+    "state": "lease_terminated",
+    "terminal": true,
+    "title": "Lease: foolery-beads-models",
+    "type": "lease",
+    "updated_at": "2026-10-24T15:40:07.566871Z",
+    "workflow_id": "lease_sdlc"
+  }
+}

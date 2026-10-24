@@ -1,0 +1,9 @@
+{
+  "event_id": "01a16e7b-b6dc-7101-a4a3-d50f682c2ac7",
+  "occurred_at": "2026-10-24T15:16:03.925666Z",
+  "knot_id": "foolery-3c24",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Address GitHub discussion #32 and refresh Codex, Claude, and OpenRouter model discovery. Plan: [ ] Inspect Beads 1.3 journal contract and current refresh path; [ ] implement ordered incremental mirror with explicit compatibility and recovery; [ ] refresh official model catalogs and OpenCode discovery; [ ] show working preview and collect operator feedback; [ ] run required lint, typecheck, unit tests and build; [ ] integrate to origin/main via repo rail and verify. No terminal knot transition without explicit user instruction."
+  }
+}
