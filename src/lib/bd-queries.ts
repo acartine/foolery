@@ -51,7 +51,7 @@ function inferParent(
 }
 
 /** Map bd CLI JSON fields to our Beat interface. */
-function normalizeBeat(
+export function normalizeBeat(
   raw: Record<string, unknown>,
 ): Beat {
   const id = raw.id as string;
@@ -108,7 +108,7 @@ function normalizeBeats(raw: string): Beat[] {
 
 // ── Workflow filters ────────────────────────────────────────
 
-function applyWorkflowFilters(
+export function applyWorkflowFilters(
   beats: Beat[],
   filters?: Record<string, string>,
 ): Beat[] {

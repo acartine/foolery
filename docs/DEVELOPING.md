@@ -545,3 +545,41 @@ Publishing a GitHub release triggers `release-runtime-artifact`, which builds an
 - [Settings Guide](SETTINGS.md) -- how settings work and how to add new ones
 - [Knots](https://github.com/acartine/knots) -- primary memory manager backend
 - [Beads CLI](https://github.com/steveyegge/beads) -- alternative memory manager backend
+
+## Beads event journal refresh
+
+Foolery can follow Beads 1.3+ workspaces without running a full `bd list` on
+its normal ten-second refresh timer. Enable journaling in each workspace whose
+writers should produce events:
+
+```bash
+bd config set events-journal true
+```
+
+The Beats screen opens one multiplexed `/api/beats/events` SSE connection to
+Foolery. Its server shares one `bd events tail --follow` process per Beads
+workspace, initializes from a full snapshot, and applies ordered issue snapshots
+and deletes. Overview and simple type/priority/workflow filters read the mirror.
+State, parent, label, and other native selectors retain CLI semantics and refetch
+on journal changes rather than on the ten-second timer. Missing `is_blocked`
+in a journal snapshot means false. Checkpoints belong to that workspace's current
+mirror and are never reused across clones. The last browser subscription closing
+stops its follower and discards the mirror. Newer Beads releases advertising
+`--exit-on-stdin-eof` also stop followers when the Foolery process disappears.
+Beads 1.3 lacks that flag; forced server termination can leave a follower until
+its next output detects the closed pipe. Normal client disconnects stop it explicitly.
+
+Older Beads versions and disabled journals retain ordinary polling; the SSE
+connection reports `polling` and the enable command. Unexpected journal failures
+produce `FOOLERY BEADS JOURNAL FAILURE` in the server/browser console, restore
+polling, and retry from a fresh snapshot. Truncated cursors also rebuild from
+current state. All-Beads scopes disable the timer after every mirror is ready;
+mixed Knots/Beads scopes keep the timer for the other backends.
+
+Dolt pulls, branch switches, and direct library/SQL writes are not journaled.
+Foolery rebuilds immediately after a sync run through its own Sync action and
+reconciles a full snapshot every five minutes to discover outside changes.
+Reload the Beats page for an immediate fresh baseline when it is the only client;
+otherwise allow the reconciliation interval. Search and ready-work queries still
+use the CLI. This integration uses the CLI journal, so it works without the
+preview `bd serve` HTTP server, a Dolt server, or browser CORS configuration.

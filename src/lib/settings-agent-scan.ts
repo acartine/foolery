@@ -2,8 +2,8 @@
  * Dynamic model discovery and import-options builder.
  *
  * CLIs that support model listing (copilot, opencode) are
- * queried at scan time. Others fall back to config-file
- * detection only.
+ * queried at scan time. Claude and Codex combine a versioned
+ * catalog with the configured model, preserving existing selections.
  */
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
@@ -23,7 +23,12 @@ const execAsync = promisify(exec);
 const STATIC_PROVIDER_MODEL_IDS: Partial<
   Record<string, readonly string[]>
 > = {
+  // Verified 2026-10-24: platform.claude.com/docs/en/models/overview
   claude: [
+    "claude-opus-5-5",
+    "claude-fable-5-1",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
     "claude-opus-4-8",
     "claude-fable-5",
     "claude-sonnet-5",
@@ -34,18 +39,16 @@ const STATIC_PROVIDER_MODEL_IDS: Partial<
     "claude-haiku-4-5",
     "claude-opus-4-5",
   ],
+  // Verified 2026-10-24: learn.chatgpt.com/docs/models
+  // Older configured IDs are retained by buildAgentImportOptions below.
   codex: [
+    "gpt-6.1-sol",
+    "gpt-6-astra",
+    "gpt-6-sol",
+    "gpt-6-luna",
     "gpt-5.6-sol",
     "gpt-5.6-terra",
     "gpt-5.6-luna",
-    "gpt-5.4",
-    "gpt-5.4-mini",
-    "gpt-5.3-codex",
-    "gpt-5.3-codex-spark",
-    "gpt-5.2-codex",
-    "gpt-5.2",
-    "gpt-5.1-codex-max",
-    "gpt-5.1-codex-mini",
   ],
   gemini: [
     "gemini-2.5-pro",
@@ -61,7 +64,7 @@ export async function readOpenCodeModels(): Promise<
 > {
   try {
     const { stdout } = await execAsync(
-      "opencode models", { timeout: 10_000 },
+      "opencode models --refresh", { timeout: 30_000 },
     );
     return stdout.trim().split("\n")
       .filter(Boolean)
@@ -78,7 +81,10 @@ export async function readOpenCodeModels(): Promise<
         };
       });
   } catch {
-    return [];
+    const message = "FOOLERY MODEL SCAN FAILURE: OpenCode model refresh failed. "
+      + "Run opencode models --refresh and check provider configuration and network access.";
+    console.error(`\u001b[31m${message}\u001b[0m`);
+    throw new Error(message);
   }
 }
 

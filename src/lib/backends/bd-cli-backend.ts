@@ -30,6 +30,7 @@ import {
 } from "@/lib/workflows";
 import { BeadsBackend } from "@/lib/backends/beads-backend";
 import * as bd from "@/lib/bd";
+import { cachedJournalBeats } from "@/lib/beads-journal-runtime";
 import {
   WorkflowCorrectionFailureError,
 } from "@/lib/workflow-correction-failure";
@@ -91,6 +92,8 @@ export class BdCliBackend implements BackendPort {
     filters?: BeatListFilters,
     repoPath?: string,
   ): Promise<BackendResult<Beat[]>> {
+    const cached = cachedJournalBeats(repoPath, filters);
+    if (cached) return { ok: true, data: cached };
     return toBR(await bd.listBeats(filtersToRecord(filters), repoPath));
   }
 

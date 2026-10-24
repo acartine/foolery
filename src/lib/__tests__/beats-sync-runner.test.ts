@@ -22,7 +22,9 @@ describe("beats sync runner", () => {
 
   it("runs bd sync --no-daemon for Beads repos", async () => {
     const execFile = vi.fn().mockResolvedValue({});
-    const result = await runRepoSync(repo("beads"), { execFile });
+    const refreshJournal = vi.fn();
+    const result = await runRepoSync(repo("beads"), { execFile, refreshJournal });
+    expect(refreshJournal).toHaveBeenCalledWith("/repo");
 
     expect(result).toEqual({ ok: true, command: "bd sync --no-daemon" });
     expect(execFile).toHaveBeenCalledWith(

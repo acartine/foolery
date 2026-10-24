@@ -19,6 +19,7 @@ import { wavesPaths } from "@/lib/openapi/paths-waves";
 import {
   terminalPaths,
   orchestrationPaths,
+  beadsJournalPaths,
 } from "@/lib/openapi/paths-streaming";
 import { terminalActionPaths } from "@/lib/openapi/paths-terminal-actions";
 import { settingsPaths } from "@/lib/openapi/paths-settings";
@@ -87,6 +88,7 @@ export const openApiSpec = {
   ],
   paths: {
     ...beatsPaths,
+    ...beadsJournalPaths,
     ...beatCorrectionPaths,
     ...depsPaths,
     ...plansPaths,

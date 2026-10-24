@@ -2,6 +2,7 @@ import { execFile as execFileCallback } from "node:child_process";
 import { promisify } from "node:util";
 import type { RegisteredRepo } from "@/lib/registry";
 import { serverLog } from "@/lib/server-logger";
+import { refreshBeadsJournal } from "@/lib/beads-journal-runtime";
 
 const execFile = promisify(execFileCallback);
 
@@ -14,6 +15,7 @@ export interface BeatsSyncRunResult {
 }
 
 export interface BeatsSyncRunnerDeps {
+  refreshJournal?: (repoPath: string) => void;
   execFile?: (
     file: string,
     args: string[],
@@ -40,6 +42,9 @@ export async function runRepoSync(
   const run = deps.execFile ?? execFile;
   try {
     const result = await run(file, args, { cwd: repo.path });
+    if (repo.memoryManagerType === "beads") {
+      (deps.refreshJournal ?? refreshBeadsJournal)(repo.path);
+    }
     return {
       ok: true,
       command,

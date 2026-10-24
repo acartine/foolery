@@ -13,6 +13,7 @@ import type { BeatsScope } from "@/lib/api";
 import type { BdResult } from "@/lib/types";
 import { withClientPerfSpan } from "@/lib/client-perf";
 import { useAppStore } from "@/stores/app-store";
+import { useBeadsJournal } from "@/hooks/use-beads-journal";
 import { useRepoSwitchQueryState } from "@/hooks/use-repo-switch-query-state";
 import {
   hasRollingAncestor as hasRollingAncestorLib,
@@ -78,6 +79,7 @@ export function useBeatsQuery(
   const { filters } = useAppStore();
   const scope = resolveBeatsScope(activeRepo, registeredRepos);
   const streaming = useStreamingProgress();
+  const journalLive = useBeadsJournal(scope, shouldLoadBeats && !searchQuery);
 
   const params: Record<string, string> = {};
   if (
@@ -118,7 +120,7 @@ export function useBeatsQuery(
       Boolean(activeRepo) || registeredRepos.length > 0
     ),
     staleTime: 10_000,
-    refetchInterval: 10_000,
+    refetchInterval: journalLive ? false : 10_000,
     retry: (count, error) =>
       !(error instanceof DegradedStoreError)
       && count < 3,

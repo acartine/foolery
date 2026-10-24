@@ -92,6 +92,7 @@ export function providerLabel(provider?: string, command?: string): string | und
  * label is constructed.
  */
 const CODEX_FLAVOR_DISPLAY: Record<string, string> = {
+  astra: "Astra",
   sol: "Sol",
   terra: "Terra",
   luna: "Luna",
@@ -124,15 +125,8 @@ function normalizeCodexModel(
         ? "codex-spark"
         : cleaned.includes("codex")
           ? "codex"
-          : /(?:^|-)sol(?:-|$)/u.test(cleaned)
-            ? "sol"
-            : /(?:^|-)terra(?:-|$)/u.test(cleaned)
-              ? "terra"
-              : /(?:^|-)luna(?:-|$)/u.test(cleaned)
-                ? "luna"
-                : /\bmini\b/u.test(cleaned)
-                  ? "mini"
-                  : undefined;
+          : cleaned.split("-").find((part) =>
+            ["astra", "sol", "terra", "luna", "mini"].includes(part));
   const flavor = flavorKey
     ? CODEX_FLAVOR_DISPLAY[flavorKey]
     : undefined;

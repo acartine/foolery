@@ -37,6 +37,7 @@ type AggregateRequest = {
   repos: RegisteredRepo[];
 };
 
+let cacheGeneration = 0;
 const aggregateCache = new Map<string, AggregateCacheEntry>();
 const inflight = new Map<string, Promise<AggregateBeatsResult>>();
 
@@ -162,7 +163,7 @@ function buildCacheKey(request: AggregateRequest): string {
   const filterKeys = Object.keys(request.filters).sort();
   const serializedFilters = JSON.stringify(request.filters, filterKeys);
   const repoKey = request.repos.map((repo) => repo.path).sort().join("|");
-  return `${request.query ?? ""}:${serializedFilters}:${repoKey}`;
+  return `${cacheGeneration}:${request.query ?? ""}:${serializedFilters}:${repoKey}`;
 }
 
 function getCachedResult(key: string): AggregateBeatsResult | null {
@@ -299,6 +300,7 @@ export function aggregateBeatsErrorStatus(error: string): number {
 }
 
 export function _resetAggregateBeatsCache(): void {
+  cacheGeneration++;
   aggregateCache.clear();
   inflight.clear();
 }

@@ -76,9 +76,13 @@ describe("scanForAgents: discovery and status", () => {
       path: "/usr/local/bin/claude",
       installed: true,
       provider: "Claude",
-      selectedOptionId: "claude-claude-opus-4-8",
+      selectedOptionId: "claude-claude-opus-5-5",
     });
     expect(claude?.options?.map((option) => option.label)).toEqual([
+      "Claude Opus 5.5",
+      "Claude Fable 5.1",
+      "Claude Sonnet 5.5",
+      "Claude Haiku 5.5",
       "Claude Opus 4.8",
       "Claude Fable 5",
       "Claude Sonnet 5",
@@ -90,14 +94,14 @@ describe("scanForAgents: discovery and status", () => {
       "Claude Opus 4.5",
     ]);
     expect(claude?.options?.[0]).toMatchObject({
-      id: "claude-claude-opus-4-8",
-      modelId: "claude-opus-4-8",
+      id: "claude-claude-opus-5-5",
+      modelId: "claude-opus-5-5",
       provider: "Claude",
       // Display-form per foolery-b42b.
       model: "Claude",
       flavor: "Opus",
-      version: "4.8",
-      label: "Claude Opus 4.8",
+      version: "5.5",
+      label: "Claude Opus 5.5",
     });
   });
 
@@ -211,19 +215,15 @@ describe("scanForAgents: codex model metadata", () => {
     expect(codex?.options?.length).toBeGreaterThan(0);
     expect(codex?.options?.map((option) => option.modelId)).toEqual([
       "gpt-5.6-sol",
+      "gpt-6.1-sol",
+      "gpt-6-astra",
+      "gpt-6-sol",
+      "gpt-6-luna",
       "gpt-5.6-terra",
       "gpt-5.6-luna",
-      "gpt-5.4",
-      "gpt-5.4-mini",
-      "gpt-5.3-codex",
-      "gpt-5.3-codex-spark",
-      "gpt-5.2-codex",
-      "gpt-5.2",
-      "gpt-5.1-codex-max",
-      "gpt-5.1-codex-mini",
     ]);
     expect(codex?.selectedOptionId).toBe("codex-gpt-5-6-sol");
-    expect(codex?.options?.slice(0, 3)).toMatchObject([
+    expect(codex?.options?.filter((option) => option.version === "5.6")).toMatchObject([
       {
         id: "codex-gpt-5-6-sol",
         label: "Codex GPT Sol 5.6",
@@ -276,7 +276,7 @@ describe("scanForAgents: claude model metadata", () => {
       modelId: "claude-sonnet-4-5",
       version: "4.5",
     });
-    expect(claude?.options?.length).toBe(9);
+    expect(claude?.options?.length).toBe(13);
     expect(claude?.options?.[0]).toMatchObject({
       id: "claude-claude-sonnet-4-5",
       modelId: "claude-sonnet-4-5",
@@ -286,43 +286,12 @@ describe("scanForAgents: claude model metadata", () => {
       flavor: "Sonnet",
       version: "4.5",
     });
-    expect(claude?.options?.[1]).toMatchObject({
-      id: "claude-claude-opus-4-8",
-      modelId: "claude-opus-4-8",
-      label: "Claude Opus 4.8",
-      provider: "Claude",
-      model: "Claude",
-      flavor: "Opus",
-      version: "4.8",
-    });
-    expect(claude?.options?.[2]).toMatchObject({
-      id: "claude-claude-fable-5",
-      modelId: "claude-fable-5",
-      label: "Claude Fable 5",
-      provider: "Claude",
-      model: "Claude",
-      flavor: "Fable",
-      version: "5",
-    });
-    expect(claude?.options?.[3]).toMatchObject({
-      id: "claude-claude-sonnet-5",
-      modelId: "claude-sonnet-5",
-      label: "Claude Sonnet 5",
-      provider: "Claude",
-      model: "Claude",
-      flavor: "Sonnet",
-      version: "5",
-    });
-    expect(claude?.options?.[4]).toMatchObject({
-      id: "claude-claude-opus-4-7",
-      modelId: "claude-opus-4-7",
-      label: "Claude Opus 4.7",
-      provider: "Claude",
-      model: "Claude",
-      flavor: "Opus",
-      version: "4.7",
-    });
-    expect(claude?.options?.[5]?.label).toBe("Claude Sonnet 4.6");
+    expect(claude?.options?.slice(1, 5).map((option) => option.label)).toEqual([
+      "Claude Opus 5.5",
+      "Claude Fable 5.1",
+      "Claude Sonnet 5.5",
+      "Claude Haiku 5.5",
+    ]);
   });
 });
 
@@ -381,6 +350,22 @@ describe("scanForAgents: gemini model metadata", () => {
 });
 
 describe("scanForAgents: opencode model metadata", () => {
+  it("surfaces a failed model refresh instead of returning an empty catalog", async () => {
+    mockExecCb.mockImplementation(async (cmd: string) => {
+      if (cmd === "command -v opencode") {
+        return { stdout: "/opt/homebrew/bin/opencode\n", stderr: "" };
+      }
+      throw new Error("refresh failed");
+    });
+    const banner = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      await expect(scanForAgents()).rejects.toThrow("FOOLERY MODEL SCAN FAILURE");
+      expect(banner).toHaveBeenCalledWith(expect.stringContaining("opencode models --refresh"));
+    } finally {
+      banner.mockRestore();
+    }
+  });
+
   it("captures OpenCode model metadata with ids separate from display labels", async () => {
     mockExecCb.mockImplementation(async (cmd: string) => {
       if (cmd === "command -v opencode") {
@@ -389,7 +374,7 @@ describe("scanForAgents: opencode model metadata", () => {
           stderr: "",
         };
       }
-      if (cmd === "opencode models") {
+      if (cmd === "opencode models --refresh") {
         return {
           stdout: [
             "openrouter/anthropic/claude-sonnet-4-5",
@@ -403,6 +388,7 @@ describe("scanForAgents: opencode model metadata", () => {
 
     const agents = await scanForAgents();
     const opencode = agents.find((agent) => agent.id === "opencode");
+    expect(mockExecCb).toHaveBeenCalledWith("opencode models --refresh");
     expect(opencode).toMatchObject({
       id: "opencode",
       command: "opencode",
