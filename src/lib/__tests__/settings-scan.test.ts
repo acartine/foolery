@@ -80,6 +80,7 @@ describe("scanForAgents: discovery and status", () => {
     });
     expect(claude?.options?.map((option) => option.label)).toEqual([
       "Claude Opus 5.5",
+      "Claude Fable 5.2",
       "Claude Fable 5.1",
       "Claude Sonnet 5.5",
       "Claude Haiku 5.5",
@@ -276,7 +277,7 @@ describe("scanForAgents: claude model metadata", () => {
       modelId: "claude-sonnet-4-5",
       version: "4.5",
     });
-    expect(claude?.options?.length).toBe(13);
+    expect(claude?.options?.length).toBe(14);
     expect(claude?.options?.[0]).toMatchObject({
       id: "claude-claude-sonnet-4-5",
       modelId: "claude-sonnet-4-5",
@@ -286,8 +287,9 @@ describe("scanForAgents: claude model metadata", () => {
       flavor: "Sonnet",
       version: "4.5",
     });
-    expect(claude?.options?.slice(1, 5).map((option) => option.label)).toEqual([
+    expect(claude?.options?.slice(1, 6).map((option) => option.label)).toEqual([
       "Claude Opus 5.5",
+      "Claude Fable 5.2",
       "Claude Fable 5.1",
       "Claude Sonnet 5.5",
       "Claude Haiku 5.5",

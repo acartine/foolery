@@ -109,10 +109,10 @@ Non-alphanumerics in the model portion are lowercased and replaced with `-`.
 ### Discover current models
 
 In Settings → Agents, use **Scan** to discover installed CLIs and model choices.
-Codex and Claude include a versioned catalog (verified October 24, 2026):
+Codex and Claude include a versioned catalog:
 
 - Codex: GPT-6.1 Sol, GPT-6 Astra, GPT-6 Sol, GPT-6 Luna, and the GPT-5.6 family.
-- Claude: Opus 5.5, Fable 5.1, Sonnet 5.5, Haiku 5.5, and earlier catalog entries.
+- Claude: Opus 5.5, Fable 5.2, Fable 5.1, Sonnet 5.5, Haiku 5.5, and earlier catalog entries.
 - OpenRouter: discovered through configured OpenCode providers. Each scan runs
   `opencode models --refresh` to refresh OpenCode's cached catalog from models.dev.
 
@@ -124,6 +124,8 @@ pinned models. It does not replace registered agents or change action mappings.
 Catalog entries do not guarantee account access; your provider and CLI determine
 availability. Use a current CLI: Claude Code requires v2.1.280 for Opus 5.5,
 v2.1.284 for Sonnet 5.5, v2.1.293 for Haiku 5.5, and v2.1.257 for Fable 5.1.
+For Fable 5.2 (`claude-fable-5-2`), use
+[Claude Code v2.1.321 or later](https://github.com/anthropics/claude-code/releases/tag/v2.1.321).
 
 Sources: [Codex models](https://learn.chatgpt.com/docs/models),
 [Claude Code models](https://code.claude.com/docs/en/model-config), and

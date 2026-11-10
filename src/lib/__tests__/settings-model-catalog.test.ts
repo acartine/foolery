@@ -22,8 +22,9 @@ describe("current provider model catalogs", () => {
 
   it("keeps the CLI's exact Claude model IDs separate from their display labels", () => {
     const options = buildAgentImportOptions("claude", {});
-    expect(options?.slice(0, 4).map(({ modelId, label }) => ({ modelId, label }))).toEqual([
+    expect(options?.slice(0, 5).map(({ modelId, label }) => ({ modelId, label }))).toEqual([
       { modelId: "claude-opus-5-5", label: "Claude Opus 5.5" },
+      { modelId: "claude-fable-5-2", label: "Claude Fable 5.2" },
       { modelId: "claude-fable-5-1", label: "Claude Fable 5.1" },
       { modelId: "claude-sonnet-5-5", label: "Claude Sonnet 5.5" },
       { modelId: "claude-haiku-5-5", label: "Claude Haiku 5.5" },

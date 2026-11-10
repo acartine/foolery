@@ -26,6 +26,8 @@ const STATIC_PROVIDER_MODEL_IDS: Partial<
   // Verified 2026-10-24: platform.claude.com/docs/en/models/overview
   claude: [
     "claude-opus-5-5",
+    // Added in Claude Code 2.1.321.
+    "claude-fable-5-2",
     "claude-fable-5-1",
     "claude-sonnet-5-5",
     "claude-haiku-5-5",
